@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Matt Gordon</Authors>
+    <Company />
+    <Description>Extenso - Data</Description>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Extenso.Caching.Abstractions\Extenso.Caching.Abstractions.csproj" />
+    <ProjectReference Include="..\Extenso.Data.Abstractions\Extenso.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\Extenso.Infrastructure.Abstractions\Extenso.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\Extenso\Extenso.csproj" />
+  </ItemGroup>
+
+</Project>
