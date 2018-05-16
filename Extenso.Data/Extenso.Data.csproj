@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Matt Gordon</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Description>This library provides a generic repository interface and base class, a fluent t-sql query builder, data-related extension methods and other helper classes.</Description>
+    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="Mantle.Data.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.3" />

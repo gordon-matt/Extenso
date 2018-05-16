@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Extenso</RootNamespace>
+    <Company>Matt Gordon</Company>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Authors>Matt Gordon</Authors>
+    <Description>Extension methods and other helper classes</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
