@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Demo.Data.Domain;
-using Extenso.Data;
+using Extenso.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Controllers

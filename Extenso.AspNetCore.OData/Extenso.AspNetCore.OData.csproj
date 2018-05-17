@@ -6,7 +6,8 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
+    <Description></Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
+    <ProjectReference Include="..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
   </ItemGroup>
 
 </Project>

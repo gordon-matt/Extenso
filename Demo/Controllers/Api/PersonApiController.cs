@@ -1,5 +1,5 @@
 ﻿using Demo.Data.Domain;
-using Extenso.Data;
+using Extenso.Data.Entity;
 using Extenso.Web.OData;
 
 namespace Demo.Controllers.Api

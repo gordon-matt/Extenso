@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Extenso.Data
+namespace Extenso.Data.Entity
 {
     public interface IRepository<TEntity> where TEntity : class
     {

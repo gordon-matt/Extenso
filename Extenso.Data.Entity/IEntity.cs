@@ -1,4 +1,4 @@
-﻿namespace Extenso.Data
+﻿namespace Extenso.Data.Entity
 {
     public interface IEntity
     {

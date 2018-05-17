@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Extenso.Data
+namespace Extenso.Data.Entity
 {
     public interface IRepositoryConnection<TEntity> : IDisposable
     {
