@@ -15,7 +15,17 @@ This is the main library and mostly contains various extension methods.
 #### Extenso.Data
 > NuGet: https://www.nuget.org/packages/Extenso.Data/
 
-This library contains a generic `IRepository<TEntity>` interface and base class implementation for Entity Framework. There is also a Query Builder which lets you build T-SQL statements through a fluent interface. In addition, there are also a great deal of useful extension methods and other helpers classes aimed at data.
+Extension methods and other data-related helper classes.
+
+#### Extenso.Data.Entity
+> NuGet: https://www.nuget.org/packages/Extenso.Data.Entity/
+
+This package contains a generic `IRepository<TEntity>` interface and base class implementation for Entity Framework. 
+
+#### Extenso.Data.QueryBuilder
+> NuGet: https://www.nuget.org/packages/Extenso.Data.QueryBuilder/
+
+This package consists of a Query Builder which lets you build T-SQL statements through a fluent interface. 
 
 #### Extenso.AspNetCore.OData
 > NuGet: https://www.nuget.org/packages/Extenso.AspNetCore.OData/
