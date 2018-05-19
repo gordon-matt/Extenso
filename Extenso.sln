@@ -13,7 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "Demo\Demo.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.Entity", "Extenso.Data.Entity\Extenso.Data.Entity.csproj", "{CC89B051-50AE-4EE8-83A8-291DE3DA994F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder", "Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj", "{5CB280BE-C53B-4619-88FB-280F5487A5B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.QueryBuilder", "Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj", "{5CB280BE-C53B-4619-88FB-280F5487A5B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc", "Extenso.AspNetCore.Mvc\Extenso.AspNetCore.Mvc.csproj", "{AAB4105D-E2D1-4456-B129-DA6D6700E97D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.ExtensoUI", "Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj", "{18A3B0A7-123C-44D8-B1A8-A8AA1FFE4FA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI", "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.csproj", "{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +51,18 @@ Global
 		{5CB280BE-C53B-4619-88FB-280F5487A5B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CB280BE-C53B-4619-88FB-280F5487A5B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CB280BE-C53B-4619-88FB-280F5487A5B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAB4105D-E2D1-4456-B129-DA6D6700E97D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB4105D-E2D1-4456-B129-DA6D6700E97D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB4105D-E2D1-4456-B129-DA6D6700E97D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB4105D-E2D1-4456-B129-DA6D6700E97D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A3B0A7-123C-44D8-B1A8-A8AA1FFE4FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A3B0A7-123C-44D8-B1A8-A8AA1FFE4FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A3B0A7-123C-44D8-B1A8-A8AA1FFE4FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A3B0A7-123C-44D8-B1A8-A8AA1FFE4FA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

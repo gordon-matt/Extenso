@@ -5,6 +5,10 @@
     <UserSecretsId>aspnet-Demo-F3F41096-7E83-4831-99E8-1A9AFC3549D1</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\WorldMap.jpg" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
@@ -21,6 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.csproj" />
+    <ProjectReference Include="..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />
     <ProjectReference Include="..\Extenso.AspNetCore.OData\Extenso.AspNetCore.OData.csproj" />
   </ItemGroup>
 
