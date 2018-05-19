@@ -7,14 +7,17 @@ using Demo.Data;
 using Demo.Infrastructure;
 using Demo.Models;
 using Demo.Services;
+using Extenso.AspNetCore.Mvc.ExtensoUI;
+using Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI;
+using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Extenso.AspNetCore.OData;
-using Extenso.Data;
 using Extenso.Data.Entity;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,6 +85,9 @@ namespace Demo
             }
 
             app.UseAuthentication();
+
+            app.UseExtensoUI<Bootstrap3UIProvider>();
+            //app.UseExtensoUI<KendoBootstrap3UIProvider>();
 
             app.UseMvc(routes =>
             {

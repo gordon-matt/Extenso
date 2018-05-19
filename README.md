@@ -17,6 +17,21 @@ This is the main library and mostly contains various extension methods.
 
 This library contains a generic `IRepository<TEntity>` interface and base class implementation for Entity Framework. There is also a Query Builder which lets you build T-SQL statements through a fluent interface. In addition, there are also a great deal of useful extension methods and other helpers classes aimed at data.
 
+#### Extenso.AspNetCore.Mvc
+> NuGet: https://www.nuget.org/packages/Extenso.AspNetCore.Mvc/
+
+MVC-related extension methods and other helper classes. Includes a FluentTagBuilder, an IRazorViewRenderService (to render Razor views to a string), various HTML Helpers and more.
+
+#### Extenso.AspNetCore.Mvc.ExtensoUI
+> NuGet: https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI/
+
+HTML Helpers for creating common UI components (Accordions, Tabs, Panels, Modal Dialogs, etc). This package includes a default provider for Bootstrap 3.
+
+#### Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI
+> NuGet: https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI/
+
+Kendo UI Provider for ExtensoUI.
+
 #### Extenso.AspNetCore.OData
 > NuGet: https://www.nuget.org/packages/Extenso.AspNetCore.OData/
 
