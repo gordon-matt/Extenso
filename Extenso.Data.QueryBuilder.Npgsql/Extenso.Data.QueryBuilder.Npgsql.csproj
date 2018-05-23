@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Matt Gordon</Authors>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Description>Fluent T-SQL Query Builder for PostgreSQL</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj" />
+  </ItemGroup>
+
+</Project>

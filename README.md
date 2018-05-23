@@ -17,15 +17,35 @@ This is the main library and mostly contains various extension methods.
 
 Extension methods and other data-related helper classes.
 
+#### Extenso.Data.MySql
+> NuGet: https://www.nuget.org/packages/Extenso.Data.MySql/
+
+Data-related extension methods and other helper classes for MySql.
+
+#### Extenso.Data.Npgsql
+> NuGet: https://www.nuget.org/packages/Extenso.Data.Npgsql/
+
+Data-related extension methods and other helper classes for Npgsql
+
 #### Extenso.Data.Entity
 > NuGet: https://www.nuget.org/packages/Extenso.Data.Entity/
 
-This package contains a generic `IRepository<TEntity>` interface and base class implementation for Entity Framework. 
+This package contains a generic `IRepository<TEntity>` interface and base class implementation for Entity Framework.
 
 #### Extenso.Data.QueryBuilder
 > NuGet: https://www.nuget.org/packages/Extenso.Data.QueryBuilder/
 
-This package consists of a Query Builder which lets you build T-SQL statements through a fluent interface. 
+This package consists of a Query Builder which lets you build T-SQL statements through a fluent interface.
+
+#### Extenso.Data.QueryBuilder.MySql
+> NuGet: https://www.nuget.org/packages/Extenso.Data.QueryBuilder/
+
+Fluent T-SQL Query Builder for MySQL.
+
+#### Extenso.Data.QueryBuilder.Npgsql
+> NuGet: https://www.nuget.org/packages/Extenso.Data.QueryBuilder/
+
+Fluent T-SQL Query Builder for PostgreSQL.
 
 #### Extenso.AspNetCore.Mvc
 > NuGet: https://www.nuget.org/packages/Extenso.AspNetCore.Mvc/

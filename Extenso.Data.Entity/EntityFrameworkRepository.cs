@@ -14,12 +14,13 @@ namespace Extenso.Data.Entity
     public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         where TEntity : class, IEntity
     {
-        #region Private Members
+        #region Non-Public Members
 
-        private IDbContextFactory contextFactory;
         private readonly ILogger logger;
 
-        #endregion Private Members
+        protected IDbContextFactory contextFactory;
+
+        #endregion Non-Public Members
 
         #region Constructor
 

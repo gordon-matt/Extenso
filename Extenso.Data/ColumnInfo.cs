@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Data;
 
 namespace Extenso.Data
 {
@@ -19,11 +19,20 @@ namespace Extenso.Data
 
         public bool IsNullable { get; set; }
 
-        public Type DataType { get; set; }
+        public DbType DataType { get; set; }
 
         public long MaximumLength { get; set; }
 
+        public int Precision { get; set; }
+
+        public int Scale { get; set; }
+
         public KeyType KeyType { get; set; }
+
+        /// <summary>
+        /// MSSQL: IDENTITY, PG: Sequence, etc..
+        /// </summary>
+        public bool IsAutoIncremented { get; set; }
 
         public override string ToString()
         {

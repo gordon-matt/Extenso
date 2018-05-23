@@ -19,7 +19,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc", "E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.ExtensoUI", "Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj", "{18A3B0A7-123C-44D8-B1A8-A8AA1FFE4FA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI", "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.csproj", "{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI", "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.csproj", "{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.MySql", "Extenso.Data.MySql\Extenso.Data.MySql.csproj", "{C81D00C5-C88F-4ECD-A360-892745B876CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.Npgsql", "Extenso.Data.Npgsql\Extenso.Data.Npgsql.csproj", "{556B123C-06A1-4B9D-8A4C-F15F21A20505}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder.MySql", "Extenso.Data.QueryBuilder.MySql\Extenso.Data.QueryBuilder.MySql.csproj", "{698919F4-1891-4388-BD11-0ABE96067AE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder.Npgsql", "Extenso.Data.QueryBuilder.Npgsql\Extenso.Data.QueryBuilder.Npgsql.csproj", "{A967F072-917E-4BBB-938D-F31C3156962B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +71,22 @@ Global
 		{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C81D00C5-C88F-4ECD-A360-892745B876CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C81D00C5-C88F-4ECD-A360-892745B876CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C81D00C5-C88F-4ECD-A360-892745B876CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C81D00C5-C88F-4ECD-A360-892745B876CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{556B123C-06A1-4B9D-8A4C-F15F21A20505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{556B123C-06A1-4B9D-8A4C-F15F21A20505}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{556B123C-06A1-4B9D-8A4C-F15F21A20505}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{556B123C-06A1-4B9D-8A4C-F15F21A20505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{698919F4-1891-4388-BD11-0ABE96067AE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{698919F4-1891-4388-BD11-0ABE96067AE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{698919F4-1891-4388-BD11-0ABE96067AE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{698919F4-1891-4388-BD11-0ABE96067AE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A967F072-917E-4BBB-938D-F31C3156962B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A967F072-917E-4BBB-938D-F31C3156962B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A967F072-917E-4BBB-938D-F31C3156962B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A967F072-917E-4BBB-938D-F31C3156962B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
