@@ -1,0 +1,8 @@
+/* https://stackoverflow.com/questions/1667097/how-to-get-google-prettify-to-render-more-like-visual-studio */
+.com       { color: #008000 !important; }
+.str, .tag { color: #A31515 !important; }
+.kwd, .atv { color: #0000FF !important; }
+.typ       { color: #2B91AF !important; }
+.lit, .atn { color: #FF0000 !important; }
+.pun, .pln { color: #000000 !important; }
+.dec       { color: #800080 !important; }

@@ -1,0 +1,47 @@
+﻿<template>
+    <style type="text/css">
+        .card:hover, .card:focus, .card:active {
+            background-color: #FBC02D;
+            cursor: pointer;
+        }
+		.card-deck {
+			display: grid;
+		}
+		@media (min-width: 0) {
+			.card-deck {
+				grid-template-columns: repeat(1, 1fr);
+			}
+		}
+		@media (min-width: 576px) {
+			.card-deck {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+		@media (min-width: 768px) {
+			.card-deck {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+		@media (min-width: 992px) {
+			.card-deck {
+				grid-template-columns: repeat(4, 1fr);
+			}
+		}
+		@media (min-width: 1200px) {
+			.card-deck {
+				grid-template-columns: repeat(4, 1fr);
+			}
+		}
+    </style>
+
+    <div class="card-deck">
+        <div repeat.for="assembly of assemblies" id="${assembly.Id}" class="card my-3">
+            <a href='#assembly/${assembly.Id}' style='position: absolute; top: 0; left: 0; height: 100%; width: 100%;'></a>
+            <div class="card-body">
+                <h4 class="card-title">${assembly.Name}</h4>
+                <p class="card-text">${assembly.FullName}</p>
+                <a class="card-link" route-href="route: assembly; params.bind: { id: assembly.Id }" title="${assembly.Name}">View</a>
+            </div>
+        </div>
+    </div>
+</template>

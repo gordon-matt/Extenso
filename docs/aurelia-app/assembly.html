@@ -1,0 +1,229 @@
+﻿<template>
+    <require from='/css/assembly-detail.css'></require>
+
+    <h1>
+        <span>${selectedAssembly.Name}</span>&nbsp;
+        <small class="text-muted">
+            <span>${selectedAssembly.FullName}</span>
+        </small>
+    </h1>
+    <div class="row">
+        <div class="col-md-3 scroll-column">
+            <h2 class="namespace-title text-muted">Namespaces</h2>
+			<div id="namespaces">
+				<ul id="namespace-list" class="list-group list-group-flush scrolly">
+					<li repeat.for="namespace of selectedAssembly.Namespaces" class="list-group-item list-group-item-action flex-column align-items-start">
+						<div class="d-flex w-100 justify-content-between">
+							<h6 class="mb-1 text-truncate" title="${namespace.Name}">${namespace.Name}</h6>
+						</div>
+						<p class="mb-1">
+							<button type="button" if.bind="namespace.Classes.length > 0" click.delegate="showClasses(namespace.Name)" class="btn btn-sm btn-warning" title="# of classes">${namespace.Classes.length} Classes</button>
+							<button type="button" if.bind="namespace.Structures.length > 0" click.delegate="showStructures(namespace.Name)" class="btn btn-sm btn-info" title="# of structures">${namespace.Structures.length} Structures</button>
+							<button type="button" if.bind="namespace.Interfaces.length > 0" click.delegate="showInterfaces(namespace.Name)" class="btn btn-sm btn-primary" title="# of interfaces">${namespace.Interfaces.length} Interfaces</button>
+							<button type="button" if.bind="namespace.Enumerations.length > 0" click.delegate="showEnumerations(namespace.Name)" class="btn btn-sm btn-default" title="# of enumerations">${namespace.Enumerations.length} Enums</button>
+							<button type="button" if.bind="namespace.Delegates.length > 0" click.delegate="showDelegates(namespace.Name)" class="btn btn-sm btn-primary" title=" # of delegates">${namespace.Delegates.length} Delegates</button>
+						</p>
+					</li>
+				</ul>
+			</div>
+        </div>
+        <div class="col-md-9 border border-top-0 border-bottom-0 border-right-0">
+            <h2 id="namespace-title" class="namespace-title">${selectedNamespace.Name}</h2>
+            <div class="row">
+                <div class="col-md-3 scroll-column">
+                    <h3>${selectedTypesTitle}</h3>
+                    <div id="types">
+                        <ul id="type-list" class="list-group list-group-flush scrolly">
+							<li repeat.for="type of selectedTypes" class="list-group-item list-group-item-action flex-column align-items-start">
+								<a href="javascript.void(0);" click.delegate="showType(type)">
+									<h5 class="list-group-item-heading text-truncate" title="${type.Name}">${type.Name}</h5>
+								</a>
+							</li>
+                        </ul>
+                    </div>
+                </div>
+                <div if.bind="selectedType" id="type-details" class="col-md-9 full-height">
+                    <div class="col-md-12">
+                        <h3 title="${selectedType.FullName}">
+                            ${selectedType.Name}
+                            <small>
+                                <span if.bind="selectedType.IsPublic" class="pull-right badge badge-primary">Public</span>
+                                <span if.bind="!selectedType.IsPublic" class="pull-right badge">Private</span>
+
+                                <span if.bind="selectedType.IsAbstract" class="pull-right badge badge-info">Abstract</span>
+                                <span if.bind="selectedType.IsSealed" class="pull-right badge badge-warning">Sealed</span>
+                            </small>
+                        </h3>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">Inherited</li>
+                            <li repeat.for="parent of selectedType.Parents" class="breadcrumb-item">
+                                <a href="#" title="${parent.FullName}">${parent.Name}</a>
+                            </li>
+                        </ol>
+                        <p>${selectedType.Summary}</p>
+                        <p class="text-muted hidden">${selectedType.Remarks}</p>
+                        <p class="text-muted hidden">${selectedType.Example}</p>
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <div role="tabpanel">
+                            <ul id="type-tabs" class="nav nav-tabs" role="tablist">
+                                <li if.bind="selectedType.Constructors.length > 0" class="nav-item" role="presentation">
+                                    <a class="nav-link" href="#Constructors" aria-controls="Constructors" role="tab" data-toggle="tab">Constructors</a>
+                                </li>
+                                <li if.bind="selectedType.Methods.length > 0" class="nav-item" role="presentation">
+                                    <a class="nav-link" href="#Methods" aria-controls="Methods" role="tab" data-toggle="tab">Methods</a>
+                                </li>
+                                <li if.bind="selectedType.Properties.length > 0" class="nav-item" role="presentation">
+                                    <a class="nav-link" href="#Properties" aria-controls="Properties" role="tab" data-toggle="tab">Properties</a>
+                                </li>
+                                <li if.bind="selectedType.Members.length > 0" class="nav-item" role="presentation">
+                                    <a class="nav-link" href="#Members" aria-controls="Members" role="tab" data-toggle="tab">Members</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div if.bind="selectedType.Constructors.length > 0" role="tabpanel" class="tab-pane" id="Constructors">
+                                    <div class="accordion">
+                                        <div repeat.for="ctor of selectedType.Constructors" class="card">
+                                            <div class="card-header" id="heading-${ctor.Id}">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-${ctor.Id}" aria-expanded="false" aria-controls="collapse-${ctor.Id}">
+                                                        ${ctor.Name}(${ctor.Parameters})
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapse-${ctor.Id}" class="collapse" aria-labelledby="heading-${ctor.Id}" data-parent="#accordionExample">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${ctor.FullName}</h5>
+                                                    <p class="card-text">${ctor.Summary}</p>
+                                                    <hr />
+                                                    <section if.bind="ctor.Parameters">
+                                                        <h6 class="text-warning">Parameters</h6>
+                                                        <dl>
+                                                            <dt repeat.for="parameter of ctor.Parameters">
+                                                                ${parameter.Name} (${parameter.TypeFullName})
+                                                            </dt>
+                                                            <dd class="small text-muted">${parameter.Description}</dd>
+                                                        </dl>
+                                                    </section>
+                                                    <section if.bind="ctor.Remarks">
+                                                        <hr />
+                                                        <h6>Remarks</h6>
+                                                        <p>${ctor.Remarks}</p>
+                                                    </section>
+                                                    <section if.bind="ctor.Example">
+                                                        <hr />
+                                                        <h6>Example</h6>
+                                                        <p>${ctor.Example}</p>
+                                                    </section>
+                                                    <section if.bind="ctor.Exceptions">
+                                                        <hr />
+                                                        <h6>Exceptions</h6>
+                                                        <p>${ctor.Exceptions}</p>
+                                                    </section>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div if.bind="selectedType.Methods.length > 0" role="tabpanel" class="tab-pane" id="Methods">
+                                    <div class="accordion">
+                                        <div repeat.for="method of selectedType.Methods" class="card">
+                                            <div class="card-header" id="heading-${method.Id}">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-${method.Id}" aria-expanded="false" aria-controls="collapse-${method.Id}">
+                                                        ${method.Name}(${method.FormattedParams})
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapse-${method.Id}" class="collapse" aria-labelledby="heading-${method.Id}" data-parent="#accordionExample">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${method.FullName}</h5>
+                                                    <p class="card-text">${method.Summary}</p>
+                                                    <hr />
+                                                    <section if.bind="method.Parameters">
+                                                        <h6 class="text-warning">Parameters</h6>
+                                                        <dl>
+                                                            <dt repeat.for="parameter of method.Parameters">
+                                                                ${parameter.Name} (${parameter.TypeFullName})
+                                                            </dt>
+                                                            <dd class="small text-muted">${parameter.Description}</dd>
+                                                        </dl>
+                                                    </section>
+                                                    <section if.bind="method.Returns">
+                                                        <hr />
+                                                        <h6 class="text-primary">Returns</h6>
+                                                        <dl>
+                                                            <dt>${method.ReturnTypeFullName}</dt>
+                                                            <dd class="small text-muted">${method.Returns}</dd>
+                                                        </dl>
+                                                    </section>
+                                                    <section if.bind="method.Remarks">
+                                                        <hr />
+                                                        <h6>Remarks</h6>
+                                                        <p>${method.Remarks}</p>
+                                                    </section>
+                                                    <section if.bind="method.Example">
+                                                        <hr />
+                                                        <h6>Example</h6>
+                                                        <pre class="prettyprint lang-cs" lang="cs"><code>${method.Example}</code></pre>
+                                                    </section>
+                                                    <section if.bind="method.Exceptions">
+                                                        <hr />
+                                                        <h6>Exceptions</h6>
+                                                        <p>${method.Exceptions}</p>
+                                                    </section>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div if.bind="selectedType.Properties.length > 0" role="tabpanel" class="tab-pane" id="Properties">
+                                    <div class="accordion">
+                                        <div repeat.for="property of selectedType.Properties" class="card">
+                                            <div class="card-header" id="heading-${property.Id}">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-${property.Id}" aria-expanded="false" aria-controls="collapse-${property.Id}">
+                                                        ${property.Name}
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapse-${property.Id}" class="collapse" aria-labelledby="heading-${property.Id}" data-parent="#accordionExample">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${property.FullName}</h5>
+                                                    <p class="card-text">${property.Summary}</p>
+                                                    <hr />
+                                                    <section if.bind="method.Remarks">
+                                                        <hr />
+                                                        <h6>Remarks</h6>
+                                                        <p>${method.Remarks}</p>
+                                                    </section>
+                                                    <section if.bind="method.Example">
+                                                        <hr />
+                                                        <h6>Example</h6>
+                                                        <p>${method.Example}</p>
+                                                    </section>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div if.bind="selectedType.Members.length > 0" role="tabpanel" class="tab-pane" id="Members">
+                                    <ul class="list-group">
+                                        <li repeat.for="member of selectedType.Members" class="list-group-item">
+                                            <h6 class="list-group-item-heading">${member.Name}</h6>
+                                            <div class="list-group-item-text">
+                                                <small>${member.Description}</small>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

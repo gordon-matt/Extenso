@@ -1,0 +1,17 @@
+﻿<template>
+    <require from='/aurelia-app/nav-bar'></require>
+
+    <nav-bar router.bind="router"></nav-bar>
+
+    <main class="container-fluid body-content">
+        <a href="https://github.com/gordon-matt/Extenso"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 99999" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+        <div class="page-host">
+            <router-view></router-view>
+        </div>
+        <hr />
+        <footer>
+            <p>&copy; 2018 - Created with <a href="https://github.com/gordon-matt/Doxie" target="_blank">Doxie</a></p>
+        </footer>
+    </main>
+
+</template>
