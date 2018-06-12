@@ -11,5 +11,5 @@ export function configure(aurelia) {
         .standardConfiguration()
         .developmentLogging();
 
-    aurelia.start().then(a => a.setRoot("/aurelia-app/app", document.body));
+    aurelia.start().then(a => a.setRoot("aurelia-app/app", document.body));
 }
