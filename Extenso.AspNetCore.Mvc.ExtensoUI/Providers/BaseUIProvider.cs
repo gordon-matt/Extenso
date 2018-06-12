@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Extenso.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers
 {
@@ -26,19 +29,49 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers
 
         #region General
 
-        public abstract IHtmlContent ActionLink(IHtmlHelper html, string text, State state, string actionName, string controllerName, object routeValues = null, object htmlAttributes = null);
+        public virtual IHtmlContent ActionLink(IHtmlHelper html, string text, State state, string actionName, string controllerName, object routeValues = null, object htmlAttributes = null)
+        {
+            string stateCss = GetButtonCssClass(state);
 
-        public abstract IHtmlContent Badge(string text, object htmlAttributes = null);
+            var builder = new FluentTagBuilder("a")
+                .MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes))
+                .MergeAttribute("href", Internal.UrlHelper.Action(actionName, controllerName, routeValues))
+                .AddCssClass(stateCss)
+                .SetInnerHtml(text);
 
-        public abstract IHtmlContent Button(string text, State state, string onClick = null, object htmlAttributes = null);
+            return new HtmlString(builder.ToString());
+        }
 
-        public abstract IHtmlContent InlineLabel(string text, State state, object htmlAttributes = null);
+        public virtual IHtmlContent Button(string text, State state, string onClick = null, object htmlAttributes = null)
+        {
+            string stateCss = GetButtonCssClass(state);
 
-        public abstract IHtmlContent Quote(string text, string author, string titleOfWork, object htmlAttributes = null);
+            var builder = new FluentTagBuilder("button")
+                .MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes))
+                .MergeAttribute("type", "button")
+                .AddCssClass(stateCss)
+                .SetInnerHtml(text);
 
-        public abstract IHtmlContent SubmitButton(string text, State state, object htmlAttributes = null);
+            if (!string.IsNullOrEmpty(onClick))
+            {
+                builder.MergeAttribute("onclick", onClick);
+            }
 
-        public abstract IHtmlContent TextBoxWithAddOns(IHtmlHelper html, string name, object value, string prependValue, string appendValue, object htmlAttributes = null);
+            return new HtmlString(builder.ToString());
+        }
+
+        public virtual IHtmlContent SubmitButton(string text, State state, object htmlAttributes = null)
+        {
+            string stateCss = GetButtonCssClass(state);
+
+            var builder = new FluentTagBuilder("button")
+                .MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes))
+                .MergeAttribute("type", "submit")
+                .AddCssClass(stateCss)
+                .SetInnerHtml(text);
+
+            return new HtmlString(builder.ToString());
+        }
 
         #endregion General
 
@@ -57,7 +90,5 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers
         #endregion IExtensoUIProvider Members
 
         protected abstract string GetButtonCssClass(State state);
-
-        protected abstract string GetLabelCssClass(State state);
     }
 }

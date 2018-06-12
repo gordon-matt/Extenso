@@ -9,8 +9,12 @@
     <Description>MVC-related extension methods and other helper classes. Includes a FluentTagBuilder, an IRazorViewRenderService (to render Razor views to a string), various HTML Helpers and more</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Extenso.AspNetCore.Mvc.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

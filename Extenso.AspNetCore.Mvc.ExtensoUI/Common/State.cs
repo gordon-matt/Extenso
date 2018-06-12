@@ -7,7 +7,7 @@
         Info,
         Success,
         Warning,
-        Important,
+        Danger,
         Inverse
     }
 }

@@ -63,6 +63,31 @@ namespace Extenso
             }
         }
 
+        #region Compute Hash
+
+        public static string ComputeHash<T>(this object instance, T cryptoServiceProvider) where T : HashAlgorithm, new()
+        {
+            var serializer = new DataContractSerializer(instance.GetType());
+            using (var memoryStream = new MemoryStream())
+            {
+                serializer.WriteObject(memoryStream, instance);
+                cryptoServiceProvider.ComputeHash(memoryStream.ToArray());
+                return Convert.ToBase64String(cryptoServiceProvider.Hash);
+            }
+        }
+
+        public static string ComputeMD5Hash(this object instance)
+        {
+            return instance.ComputeHash(new MD5CryptoServiceProvider());
+        }
+
+        public static string ComputeSHA1Hash(this object instance)
+        {
+            return instance.ComputeHash(new SHA1CryptoServiceProvider());
+        }
+
+        #endregion Compute Hash
+
         public static T ConvertTo<T>(this object source)
         {
             //return (T)Convert.ChangeType(source, typeof(T));
@@ -119,7 +144,8 @@ namespace Extenso
         /// <typeparam name="T">This System.Object's type</typeparam>
         /// <param name="t">This item</param>
         /// <param name="items">The values to compare</param>
-        /// <returns>true if values contains this item, otherwise false.</returns>
+        /// <returns>true if items contains this item, otherwise false.</returns>
+        /// <example><code>if (myString.In("val1", "val2", "val3"))</code></example>
         public static bool In<T>(this T t, params T[] items)
         {
             foreach (T item in items)
@@ -238,30 +264,5 @@ namespace Extenso
                 }
             }
         }
-
-        #region Compute Hash
-
-        public static string ComputeMD5Hash(this object instance)
-        {
-            return ComputeHash(instance, new MD5CryptoServiceProvider());
-        }
-
-        public static string ComputeSHA1Hash(this object instance)
-        {
-            return ComputeHash(instance, new SHA1CryptoServiceProvider());
-        }
-
-        private static string ComputeHash<T>(object instance, T cryptoServiceProvider) where T : HashAlgorithm, new()
-        {
-            var serializer = new DataContractSerializer(instance.GetType());
-            using (var memoryStream = new MemoryStream())
-            {
-                serializer.WriteObject(memoryStream, instance);
-                cryptoServiceProvider.ComputeHash(memoryStream.ToArray());
-                return Convert.ToBase64String(cryptoServiceProvider.Hash);
-            }
-        }
-
-        #endregion Compute Hash
     }
 }

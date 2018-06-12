@@ -9,6 +9,10 @@
     <Description>Fluent T-SQL Query Builder</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Extenso.Data.QueryBuilder.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
   </ItemGroup>

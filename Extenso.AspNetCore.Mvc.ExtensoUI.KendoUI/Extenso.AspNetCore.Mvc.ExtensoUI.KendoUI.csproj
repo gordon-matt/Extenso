@@ -10,6 +10,10 @@
     <Description>Kendo UI Provider for ExtensoUI</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />
   </ItemGroup>

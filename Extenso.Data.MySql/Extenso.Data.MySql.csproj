@@ -9,6 +9,10 @@
     <Description>Data-related extension methods and other helper classes for MySql</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Extenso.Data.MySql.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.11" />
   </ItemGroup>

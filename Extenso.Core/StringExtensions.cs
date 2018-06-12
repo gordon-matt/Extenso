@@ -1132,10 +1132,10 @@ namespace Extenso
                     return item;
                 }
             }
-            catch
-            {
-                return default(T);
-            }
+            //catch
+            //{
+            //    return default(T);
+            //}
             finally
             {
                 reader.Close();
@@ -1168,10 +1168,10 @@ namespace Extenso
                     return item;
                 }
             }
-            catch
-            {
-                return null;
-            }
+            //catch
+            //{
+            //    return null;
+            //}
             finally
             {
                 reader.Close();

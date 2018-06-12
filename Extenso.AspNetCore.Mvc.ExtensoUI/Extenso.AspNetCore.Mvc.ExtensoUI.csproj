@@ -10,6 +10,10 @@
     <Description>HTML Helpers for creating common UI components (Accordions, Tabs, Panels, Modal Dialogs, etc). This package includes a default provider for Bootstrap 3.</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Extenso.AspNetCore.Mvc.ExtensoUI.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Extenso.AspNetCore.Mvc\Extenso.AspNetCore.Mvc.csproj" />
   </ItemGroup>

@@ -1,0 +1,3 @@
+﻿This is a "dummy" project.. it has no real use on its own. It's only purpose is to reference all the class libraries in this solution, so that the assemblies,
+the XML documentation files for the DLLs and all referenced assemblies can be in one place (the bin directory). This is then used by another app called Doxie, to generate
+documentation from the DLLs and XML markup. See [Doxie Project](https://github.com/gordon-matt/Doxie) for more.

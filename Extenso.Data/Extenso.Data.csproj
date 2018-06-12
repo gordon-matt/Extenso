@@ -10,8 +10,12 @@
     <Version>1.0.2</Version>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Extenso.Data.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

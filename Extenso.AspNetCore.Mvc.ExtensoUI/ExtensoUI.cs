@@ -36,15 +36,6 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
 
         #endregion Accordion
 
-        #region Badge
-
-        public IHtmlContent Badge(string text, object htmlAttributes = null)
-        {
-            return provider.Badge(text, htmlAttributes);
-        }
-
-        #endregion Badge
-
         #region Buttons
 
         public IHtmlContent ModalLaunchButton(string modalId, string text, object htmlAttributes = null)
@@ -69,15 +60,6 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
 
         #endregion Buttons
 
-        #region Inline Label
-
-        public IHtmlContent InlineLabel(string text, State state, object htmlAttributes = null)
-        {
-            return provider.InlineLabel(text, state, htmlAttributes);
-        }
-
-        #endregion Inline Label
-
         #region Modal (Dialog)
 
         public ModalBuilder<TModel> Begin(Modal modal)
@@ -93,15 +75,6 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
 
         #endregion Modal (Dialog)
 
-        #region TextBoxWithAddOns
-
-        public IHtmlContent TextBoxWithAddOns(string name, object value, string prependValue, string appendValue, object htmlAttributes = null)
-        {
-            return provider.TextBoxWithAddOns(html, name, value, prependValue, appendValue, htmlAttributes);
-        }
-
-        #endregion TextBoxWithAddOns
-
         #region Panel
 
         public PanelBuilder<TModel> Begin(Panel panel)
@@ -116,15 +89,6 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
         }
 
         #endregion Panel
-
-        #region Quotes
-
-        public IHtmlContent Quote(string text, string author, string titleOfWork, object htmlAttributes = null)
-        {
-            return provider.Quote(text, author, titleOfWork, htmlAttributes);
-        }
-
-        #endregion Quotes
 
         #region Tabs
 
