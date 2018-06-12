@@ -1,7 +1,5 @@
 System.config({
-  // resolve to "/Extenso" for gh-page site
-  // resolve to "/" for local dev
-  baseURL: location.pathname,
+  baseURL: '/Extenso',
   defaultJSExtensions: true,
   transpiler: "babel",
   babelOptions: {
