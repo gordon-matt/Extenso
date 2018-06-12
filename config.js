@@ -1,5 +1,5 @@
 System.config({
-  baseURL: '/Extenso',
+  baseURL: '/Extenso/',
   defaultJSExtensions: true,
   transpiler: "babel",
   babelOptions: {
