@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Extenso.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -6,17 +7,15 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI
 {
     public class KendoUIAccordionProvider : IAccordionProvider
     {
-        private readonly KendoBootstrap3UIProvider uiProvider;
+        private readonly BaseUIProvider uiProvider;
 
-        public KendoUIAccordionProvider(KendoBootstrap3UIProvider uiProvider)
+        public KendoUIAccordionProvider(BaseUIProvider uiProvider)
         {
             this.uiProvider = uiProvider;
         }
 
         #region IAccordionProvider Members
-
-        public string AccordionTag => "ul";
-
+        
         public void BeginAccordion(Accordion accordion, TextWriter writer)
         {
             uiProvider.Scripts.Add(

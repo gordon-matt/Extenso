@@ -10,8 +10,12 @@
     <Description></Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Extenso.AspNetCore.OData.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0-Nightly201805151240" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0-Nightly201806082048" />
   </ItemGroup>
 
   <ItemGroup>

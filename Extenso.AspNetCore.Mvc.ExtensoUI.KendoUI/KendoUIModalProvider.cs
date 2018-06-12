@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Extenso.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,9 +10,9 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI
     {
         private string title;
 
-        private readonly KendoBootstrap3UIProvider uiProvider;
+        private readonly BaseUIProvider uiProvider;
 
-        public KendoUIModalProvider(KendoBootstrap3UIProvider uiProvider)
+        public KendoUIModalProvider(BaseUIProvider uiProvider)
         {
             this.uiProvider = uiProvider;
         }

@@ -22,8 +22,8 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
             var urlHelperFactory = app.ApplicationServices.GetRequiredService<IUrlHelperFactory>();
             Internal.UrlHelper = urlHelperFactory.GetUrlHelper(actionContext);
 
-            var bootstrap3Provider = new TProvider();
-            ExtensoUISettings.Init(bootstrap3Provider, bootstrap3Provider);
+            var provider = new TProvider();
+            ExtensoUISettings.Init(provider, provider);
         }
     }
 }

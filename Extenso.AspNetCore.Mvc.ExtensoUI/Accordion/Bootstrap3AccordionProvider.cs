@@ -34,7 +34,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
                     .AddCssClass("panel-title")
                     .StartTag("a")
                         .MergeAttribute("data-toggle", "collapse")
-                        .MergeAttribute("data-parent", "#" + parentAccordionId)
+                        .MergeAttribute("data-parent", $"#{parentAccordionId}")
                         .MergeAttribute("href", $"#{panelId}")
                         .MergeAttribute("aria-controls", panelId)
                         .MergeAttribute("aria-expanded", expanded ? "true" : "false")

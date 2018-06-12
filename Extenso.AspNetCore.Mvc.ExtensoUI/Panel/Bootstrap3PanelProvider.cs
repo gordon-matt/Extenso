@@ -13,7 +13,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
             switch (panel.State)
             {
                 case State.Default: panel.EnsureClass("panel panel-default"); break;
-                case State.Important: panel.EnsureClass("panel panel-danger"); break;
+                case State.Danger: panel.EnsureClass("panel panel-danger"); break;
                 case State.Info: panel.EnsureClass("panel panel-info"); break;
                 case State.Inverse: panel.EnsureClass("panel panel-inverse"); break;
                 case State.Primary: panel.EnsureClass("panel panel-primary"); break;

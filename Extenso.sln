@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data", "Extenso.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.OData", "Extenso.AspNetCore.OData\Extenso.AspNetCore.OData.csproj", "{028C42BC-D779-49A6-B330-BD923E6FADA6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "Demo\Demo.csproj", "{1D29D910-1DEA-47A1-92EC-E35CC2998695}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.Entity", "Extenso.Data.Entity\Extenso.Data.Entity.csproj", "{CC89B051-50AE-4EE8-83A8-291DE3DA994F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.QueryBuilder", "Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj", "{5CB280BE-C53B-4619-88FB-280F5487A5B4}"
@@ -21,13 +19,41 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.Exte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI", "Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.csproj", "{D21B77CA-C04A-441C-BB55-DCE4D8AA4000}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.MySql", "Extenso.Data.MySql\Extenso.Data.MySql.csproj", "{C81D00C5-C88F-4ECD-A360-892745B876CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.MySql", "Extenso.Data.MySql\Extenso.Data.MySql.csproj", "{C81D00C5-C88F-4ECD-A360-892745B876CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.Npgsql", "Extenso.Data.Npgsql\Extenso.Data.Npgsql.csproj", "{556B123C-06A1-4B9D-8A4C-F15F21A20505}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.Npgsql", "Extenso.Data.Npgsql\Extenso.Data.Npgsql.csproj", "{556B123C-06A1-4B9D-8A4C-F15F21A20505}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder.MySql", "Extenso.Data.QueryBuilder.MySql\Extenso.Data.QueryBuilder.MySql.csproj", "{698919F4-1891-4388-BD11-0ABE96067AE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.QueryBuilder.MySql", "Extenso.Data.QueryBuilder.MySql\Extenso.Data.QueryBuilder.MySql.csproj", "{698919F4-1891-4388-BD11-0ABE96067AE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder.Npgsql", "Extenso.Data.QueryBuilder.Npgsql\Extenso.Data.QueryBuilder.Npgsql.csproj", "{A967F072-917E-4BBB-938D-F31C3156962B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.QueryBuilder.Npgsql", "Extenso.Data.QueryBuilder.Npgsql\Extenso.Data.QueryBuilder.Npgsql.csproj", "{A967F072-917E-4BBB-938D-F31C3156962B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{4ABD18F5-B7DA-4590-9CB1-1200B6EBEB58}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3", "Demos\Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3\Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3.csproj", "{00DC904C-1EF8-466D-8254-6FCA2D0D2D47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap4", "Demos\Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap4\Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap4.csproj", "{E5BEA9F6-6F47-43F8-B980-24F849191348}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Extenso.AspNetCore.Mvc.OData", "Demos\Demo.AspNetCore.Mvc.OData\Demo.Extenso.AspNetCore.Mvc.OData.csproj", "{75BBEB76-7BF8-4F5D-BC61-16D824C7B816}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExtensoUI", "ExtensoUI", "{F63724D8-A57F-4B23-A73C-41A1EC144331}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCore", "AspNetCore", "{409B2AA0-96DC-4F56-8187-455594DB6591}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mvc", "Mvc", "{376F048F-9868-4FAF-A7C5-1F468DBBE3A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.AspNetCore.Mvc.ExtensoUI.KendoBootstrap3", "Demos\Demo.AspNetCore.Mvc.ExtensoUI.KendoBootstrap3\Demo.AspNetCore.Mvc.ExtensoUI.KendoBootstrap3.csproj", "{12CCD743-1723-4B60-8367-38E171DD5AC9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.ExtensoUI.Foundation", "Extenso.AspNetCore.Mvc.ExtensoUI.Foundation\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation.csproj", "{DD8F7A5A-D60B-40F7-9F56-A7C022D66313}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI", "Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI\Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI.csproj", "{0E894B50-02C6-4DF0-939F-0D2B790B7069}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.AspNetCore.Mvc.ExtensoUI.Foundation6", "Demos\Demo.AspNetCore.Mvc.ExtensoUI.Foundation6\Demo.AspNetCore.Mvc.ExtensoUI.Foundation6.csproj", "{B04BBC6F-02F1-48D4-AEA5-6327A0E7FA3F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.AspNetCore.Mvc.ExtensoUI.JQueryUI", "Demos\Demo.AspNetCore.Mvc.ExtensoUI.JQueryUI\Demo.AspNetCore.Mvc.ExtensoUI.JQueryUI.csproj", "{5DA69C85-A2F8-4740-BC0A-C12CBF42A76D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{86C509D1-589D-44A0-8971-ED92B3FCA11B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoxieDummy", "DoxieDummy\DoxieDummy.csproj", "{EF1DBE01-00FB-4872-A167-88235E1EE740}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +73,6 @@ Global
 		{028C42BC-D779-49A6-B330-BD923E6FADA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{028C42BC-D779-49A6-B330-BD923E6FADA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{028C42BC-D779-49A6-B330-BD923E6FADA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D29D910-1DEA-47A1-92EC-E35CC2998695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D29D910-1DEA-47A1-92EC-E35CC2998695}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D29D910-1DEA-47A1-92EC-E35CC2998695}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D29D910-1DEA-47A1-92EC-E35CC2998695}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CC89B051-50AE-4EE8-83A8-291DE3DA994F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC89B051-50AE-4EE8-83A8-291DE3DA994F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC89B051-50AE-4EE8-83A8-291DE3DA994F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -87,9 +109,57 @@ Global
 		{A967F072-917E-4BBB-938D-F31C3156962B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A967F072-917E-4BBB-938D-F31C3156962B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A967F072-917E-4BBB-938D-F31C3156962B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00DC904C-1EF8-466D-8254-6FCA2D0D2D47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00DC904C-1EF8-466D-8254-6FCA2D0D2D47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00DC904C-1EF8-466D-8254-6FCA2D0D2D47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00DC904C-1EF8-466D-8254-6FCA2D0D2D47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5BEA9F6-6F47-43F8-B980-24F849191348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5BEA9F6-6F47-43F8-B980-24F849191348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5BEA9F6-6F47-43F8-B980-24F849191348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5BEA9F6-6F47-43F8-B980-24F849191348}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75BBEB76-7BF8-4F5D-BC61-16D824C7B816}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75BBEB76-7BF8-4F5D-BC61-16D824C7B816}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75BBEB76-7BF8-4F5D-BC61-16D824C7B816}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75BBEB76-7BF8-4F5D-BC61-16D824C7B816}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12CCD743-1723-4B60-8367-38E171DD5AC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12CCD743-1723-4B60-8367-38E171DD5AC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12CCD743-1723-4B60-8367-38E171DD5AC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12CCD743-1723-4B60-8367-38E171DD5AC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD8F7A5A-D60B-40F7-9F56-A7C022D66313}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD8F7A5A-D60B-40F7-9F56-A7C022D66313}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD8F7A5A-D60B-40F7-9F56-A7C022D66313}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD8F7A5A-D60B-40F7-9F56-A7C022D66313}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E894B50-02C6-4DF0-939F-0D2B790B7069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E894B50-02C6-4DF0-939F-0D2B790B7069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E894B50-02C6-4DF0-939F-0D2B790B7069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E894B50-02C6-4DF0-939F-0D2B790B7069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B04BBC6F-02F1-48D4-AEA5-6327A0E7FA3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B04BBC6F-02F1-48D4-AEA5-6327A0E7FA3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B04BBC6F-02F1-48D4-AEA5-6327A0E7FA3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B04BBC6F-02F1-48D4-AEA5-6327A0E7FA3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DA69C85-A2F8-4740-BC0A-C12CBF42A76D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DA69C85-A2F8-4740-BC0A-C12CBF42A76D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DA69C85-A2F8-4740-BC0A-C12CBF42A76D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DA69C85-A2F8-4740-BC0A-C12CBF42A76D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF1DBE01-00FB-4872-A167-88235E1EE740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF1DBE01-00FB-4872-A167-88235E1EE740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF1DBE01-00FB-4872-A167-88235E1EE740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF1DBE01-00FB-4872-A167-88235E1EE740}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{00DC904C-1EF8-466D-8254-6FCA2D0D2D47} = {F63724D8-A57F-4B23-A73C-41A1EC144331}
+		{E5BEA9F6-6F47-43F8-B980-24F849191348} = {F63724D8-A57F-4B23-A73C-41A1EC144331}
+		{75BBEB76-7BF8-4F5D-BC61-16D824C7B816} = {376F048F-9868-4FAF-A7C5-1F468DBBE3A0}
+		{F63724D8-A57F-4B23-A73C-41A1EC144331} = {376F048F-9868-4FAF-A7C5-1F468DBBE3A0}
+		{409B2AA0-96DC-4F56-8187-455594DB6591} = {4ABD18F5-B7DA-4590-9CB1-1200B6EBEB58}
+		{376F048F-9868-4FAF-A7C5-1F468DBBE3A0} = {409B2AA0-96DC-4F56-8187-455594DB6591}
+		{12CCD743-1723-4B60-8367-38E171DD5AC9} = {F63724D8-A57F-4B23-A73C-41A1EC144331}
+		{B04BBC6F-02F1-48D4-AEA5-6327A0E7FA3F} = {F63724D8-A57F-4B23-A73C-41A1EC144331}
+		{5DA69C85-A2F8-4740-BC0A-C12CBF42A76D} = {F63724D8-A57F-4B23-A73C-41A1EC144331}
+		{EF1DBE01-00FB-4872-A167-88235E1EE740} = {86C509D1-589D-44A0-8971-ED92B3FCA11B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}
