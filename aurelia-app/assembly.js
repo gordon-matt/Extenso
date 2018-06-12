@@ -11,7 +11,7 @@
 
         $.ajax({
             dataType: "json",
-            url: "/js/assemblies.json",
+            url: "/Extenso/js/assemblies.json",
             async: false,
             success: function (json) {
                 $.each(json, function (i) {
