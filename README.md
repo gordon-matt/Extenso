@@ -6,7 +6,9 @@
 This project is partly based on a much older project of mine called, MBG Extensions Library, which I wrote back in 2010. There is an article on [CodeProject](https://www.codeproject.com/Articles/116940/MBG-Extensions-Library) of which large portions are still applicable to Extenso.Core and parts of Extenso.Data. In any case, Extenso aims to be more than just an extensions library - various other helper classes will be added in separate packages, so you can pick and choose what you like.
 
 ## Documentation
-Proper documentation will be added in future, but for now, here is a quick rundown of the different packages:
+Documentation can be found here: https://gordon-matt.github.io/Extenso/
+
+NuGet packages as follows:
 
 #### Extenso.Core
 > NuGet: https://www.nuget.org/packages/Extenso.Core/
