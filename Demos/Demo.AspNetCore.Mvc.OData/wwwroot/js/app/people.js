@@ -115,10 +115,10 @@ var ViewModel = function () {
             async: false
         })
         .done(function (json) {
-            self.id(json.Id);
-            self.familyName(json.FamilyName);
-            self.givenNames(json.GivenNames);
-            self.dateOfBirth(json.DateOfBirth);
+            self.id(json.id);
+            self.familyName(json.familyName);
+            self.givenNames(json.givenNames);
+            self.dateOfBirth(json.dateOfBirth);
 
             switchSection($("#form-section"));
             $("#form-section-legend").html("Edit");

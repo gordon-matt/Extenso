@@ -43,11 +43,11 @@ namespace Extenso.Web.OData
         #region Public Methods
 
         // GET: odata/<Entity>
-        public virtual async Task<IEnumerable<TEntity>> Get(ODataQueryOptions<TEntity> options)
+        public virtual async Task<IActionResult> Get(ODataQueryOptions<TEntity> options)
         {
             if (!await AuthorizeAsync(ReadPermission))
             {
-                return Enumerable.Empty<TEntity>().AsQueryable();
+                return Unauthorized();
             }
 
             //    using (var connection = Service.OpenConnection())
@@ -67,7 +67,8 @@ namespace Extenso.Web.OData
             // Recommended not to use ToHashSetAsync(). See: https://github.com/OData/WebApi/issues/1235#issuecomment-371322404
             //return await (results as IQueryable<TEntity>).ToHashSetAsync();
 
-            return await Task.FromResult((results as IQueryable<TEntity>).ToHashSet());
+            var response = await Task.FromResult((results as IQueryable<TEntity>).ToHashSet());
+            return Ok(response);
         }
 
         // GET: odata/<Entity>(5)
