@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0-Nightly201806082048" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0-Nightly201806141243" />
   </ItemGroup>
 
   <ItemGroup>

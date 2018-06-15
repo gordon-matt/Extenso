@@ -18,29 +18,36 @@ namespace Extenso.Collections
         /// <summary>
         /// Determines whether this collection contains any of the specified values
         /// </summary>
-        /// <typeparam name="T">The type of the values to compare</typeparam>
-        /// <param name="t">This collection</param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">This collection</param>
         /// <param name="items">The values to compare</param>
         /// <returns>true if the collection contains any of the specified values, otherwise false</returns>
-        public static bool ContainsAny<T>(this IEnumerable<T> t, params T[] items)
+        public static bool ContainsAny<T>(this IEnumerable<T> source, params T[] items)
         {
-            return items.Any(t.Contains);
+            return items.Any(source.Contains);
         }
 
-        public static bool ContainsAny<T>(this IEnumerable<T> t, IEnumerable<T> items)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> items)
         {
-            return items.Any(t.Contains);
+            return items.Any(source.Contains);
         }
 
         /// <summary>
         /// Performs the specified action on each element of the System.Collections.Generic.IEnumerable&lt;T&gt;.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
         /// <param name="action">The System.Action&lt;T&gt; delegate to perform on each element of the System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
-        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
-            foreach (T item in enumerable)
+            foreach (T item in source)
             {
                 action(item);
             }
@@ -49,12 +56,12 @@ namespace Extenso.Collections
         /// <summary>
         /// Indicates whether the specified System.Collections.Generic.IEnumerable&lt;T&gt; is null or empty
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
         /// <returns>true if the System.Collections.Generic.IEnumerable&lt;T&gt; is null or empty; otherwise, false.</returns>
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source)
         {
-            return enumerable == null || !enumerable.FastAny();
+            return source == null || !source.FastAny();
             //return enumerable == null || !enumerable.Any();
         }
 
@@ -62,32 +69,33 @@ namespace Extenso.Collections
         /// <para>Returns all elements of this IEnumerable&lt;T&gt; in a single System.String.</para>
         /// <para>Elements are separated by a comma.</para>
         /// </summary>
-        /// <param name="values">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
         /// <returns>System.String containing elements from specified IEnumerable&lt;T&gt;.</returns>
-        public static string Join<T>(this IEnumerable<T> values)
+        public static string Join<T>(this IEnumerable<T> source)
         {
-            return values.Join(",");
+            return source.Join(",");
         }
 
         /// <summary>
         /// <para>Returns all elements of this IEnumerable&lt;T&gt; in a single System.String.</para>
         /// <para>Elements are separated by the specified separator.</para>
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="values">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
         /// <param name="separator">The System.String to use to separate each element.</param>
         /// <returns>System.String containing elements from specified IEnumerable&lt;T&gt;.</returns>
-        public static string Join<T>(this IEnumerable<T> values, string separator)
+        public static string Join<T>(this IEnumerable<T> source, string separator)
         {
-            if (values == null)
+            if (source == null)
             {
-                throw new ArgumentNullException(nameof(values));
+                throw new ArgumentNullException(nameof(source));
             }
             if (separator == null)
             {
                 separator = string.Empty;
             }
-            using (IEnumerator<T> enumerator = values.GetEnumerator())
+            using (IEnumerator<T> enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
@@ -116,31 +124,38 @@ namespace Extenso.Collections
         /// <para>Returns all elements of this IEnumerable&lt;T&gt; in a single System.String.</para>
         /// <para>Elements are separated by a comma.</para>
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <typeparam name="TResult"></typeparam>
-        /// <param name="enumerable">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
+        /// <param name="source">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
         /// <param name="selector"></param>
         /// <returns>System.String containing elements from specified IEnumerable&lt;T&gt;.</returns>
-        public static string Join<T, TResult>(this IEnumerable<T> enumerable, Func<T, TResult> selector)
+        public static string Join<T, TResult>(this IEnumerable<T> source, Func<T, TResult> selector)
         {
-            return enumerable.Join(selector, ",");
+            return source.Join(selector, ",");
         }
 
         /// <summary>
         /// <para>Returns all elements of this IEnumerable&lt;T&gt; in a single System.String.</para>
         /// <para>Elements are separated by the specified separator.</para>
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <typeparam name="TResult"></typeparam>
-        /// <param name="enumerable">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
+        /// <param name="source">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
         /// <param name="selector"></param>
         /// <param name="separator"></param>
         /// <returns>System.String containing elements from specified IEnumerable&lt;T&gt;.</returns>
-        public static string Join<T, TResult>(this IEnumerable<T> enumerable, Func<T, TResult> selector, string separator)
+        public static string Join<T, TResult>(this IEnumerable<T> source, Func<T, TResult> selector, string separator)
         {
-            return enumerable.Select(selector).Join(separator);
+            return source.Select(selector).Join(separator);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
         public static IEnumerable<T> SafeUnion<T>(this IEnumerable<T> first, IEnumerable<T> second)
         {
             if (first.IsNullOrEmpty())
@@ -154,13 +169,20 @@ namespace Extenso.Collections
             return first.Union(second);
         }
 
-        public static IEnumerable<IEnumerable<T>> ToChunks<T>(this IEnumerable<T> collection, int size)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static IEnumerable<IEnumerable<T>> ToChunks<T>(this IEnumerable<T> source, int size)
         {
             var chunks = new HashSet<HashSet<T>>();
             var chunk = new HashSet<T>();
 
             int count = 0;
-            foreach (var element in collection)
+            foreach (var element in source)
             {
                 if (count++ == size)
                 {
@@ -176,15 +198,21 @@ namespace Extenso.Collections
             return chunks;
         }
 
-        public static DataTable ToDataTable<T>(this IEnumerable<T> enumerable)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static DataTable ToDataTable<T>(this IEnumerable<T> source)
         {
-            return enumerable.ToDataTable(string.Concat(typeof(T).Name, "_Table"));
+            return source.ToDataTable(string.Concat(typeof(T).Name, "_Table"));
         }
 
         /// <summary>
         /// Creates and returns a System.Data.DataTable from the specified System.Collections.Generic.IEnumerable&lt;T&gt;.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="enumerable">This instance of System.Collections.Generic.IEnumerable&lt;T&gt;.</param>
         /// <param name="tableName">The value to set for the DataTable's Name property.</param>
         /// <returns></returns>
@@ -238,17 +266,41 @@ namespace Extenso.Collections
             return table;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
         {
             return new HashSet<T>(source);
         }
 
-        public static List<T> ToListOf<T>(this IEnumerable enumerable)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static List<T> ToListOf<T>(this IEnumerable source)
         {
-            return (from object item in enumerable select item.ConvertTo<T>()).ToList();
+            return (from object item in source select item.ConvertTo<T>()).ToList();
         }
 
         // http://stackoverflow.com/questions/17971921/how-to-convert-row-to-column-in-linq-and-sql
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <typeparam name="TColumn"></typeparam>
+        /// <typeparam name="TRow"></typeparam>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="columnSelector"></param>
+        /// <param name="rowSelector"></param>
+        /// <param name="dataSelector"></param>
+        /// <returns></returns>
         public static DataTable ToPivotTable<T, TColumn, TRow, TData>(
             this IEnumerable<T> source,
             Func<T, TColumn> columnSelector,
@@ -292,40 +344,53 @@ namespace Extenso.Collections
         /// <summary>
         /// Creates a System.Collections.Generic.Queue&lt;T&gt; from an System.Collections.Generic.IEnumerable&lt;T&gt;.
         /// </summary>
-        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="source">The System.Collections.Generic.IEnumerable&lt;T&gt; to create a System.Collections.Generic.Queue&lt;T&gt; from</param>
         /// <returns>A System.Collections.Generic.Queue&lt;T&gt; that contains elements from the input sequence</returns>
-        public static Queue<TSource> ToQueue<TSource>(this IEnumerable<TSource> source)
+        public static Queue<T> ToQueue<T>(this IEnumerable<T> source)
         {
-            var queue = new Queue<TSource>();
-            foreach (TSource item in source)
+            var queue = new Queue<T>();
+            foreach (T item in source)
             {
                 queue.Enqueue(item);
             }
             return queue;
         }
 
-        public static IList<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IList<T> ToReadOnlyCollection<T>(this IEnumerable<T> source)
         {
-            return new ReadOnlyCollection<T>(enumerable.ToList());
+            return new ReadOnlyCollection<T>(source.ToList());
         }
 
         /// <summary>
         /// Creates a System.Collections.Generic.Stack&lt;T&gt; from an System.Collections.Generic.IEnumerable&lt;T&gt;.
         /// </summary>
-        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="source">The System.Collections.Generic.IEnumerable&lt;T&gt; to create a System.Collections.Generic.Stack&lt;T&gt; from</param>
         /// <returns>A System.Collections.Generic.Stack&lt;T&gt; that contains elements from the input sequence</returns>
-        public static Stack<TSource> ToStack<TSource>(this IEnumerable<TSource> source)
+        public static Stack<T> ToStack<T>(this IEnumerable<T> source)
         {
-            var stack = new Stack<TSource>();
-            foreach (TSource item in source.Reverse())
+            var stack = new Stack<T>();
+            foreach (T item in source.Reverse())
             {
                 stack.Push(item);
             }
             return stack;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <param name="descendBy"></param>
+        /// <returns></returns>
         public static IEnumerable<T> Descendants<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> descendBy)
         {
             foreach (T value in source)
@@ -339,12 +404,25 @@ namespace Extenso.Collections
             }
         }
 
-        public static string ToCsv<T>(this IEnumerable<T> table)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static string ToCsv<T>(this IEnumerable<T> source)
         {
-            return table.ToCsv(true);
+            return source.ToCsv(true);
         }
 
-        public static string ToCsv<T>(this IEnumerable<T> table, bool outputColumnNames)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <param name="outputColumnNames"></param>
+        /// <returns></returns>
+        public static string ToCsv<T>(this IEnumerable<T> source, bool outputColumnNames)
         {
             var sb = new StringBuilder(2000);
 
@@ -367,7 +445,7 @@ namespace Extenso.Collections
 
             #region Rows (Data)
 
-            foreach (var row in table)
+            foreach (var row in source)
             {
                 foreach (PropertyInfo p in properties)
                 {
@@ -388,12 +466,27 @@ namespace Extenso.Collections
             return sb.ToString();
         }
 
-        public static bool ToCsv<T>(this IEnumerable<T> table, string filePath)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath)
         {
-            return table.ToCsv(filePath, true);
+            return source.ToCsv(filePath, true);
         }
 
-        public static bool ToCsv<T>(this IEnumerable<T> table, string filePath, bool outputColumnNames)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <param name="filePath"></param>
+        /// <param name="outputColumnNames"></param>
+        /// <returns></returns>
+        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath, bool outputColumnNames)
         {
             var sb = new StringBuilder(2000);
 
@@ -416,7 +509,7 @@ namespace Extenso.Collections
 
             #region Rows (Data)
 
-            foreach (var row in table)
+            foreach (var row in source)
             {
                 foreach (PropertyInfo p in properties)
                 {
@@ -466,7 +559,14 @@ namespace Extenso.Collections
             }
         }
 
-        public static bool HasMoreThan<TSource>(this IEnumerable<TSource> source, int n)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static bool HasMoreThan<T>(this IEnumerable<T> source, int n)
         {
             if (source == null)
             {
@@ -474,14 +574,14 @@ namespace Extenso.Collections
                 //throw new ArgumentNullException("source");
             }
 
-            var array = source as TSource[];
+            var array = source as T[];
 
             if (array != null)
             {
                 return array.Length > n;
             }
 
-            var collection = source as ICollection<TSource>;
+            var collection = source as ICollection<T>;
 
             if (collection != null)
             {

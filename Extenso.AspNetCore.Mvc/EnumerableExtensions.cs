@@ -11,26 +11,26 @@ namespace Extenso.AspNetCore.Mvc
     public static class EnumerableExtensions
     {
         /// <summary>
-        /// Creates a <see cref="SelectList"/> from the given collection
+        /// Creates a Microsoft.AspNetCore.Mvc.Rendering.SelectList from the given collection
         /// </summary>
-        /// <param name="enumerable"></param>
-        /// <returns>An instance of <see cref="SelectList"/></returns>
-        public static SelectList ToSelectList(this IEnumerable<string> enumerable)
+        /// <param name="source"></param>
+        /// <returns>An instance of Microsoft.AspNetCore.Mvc.Rendering.SelectList</returns>
+        public static SelectList ToSelectList(this IEnumerable<string> source)
         {
-            return enumerable.ToSelectList(x => x, x => x);
+            return source.ToSelectList(x => x, x => x);
         }
 
         /// <summary>
-        /// Creates a <see cref="SelectList"/> from the given collection
+        /// Creates a Microsoft.AspNetCore.Mvc.Rendering.SelectList from the given collection
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable"></param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
         /// <param name="valueFieldSelector"></param>
         /// <param name="textFieldSelector"></param>
-        /// <returns>An instance of <see cref="SelectList"/></returns>
-        public static SelectList ToSelectList<T>(this IEnumerable<T> enumerable, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector)
+        /// <returns>An instance of Microsoft.AspNetCore.Mvc.Rendering.SelectList</returns>
+        public static SelectList ToSelectList<T>(this IEnumerable<T> source, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector)
         {
-            var values = from T item in enumerable
+            var values = from T item in source
                          select new
                          {
                              ValueField = Convert.ToString(valueFieldSelector(item)),
@@ -40,17 +40,17 @@ namespace Extenso.AspNetCore.Mvc
         }
 
         /// <summary>
-        /// Creates a <see cref="SelectList"/> from the given collection
+        /// Creates a Microsoft.AspNetCore.Mvc.Rendering.SelectList from the given collection
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable"></param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source"></param>
         /// <param name="valueFieldSelector"></param>
         /// <param name="textFieldSelector"></param>
         /// <param name="emptyText"></param>
-        /// <returns>An instance of <see cref="SelectList"/></returns>
-        public static SelectList ToSelectList<T>(this IEnumerable<T> enumerable, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, string emptyText)
+        /// <returns>An instance of Microsoft.AspNetCore.Mvc.Rendering.SelectList</returns>
+        public static SelectList ToSelectList<T>(this IEnumerable<T> source, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, string emptyText)
         {
-            var values = (from T item in enumerable
+            var values = (from T item in source
                           select new
                           {
                               ValueField = Convert.ToString(valueFieldSelector(item)),
@@ -66,17 +66,17 @@ namespace Extenso.AspNetCore.Mvc
         }
 
         /// <summary>
-        /// Creates a <see cref="SelectList"/> from the given collection
+        /// Creates a Microsoft.AspNetCore.Mvc.Rendering.SelectList from the given collection
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable"></param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="valueFieldSelector"></param>
         /// <param name="textFieldSelector"></param>
         /// <param name="selectedValue"></param>
-        /// <returns>An instance of <see cref="SelectList"/></returns>
-        public static SelectList ToSelectList<T>(this IEnumerable<T> enumerable, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, object selectedValue)
+        /// <returns>An instance of Microsoft.AspNetCore.Mvc.Rendering.SelectList</returns>
+        public static SelectList ToSelectList<T>(this IEnumerable<T> source, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, object selectedValue)
         {
-            var values = from T item in enumerable
+            var values = from T item in source
                          select new
                          {
                              ValueField = Convert.ToString(valueFieldSelector(item)),
@@ -86,18 +86,18 @@ namespace Extenso.AspNetCore.Mvc
         }
 
         /// <summary>
-        /// Creates a <see cref="SelectList"/> from the given collection
+        /// Creates a Microsoft.AspNetCore.Mvc.Rendering.SelectList from the given collection
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable"></param>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="valueFieldSelector"></param>
         /// <param name="textFieldSelector"></param>
         /// <param name="selectedValue"></param>
         /// <param name="emptyText"></param>
-        /// <returns>An instance of <see cref="SelectList"/></returns>
-        public static SelectList ToSelectList<T>(this IEnumerable<T> enumerable, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, object selectedValue, string emptyText)
+        /// <returns>An instance of Microsoft.AspNetCore.Mvc.Rendering.SelectList</returns>
+        public static SelectList ToSelectList<T>(this IEnumerable<T> source, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, object selectedValue, string emptyText)
         {
-            var values = (from T item in enumerable
+            var values = (from T item in source
                           select new
                           {
                               ValueField = Convert.ToString(valueFieldSelector(item)),
@@ -112,19 +112,19 @@ namespace Extenso.AspNetCore.Mvc
         }
 
         /// <summary>
-        /// Creates a <see cref="MultiSelectList"/> from the given collection
+        /// Creates a Microsoft.AspNetCore.Mvc.Rendering.MultiSelectList from the given collection
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <typeparam name="TValue"></typeparam>
-        /// <param name="enumerable"></param>
+        /// <param name="source"></param>
         /// <param name="valueFieldSelector"></param>
         /// <param name="textFieldSelector"></param>
         /// <param name="selectedValues"></param>
         /// <param name="emptyText"></param>
-        /// <returns>An instance of <see cref="MultiSelectList"/></returns>
-        public static MultiSelectList ToMultiSelectList<T, TValue>(this IEnumerable<T> enumerable, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, IEnumerable<TValue> selectedValues, string emptyText = null)
+        /// <returns>An instance of Microsoft.AspNetCore.Mvc.Rendering.MultiSelectList</returns>
+        public static MultiSelectList ToMultiSelectList<T, TValue>(this IEnumerable<T> source, Func<T, object> valueFieldSelector, Func<T, string> textFieldSelector, IEnumerable<TValue> selectedValues, string emptyText = null)
         {
-            var values = (from T item in enumerable
+            var values = (from T item in source
                           select new
                           {
                               ValueField = Convert.ToString(valueFieldSelector(item)),
