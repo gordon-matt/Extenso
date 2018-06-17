@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Extenso.Collections
 {
+    /// <summary>
+    /// Provides a set of static methods for querying and manipulating objects that implement System.Collections.Generic.ICollection`1.
+    /// </summary>
     public static class CollectionExtensions
     {
         /// <summary>
