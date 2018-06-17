@@ -15,12 +15,12 @@ namespace Extenso.IO
         /// <returns>The System.Object being deserialized.</returns>
         public static T BinaryDeserialize<T>(this FileInfo fileInfo) where T : ISerializable
         {
-            using (Stream stream = File.Open(fileInfo.FullName, FileMode.Open))
+            using (var fileStream = File.Open(fileInfo.FullName, FileMode.Open))
             {
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                T item = (T)binaryFormatter.Deserialize(stream);
-                stream.Close();
-                return item;
+                var binaryFormatter = new BinaryFormatter();
+                T obj = (T)binaryFormatter.Deserialize(fileStream);
+                fileStream.Close();
+                return obj;
             }
         }
 
@@ -31,16 +31,14 @@ namespace Extenso.IO
         /// <returns>The name of the new compressed file.</returns>
         public static void DeflateCompress(this FileInfo fileInfo)
         {
-            using (FileStream fsIn = fileInfo.OpenRead())
+            using (var fileStreamIn = fileInfo.OpenRead())
             {
                 if (fileInfo.Extension != ".cmp")
                 {
-                    using (FileStream fsOut = File.Create(fileInfo.FullName + ".cmp"))
+                    using (var fileStreamOut = File.Create(fileInfo.FullName + ".cmp"))
+                    using (var deflateStream = new DeflateStream(fileStreamOut, CompressionMode.Compress))
                     {
-                        using (DeflateStream deflateStream = new DeflateStream(fsOut, CompressionMode.Compress))
-                        {
-                            fsIn.CopyTo(deflateStream);
-                        }
+                        fileStreamIn.CopyTo(deflateStream);
                     }
                 }
             }
@@ -53,16 +51,14 @@ namespace Extenso.IO
         /// <returns>The name of the new decompressed file.</returns>
         public static void DeflateDecompress(this FileInfo fileInfo)
         {
-            using (FileStream fsIn = fileInfo.OpenRead())
+            using (var fileStreamIn = fileInfo.OpenRead())
             {
                 string originalName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
 
-                using (FileStream fsOut = File.Create(originalName))
+                using (var fileStreamOut = File.Create(originalName))
+                using (var deflateStream = new DeflateStream(fileStreamIn, CompressionMode.Decompress))
                 {
-                    using (DeflateStream deflateStream = new DeflateStream(fsIn, CompressionMode.Decompress))
-                    {
-                        deflateStream.CopyTo(fsOut);
-                    }
+                    deflateStream.CopyTo(fileStreamOut);
                 }
             }
         }
@@ -126,12 +122,10 @@ namespace Extenso.IO
 
         public static string GetText(this FileInfo fileInfo)
         {
-            using (FileStream fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+            using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+            using (var streamReader = new StreamReader(fileStream))
             {
-                using (StreamReader streamReader = new StreamReader(fileStream))
-                {
-                    return streamReader.ReadToEnd();
-                }
+                return streamReader.ReadToEnd();
             }
         }
 
@@ -142,16 +136,14 @@ namespace Extenso.IO
         /// <returns>The name of the new compressed file.</returns>
         public static void GZipCompress(this FileInfo fileInfo)
         {
-            using (FileStream fsIn = fileInfo.OpenRead())
+            using (var fileStreamIn = fileInfo.OpenRead())
             {
                 if (fileInfo.Extension != ".gz")
                 {
-                    using (FileStream fsOut = File.Create(fileInfo.FullName + ".gz"))
+                    using (var fileStreamOut = File.Create(fileInfo.FullName + ".gz"))
+                    using (var gZipStream = new GZipStream(fileStreamOut, CompressionMode.Compress))
                     {
-                        using (GZipStream gZipStream = new GZipStream(fsOut, CompressionMode.Compress))
-                        {
-                            fsIn.CopyTo(gZipStream);
-                        }
+                        fileStreamIn.CopyTo(gZipStream);
                     }
                 }
             }
@@ -164,18 +156,16 @@ namespace Extenso.IO
         /// <returns>The name of the new decompressed file.</returns>
         public static void GZipDecompress(this FileInfo fileInfo)
         {
-            using (FileStream fsIn = fileInfo.OpenRead())
+            using (var fileStreamIn = fileInfo.OpenRead())
             {
                 // Get original file extension, for example:
                 // "doc" from report.doc.gz.
                 string originalName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
 
-                using (FileStream fsOut = File.Create(originalName))
+                using (var fileStreamOut = File.Create(originalName))
+                using (var gZipStream = new GZipStream(fileStreamIn, CompressionMode.Decompress))
                 {
-                    using (GZipStream gZipStream = new GZipStream(fsIn, CompressionMode.Decompress))
-                    {
-                        gZipStream.CopyTo(fsOut);
-                    }
+                    gZipStream.CopyTo(fileStreamOut);
                 }
             }
         }
@@ -255,13 +245,10 @@ namespace Extenso.IO
         /// <returns>The System.Object being deserialized.</returns>
         public static T XmlDeserialize<T>(this FileInfo fileInfo)
         {
-            string xml = string.Empty;
-            using (FileStream fs = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+            using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+            using (var streamReader = new StreamReader(fileStream))
             {
-                using (StreamReader sr = new StreamReader(fs))
-                {
-                    return sr.ReadToEnd().XmlDeserialize<T>();
-                }
+                return streamReader.ReadToEnd().XmlDeserialize<T>();
             }
         }
     }

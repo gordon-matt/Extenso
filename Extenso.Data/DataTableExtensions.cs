@@ -55,7 +55,7 @@ namespace Extenso.Data
                     sb.Append(',');
                 }
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append(System.Environment.NewLine);
+                sb.Append(Environment.NewLine);
             }
 
             #endregion Column Names
@@ -75,7 +75,7 @@ namespace Extenso.Data
 
                 //Remove Last ','
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append(System.Environment.NewLine);
+                sb.Append(Environment.NewLine);
             }
 
             #endregion Rows (Data)
@@ -102,7 +102,7 @@ namespace Extenso.Data
                     sb.Append(',');
                 }
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append(System.Environment.NewLine);
+                sb.Append(Environment.NewLine);
             }
 
             #endregion Column Names
@@ -122,7 +122,7 @@ namespace Extenso.Data
 
                 //Remove Last ','
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append(System.Environment.NewLine);
+                sb.Append(Environment.NewLine);
             }
 
             #endregion Rows (Data)

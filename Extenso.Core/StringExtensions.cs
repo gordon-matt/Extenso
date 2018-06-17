@@ -964,7 +964,7 @@ namespace Extenso
         /// </summary>
         /// <param name="s">The string to write to file.</param>
         /// <param name="filePath">The file to write the string to.</param>
-        /// <returns>true if successful,; otherwise false.</returns>
+        /// <returns>true if successful; otherwise false.</returns>
         public static bool ToFile(this string s, string filePath)
         {
             try
@@ -1002,7 +1002,7 @@ namespace Extenso
         {
             if (!string.IsNullOrEmpty(s))
             {
-                return s.Split(new[] { "\r\n", System.Environment.NewLine, "\n" }, StringSplitOptions.None);
+                return s.Split(new[] { "\r\n", Environment.NewLine, "\n" }, StringSplitOptions.None);
             }
 
             return new string[0];
