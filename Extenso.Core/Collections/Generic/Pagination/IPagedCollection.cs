@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace Extenso.Collections.Generic
 {
@@ -42,7 +43,7 @@ namespace Extenso.Collections.Generic
     /// A generic IPagedCollection
     /// </summary>
     /// <typeparam name="T">The type of the elements in the collection.</typeparam>
-    public interface IPagedCollection<T> : IPagedCollection
+    public interface IPagedCollection<T> : IPagedCollection, ICollection<T>
     {
     }
 }
