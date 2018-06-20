@@ -41,6 +41,26 @@ namespace Extenso.Collections
         }
 
         /// <summary>
+        /// Returns a collection of elements that contains the descendant elements of the same type in source.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to find descendant elements in.</param>
+        /// <param name="descendBy">A function to find the child collection to descend by.</param>
+        /// <returns>A collection of elements that contains the descendant elements of the same type in source.</returns>
+        public static IEnumerable<T> Descendants<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> descendBy)
+        {
+            foreach (T value in source)
+            {
+                yield return value;
+
+                foreach (T child in descendBy(value).Descendants<T>(descendBy))
+                {
+                    yield return child;
+                }
+            }
+        }
+
+        /// <summary>
         /// Performs the specified action on each element of the System.Collections.Generic.IEnumerable`1.
         /// </summary>
         /// <typeparam name="T">The type of the elements of source.</typeparam>
@@ -181,6 +201,68 @@ namespace Extenso.Collections
             chunks.Add(chunk);
 
             return chunks;
+        }
+
+        /// <summary>
+        /// Returns a string containing the elements of source in CSV format.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a CSV formatted string from.</param>
+        /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
+        /// <returns>A string containing the elements of source in CSV format.</returns>
+        public static string ToCsv<T>(this IEnumerable<T> source, bool outputColumnNames = true)
+        {
+            var sb = new StringBuilder(2000);
+
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            #region Column Names
+
+            if (outputColumnNames)
+            {
+                foreach (var propertyInfo in properties)
+                {
+                    sb.Append(propertyInfo.Name);
+                    sb.Append(',');
+                }
+                sb.Remove(sb.Length - 1, 1);
+                sb.Append(Environment.NewLine);
+            }
+
+            #endregion Column Names
+
+            #region Rows (Data)
+
+            foreach (var element in source)
+            {
+                foreach (var propertyInfo in properties)
+                {
+                    string value = propertyInfo.GetValue(element).ToString();
+                    sb.Append(value.Contains(",") ? value.AddDoubleQuotes() : value);
+                    sb.Append(',');
+                }
+
+                // Remove trailing comma
+                sb.Remove(sb.Length - 1, 1);
+                sb.Append(Environment.NewLine);
+            }
+
+            #endregion Rows (Data)
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Writes the elements to file in CSV format.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a CSV formatted file from.</param>
+        /// <param name="filePath">The full path of the file to write to.</param>
+        /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
+        /// <returns>true if successful; otherwise false.</returns>
+        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath, bool outputColumnNames = true)
+        {
+            return source.ToCsv(outputColumnNames).ToFile(filePath);
         }
 
         /// <summary>
@@ -367,88 +449,6 @@ namespace Extenso.Collections
                 stack.Push(item);
             }
             return stack;
-        }
-
-        /// <summary>
-        /// Returns a collection of elements that contains the descendant elements of the same type in source.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of source.</typeparam>
-        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to find descendant elements in.</param>
-        /// <param name="descendBy">A function to find the child collection to descend by.</param>
-        /// <returns>A collection of elements that contains the descendant elements of the same type in source.</returns>
-        public static IEnumerable<T> Descendants<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> descendBy)
-        {
-            foreach (T value in source)
-            {
-                yield return value;
-
-                foreach (T child in descendBy(value).Descendants<T>(descendBy))
-                {
-                    yield return child;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns a string containing the elements of source in CSV format.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of source.</typeparam>
-        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a CSV formatted string from.</param>
-        /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
-        /// <returns>A string containing the elements of source in CSV format.</returns>
-        public static string ToCsv<T>(this IEnumerable<T> source, bool outputColumnNames = true)
-        {
-            var sb = new StringBuilder(2000);
-
-            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            #region Column Names
-
-            if (outputColumnNames)
-            {
-                foreach (var propertyInfo in properties)
-                {
-                    sb.Append(propertyInfo.Name);
-                    sb.Append(',');
-                }
-                sb.Remove(sb.Length - 1, 1);
-                sb.Append(Environment.NewLine);
-            }
-
-            #endregion Column Names
-
-            #region Rows (Data)
-
-            foreach (var element in source)
-            {
-                foreach (var propertyInfo in properties)
-                {
-                    string value = propertyInfo.GetValue(element).ToString();
-                    sb.Append(value.Contains(",") ? value.AddDoubleQuotes() : value);
-                    sb.Append(',');
-                }
-
-                // Remove trailing comma
-                sb.Remove(sb.Length - 1, 1);
-                sb.Append(Environment.NewLine);
-            }
-
-            #endregion Rows (Data)
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Writes the elements to file in CSV format.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of source.</typeparam>
-        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a CSV formatted file from.</param>
-        /// <param name="filePath">The full path of the file to write to.</param>
-        /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
-        /// <returns>true if successful; otherwise false.</returns>
-        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath, bool outputColumnNames = true)
-        {
-            return source.ToCsv(outputColumnNames).ToFile(filePath);
         }
 
         internal static bool FastAny<TSource>(this IEnumerable<TSource> source)

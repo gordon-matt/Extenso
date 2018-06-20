@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Extenso.Collections;
@@ -73,27 +72,31 @@ namespace Extenso.Web.OData
 
         // GET: odata/<Entity>(5)
         [EnableQuery]
-        public virtual async Task<SingleResult<TEntity>> Get([FromODataUri] TKey key)
+        public virtual async Task<IActionResult> Get([FromODataUri] TKey key)
         {
-            if (!await AuthorizeAsync(ReadPermission))
-            {
-                return SingleResult.Create(Enumerable.Empty<TEntity>().AsQueryable());
-            }
-
             var entity = await Repository.FindOneAsync(key);
 
-            // TODO: CheckPermission(ReadPermission) is getting done twice.. once above, and once in CanViewEntity(). Unnecessary... see if this can be modified
-            if (!await CanViewEntity(entity))
+            if (entity == null)
             {
-                return SingleResult.Create(Enumerable.Empty<TEntity>().AsQueryable());
+                return NotFound();
             }
 
-            return SingleResult.Create(new[] { entity }.AsQueryable());
+            if (!await CanViewEntity(entity))
+            {
+                return Unauthorized();
+            }
+
+            return Ok(entity);
         }
 
         // PUT: odata/<Entity>(5)
         public virtual async Task<IActionResult> Put([FromODataUri] TKey key, [FromBody] TEntity entity)
         {
+            if (entity == null)
+            {
+                return BadRequest();
+            }
+
             if (!await CanModifyEntity(entity))
             {
                 return Unauthorized();
@@ -130,6 +133,11 @@ namespace Extenso.Web.OData
         // POST: odata/<Entity>
         public virtual async Task<IActionResult> Post([FromBody] TEntity entity)
         {
+            if (entity == null)
+            {
+                return BadRequest();
+            }
+
             if (!await CanModifyEntity(entity))
             {
                 return Unauthorized();
@@ -239,21 +247,11 @@ namespace Extenso.Web.OData
 
         protected virtual async Task<bool> CanViewEntity(TEntity entity)
         {
-            if (entity == null)
-            {
-                return false;
-            }
-
             return await AuthorizeAsync(ReadPermission);
         }
 
         protected virtual async Task<bool> CanModifyEntity(TEntity entity)
         {
-            if (entity == null)
-            {
-                return false;
-            }
-
             return await AuthorizeAsync(WritePermission);
         }
 
