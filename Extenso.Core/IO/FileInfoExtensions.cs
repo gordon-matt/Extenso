@@ -5,96 +5,94 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Extenso.IO
 {
+    /// <summary>
+    /// Provides a set of static methods for querying and manipulating instances of System.IO.FileInfo.
+    /// </summary>
     public static class FileInfoExtensions
     {
         /// <summary>
-        /// Deserializes the Binary data contained in the specified file.
+        /// Deserializes the binary data contained in the given file to an object of the specified type.
         /// </summary>
-        /// <typeparam name="T">The type of System.Object to be deserialized.</typeparam>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
-        /// <returns>The System.Object being deserialized.</returns>
+        /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
+        /// <param name="fileInfo">The binary file to deserialize.</param>
+        /// <returns>The deserialized object from the binary data.</returns>
         public static T BinaryDeserialize<T>(this FileInfo fileInfo) where T : ISerializable
         {
             using (var fileStream = File.Open(fileInfo.FullName, FileMode.Open))
             {
-                var binaryFormatter = new BinaryFormatter();
-                T obj = (T)binaryFormatter.Deserialize(fileStream);
-                fileStream.Close();
-                return obj;
+                return fileStream.BinaryDeserialize<T>();
             }
         }
 
         /// <summary>
-        /// Compresses the file using the Deflate algorithm and returns the name of the compressed file.
+        /// Compresses the given file using the Deflate algorithm and returns the name of the compressed file.
         /// </summary>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
+        /// <param name="fileInfo">The file to be compressed.</param>
         /// <returns>The name of the new compressed file.</returns>
-        public static void DeflateCompress(this FileInfo fileInfo)
+        public static string DeflateCompress(this FileInfo fileInfo)
         {
+            string compressedFileName = $"{fileInfo.FullName}.cmp";
+
             using (var fileStreamIn = fileInfo.OpenRead())
+            using (var fileStreamOut = File.Create(compressedFileName))
+            using (var deflateStream = new DeflateStream(fileStreamOut, CompressionMode.Compress))
             {
-                if (fileInfo.Extension != ".cmp")
-                {
-                    using (var fileStreamOut = File.Create(fileInfo.FullName + ".cmp"))
-                    using (var deflateStream = new DeflateStream(fileStreamOut, CompressionMode.Compress))
-                    {
-                        fileStreamIn.CopyTo(deflateStream);
-                    }
-                }
+                fileStreamIn.CopyTo(deflateStream);
             }
+
+            return compressedFileName;
         }
 
         /// <summary>
-        /// Decompresses the file using the Deflate algorithm and returns the name of the decompressed file.
+        /// Decompresses the given file using the Deflate algorithm and returns the name of the decompressed file.
         /// </summary>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
+        /// <param name="fileInfo">The file to be decompressed.</param>
         /// <returns>The name of the new decompressed file.</returns>
-        public static void DeflateDecompress(this FileInfo fileInfo)
+        public static string DeflateDecompress(this FileInfo fileInfo)
         {
+            string deCompressedFileName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
+
             using (var fileStreamIn = fileInfo.OpenRead())
+            using (var fileStreamOut = File.Create(deCompressedFileName))
+            using (var deflateStream = new DeflateStream(fileStreamIn, CompressionMode.Decompress))
             {
-                string originalName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
-
-                using (var fileStreamOut = File.Create(originalName))
-                using (var deflateStream = new DeflateStream(fileStreamIn, CompressionMode.Decompress))
-                {
-                    deflateStream.CopyTo(fileStreamOut);
-                }
+                deflateStream.CopyTo(fileStreamOut);
             }
-        }
 
-        public static byte[] GetBytes(this FileInfo fileInfo)
-        {
-            return fileInfo.GetBytes(0x1000);
+            return deCompressedFileName;
         }
 
         /// <summary>
-        /// Gets the file data as an array of bytes
+        /// Returns the given file's data as an array of bytes
         /// </summary>
         /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
         /// <param name="maxBufferSize">The buffer size.</param>
         /// <returns>System.Byte[] representing the file data.</returns>
-        public static byte[] GetBytes(this FileInfo fileInfo, long maxBufferSize)
+        public static byte[] GetBytes(this FileInfo fileInfo, long maxBufferSize = 0x1000)
         {
             byte[] buffer = new byte[(fileInfo.Length > maxBufferSize ? maxBufferSize : fileInfo.Length)];
-            using (FileStream fileStream = new FileStream(
-                fileInfo.FullName,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                buffer.Length))
+            using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length))
             {
                 fileStream.Read(buffer, 0, buffer.Length);
-                //fileStream.Close();
             }
             return buffer;
         }
 
         /// <summary>
+        /// Gets the file size in GigaBytes
+        /// </summary>
+        /// <param name="fileInfo">The file which is to be measured in GB.</param>
+        /// <returns>A System.Double representing the size of the file in GB.</returns>
+        public static long GetFileSizeInGigaBytes(this FileInfo fileInfo)
+        {
+            return fileInfo.GetFileSizeInMegaBytes() / 1024;
+        }
+
+        /// <summary>
         /// Gets the file size in KiloBytes
         /// </summary>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
-        /// <returns>System.Double representing the size of the file.</returns>
+        /// <param name="fileInfo">The file which is to be measured in KB.</param>
+        /// <returns>A System.Double representing the size of the file in KB.</returns>
         public static long GetFileSizeInKiloBytes(this FileInfo fileInfo)
         {
             return fileInfo.Length / 1024;
@@ -103,50 +101,30 @@ namespace Extenso.IO
         /// <summary>
         /// Gets the file size in MegaBytes
         /// </summary>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
-        /// <returns>System.Double representing the size of the file.</returns>
+        /// <param name="fileInfo">The file which is to be measured in MB.</param>
+        /// <returns>A System.Double representing the size of the file in MB.</returns>
         public static long GetFileSizeInMegaBytes(this FileInfo fileInfo)
         {
             return fileInfo.GetFileSizeInKiloBytes() / 1024;
         }
 
         /// <summary>
-        /// Gets the file size in GigaBytes
-        /// </summary>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
-        /// <returns>System.Double representing the size of the file.</returns>
-        public static long GetFileSizeInGigaBytes(this FileInfo fileInfo)
-        {
-            return fileInfo.GetFileSizeInMegaBytes() / 1024;
-        }
-
-        public static string GetText(this FileInfo fileInfo)
-        {
-            using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
-            using (var streamReader = new StreamReader(fileStream))
-            {
-                return streamReader.ReadToEnd();
-            }
-        }
-
-        /// <summary>
         /// Compresses the file using the GZip algorithm and returns the name of the compressed file.
         /// </summary>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
+        /// <param name="fileInfo">The file to be compressed.</param>
         /// <returns>The name of the new compressed file.</returns>
-        public static void GZipCompress(this FileInfo fileInfo)
+        public static string GZipCompress(this FileInfo fileInfo)
         {
+            string compressedFileName = $"{fileInfo.FullName}.gz";
+
             using (var fileStreamIn = fileInfo.OpenRead())
+            using (var fileStreamOut = File.Create(compressedFileName))
+            using (var gZipStream = new GZipStream(fileStreamOut, CompressionMode.Compress))
             {
-                if (fileInfo.Extension != ".gz")
-                {
-                    using (var fileStreamOut = File.Create(fileInfo.FullName + ".gz"))
-                    using (var gZipStream = new GZipStream(fileStreamOut, CompressionMode.Compress))
-                    {
-                        fileStreamIn.CopyTo(gZipStream);
-                    }
-                }
+                fileStreamIn.CopyTo(gZipStream);
             }
+
+            return compressedFileName;
         }
 
         /// <summary>
@@ -154,95 +132,44 @@ namespace Extenso.IO
         /// </summary>
         /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
         /// <returns>The name of the new decompressed file.</returns>
-        public static void GZipDecompress(this FileInfo fileInfo)
+        public static string GZipDecompress(this FileInfo fileInfo)
         {
-            using (var fileStreamIn = fileInfo.OpenRead())
-            {
-                // Get original file extension, for example:
-                // "doc" from report.doc.gz.
-                string originalName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
+            // Get original file extension, for example:
+            // "doc" from report.doc.gz.
+            string deCompressedFileName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
 
-                using (var fileStreamOut = File.Create(originalName))
-                using (var gZipStream = new GZipStream(fileStreamIn, CompressionMode.Decompress))
-                {
-                    gZipStream.CopyTo(fileStreamOut);
-                }
+            using (var fileStreamIn = fileInfo.OpenRead())
+            using (var fileStreamOut = File.Create(deCompressedFileName))
+            using (var gZipStream = new GZipStream(fileStreamIn, CompressionMode.Decompress))
+            {
+                gZipStream.CopyTo(fileStreamOut);
             }
+
+            return deCompressedFileName;
         }
 
-        //public static DataTable ReadCsv(this FileInfo fileInfo, bool hasHeaderRow, params string[] delimeters)
-        //{
-        //    if (delimeters.IsNullOrEmpty())
-        //    {
-        //        delimeters = new[] { "," };
-        //    }
+        /// <summary>
+        /// Opens the text file, reads all lines of the file, and then closes the file.
+        /// </summary>
+        /// <param name="fileInfo">The file to read all text from.</param>
+        /// <returns>A string containing all lines of the file.</returns>
+        public static string ReadAllText(this FileInfo fileInfo)
+        {
+            return File.ReadAllText(fileInfo.FullName);
 
-        //    using (var parser = new TextFieldParser(fileInfo.FullName))
-        //    {
-        //        parser.TextFieldType = FieldType.Delimited;
-        //        parser.SetDelimiters(delimeters);
-        //        parser.HasFieldsEnclosedInQuotes = false;
-
-        //        var table = new DataTable(Path.GetFileNameWithoutExtension(fileInfo.Name));
-
-        //        int lineNumber = 1;
-        //        while (!parser.EndOfData)
-        //        {
-        //            string[] fields;
-        //            try
-        //            {
-        //                fields = parser.ReadFields();
-        //            }
-        //            catch (MalformedLineException x)
-        //            {
-        //                var logger = LoggingUtilities.Resolve();
-        //                logger.Error("Error when reading CSV file: " + fileInfo.FullName, x);
-        //                continue;
-        //            }
-
-        //            if (lineNumber == 1)
-        //            {
-        //                if (hasHeaderRow)
-        //                {
-        //                    foreach (string field in fields)
-        //                    {
-        //                        table.Columns.Add(field);
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    for (int i = 0; i < fields.Count(); i++)
-        //                    {
-        //                        table.Columns.Add("Column" + (i + 1));
-        //                    }
-        //                    table.Rows.Add(fields);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var row = table.NewRow();
-        //                for (int i = 0; i < table.Columns.Count; i++)
-        //                {
-        //                    row[i] = fields[i];
-        //                }
-        //                table.Rows.Add(row);
-
-        //                //table.Rows.Add(fields); //  <-- this version breaks when accidenteally have extra comma at end of line
-        //            }
-
-        //            lineNumber++;
-        //        }
-
-        //        return table;
-        //    }
-        //}
+            //using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
+            //using (var streamReader = new StreamReader(fileStream))
+            //{
+            //    return streamReader.ReadToEnd();
+            //}
+        }
 
         /// <summary>
-        /// Deserializes the XML data contained in the specified file.
+        /// Deserializes the XML data contained in the given file to an object of the specified type.
         /// </summary>
-        /// <typeparam name="T">The type of System.Object to be deserialized.</typeparam>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
-        /// <returns>The System.Object being deserialized.</returns>
+        /// <typeparam name="T">The type of object to deserialize the XML data to.</typeparam>
+        /// <param name="fileInfo">The XML file to deserialize.</param>
+        /// <returns>The deserialized object from the XML data.</returns>
         public static T XmlDeserialize<T>(this FileInfo fileInfo)
         {
             using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))
