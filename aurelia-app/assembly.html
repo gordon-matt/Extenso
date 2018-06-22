@@ -7,11 +7,11 @@
             <span>${selectedAssembly.FullName}</span>
         </small>
     </h1>
-    <div class="row">
-        <div class="col-md-3 scroll-column">
+    <div class="row h-100">
+        <div class="col-md-3">
             <h2 class="namespace-title text-muted">Namespaces</h2>
 			<div id="namespaces">
-				<ul id="namespace-list" class="list-group list-group-flush scrolly">
+				<ul id="namespace-list" class="list-group list-group-flush">
 					<li repeat.for="namespace of selectedAssembly.Namespaces" class="list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-between">
 							<h6 class="mb-1 text-truncate" title="${namespace.Name}">${namespace.Name}</h6>
@@ -30,10 +30,10 @@
         <div class="col-md-9 border border-top-0 border-bottom-0 border-right-0">
             <h2 id="namespace-title" class="namespace-title">${selectedNamespace.Name}</h2>
             <div class="row">
-                <div class="col-md-3 scroll-column">
+                <div class="col-md-3">
                     <h3>${selectedTypesTitle}</h3>
                     <div id="types">
-                        <ul id="type-list" class="list-group list-group-flush scrolly">
+                        <ul id="type-list" class="list-group list-group-flush">
 							<li repeat.for="type of selectedTypes" class="list-group-item list-group-item-action flex-column align-items-start">
 								<a href="javascript.void(0);" click.delegate="showType(type)">
 									<h5 class="list-group-item-heading text-truncate" title="${type.Name}">${type.Name}</h5>
@@ -42,7 +42,7 @@
                         </ul>
                     </div>
                 </div>
-                <div if.bind="selectedType" id="type-details" class="col-md-9 full-height">
+                <div if.bind="selectedType" id="type-details" class="col-md-9">
                     <div class="col-md-12">
                         <h3 title="${selectedType.FullName}">
                             ${selectedType.Name}
@@ -57,7 +57,7 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">Inherited</li>
                             <li repeat.for="parent of selectedType.Parents" class="breadcrumb-item">
-                                <a href="#" title="${parent.FullName}">${parent.Name}</a>
+                                ${parent.Name}
                             </li>
                         </ol>
                         <p>${selectedType.Summary}</p>
@@ -66,20 +66,19 @@
                     </div>
 
                     <div class="col-md-12">
-
                         <div role="tabpanel">
                             <ul id="type-tabs" class="nav nav-tabs" role="tablist">
                                 <li if.bind="selectedType.Constructors.length > 0" class="nav-item" role="presentation">
-                                    <a class="nav-link" href="#Constructors" aria-controls="Constructors" role="tab" data-toggle="tab">Constructors</a>
+                                    <a class="nav-link" href="#Constructors" aria-controls="Constructors" role="tab" data-toggle="tab"><img src="img/method.gif" border="0" alt="method" /> Constructors</a>
                                 </li>
                                 <li if.bind="selectedType.Methods.length > 0" class="nav-item" role="presentation">
-                                    <a class="nav-link" href="#Methods" aria-controls="Methods" role="tab" data-toggle="tab">Methods</a>
+                                    <a class="nav-link" href="#Methods" aria-controls="Methods" role="tab" data-toggle="tab"><img src="img/method.gif" border="0" alt="method" /> Methods</a>
                                 </li>
                                 <li if.bind="selectedType.Properties.length > 0" class="nav-item" role="presentation">
-                                    <a class="nav-link" href="#Properties" aria-controls="Properties" role="tab" data-toggle="tab">Properties</a>
+                                    <a class="nav-link" href="#Properties" aria-controls="Properties" role="tab" data-toggle="tab"><img src="img/property.gif" border="0" alt="property" /> Properties</a>
                                 </li>
                                 <li if.bind="selectedType.Members.length > 0" class="nav-item" role="presentation">
-                                    <a class="nav-link" href="#Members" aria-controls="Members" role="tab" data-toggle="tab">Members</a>
+                                    <a class="nav-link" href="#Members" aria-controls="Members" role="tab" data-toggle="tab"><img src="img/enumeration.gif" border="0" alt="members" /> Members</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
@@ -89,7 +88,7 @@
                                             <div class="card-header" id="heading-${ctor.Id}">
                                                 <h5 class="mb-0">
                                                     <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-${ctor.Id}" aria-expanded="false" aria-controls="collapse-${ctor.Id}">
-                                                        ${ctor.Name}(${ctor.Parameters})
+                                                        <img src="img/method.gif" border="0" alt="method" /> ${ctor.Name}(${ctor.Parameters})
                                                     </button>
                                                 </h5>
                                             </div>
@@ -100,11 +99,12 @@
                                                     <hr />
                                                     <section if.bind="ctor.Parameters">
                                                         <h6 class="text-warning">Parameters</h6>
-                                                        <dl>
-                                                            <dt repeat.for="parameter of ctor.Parameters">
-                                                                ${parameter.Name} (${parameter.TypeFullName})
+                                                        <dl repeat.for="parameter of ctor.Parameters">
+                                                            <dt>
+                                                                ${parameter.Name}
                                                             </dt>
-                                                            <dd class="small text-muted">${parameter.Description}</dd>
+															<dd class="small text-muted indent-1"><strong>Type:</strong> ${parameter.TypeFullName}</dd>
+                                                            <dd class="small text-muted indent-1"><strong>Description:</strong> ${parameter.Description}</dd>
                                                         </dl>
                                                     </section>
                                                     <section if.bind="ctor.Remarks">
@@ -133,7 +133,7 @@
                                             <div class="card-header" id="heading-${method.Id}">
                                                 <h5 class="mb-0">
                                                     <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-${method.Id}" aria-expanded="false" aria-controls="collapse-${method.Id}">
-                                                        ${method.Name}(${method.FormattedParams})
+                                                        <img src="img/method.gif" border="0" alt="method" /> ${method.Name}(${method.FormattedParams})
                                                     </button>
                                                 </h5>
                                             </div>
@@ -144,11 +144,12 @@
                                                     <hr />
                                                     <section if.bind="method.Parameters">
                                                         <h6 class="text-warning">Parameters</h6>
-                                                        <dl>
-                                                            <dt repeat.for="parameter of method.Parameters">
-                                                                ${parameter.Name} (${parameter.TypeFullName})
+                                                        <dl repeat.for="parameter of method.Parameters">
+                                                            <dt>
+                                                                ${parameter.Name}
                                                             </dt>
-                                                            <dd class="small text-muted">${parameter.Description}</dd>
+															<dd class="small text-muted indent-1"><strong>Type:</strong> ${parameter.TypeFullName}</dd>
+                                                            <dd class="small text-muted indent-1"><strong>Description:</strong> ${parameter.Description}</dd>
                                                         </dl>
                                                     </section>
                                                     <section if.bind="method.Returns">
@@ -185,7 +186,7 @@
                                             <div class="card-header" id="heading-${property.Id}">
                                                 <h5 class="mb-0">
                                                     <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-${property.Id}" aria-expanded="false" aria-controls="collapse-${property.Id}">
-                                                        ${property.Name}
+                                                        <img src="img/property.gif" border="0" alt="method" /> ${property.Name}
                                                     </button>
                                                 </h5>
                                             </div>
@@ -212,7 +213,7 @@
                                 <div if.bind="selectedType.Members.length > 0" role="tabpanel" class="tab-pane" id="Members">
                                     <ul class="list-group">
                                         <li repeat.for="member of selectedType.Members" class="list-group-item">
-                                            <h6 class="list-group-item-heading">${member.Name}</h6>
+                                            <h6 class="list-group-item-heading"><img src="img/enumeration.gif" border="0" alt="members" /> ${member.Name}</h6>
                                             <div class="list-group-item-text">
                                                 <small>${member.Description}</small>
                                             </div>
