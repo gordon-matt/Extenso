@@ -19,7 +19,7 @@ namespace Extenso
         /// <typeparam name="T">The type of the enumeration.</typeparam>
         /// <param name="enum">The enumeration member to get the display name for.</param>
         /// <returns>A System.String that is used for display in the UI.</returns>
-        public static string GetDisplayName<T>(T @enum) where T : struct
+        public static string GetDisplayName<T>(T @enum)
         {
             if (!(@enum is Enum))
             {
@@ -55,7 +55,7 @@ namespace Extenso
         /// When this method returns, order contains a System.Int32 whose value can be used to place the return value above or below other values retrieved from this method.
         /// </param>
         /// <returns>A System.String that is used for display in the UI.</returns>
-        public static string GetDisplayName<T>(T @enum, out int order) where T : struct
+        public static string GetDisplayName<T>(T @enum, out int order)
         {
             order = 0;
             if (!(@enum is Enum))
@@ -91,7 +91,7 @@ namespace Extenso
         /// </summary>
         /// <typeparam name="T">The type of the enumeration.</typeparam>
         /// <returns>A collection of strings that are used for display in the UI.</returns>
-        public static IEnumerable<string> GetDisplayNames<T>() where T : struct
+        public static IEnumerable<string> GetDisplayNames<T>()
         {
             return GetValues<T>().Select(x => GetDisplayName(x));
         }
@@ -103,7 +103,7 @@ namespace Extenso
         /// <typeparam name="T">The type of the enumeration. This should match the type of source.</typeparam>
         /// <param name="source">The enum value which is a set of flags from which individual values are to be extracted.</param>
         /// <returns>A collection of individual values extracted from source.</returns>
-        public static IEnumerable<T> GetFlags<T>(this Enum source) where T : struct
+        public static IEnumerable<T> GetFlags<T>(this Enum source)
         {
             if (!typeof(T).IsEnum)
             {
@@ -136,7 +136,7 @@ namespace Extenso
         /// </summary>
         /// <typeparam name="T">The type of the enumeration.</typeparam>
         /// <returns>A collection that contains the values of the constants in the specified enumeration type.</returns>
-        public static IEnumerable<T> GetValues<T>() where T : struct
+        public static IEnumerable<T> GetValues<T>()
         {
             return (T[])Enum.GetValues(typeof(T));
         }
