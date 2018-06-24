@@ -1,150 +1,161 @@
-﻿using System;
-using System.Text;
+﻿// 2018.06.24 - Will probably remove this. Commenting out for now, just in case...
 
-namespace Extenso
-{
-    public static class TimeSpanExtensions
-    {
-        public static string ToFormattedEnglish(this TimeSpan timeSpan, bool useShorthand)
-        {
-            if (timeSpan == TimeSpan.MaxValue || timeSpan == TimeSpan.MinValue)
-            {
-                return "Unknown";
-            }
+//using System;
+//using System.Text;
 
-            var sb = new StringBuilder();
+//namespace Extenso
+//{
+//    /// <summary>
+//    /// Provides a set of static methods for querying and manipulating instances of System.TimeSpan
+//    /// </summary>
+//    public static class TimeSpanExtensions
+//    {
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        /// <param name="source"></param>
+//        /// <param name="useShorthand"></param>
+//        /// <returns></returns>
+//        public static string ToFormattedEnglish(this TimeSpan source, bool useShorthand)
+//        {
+//            if (source == TimeSpan.MaxValue || source == TimeSpan.MinValue)
+//            {
+//                return "Unknown";
+//            }
 
-            if (!useShorthand)
-            {
-                #region Years & Days
+//            var sb = new StringBuilder();
 
-                if (timeSpan.Days == 365 || timeSpan.Days == 366)
-                {
-                    sb.Append("1 year, ");
-                }
-                else if (timeSpan.Days > 365)
-                {
-                    sb.Append((timeSpan.Days / 365) + " years, ");
-                }
-                else if (timeSpan.Days == 1)
-                {
-                    sb.Append("1 day, ");
-                }
-                else if (timeSpan.Days > 1)
-                {
-                    sb.Append(timeSpan.Days + " days, ");
-                }
+//            if (!useShorthand)
+//            {
+//                #region Years & Days
 
-                #endregion Years & Days
+//                if (source.Days == 365 || source.Days == 366)
+//                {
+//                    sb.Append("1 year, ");
+//                }
+//                else if (source.Days > 365)
+//                {
+//                    sb.Append((source.Days / 365) + " years, ");
+//                }
+//                else if (source.Days == 1)
+//                {
+//                    sb.Append("1 day, ");
+//                }
+//                else if (source.Days > 1)
+//                {
+//                    sb.Append(source.Days + " days, ");
+//                }
 
-                #region Hours
+//                #endregion Years & Days
 
-                if (timeSpan.Hours == 1)
-                {
-                    sb.Append("1 hour, ");
-                }
-                else if (timeSpan.Hours > 1)
-                {
-                    sb.Append(timeSpan.Hours + " hours, ");
-                }
+//                #region Hours
 
-                #endregion Hours
+//                if (source.Hours == 1)
+//                {
+//                    sb.Append("1 hour, ");
+//                }
+//                else if (source.Hours > 1)
+//                {
+//                    sb.Append(source.Hours + " hours, ");
+//                }
 
-                #region Minutes
+//                #endregion Hours
 
-                if (timeSpan.Minutes == 1)
-                {
-                    sb.Append("1 minute, ");
-                }
-                else if (timeSpan.Minutes > 1)
-                {
-                    sb.Append(timeSpan.Minutes + " minutes, ");
-                }
+//                #region Minutes
 
-                #endregion Minutes
+//                if (source.Minutes == 1)
+//                {
+//                    sb.Append("1 minute, ");
+//                }
+//                else if (source.Minutes > 1)
+//                {
+//                    sb.Append(source.Minutes + " minutes, ");
+//                }
 
-                #region Seconds
+//                #endregion Minutes
 
-                if (timeSpan.Seconds == 1)
-                {
-                    sb.Append("1 second, ");
-                }
-                else if (timeSpan.Seconds > 1)
-                {
-                    sb.Append(timeSpan.Seconds + " seconds, ");
-                }
+//                #region Seconds
 
-                #endregion Seconds
-            }
-            else
-            {
-                #region Years & Days
+//                if (source.Seconds == 1)
+//                {
+//                    sb.Append("1 second, ");
+//                }
+//                else if (source.Seconds > 1)
+//                {
+//                    sb.Append(source.Seconds + " seconds, ");
+//                }
 
-                if (timeSpan.Days == 365 || timeSpan.Days == 366)
-                {
-                    sb.Append("1yr, ");
-                }
-                else if (timeSpan.Days > 365)
-                {
-                    sb.Append((timeSpan.Days / 365) + "yr, ");
-                }
-                else if (timeSpan.Days == 1)
-                {
-                    sb.Append("1d, ");
-                }
-                else if (timeSpan.Days > 1)
-                {
-                    sb.Append(timeSpan.Days + "d, ");
-                }
+//                #endregion Seconds
+//            }
+//            else
+//            {
+//                #region Years & Days
 
-                #endregion Years & Days
+//                if (source.Days == 365 || source.Days == 366)
+//                {
+//                    sb.Append("1yr, ");
+//                }
+//                else if (source.Days > 365)
+//                {
+//                    sb.Append((source.Days / 365) + "yr, ");
+//                }
+//                else if (source.Days == 1)
+//                {
+//                    sb.Append("1d, ");
+//                }
+//                else if (source.Days > 1)
+//                {
+//                    sb.Append(source.Days + "d, ");
+//                }
 
-                #region Hours
+//                #endregion Years & Days
 
-                if (timeSpan.Hours == 1)
-                {
-                    sb.Append("1h, ");
-                }
-                else if (timeSpan.Hours > 1)
-                {
-                    sb.Append(timeSpan.Hours + "h, ");
-                }
+//                #region Hours
 
-                #endregion Hours
+//                if (source.Hours == 1)
+//                {
+//                    sb.Append("1h, ");
+//                }
+//                else if (source.Hours > 1)
+//                {
+//                    sb.Append(source.Hours + "h, ");
+//                }
 
-                #region Minutes
+//                #endregion Hours
 
-                if (timeSpan.Minutes == 1)
-                {
-                    sb.Append("1min, ");
-                }
-                else if (timeSpan.Minutes > 1)
-                {
-                    sb.Append(timeSpan.Minutes + "min, ");
-                }
+//                #region Minutes
 
-                #endregion Minutes
+//                if (source.Minutes == 1)
+//                {
+//                    sb.Append("1min, ");
+//                }
+//                else if (source.Minutes > 1)
+//                {
+//                    sb.Append(source.Minutes + "min, ");
+//                }
 
-                #region Seconds
+//                #endregion Minutes
 
-                if (timeSpan.Seconds == 1)
-                {
-                    sb.Append("1s, ");
-                }
-                else if (timeSpan.Seconds > 1)
-                {
-                    sb.Append(timeSpan.Seconds + "s, ");
-                }
+//                #region Seconds
 
-                #endregion Seconds
-            }
+//                if (source.Seconds == 1)
+//                {
+//                    sb.Append("1s, ");
+//                }
+//                else if (source.Seconds > 1)
+//                {
+//                    sb.Append(source.Seconds + "s, ");
+//                }
 
-            if (sb.Length >= 2)
-            {
-                sb.Remove(sb.Length - 2, 2);
-            }
+//                #endregion Seconds
+//            }
 
-            return sb.ToString();
-        }
-    }
-}
+//            if (sb.Length >= 2)
+//            {
+//                sb.Remove(sb.Length - 2, 2);
+//            }
+
+//            return sb.ToString();
+//        }
+//    }
+//}

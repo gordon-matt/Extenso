@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,49 +18,50 @@ using Newtonsoft.Json;
 
 namespace Extenso
 {
+    /// <summary>
+    /// Provides a set of static methods for querying and manipulating strings
+    /// </summary>
     public static class StringExtensions
     {
         #region Fields
 
-        private static readonly Regex regexHtmlTag = new Regex("<.*?>", RegexOptions.Compiled);
-
-        #endregion Fields
-
         private const string RegexArabicAndHebrew = @"[\u0600-\u06FF,\u0590-\u05FF]+";
         private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+
+        #endregion Fields
 
         /// <summary>
         /// Adds a pair of double quotes to the specified System.String.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        public static string AddDoubleQuotes(this string s)
+        public static string AddDoubleQuotes(this string source)
         {
-            return string.Concat("\"", s, "\"");
+            return $"\"{source}\"";
         }
 
         /// <summary>
         /// Adds a pair of single quotes to the specified System.String.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        public static string AddSingleQuotes(this string s)
+        public static string AddSingleQuotes(this string source)
         {
-            return string.Concat("'", s, "'");
+            return $"'{source}'";
         }
 
-        public static bool Any(this string subject, params char[] chars)
+        public static bool Any(this string source, params char[] chars)
         {
-            if (string.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
             {
                 return false;
             }
 
             Array.Sort(chars);
 
-            for (var i = 0; i < subject.Length; i++)
+            for (var i = 0; i < source.Length; i++)
             {
-                char current = subject[i];
+                char current = source[i];
                 if (Array.BinarySearch(chars, current) >= 0)
                 {
                     return true;
@@ -73,13 +74,13 @@ namespace Extenso
         /// <summary>
         /// Adds the specified System.String values to the end of this System.String.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static string Append(this string s, params string[] values)
+        public static string Append(this string source, params string[] values)
         {
             var items = new string[values.Length + 1];
-            items[0] = s;
+            items[0] = source;
             values.CopyTo(items, 1);
             return string.Concat(items);
         }
@@ -87,13 +88,13 @@ namespace Extenso
         /// <summary>
         /// Adds the specified System.Object values to the end of this System.String.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static string Append(this string s, params object[] values)
+        public static string Append(this string source, params object[] values)
         {
             var items = new object[values.Length + 1];
-            items[0] = s;
+            items[0] = source;
             values.CopyTo(items, 1);
             return string.Concat(items);
         }
@@ -120,21 +121,21 @@ namespace Extenso
         //    return Encoding.UTF8.GetString(bytes);
         //}
 
-        public static T Base64Deserialize<T>(this string s)
+        public static T Base64Deserialize<T>(this string source) where T : ISerializable
         {
             // We need to know the exact length of the string - Base64 can sometimes pad us by a byte or two
-            int lengthDelimiterPosition = s.IndexOf(':');
+            int lengthDelimiterPosition = source.IndexOf(':');
 
             if (lengthDelimiterPosition == -1)
             {
-                var bytes = Convert.FromBase64String(s);
+                var bytes = Convert.FromBase64String(source);
                 return bytes.BinaryDeserialize<T>();
             }
             else
             {
-                int length = int.Parse(s.Substring(0, lengthDelimiterPosition));
+                int length = int.Parse(source.Substring(0, lengthDelimiterPosition));
 
-                var bytes = Convert.FromBase64String(s.Substring(lengthDelimiterPosition + 1));
+                var bytes = Convert.FromBase64String(source.Substring(lengthDelimiterPosition + 1));
                 using (var memoryStream = new MemoryStream(bytes, 0, length))
                 {
                     var binaryFormatter = new BinaryFormatter();
@@ -181,20 +182,20 @@ namespace Extenso
         /// <summary>
         /// Returns the characters between and exclusive of the two search characters; [from] and [to].
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static string Between(this string s, char left, char right)
+        public static string Between(this string source, char left, char right)
         {
-            int indexFrom = s.IndexOf(left);
+            int indexFrom = source.IndexOf(left);
             if (indexFrom != -1)
             {
                 ++indexFrom;
-                int indexTo = s.IndexOf(right, indexFrom);
+                int indexTo = source.IndexOf(right, indexFrom);
                 if (indexTo != -1)
                 {
-                    return s.Substring(indexFrom, indexTo - indexFrom);
+                    return source.Substring(indexFrom, indexTo - indexFrom);
                 }
             }
             return string.Empty;
@@ -202,8 +203,10 @@ namespace Extenso
 
         public static string CamelFriendly(this string camel)
         {
-            if (String.IsNullOrWhiteSpace(camel))
-                return "";
+            if (string.IsNullOrWhiteSpace(camel))
+            {
+                return string.Empty;
+            }
 
             var sb = new StringBuilder(camel);
 
@@ -222,42 +225,42 @@ namespace Extenso
         /// <summary>
         /// Returns the number of times that the specified character appears in this System.String.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        public static int CharacterCount(this string s, char c)
+        public static int CharacterCount(this string source, char c)
         {
-            return s.ToCharArray().Where(x => x == c).Count();
+            return source.ToCharArray().Where(x => x == c).Count();
         }
 
         /// <summary>
         /// <para>Returns a value indicating whether the specified System.String object occurs</para>
         /// <para>within this string.</para>
         /// </summary>
-        /// <param name="s">This instance of System.String.</param>
+        /// <param name="source">This instance of System.String.</param>
         /// <param name="value">The System.String object to seek.</param>
         /// <param name="comparisonType">One of the System.StringComparison values.</param>
         /// <returns>
         /// <para>true if the value parameter occurs within this string, or if value is the</para>
         /// <para>empty string (""); otherwise, false.</para>
         /// </returns>
-        public static bool Contains(this string s, string value, StringComparison comparisonType)
+        public static bool Contains(this string source, string value, StringComparison comparisonType)
         {
-            return s.IndexOf(value, comparisonType) != -1;
+            return source.IndexOf(value, comparisonType) != -1;
         }
 
         /// <summary>
         /// <para>Returns a value indicating whether all of the specified System.String objects</para>
         /// <para>occur within this string.</para>
         /// </summary>
-        /// <param name="s">The string</param>
+        /// <param name="source">The string</param>
         /// <param name="values">The strings to seek</param>
         /// <returns>true if all values are contained in this string; otherwise, false.</returns>
-        public static bool ContainsAll(this string s, params string[] values)
+        public static bool ContainsAll(this string source, params string[] values)
         {
             foreach (string value in values)
             {
-                if (!s.Contains(value))
+                if (!source.Contains(value))
                 { return false; }
             }
             return true;
@@ -267,14 +270,14 @@ namespace Extenso
         /// <para>Returns a value indicating whether all of the specified System.Char objects</para>
         /// <para>occur within this string.</para>
         /// </summary>
-        /// <param name="s">The string</param>
+        /// <param name="source">The string</param>
         /// <param name="values">The characters to seek</param>
         /// <returns>true if all values are contained in this string; otherwise, false.</returns>
-        public static bool ContainsAll(this string s, params char[] values)
+        public static bool ContainsAll(this string source, params char[] values)
         {
             foreach (char value in values)
             {
-                if (!s.Contains(value.ToString()))
+                if (!source.Contains(value.ToString()))
                 { return false; }
             }
             return true;
@@ -284,14 +287,14 @@ namespace Extenso
         /// <para>Returns a value indicating whether any of the specified System.String objects</para>
         /// <para>occur within this string.</para>
         /// </summary>
-        /// <param name="s">The string</param>
+        /// <param name="source">The string</param>
         /// <param name="values">The strings to seek</param>
         /// <returns>true if any value is contained in this string; otherwise, false.</returns>
-        public static bool ContainsAny(this string s, params string[] values)
+        public static bool ContainsAny(this string source, params string[] values)
         {
             foreach (string value in values)
             {
-                if (s.Contains(value))
+                if (source.Contains(value))
                 { return true; }
             }
             return false;
@@ -301,14 +304,14 @@ namespace Extenso
         /// <para>Returns a value indicating whether any of the specified System.Char objects</para>
         /// <para>occur within this string.</para>
         /// </summary>
-        /// <param name="s">The string</param>
+        /// <param name="source">The string</param>
         /// <param name="values">The characters to seek</param>
         /// <returns>true if any value is contained in this string; otherwise, false.</returns>
-        public static bool ContainsAny(this string s, params char[] values)
+        public static bool ContainsAny(this string source, params char[] values)
         {
             foreach (char value in values)
             {
-                if (s.Contains(value.ToString()))
+                if (source.Contains(value.ToString()))
                 { return true; }
             }
             return false;
@@ -318,142 +321,174 @@ namespace Extenso
         /// <para>Returns a value indicating whether any of the System.String objects from the</para>
         /// <para>specified IEnumerable&lt;string&gt; occur within this string.</para>
         /// </summary>
-        /// <param name="s">The string</param>
+        /// <param name="source">The string</param>
         /// <param name="values">The strings to seek</param>
         /// <returns>true if any value is contained in this string; otherwise, false.</returns>
-        public static bool ContainsAny(this string s, IEnumerable<string> values)
+        public static bool ContainsAny(this string source, IEnumerable<string> values)
         {
             foreach (string value in values)
             {
                 if (string.IsNullOrEmpty(value))
                 { continue; }
-                if (s.Contains(value))
+                if (source.Contains(value))
                 { return true; }
             }
             return false;
         }
 
-        public static bool ContainsWhiteSpace(this string s)
+        public static bool ContainsWhiteSpace(this string source)
         {
-            return s.Any(char.IsWhiteSpace);
+            return source.Any(char.IsWhiteSpace);
+        }
+
+        public static string DeflateCompress(this string source)
+        {
+            var bytes = Encoding.UTF8.GetBytes(source);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Compress, true))
+                {
+                    deflateStream.Write(bytes, 0, bytes.Length);
+                }
+                memoryStream.Position = 0;
+                var compressed = new byte[memoryStream.Length];
+                memoryStream.Read(compressed, 0, compressed.Length);
+                var gZipBuffer = new byte[compressed.Length + 4];
+                Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
+                Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
+                return Convert.ToBase64String(gZipBuffer);
+            }
+        }
+
+        public static string DeflateDecompress(this string source)
+        {
+            var compressedBuffer = Convert.FromBase64String(source);
+            using (var memoryStream = new MemoryStream())
+            {
+                int dataLength = BitConverter.ToInt32(compressedBuffer, 0);
+                memoryStream.Write(compressedBuffer, 4, compressedBuffer.Length - 4);
+                var buffer = new byte[dataLength];
+                memoryStream.Position = 0;
+                using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress))
+                {
+                    deflateStream.Read(buffer, 0, buffer.Length);
+                }
+                return Encoding.UTF8.GetString(buffer);
+            }
         }
 
         /// <summary>
         /// <para>Determines whether the end of this string instance matches</para>
         /// <para>one of the specified strings.</para>
         /// </summary>
-        /// <param name="s">The string</param>
+        /// <param name="source">The string</param>
         /// <param name="values">The strings to compare</param>
         /// <returns>true if any value matches the end of this string; otherwise, false.</returns>
-        public static bool EndsWithAny(this string s, params string[] values)
+        public static bool EndsWithAny(this string source, params string[] values)
         {
             foreach (string value in values)
             {
-                if (s.EndsWith(value))
+                if (source.EndsWith(value))
                 { return true; }
             }
             return false;
         }
 
-        public static string HtmlClassify(this string text)
+        public static string GZipCompress(this string source)
         {
-            if (String.IsNullOrWhiteSpace(text))
-                return "";
+            var bytes = Encoding.UTF8.GetBytes(source);
 
-            var friendlier = text.CamelFriendly();
-
-            var result = new char[friendlier.Length];
-
-            var cursor = 0;
-            var previousIsNotLetter = false;
-            for (var i = 0; i < friendlier.Length; i++)
+            using (var memoryStream = new MemoryStream())
             {
-                char current = friendlier[i];
-                if (IsLetter(current))
+                using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
                 {
-                    if (previousIsNotLetter && i != 0)
-                    {
-                        result[cursor++] = '-';
-                    }
-
-                    result[cursor++] = Char.ToLowerInvariant(current);
-                    previousIsNotLetter = false;
+                    gZipStream.Write(bytes, 0, bytes.Length);
                 }
-                else
-                {
-                    previousIsNotLetter = true;
-                }
+                memoryStream.Position = 0;
+                var compressed = new byte[memoryStream.Length];
+                memoryStream.Read(compressed, 0, compressed.Length);
+                var gZipBuffer = new byte[compressed.Length + 4];
+                Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
+                Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
+                return Convert.ToBase64String(gZipBuffer);
             }
+        }
 
-            return new string(result, 0, cursor);
+        public static string GZipDecompress(this string source)
+        {
+            var gZipBuffer = Convert.FromBase64String(source);
+            using (var memoryStream = new MemoryStream())
+            {
+                int dataLength = BitConverter.ToInt32(gZipBuffer, 0);
+                memoryStream.Write(gZipBuffer, 4, gZipBuffer.Length - 4);
+                var buffer = new byte[dataLength];
+                memoryStream.Position = 0;
+                using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+                {
+                    gZipStream.Read(buffer, 0, buffer.Length);
+                }
+                return Encoding.UTF8.GetString(buffer);
+            }
         }
 
         /// <summary>
         /// Converts a string that has been HTML-encoded for HTTP transmission into a decoded string.
         /// </summary>
-        /// <param name="s">The string to decode.</param>
+        /// <param name="source">The string to decode.</param>
         /// <returns>A decoded string</returns>
-        public static string HtmlDecode(this string s)
+        public static string HtmlDecode(this string source)
         {
-            return HttpUtility.HtmlDecode(s);
+            return HttpUtility.HtmlDecode(source);
         }
 
         /// <summary>
         /// Converts a string to an HTML-encoded string.
         /// </summary>
-        /// <param name="s">The string to encode.</param>
+        /// <param name="source">The string to encode.</param>
         /// <returns>An encoded string.</returns>
-        public static string HtmlEncode(this string s)
+        public static string HtmlEncode(this string source)
         {
-            return HttpUtility.HtmlEncode(s);
+            return HttpUtility.HtmlEncode(source);
         }
 
-        /// <summary>
-        /// Removes all Html tags from the specified System.String
-        /// </summary>
-        /// <param name="s">The string to strip of html tags.</param>
-        /// <returns>A System.String without html tags</returns>
-        public static string HtmlStrip(this string s)
-        {
-            return regexHtmlTag.Replace(s, string.Empty);
-        }
-
-        /// <summary>
-        /// Whether the char is a letter between A and Z or not
-        /// </summary>
-        public static bool IsLetter(this char c)
-        {
-            return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
-        }
+        //public static bool IsNullOrUndefined(this string source)
+        //{
+        //    if (string.IsNullOrWhiteSpace(source) || source.ToLowerInvariant() == "undefined")
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
         /// <summary>
         /// <para>Indicates whether a specified string is null, empty, or consists only of</para>
         /// <para>white-space characters.</para>
         /// </summary>
-        /// <param name="value">The string to test.</param>
+        /// <param name="source">The string to test.</param>
         /// <returns>
         /// <para>true if the value parameter is null or System.String.Empty, or if value consists</para>
         /// <para>exclusively of white-space characters.</para>
         /// </returns>
-        public static bool IsNullOrWhiteSpace(this string value)
+        public static bool IsNullOrWhiteSpace(this string source)
         {
-            if (value != null)
+            if (source != null)
             {
-                return value.All(char.IsWhiteSpace);
+                return source.All(char.IsWhiteSpace);
             }
             return true;
         }
 
-        public static bool IsRightToLeft(this string value)
+        public static bool IsRightToLeft(this string source)
         {
-            if (Regex.IsMatch(value, RegexArabicAndHebrew, RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(source, RegexArabicAndHebrew, RegexOptions.IgnoreCase))
             {
                 return true;
             }
             return false;
         }
 
-        public static bool IsValidUrlSegment(this string segment)
+        public static bool IsValidUrlSegment(this string source)
         {
             // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
             // the relevant bits:
@@ -466,91 +501,101 @@ namespace Extenso
             //
             // rough blacklist regex == m/^[^/?#[]@"^{}|\s`<>]+$/ (leaving off % to keep the regex simple)
 
-            return !segment.Any(validSegmentChars);
+            return !source.Any(validSegmentChars);
         }
 
-        public static T JsonDeserialize<T>(this string json, JsonSerializerSettings settings = null)
+        /// <summary>
+        /// Encodes a string for JavaScript.
+        /// </summary>
+        /// <param name="source">A string to encode.</param>
+        /// <returns></returns>
+        public static string JavaScriptStringEncode(this string source)
         {
-            if (string.IsNullOrWhiteSpace(json))
+            return HttpUtility.JavaScriptStringEncode(source);
+        }
+
+        public static T JsonDeserialize<T>(this string source, JsonSerializerSettings settings = null)
+        {
+            if (string.IsNullOrWhiteSpace(source))
             {
                 return default(T);
             }
 
             if (settings == null)
             {
-                return JsonConvert.DeserializeObject<T>(json);
+                return JsonConvert.DeserializeObject<T>(source);
             }
 
-            return JsonConvert.DeserializeObject<T>(json, settings);
+            return JsonConvert.DeserializeObject<T>(source, settings);
         }
 
-        public static object JsonDeserialize(this string json, Type type, JsonSerializerSettings settings = null)
+        public static object JsonDeserialize(this string source, Type type, JsonSerializerSettings settings = null)
         {
-            if (string.IsNullOrWhiteSpace(json))
+            if (string.IsNullOrWhiteSpace(source))
             {
                 return null;
             }
 
             if (settings == null)
             {
-                return JsonConvert.DeserializeObject(json, type);
+                return JsonConvert.DeserializeObject(source, type);
             }
 
-            return JsonConvert.DeserializeObject(json, type, settings);
+            return JsonConvert.DeserializeObject(source, type, settings);
         }
 
         /// <summary>
         /// Gets specified number of characters from left of string
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public static string Left(this string s, int count)
+        public static string Left(this string source, int count)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
-            if (s.Length <= count)
+            if (source.Length <= count)
             {
-                return s;
+                return source;
             }
 
-            return s.Substring(0, count);
+            return source.Substring(0, count);
         }
 
         /// <summary>
         /// Returns all characters to the left of the first occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string LeftOf(this string s, char value)
+        public static string LeftOf(this string source, char value)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
-            int index = s.IndexOf(value);
+            int index = source.IndexOf(value);
             if (index != -1)
             {
-                return s.Substring(0, index);
+                return source.Substring(0, index);
             }
-            return s;
+            return source;
         }
 
         /// <summary>
         /// Returns all characters to the left of the [n]th occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        public static string LeftOf(this string s, char value, int n)
+        public static string LeftOf(this string source, char value, int n)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
@@ -558,57 +603,57 @@ namespace Extenso
             int index = -1;
             while (n > 0)
             {
-                index = s.IndexOf(value, index + 1);
+                index = source.IndexOf(value, index + 1);
                 if (index == -1)
                 { break; }
                 --n;
             }
             if (index != -1)
             {
-                return s.Substring(0, index);
+                return source.Substring(0, index);
             }
-            return s;
+            return source;
         }
 
         /// <summary>
         /// Returns all characters to the left of the first occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string LeftOf(this string s, string value)
+        public static string LeftOf(this string source, string value)
         {
             if (value == null)
             {
                 return null;
             }
 
-            int index = s.IndexOf(value);
+            int index = source.IndexOf(value);
             if (index != -1)
             {
-                return s.Substring(0, index);
+                return source.Substring(0, index);
             }
-            return s;
+            return source;
         }
 
         /// <summary>
         /// Returns all characters to the left of the last occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string LeftOfLastIndexOf(this string s, char value)
+        public static string LeftOfLastIndexOf(this string source, char value)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
-            string ret = s;
-            int index = s.LastIndexOf(value);
+            string ret = source;
+            int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = s.Substring(0, index);
+                ret = source.Substring(0, index);
             }
             return ret;
         }
@@ -616,34 +661,34 @@ namespace Extenso
         /// <summary>
         /// Returns all characters to the left of the last occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string LeftOfLastIndexOf(this string s, string value)
+        public static string LeftOfLastIndexOf(this string source, string value)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
-            string ret = s;
-            int index = s.LastIndexOf(value);
+            string ret = source;
+            int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = s.Substring(0, index);
+                ret = source.Substring(0, index);
             }
             return ret;
         }
 
-        public static T? ParseNullable<T>(this string s) where T : struct
+        public static T? ParseNullable<T>(this string source) where T : struct
         {
             var result = new T?();
             try
             {
-                if (!string.IsNullOrWhiteSpace(s))
+                if (!string.IsNullOrWhiteSpace(source))
                 {
                     TypeConverter conv = TypeDescriptor.GetConverter(typeof(T));
-                    result = (T)conv.ConvertFrom(s);
+                    result = (T)conv.ConvertFrom(source);
                 }
             }
             catch { }
@@ -653,28 +698,28 @@ namespace Extenso
         /// <summary>
         /// Adds the specified System.String values to the beginning of this System.String.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static string Prepend(this string s, params string[] values)
+        public static string Prepend(this string source, params string[] values)
         {
             var items = new string[values.Length + 1];
             values.CopyTo(items, 0);
-            items[items.Length - 1] = s;
+            items[items.Length - 1] = source;
             return string.Concat(items);
         }
 
         /// <summary>
         /// Adds the specified System.Object values to the beginning of this System.String.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static string Prepend(this string s, params object[] values)
+        public static string Prepend(this string source, params object[] values)
         {
             var items = new object[values.Length + 1];
             values.CopyTo(items, 0);
-            items[items.Length - 1] = s;
+            items[items.Length - 1] = source;
             return string.Concat(items);
         }
 
@@ -682,34 +727,34 @@ namespace Extenso
         /// <para>Escapes a minimal set of metacharacters (\, *, +, ?, |, {, [, (,), ^, $,.,</para>
         /// <para>#, and white space) by replacing them with their escape codes.</para>
         /// </summary>
-        /// <param name="s">The input string containing the text to convert.</param>
+        /// <param name="source">The input string containing the text to convert.</param>
         /// <returns>A string of characters with any metacharacters converted to their escaped form.</returns>
-        public static string RegexEscape(this string s)
+        public static string RegexEscape(this string source)
         {
-            return Regex.Escape(s);
+            return Regex.Escape(source);
         }
 
         /// <summary>
         /// Unescapes any escaped characters in the input string (for Regex).
         /// </summary>
-        /// <param name="s">The input string containing the text to convert.</param>
+        /// <param name="source">The input string containing the text to convert.</param>
         /// <returns>A string of characters with any escaped characters converted to their unescaped form.</returns>
-        public static string RegexUnescape(this string s)
+        public static string RegexUnescape(this string source)
         {
-            return Regex.Unescape(s);
+            return Regex.Unescape(source);
         }
 
-        public static string RemoveBetween(this string str, char begin, char end)
+        public static string RemoveBetween(this string source, char begin, char end)
         {
             var regex = new Regex(string.Format("\\{0}.*?\\{1}", begin, end));
-            return regex.Replace(str, string.Empty);
+            return regex.Replace(source, string.Empty);
         }
 
         public static string RemoveTags(this string html)
         {
-            if (String.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var result = new char[html.Length];
@@ -722,12 +767,8 @@ namespace Extenso
 
                 switch (current)
                 {
-                    case '<':
-                        inside = true;
-                        continue;
-                    case '>':
-                        inside = false;
-                        continue;
+                    case '<': inside = true; continue;
+                    case '>': inside = false; continue;
                 }
 
                 if (!inside)
@@ -743,20 +784,20 @@ namespace Extenso
         /// <para>Takes a System.String and returns a new System.String of the original</para>
         /// <para>repeated [n] number of times</para>
         /// </summary>
-        /// <param name="s">The String</param>
+        /// <param name="source">The String</param>
         /// <param name="count">The number of times to repeat the String</param>
         /// <returns>A new System.String of the original repeated [n] number of times</returns>
-        public static string Repeat(this string s, byte count)
+        public static string Repeat(this string source, byte count)
         {
             if (count == 0)
             {
                 return string.Empty;
             }
 
-            var sb = new StringBuilder(s.Length * count);
+            var sb = new StringBuilder(source.Length * count);
             for (int i = 0; i < count; i++)
             {
-                sb.Append(s);
+                sb.Append(source);
             }
 
             return sb.ToString();
@@ -766,67 +807,67 @@ namespace Extenso
         /// <para>Replaces all occurrences of the specified System.Strings in this instance</para>
         /// <para>with specified System.Strings from the given System.Collections.Generic.IDictionary.</para>
         /// </summary>
-        /// <param name="str">This System.String instance</param>
+        /// <param name="source">This System.String instance</param>
         /// <param name="replacements">The given IDictionary. Keys found in this System.String will be replaced by corresponding Values</param>
         /// <returns></returns>
-        public static string Replace(this string str, IDictionary<string, string> replacements)
+        public static string Replace(this string source, IDictionary<string, string> replacements)
         {
             var regex = new Regex(replacements.Keys.Join(a => string.Concat("(", Regex.Escape(a), ")"), "|"));
-            return regex.Replace(str, m => replacements[m.Value]);
+            return regex.Replace(source, m => replacements[m.Value]);
         }
 
         /// <summary>
         /// Gets specified number of characters from right of string
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public static string Right(this string s, int count)
+        public static string Right(this string source, int count)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
-            if (s.Length <= count)
+            if (source.Length <= count)
             {
-                return s;
+                return source;
             }
 
-            return s.Substring(s.Length - count, count);
+            return source.Substring(source.Length - count, count);
         }
 
         /// <summary>
         /// Returns all characters to the right of the first occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string RightOf(this string s, char value)
+        public static string RightOf(this string source, char value)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
-            int index = s.IndexOf(value);
+            int index = source.IndexOf(value);
             if (index != -1)
             {
-                return s.Substring(index + 1);
+                return source.Substring(index + 1);
             }
-            return s;
+            return source;
         }
 
         /// <summary>
         /// Returns all characters to the right of the [n]th occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        public static string RightOf(this string s, char value, int n)
+        public static string RightOf(this string source, char value, int n)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
@@ -834,7 +875,7 @@ namespace Extenso
             int index = -1;
             while (n > 0)
             {
-                index = s.IndexOf(value, index + 1);
+                index = source.IndexOf(value, index + 1);
                 if (index == -1)
                 { break; }
                 --n;
@@ -842,50 +883,50 @@ namespace Extenso
 
             if (index != -1)
             {
-                return s.Substring(index + 1);
+                return source.Substring(index + 1);
             }
-            return s;
+            return source;
         }
 
         /// <summary>
         /// Returns all characters to the right of the first occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string RightOf(this string s, string value)
+        public static string RightOf(this string source, string value)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
-            int index = s.IndexOf(value);
+            int index = source.IndexOf(value);
             if (index != -1)
             {
-                return s.Substring(index + 1);
+                return source.Substring(index + 1);
             }
-            return s;
+            return source;
         }
 
         /// <summary>
         /// Returns all characters to the right of the last occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string RightOfLastIndexOf(this string s, char value)
+        public static string RightOfLastIndexOf(this string source, char value)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
             string ret = string.Empty;
-            int index = s.LastIndexOf(value);
+            int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = s.Substring(index + 1);
+                ret = source.Substring(index + 1);
             }
             return ret;
         }
@@ -893,23 +934,32 @@ namespace Extenso
         /// <summary>
         /// Returns all characters to the right of the last occurrence of [value] in this System.String.
         /// </summary>
-        /// <param name="s">This System.String.</param>
+        /// <param name="source">This System.String.</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string RightOfLastIndexOf(this string s, string value)
+        public static string RightOfLastIndexOf(this string source, string value)
         {
-            if (s == null)
+            if (source == null)
             {
                 return null;
             }
 
             string ret = string.Empty;
-            int index = s.LastIndexOf(value);
+            int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = s.Substring(index + 1);
+                ret = source.Substring(index + 1);
             }
             return ret;
+        }
+
+        public static string SafeTrim(this string source, params char[] trimChars)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return source;
+            }
+            return source.Trim(trimChars);
         }
 
         /// <summary>
@@ -940,32 +990,32 @@ namespace Extenso
         /// <para>Determines whether the beginning of this string instance matches</para>
         /// <para>one of the specified strings.</para>
         /// </summary>
-        /// <param name="s">The string</param>
+        /// <param name="source">The string</param>
         /// <param name="values">The strings to compare</param>
         /// <returns>true if any value matches the beginning of this string; otherwise, false.</returns>
-        public static bool StartsWithAny(this string s, params string[] values)
+        public static bool StartsWithAny(this string source, params string[] values)
         {
             foreach (string value in values)
             {
-                if (s.StartsWith(value))
+                if (source.StartsWith(value))
                 { return true; }
             }
             return false;
         }
 
-        public static string ToCamelCase(this string s)
+        public static string ToCamelCase(this string source)
         {
-            string pascal = s.ToPascalCase();
+            string pascal = source.ToPascalCase();
             return string.Concat(pascal[0].ToString().ToLower(), pascal.Substring(1));
         }
 
         /// <summary>
         /// Writes the instance of System.String to a new file or overwrites the existing file.
         /// </summary>
-        /// <param name="s">The string to write to file.</param>
+        /// <param name="source">The string to write to file.</param>
         /// <param name="filePath">The file to write the string to.</param>
         /// <returns>true if successful; otherwise false.</returns>
-        public static bool ToFile(this string s, string filePath)
+        public static bool ToFile(this string source, string filePath)
         {
             try
             {
@@ -978,7 +1028,7 @@ namespace Extenso
                 using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 using (var sw = new StreamWriter(fs))
                 {
-                    sw.Write(s);
+                    sw.Write(source);
                     sw.Flush();
                     return true;
                 }
@@ -996,13 +1046,13 @@ namespace Extenso
         /// <summary>
         /// Splits the given string by new line characters and returns the result in an IEnumerable&lt;string&gt;.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        public static IEnumerable<string> ToLines(this string s)
+        public static IEnumerable<string> ToLines(this string source)
         {
-            if (!string.IsNullOrEmpty(s))
+            if (!string.IsNullOrEmpty(source))
             {
-                return s.Split(new[] { "\r\n", Environment.NewLine, "\n" }, StringSplitOptions.None);
+                return source.Split(new[] { "\r\n", Environment.NewLine, "\n" }, StringSplitOptions.None);
             }
 
             return new string[0];
@@ -1011,55 +1061,55 @@ namespace Extenso
         /// <summary>
         ///  Converts the specified string to Pascal Case.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        public static string ToPascalCase(this string s)
+        public static string ToPascalCase(this string source)
         {
-            return s.ToTitleCase().Replace(" ", string.Empty);
+            return source.ToTitleCase().Replace(" ", string.Empty);
             //return s.SpacePascal().ToTitleCase().Replace(" ", string.Empty);
         }
 
-        public static MemoryStream ToStream(this string s)
+        public static MemoryStream ToStream(this string source)
         {
-            return s.ToStream(Encoding.UTF8);
+            return source.ToStream(Encoding.UTF8);
         }
 
-        public static MemoryStream ToStream(this string s, Encoding encoding)
+        public static MemoryStream ToStream(this string source, Encoding encoding)
         {
-            byte[] bytes = encoding.GetBytes(s);
+            byte[] bytes = encoding.GetBytes(source);
             return new MemoryStream(bytes);
         }
 
         /// <summary>
         /// Converts the specified string to Title Case using the Current Culture.
         /// </summary>
-        /// <param name="s">The string to convert.</param>
+        /// <param name="source">The string to convert.</param>
         /// <returns>The specified string converted to Title Case.</returns>
-        public static string ToTitleCase(this string s)
+        public static string ToTitleCase(this string source)
         {
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(s);
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(source);
         }
 
         /// <summary>
         /// Converts the specified string to Title Case.
         /// </summary>
-        /// <param name="s">The string to convert.</param>
+        /// <param name="source">The string to convert.</param>
         /// <param name="cultureInfo">The System.Globalization.CultureInfo to use for converting to Title Case.</param>
         /// <returns>The specified string converted to Title Case.</returns>
-        public static string ToTitleCase(this string s, CultureInfo cultureInfo)
+        public static string ToTitleCase(this string source, CultureInfo cultureInfo)
         {
-            return cultureInfo.TextInfo.ToTitleCase(s);
+            return cultureInfo.TextInfo.ToTitleCase(source);
         }
 
         /// <summary>
         /// Encrypts the specified System.String using the TripleDES symmetric algorithm and returns the data as a System.Byte[].
         /// </summary>
-        /// <param name="s">The System.String to encrypt.</param>
+        /// <param name="source">The System.String to encrypt.</param>
         /// <param name="encoding">The System.Text.Encoding to use.</param>
         /// <param name="key">The secret key to use for the symmetric algorithm.</param>
         /// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
         /// <returns>Encryped System.String as a System.Byte[].</returns>
-        public static byte[] TripleDESEncrypt(this string s, Encoding encoding, byte[] key, byte[] initializationVector)
+        public static byte[] TripleDESEncrypt(this string source, Encoding encoding, byte[] key, byte[] initializationVector)
         {
             using (var memoryStream = new MemoryStream())
             using (var cryptoStream = new CryptoStream(
@@ -1067,7 +1117,7 @@ namespace Extenso
                  new TripleDESCryptoServiceProvider().CreateEncryptor(key, initializationVector),
                  CryptoStreamMode.Write))
             {
-                byte[] bytes = encoding.GetBytes(s);
+                byte[] bytes = encoding.GetBytes(source);
 
                 cryptoStream.Write(bytes, 0, bytes.Length);
                 cryptoStream.FlushFinalBlock();
@@ -1079,48 +1129,48 @@ namespace Extenso
         /// <summary>
         /// Converts a string that has been encoded for transmission in a URL into a decoded string.
         /// </summary>
-        /// <param name="s">The string to decode.</param>
+        /// <param name="source">The string to decode.</param>
         /// <returns>A decoded string.</returns>
-        public static string UrlDecode(this string s)
+        public static string UrlDecode(this string source)
         {
-            return HttpUtility.UrlDecode(s);
+            return HttpUtility.UrlDecode(source);
         }
 
         /// <summary>
         /// Encodes a URL string.
         /// </summary>
-        /// <param name="s">The text to encode.</param>
+        /// <param name="source">The text to encode.</param>
         /// <returns>An encoded string.</returns>
-        public static string UrlEncode(this string s)
+        public static string UrlEncode(this string source)
         {
-            return HttpUtility.UrlEncode(s);
+            return HttpUtility.UrlEncode(source);
         }
 
         /// <summary>
         /// Gets the number of words in the specified System.String.
         /// </summary>
-        /// <param name="s">The string to get a word count from.</param>
+        /// <param name="source">The string to get a word count from.</param>
         /// <returns>A System.Int32 specifying the number of words in the given System.String.</returns>
-        public static int WordCount(this string s)
+        public static int WordCount(this string source)
         {
-            return s.Split(' ').Count();
+            return source.Split(' ').Count();
         }
 
         /// <summary>
         /// Deserializes the XML data contained by the specified System.String
         /// </summary>
         /// <typeparam name="T">The type of System.Object to be deserialized</typeparam>
-        /// <param name="s">The System.String containing XML data</param>
+        /// <param name="source">The System.String containing XML data</param>
         /// <returns>The System.Object being deserialized.</returns>
-        public static T XmlDeserialize<T>(this string s)
+        public static T XmlDeserialize<T>(this string source)
         {
-            if (string.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(source))
             {
                 return default(T);
             }
 
             var locker = new object();
-            var stringReader = new StringReader(s);
+            var stringReader = new StringReader(source);
             var reader = new XmlTextReader(stringReader);
             try
             {
@@ -1145,18 +1195,18 @@ namespace Extenso
         /// <summary>
         /// Deserializes the XML data contained by the specified System.String
         /// </summary>
-        /// <param name="s">The System.String containing XML data</param>
+        /// <param name="source">The System.String containing XML data</param>
         /// <param name="type"></param>
         /// <returns>The System.Object being deserialized.</returns>
-        public static object XmlDeserialize(this string s, Type type)
+        public static object XmlDeserialize(this string source, Type type)
         {
-            if (string.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(source))
             {
                 return null;
             }
 
             var locker = new object();
-            var stringReader = new StringReader(s);
+            var stringReader = new StringReader(source);
             var reader = new XmlTextReader(stringReader);
             try
             {
@@ -1178,266 +1228,158 @@ namespace Extenso
             }
         }
 
-        public static string SafeTrim(this string s, params char[] trimChars)
-        {
-            if (string.IsNullOrEmpty(s))
-            {
-                return s;
-            }
-            return s.Trim(trimChars);
-        }
-
-        #region Compression
-
-        public static string DeflateCompress(this string text)
-        {
-            var bytes = Encoding.UTF8.GetBytes(text);
-
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Compress, true))
-                {
-                    deflateStream.Write(bytes, 0, bytes.Length);
-                }
-                memoryStream.Position = 0;
-                var compressed = new byte[memoryStream.Length];
-                memoryStream.Read(compressed, 0, compressed.Length);
-                var gZipBuffer = new byte[compressed.Length + 4];
-                Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
-                Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
-                return Convert.ToBase64String(gZipBuffer);
-            }
-        }
-
-        public static string DeflateDecompress(this string compressedText)
-        {
-            var compressedBuffer = Convert.FromBase64String(compressedText);
-            using (var memoryStream = new MemoryStream())
-            {
-                int dataLength = BitConverter.ToInt32(compressedBuffer, 0);
-                memoryStream.Write(compressedBuffer, 4, compressedBuffer.Length - 4);
-                var buffer = new byte[dataLength];
-                memoryStream.Position = 0;
-                using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress))
-                {
-                    deflateStream.Read(buffer, 0, buffer.Length);
-                }
-                return Encoding.UTF8.GetString(buffer);
-            }
-        }
-
-        public static string GZipCompress(this string text)
-        {
-            var bytes = Encoding.UTF8.GetBytes(text);
-
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress, true))
-                {
-                    gZipStream.Write(bytes, 0, bytes.Length);
-                }
-                memoryStream.Position = 0;
-                var compressed = new byte[memoryStream.Length];
-                memoryStream.Read(compressed, 0, compressed.Length);
-                var gZipBuffer = new byte[compressed.Length + 4];
-                Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
-                Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
-                return Convert.ToBase64String(gZipBuffer);
-            }
-        }
-
-        public static string GZipDecompress(this string compressedText)
-        {
-            var gZipBuffer = Convert.FromBase64String(compressedText);
-            using (var memoryStream = new MemoryStream())
-            {
-                int dataLength = BitConverter.ToInt32(gZipBuffer, 0);
-                memoryStream.Write(gZipBuffer, 4, gZipBuffer.Length - 4);
-                var buffer = new byte[dataLength];
-                memoryStream.Position = 0;
-                using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                {
-                    gZipStream.Read(buffer, 0, buffer.Length);
-                }
-                return Encoding.UTF8.GetString(buffer);
-            }
-        }
-
-        #endregion Compression
-
-        #region Web Based
-
-        public static bool IsNullOrUndefined(this string value)
-        {
-            if (string.IsNullOrWhiteSpace(value) || value.ToLowerInvariant() == "undefined")
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Encodes a string for JavaScript.
-        /// </summary>
-        /// <param name="value">A string to encode.</param>
-        /// <returns></returns>
-        public static string JavaScriptStringEncode(this string value)
-        {
-            return HttpUtility.JavaScriptStringEncode(value);
-        }
-
-        #endregion Web Based
-
         #region From: WebMatrix.WebData
 
-        public static TValue As<TValue>(this string value)
-        {
-            return value.As(default(TValue));
-        }
+        // TODO: Think about removing these...
 
-        public static TValue As<TValue>(this string value, TValue defaultValue)
-        {
-            try
-            {
-                TypeConverter converter = TypeDescriptor.GetConverter(typeof(TValue));
-                if (converter.CanConvertFrom(typeof(string)))
-                {
-                    return (TValue)converter.ConvertFrom(value);
-                }
-                converter = TypeDescriptor.GetConverter(typeof(string));
-                if (converter.CanConvertTo(typeof(TValue)))
-                {
-                    return (TValue)converter.ConvertTo(value, typeof(TValue));
-                }
-            }
-            catch
-            {
-                return defaultValue;
-            }
-            return defaultValue;
-        }
+        //public static TValue As<TValue>(this string source)
+        //{
+        //    return source.As(default(TValue));
+        //}
 
-        public static bool AsBool(this string value)
-        {
-            return value.AsBool(false);
-        }
+        //public static TValue As<TValue>(this string source, TValue defaultValue)
+        //{
+        //    try
+        //    {
+        //        TypeConverter converter = TypeDescriptor.GetConverter(typeof(TValue));
+        //        if (converter.CanConvertFrom(typeof(string)))
+        //        {
+        //            return (TValue)converter.ConvertFrom(source);
+        //        }
+        //        converter = TypeDescriptor.GetConverter(typeof(string));
+        //        if (converter.CanConvertTo(typeof(TValue)))
+        //        {
+        //            return (TValue)converter.ConvertTo(source, typeof(TValue));
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return defaultValue;
+        //    }
+        //    return defaultValue;
+        //}
 
-        public static bool AsBool(this string value, bool defaultValue)
-        {
-            bool flag;
-            if (!bool.TryParse(value, out flag))
-            {
-                return defaultValue;
-            }
-            return flag;
-        }
+        //public static bool AsBool(this string source)
+        //{
+        //    return source.AsBool(false);
+        //}
 
-        public static DateTime AsDateTime(this string value)
-        {
-            return value.AsDateTime(new DateTime());
-        }
+        //public static bool AsBool(this string source, bool defaultValue)
+        //{
+        //    bool flag;
+        //    if (!bool.TryParse(source, out flag))
+        //    {
+        //        return defaultValue;
+        //    }
+        //    return flag;
+        //}
 
-        public static DateTime AsDateTime(this string value, DateTime defaultValue)
-        {
-            DateTime time;
-            if (!DateTime.TryParse(value, out time))
-            {
-                return defaultValue;
-            }
-            return time;
-        }
+        //public static DateTime AsDateTime(this string source)
+        //{
+        //    return source.AsDateTime(new DateTime());
+        //}
 
-        public static decimal AsDecimal(this string value)
-        {
-            return value.As<decimal>();
-        }
+        //public static DateTime AsDateTime(this string source, DateTime defaultValue)
+        //{
+        //    DateTime time;
+        //    if (!DateTime.TryParse(source, out time))
+        //    {
+        //        return defaultValue;
+        //    }
+        //    return time;
+        //}
 
-        public static decimal AsDecimal(this string value, decimal defaultValue)
-        {
-            return value.As(defaultValue);
-        }
+        //public static decimal AsDecimal(this string source)
+        //{
+        //    return source.As<decimal>();
+        //}
 
-        public static float AsFloat(this string value)
-        {
-            return value.AsFloat(0f);
-        }
+        //public static decimal AsDecimal(this string source, decimal defaultValue)
+        //{
+        //    return source.As(defaultValue);
+        //}
 
-        public static float AsFloat(this string value, float defaultValue)
-        {
-            float num;
-            if (!float.TryParse(value, out num))
-            {
-                return defaultValue;
-            }
-            return num;
-        }
+        //public static float AsFloat(this string value)
+        //{
+        //    return value.AsFloat(0f);
+        //}
 
-        public static int AsInt(this string value)
-        {
-            return value.AsInt(0);
-        }
+        //public static float AsFloat(this string source, float defaultValue)
+        //{
+        //    float num;
+        //    if (!float.TryParse(source, out num))
+        //    {
+        //        return defaultValue;
+        //    }
+        //    return num;
+        //}
 
-        public static int AsInt(this string value, int defaultValue)
-        {
-            int num;
-            if (!int.TryParse(value, out num))
-            {
-                return defaultValue;
-            }
-            return num;
-        }
+        //public static int AsInt(this string source)
+        //{
+        //    return source.AsInt(0);
+        //}
 
-        public static bool Is<TValue>(this string value)
-        {
-            TypeConverter converter = TypeDescriptor.GetConverter(typeof(TValue));
-            try
-            {
-                if ((value == null) || converter.CanConvertFrom(null, value.GetType()))
-                {
-                    converter.ConvertFrom(null, CultureInfo.CurrentCulture, value);
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-            return false;
-        }
+        //public static int AsInt(this string source, int defaultValue)
+        //{
+        //    int num;
+        //    if (!int.TryParse(source, out num))
+        //    {
+        //        return defaultValue;
+        //    }
+        //    return num;
+        //}
 
-        public static bool IsBool(this string value)
-        {
-            bool flag;
-            return bool.TryParse(value, out flag);
-        }
+        //public static bool Is<TValue>(this string source)
+        //{
+        //    TypeConverter converter = TypeDescriptor.GetConverter(typeof(TValue));
+        //    try
+        //    {
+        //        if ((source == null) || converter.CanConvertFrom(null, source.GetType()))
+        //        {
+        //            converter.ConvertFrom(null, CultureInfo.CurrentCulture, source);
+        //            return true;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //    return false;
+        //}
 
-        public static bool IsDateTime(this string value)
-        {
-            DateTime time;
-            return DateTime.TryParse(value, out time);
-        }
+        //public static bool IsBool(this string source)
+        //{
+        //    bool flag;
+        //    return bool.TryParse(source, out flag);
+        //}
 
-        public static bool IsDecimal(this string value)
-        {
-            return value.Is<decimal>();
-        }
+        //public static bool IsDateTime(this string source)
+        //{
+        //    DateTime time;
+        //    return DateTime.TryParse(source, out time);
+        //}
 
-        public static bool IsEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
-        }
+        //public static bool IsDecimal(this string source)
+        //{
+        //    return source.Is<decimal>();
+        //}
 
-        public static bool IsFloat(this string value)
-        {
-            float num;
-            return float.TryParse(value, out num);
-        }
+        //public static bool IsEmpty(this string source)
+        //{
+        //    return string.IsNullOrEmpty(source);
+        //}
 
-        public static bool IsInt(this string value)
-        {
-            int num;
-            return int.TryParse(value, out num);
-        }
+        //public static bool IsFloat(this string source)
+        //{
+        //    float num;
+        //    return float.TryParse(source, out num);
+        //}
+
+        //public static bool IsInt(this string source)
+        //{
+        //    int num;
+        //    return int.TryParse(source, out num);
+        //}
 
         #endregion From: WebMatrix.WebData
 

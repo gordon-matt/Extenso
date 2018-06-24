@@ -1,51 +1,48 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
-
-//using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using Extenso.IO;
 
 namespace Extenso
 {
+    /// <summary>
+    /// Provides a set of static methods for querying and manipulating byte arrays.
+    /// </summary>
     public static class ByteArrayExtensions
     {
         /// <summary>
-        /// Deserializes the Binary data contained in the specified System.Byte[].
+        /// Deserializes the data contained in the given byte array to an object of the specified type.
         /// </summary>
-        /// <typeparam name="T">The type of System.Object to be deserialized.</typeparam>
-        /// <param name="data">This System.Byte[] instance.</param>
-        /// <returns>The System.Object being deserialized.</returns>
-        public static T BinaryDeserialize<T>(this byte[] data)
+        /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
+        /// <param name="data">This byte array to serialize.</param>
+        /// <returns>The deserialized object from the byte array.</returns>
+        public static T BinaryDeserialize<T>(this byte[] data) where T : ISerializable
         {
             using (var stream = new MemoryStream(data))
             {
-                var binaryFormatter = new BinaryFormatter();
-                stream.Seek(0, SeekOrigin.Begin);
-                var item = (T)binaryFormatter.Deserialize(stream);
-                stream.Close();
-                return item;
+                return stream.BinaryDeserialize<T>();
             }
         }
-        
+
         /// <summary>
         /// Encrypts data with the System.Security.Cryptography.RSA algorithm.
         /// </summary>
         /// <param name="bytes">The data to be encrypted.</param>
         /// <param name="parameters">The parameters for System.Security.Cryptography.RSA.</param>
-        /// <param name="doOAEPPadding">
-        /// <para>true to perform direct System.Security.Cryptography.RSA encryption using</para>
-        /// <para>OAEP padding (only available on a computer running Microsoft Windows XP or</para>
-        /// <para>later); otherwise, false to use PKCS#1 v1.5 padding.</para>
+        /// <param name="fOAEP">
+        /// true to perform direct System.Security.Cryptography.RSA encryption using OAEP
+        /// padding (only available on a computer running Windows XP or later); otherwise,
+        /// false to use PKCS#1 v1.5 padding.
         /// </param>
         /// <returns>The encrypted data.</returns>
-        public static byte[] RSAEncrypt(this byte[] bytes, RSAParameters parameters, bool doOAEPPadding)
+        public static byte[] RSAEncrypt(this byte[] bytes, RSAParameters parameters, bool fOAEP)
         {
             using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
             {
                 rsaCryptoServiceProvider.ImportParameters(parameters);
-                return rsaCryptoServiceProvider.Encrypt(bytes, doOAEPPadding);
+                return rsaCryptoServiceProvider.Encrypt(bytes, fOAEP);
             }
         }
 
@@ -54,29 +51,29 @@ namespace Extenso
         /// </summary>
         /// <param name="bytes">The data to be decrypted.</param>
         /// <param name="parameters">The parameters for System.Security.Cryptography.RSA.</param>
-        /// <param name="doOAEPPadding">
-        /// <para>true to perform direct System.Security.Cryptography.RSA encryption using</para>
-        /// <para>OAEP padding (only available on a computer running Microsoft Windows XP or</para>
-        /// <para>later); otherwise, false to use PKCS#1 v1.5 padding.</para>
+        /// <param name="fOAEP">
+        /// true to perform direct System.Security.Cryptography.RSA decryption using OAEP
+        /// padding (only available on a computer running Microsoft Windows XP or later);
+        /// otherwise, false to use PKCS#1 v1.5 padding.
         /// </param>
         /// <returns>The decrypted data, which is the original plain text before encryption.</returns>
-        public static byte[] RSADecrypt(this byte[] bytes, RSAParameters parameters, bool doOAEPPadding)
+        public static byte[] RSADecrypt(this byte[] bytes, RSAParameters parameters, bool fOAEP)
         {
             using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
             {
                 rsaCryptoServiceProvider.ImportParameters(parameters);
-                return rsaCryptoServiceProvider.Decrypt(bytes, doOAEPPadding);
+                return rsaCryptoServiceProvider.Decrypt(bytes, fOAEP);
             }
         }
 
         /// <summary>
-        /// Encrypts the specified System.Byte[] using the TripleDES symmetric algorithm and returns the original System.String.
+        /// Decrypts the specified byte array using the TripleDES symmetric algorithm and returns the original string.
         /// </summary>
-        /// <param name="data">The encrypted data to decrypt.</param>
+        /// <param name="data">The data to be decrypted.</param>
         /// <param name="encoding">The System.Text.Encoding to use.</param>
         /// <param name="key">The secret key to use for the symmetric algorithm.</param>
         /// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
-        /// <returns>Decrypted System.Byte[] as a System.String.</returns>
+        /// <returns>The decrypted data, which is the original plain text before encryption.</returns>
         public static string TripleDESDecrypt(this byte[] data, Encoding encoding, byte[] key, byte[] initializationVector)
         {
             using (var memoryStream = new MemoryStream(data))
@@ -91,36 +88,37 @@ namespace Extenso
             }
         }
 
-        public static MemoryStream ToStream(this byte[] bytes)
+        /// <summary>
+        /// Creates a new non-resizable instance of the System.IO.MemoryStream class based on the specified byte array.
+        /// </summary>
+        /// <param name="buffer">The array of unsigned bytes from which to create the current stream.</param>
+        /// <returns>A System.IO.MemoryStream based on the specified byte array.</returns>
+        public static MemoryStream ToStream(this byte[] buffer)
         {
-            return new MemoryStream(bytes);
+            return new MemoryStream(buffer);
         }
 
-        public static T XmlDeserialize<T>(this byte[] bytes)
-        {
-            return bytes.XmlDeserialize<T>(new UTF8Encoding());
-        }
-
+        /// <summary>
+        /// Decodes all the bytes in the specified byte array into a string and then deserializes the XML contained therein to an object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of object to deserialize the XML to.</typeparam>
+        /// <param name="bytes">The byte array containing the sequence of bytes to decode.</param>
+        /// <param name="encoding">The character encoding to be used for decoding the byte array.</param>
+        /// <returns>The deserialized object from the XML data in the encoded byte array.</returns>
         public static T XmlDeserialize<T>(this byte[] bytes, Encoding encoding)
         {
             string s = encoding.GetString(bytes);
             return s.XmlDeserialize<T>();
         }
 
-        public static string ToHexString(this byte[] bytes)
+        /// <summary>
+        /// Converts the numeric value of each element of the specified array of bytes to its equivalent hexadecimal string representation.
+        /// </summary>
+        /// <param name="bytes">The array of bytes.</param>
+        /// <returns>A string of hexadecimal pairs separated by hyphens, where each pair represents the corresponding element in value; for example, "7F-2C-4A-00".</returns>
+        public static string ToHex(this byte[] bytes)
         {
-            return BitConverter.ToString(bytes).Replace("-", "");
-        }
-
-        public static string ToFileSize(this long byteCount)
-        {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
-            if (byteCount == 0)
-                return "0" + suf[0];
-            var bytes = Math.Abs(byteCount);
-            var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-            var num = Math.Round(bytes / Math.Pow(1024, place), 1);
-            return (Math.Sign(byteCount) * num).ToString(CultureInfo.InvariantCulture) + suf[place];
+            return BitConverter.ToString(bytes);
         }
     }
 }

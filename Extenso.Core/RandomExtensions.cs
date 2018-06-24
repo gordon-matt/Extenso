@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-
-//using System.Drawing;
 using System.Linq;
 
 namespace Extenso
 {
+    /// <summary>
+    /// Provides a set of static methods for querying and manipulating instances of System.Random. Some of these can be useful for generating "dummy" data.
+    /// </summary>
     public static class RandomExtensions
     {
         /// <summary>
         /// Returns a random System.Boolean.
         /// </summary>
-        /// <param name="random">This instance of System.Random.</param>
+        /// <param name="random">An instance of System.Random.</param>
         /// <returns>System.Boolean</returns>
         public static bool NextBoolean(this Random random)
         {
@@ -22,27 +23,25 @@ namespace Extenso
         /// <summary>
         /// Returns a random System.Drawing.Color.
         /// </summary>
-        /// <param name="random">This instance of System.Random.</param>
+        /// <param name="random">An instance of System.Random.</param>
+        /// <param name="includeAlphaChannel">If true, a random value will also be generated for the alpha channel.</param>
         /// <returns>System.Drawing.Color</returns>
-        public static Color NextColor(this Random random)
+        public static Color NextColor(this Random random, bool includeAlphaChannel = false)
         {
-            return Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+            if (includeAlphaChannel)
+            {
+                return Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+            }
+            else
+            {
+                return Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+            }
         }
 
         /// <summary>
-        /// Returns a random System.Drawing.Color.
+        /// Returns a random System.DateTime between DateTime.MinValue and DateTime.MaxValue.
         /// </summary>
-        /// <param name="random">This instance of System.Random.</param>
-        /// <returns>System.Drawing.Color</returns>
-        public static Color NextColorWithAlpha(this Random random)
-        {
-            return Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-        }
-
-        /// <summary>
-        /// Returns a random System.DateTime.
-        /// </summary>
-        /// <param name="random">This instance of System.Random.</param>
+        /// <param name="random">An instance of System.Random.</param>
         /// <returns>System.DateTime</returns>
         public static DateTime NextDateTime(this Random random)
         {
@@ -50,7 +49,7 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns a random System.DateTime between the specified minimum and maximum years.
+        /// Returns a random System.DateTime between the specified years.
         /// </summary>
         /// <param name="random">This instance of System.Random.</param>
         /// <param name="minYear"></param>
@@ -69,16 +68,16 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns a random element from the specified IEnumerable&lt;T&gt;.
+        /// Returns a random element from the given sequence.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="random">This instance of System.Random.</param>
-        /// <param name="enumerable"></param>
-        /// <returns>Object of type &lt;T&gt; from specified IEnumerable&lt;T&gt;.</returns>
-        public static T NextFrom<T>(this Random random, IEnumerable<T> enumerable)
+        /// <param name="random">An instance of System.Random.</param>
+        /// <param name="collection">A collection from which to randomly select an object.</param>
+        /// <returns>A randomly selected object from the given System.Collections.Generic.IEnumerable`1.</returns>
+        public static T NextFrom<T>(this Random random, IEnumerable<T> collection)
         {
-            var list = enumerable as List<T> ?? enumerable.ToList();
-            return list.ElementAt(random.Next(0, list.Count - 1));
+            int count = collection.Count();
+            return collection.ElementAt(random.Next(0, count - 1));
         }
     }
 }

@@ -278,7 +278,7 @@ namespace Extenso.Data.Entity
 
                 if (context.Entry(entity).State == EntityState.Detached)
                 {
-                    var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                    var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                     if (localEntity != null)
                     {
@@ -308,7 +308,7 @@ namespace Extenso.Data.Entity
                 {
                     if (context.Entry(entity).State == EntityState.Detached)
                     {
-                        var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                        var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                         if (localEntity != null)
                         {
@@ -361,7 +361,7 @@ namespace Extenso.Data.Entity
 
                 if (context.Entry(entity).State == EntityState.Detached)
                 {
-                    var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                    var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                     if (localEntity != null)
                     {
@@ -391,7 +391,7 @@ namespace Extenso.Data.Entity
                 {
                     if (context.Entry(entity).State == EntityState.Detached)
                     {
-                        var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                        var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                         if (localEntity != null)
                         {
@@ -478,7 +478,7 @@ namespace Extenso.Data.Entity
 
                     if (context.Entry(entity).State == EntityState.Detached)
                     {
-                        var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                        var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                         if (localEntity != null)
                         {
@@ -524,7 +524,7 @@ namespace Extenso.Data.Entity
                     {
                         if (context.Entry(entity).State == EntityState.Detached)
                         {
-                            var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                            var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                             if (localEntity != null)
                             {
@@ -567,7 +567,7 @@ namespace Extenso.Data.Entity
 
                     if (context.Entry(entity).State == EntityState.Detached)
                     {
-                        var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                        var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                         if (localEntity != null)
                         {
@@ -613,7 +613,7 @@ namespace Extenso.Data.Entity
                     {
                         if (context.Entry(entity).State == EntityState.Detached)
                         {
-                            var localEntity = set.Local.FirstOrDefault(x => x.KeyValues.ArrayEquals(entity.KeyValues));
+                            var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
                             if (localEntity != null)
                             {
