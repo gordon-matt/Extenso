@@ -1,7 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Extenso.IO
 {
@@ -63,19 +64,26 @@ namespace Extenso.IO
         }
 
         /// <summary>
-        /// Returns the given file's data as an array of bytes
+        /// Gets the file size and includes the unit of measurement suffix.
         /// </summary>
-        /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
-        /// <param name="maxBufferSize">The buffer size.</param>
-        /// <returns>System.Byte[] representing the file data.</returns>
-        public static byte[] GetBytes(this FileInfo fileInfo, long maxBufferSize = 0x1000)
+        /// <param name="fileInfo">The file which is to be measured.</param>
+        /// <returns>A System.String representing the size of the file.</returns>
+        /// <example><code>string size = new FileInfo(path).FileSize();</code></example>
+        public static string FileSize(this FileInfo fileInfo)
         {
-            byte[] buffer = new byte[(fileInfo.Length > maxBufferSize ? maxBufferSize : fileInfo.Length)];
-            using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length))
+            long length = fileInfo.Length;
+            string[] suffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+
+            if (length == 0)
             {
-                fileStream.Read(buffer, 0, buffer.Length);
+                return "0B";
             }
-            return buffer;
+
+            long bytes = Math.Abs(length);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+
+            return (Math.Sign(length) * num).ToString(CultureInfo.InvariantCulture) + suffixes[place];
         }
 
         /// <summary>
@@ -83,9 +91,9 @@ namespace Extenso.IO
         /// </summary>
         /// <param name="fileInfo">The file which is to be measured in GB.</param>
         /// <returns>A System.Double representing the size of the file in GB.</returns>
-        public static long GetFileSizeInGigaBytes(this FileInfo fileInfo)
+        public static long FileSizeInGigaBytes(this FileInfo fileInfo)
         {
-            return fileInfo.GetFileSizeInMegaBytes() / 1024;
+            return fileInfo.FileSizeInMegaBytes() / 1024;
         }
 
         /// <summary>
@@ -93,7 +101,7 @@ namespace Extenso.IO
         /// </summary>
         /// <param name="fileInfo">The file which is to be measured in KB.</param>
         /// <returns>A System.Double representing the size of the file in KB.</returns>
-        public static long GetFileSizeInKiloBytes(this FileInfo fileInfo)
+        public static long FileSizeInKiloBytes(this FileInfo fileInfo)
         {
             return fileInfo.Length / 1024;
         }
@@ -103,9 +111,9 @@ namespace Extenso.IO
         /// </summary>
         /// <param name="fileInfo">The file which is to be measured in MB.</param>
         /// <returns>A System.Double representing the size of the file in MB.</returns>
-        public static long GetFileSizeInMegaBytes(this FileInfo fileInfo)
+        public static long FileSizeInMegaBytes(this FileInfo fileInfo)
         {
-            return fileInfo.GetFileSizeInKiloBytes() / 1024;
+            return fileInfo.FileSizeInKiloBytes() / 1024;
         }
 
         /// <summary>
@@ -149,6 +157,16 @@ namespace Extenso.IO
         }
 
         /// <summary>
+        /// Opens a binary file, reads the contents of the file into a byte array, and then closes the file.
+        /// </summary>
+        /// <param name="fileInfo">The file to open for reading.</param>
+        /// <returns> A byte array containing the contents of the file.</returns>
+        public static byte[] ReadAllBytes(this FileInfo fileInfo)
+        {
+            return File.ReadAllBytes(fileInfo.FullName);
+        }
+
+        /// <summary>
         /// Opens the text file, reads all lines of the file, and then closes the file.
         /// </summary>
         /// <param name="fileInfo">The file to read all text from.</param>
@@ -162,6 +180,22 @@ namespace Extenso.IO
             //{
             //    return streamReader.ReadToEnd();
             //}
+        }
+
+        /// <summary>
+        /// Opens a binary file, reads the specified amount of contents of the file into a byte array, and then closes the file.
+        /// </summary>
+        /// <param name="fileInfo">The file to open for reading.</param>
+        /// <param name="maxBufferSize">A maximum number of bytes to read.</param>
+        /// <returns> A byte array containing the contents of the file. If maxBufferSize is less than the file size, not all data will be returned.</returns>
+        public static byte[] ReadBytes(this FileInfo fileInfo, long maxBufferSize = 0x1000)
+        {
+            byte[] buffer = new byte[(fileInfo.Length > maxBufferSize ? maxBufferSize : fileInfo.Length)];
+            using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length))
+            {
+                fileStream.Read(buffer, 0, buffer.Length);
+            }
+            return buffer;
         }
 
         /// <summary>

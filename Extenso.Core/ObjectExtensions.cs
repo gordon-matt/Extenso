@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Dynamic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -12,6 +14,9 @@ using Newtonsoft.Json;
 
 namespace Extenso
 {
+    /// <summary>
+    /// Provides a set of static methods for querying and manipulating objects
+    /// </summary>
     public static class ObjectExtensions
     {
         /// <summary>
@@ -263,6 +268,24 @@ namespace Extenso
                     return stringBuilder.ToString();
                 }
             }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static dynamic ToExpando(this object value)
+        {
+            IDictionary<string, object> expando = new ExpandoObject();
+
+            foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(value.GetType()))
+            {
+                expando.Add(property.Name, property.GetValue(value));
+            }
+
+            return expando as ExpandoObject;
         }
     }
 }
