@@ -13,13 +13,13 @@ namespace Extenso.Collections
         /// </summary>
         /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="source">The System.Collections.Generic.ICollection`1 to add to if the predicate resolved to true.</param>
-        /// <param name="item">The element to add if predicate resolves to true.</param>
+        /// <param name="obj">The element to add if predicate resolves to true.</param>
         /// <param name="predicate">The predicate.</param>
-        public static void AddIf<T>(this ICollection<T> source, T item, Func<T, bool> predicate)
+        public static void AddIf<T>(this ICollection<T> source, T obj, Func<T, bool> predicate)
         {
-            if (predicate(item))
+            if (predicate(obj))
             {
-                source.Add(item);
+                source.Add(obj);
             }
         }
 
@@ -28,12 +28,12 @@ namespace Extenso.Collections
         /// </summary>
         /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="source">The System.Collections.Generic.ICollection`1 to add elements to.</param>
-        /// <param name="collection">The collection whose elements should be added to the end of source.</param>
-        public static void AddRange<T>(this ICollection<T> source, IEnumerable<T> collection)
+        /// <param name="values">The collection whose elements should be added to the end of source.</param>
+        public static void AddRange<T>(this ICollection<T> source, IEnumerable<T> values)
         {
-            foreach (T item in collection)
+            foreach (T value in values)
             {
-                source.Add(item);
+                source.Add(value);
             }
         }
 
@@ -42,14 +42,14 @@ namespace Extenso.Collections
         /// </summary>
         /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="source">The System.Collections.Generic.ICollection`1 to remove elements from.</param>
-        /// <param name="collection">The collection whose elements should be removed from source if found therein.</param>
-        public static void RemoveRange<T>(this ICollection<T> source, IEnumerable<T> collection)
+        /// <param name="values">The collection whose elements should be removed from source if found therein.</param>
+        public static void RemoveRange<T>(this ICollection<T> source, IEnumerable<T> values)
         {
-            foreach (T item in collection)
+            foreach (T value in values)
             {
-                if (source.Contains(item))
+                if (source.Contains(value))
                 {
-                    source.Remove(item);
+                    source.Remove(value);
                 }
             }
         }

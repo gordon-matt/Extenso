@@ -40,7 +40,7 @@ namespace Extenso
                 }
             }
 
-            return @enum.ToString().SpacePascal();
+            return @enum.ToString().SplitPascal();
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Extenso
                 }
             }
 
-            return @enum.ToString().SpacePascal();
+            return @enum.ToString().SplitPascal();
         }
 
         /// <summary>

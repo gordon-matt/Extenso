@@ -145,7 +145,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
         /// <returns></returns>
         public static IHtmlContent JsonObject<TEntity>(this IHtmlHelper html, string name, TEntity item)
         {
-            return new HtmlString(string.Format("var {0} = {1};", name, item.ToJson()));
+            return new HtmlString(string.Format("var {0} = {1};", name, item.JsonSerialize()));
         }
 
         #endregion Other

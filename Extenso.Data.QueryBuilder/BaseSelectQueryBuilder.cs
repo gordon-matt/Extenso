@@ -341,15 +341,15 @@ namespace Extenso.Data.QueryBuilder
                 switch (collectionType.Name)
                 {
                     case "String":
-                        formattedValue = string.Join("','", collection.OfType<string>()).AddSingleQuotes();
+                        formattedValue = string.Join("','", collection.OfType<string>()).EnquoteSingle();
                         break;
 
                     case "DateTime":
-                        formattedValue = string.Join("','", collection.OfType<DateTime>().Select(x => x.ToString("yyyy/MM/dd HH:mm:ss"))).AddSingleQuotes();
+                        formattedValue = string.Join("','", collection.OfType<DateTime>().Select(x => x.ToString("yyyy/MM/dd HH:mm:ss"))).EnquoteSingle();
                         break;
 
                     case "Guid":
-                        formattedValue = string.Join("','", collection.OfType<Guid>().Select(x => x.ToString())).AddSingleQuotes();
+                        formattedValue = string.Join("','", collection.OfType<Guid>().Select(x => x.ToString())).EnquoteSingle();
                         break;
 
                     //case "SqlLiteral":

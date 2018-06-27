@@ -16,7 +16,7 @@ namespace Extenso.IO
         /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
         /// <param name="stream">The stream to deserialize.</param>
         /// <returns>The deserialized object from the stream.</returns>
-        public static T BinaryDeserialize<T>(this Stream stream) where T : ISerializable
+        public static T BinaryDeserialize<T>(this Stream stream)
         {
             return (T)new BinaryFormatter().Deserialize(stream);
         }
@@ -27,7 +27,7 @@ namespace Extenso.IO
         /// <typeparam name="T">The type of obj</typeparam>
         /// <param name="stream">The stream to write to.</param>
         /// <param name="obj">The object to serialize.</param>
-        public static void BinarySerialize<T>(this Stream stream, T obj) where T : ISerializable
+        public static void BinarySerialize<T>(this Stream stream, T obj)
         {
             new BinaryFormatter().Serialize(stream, obj);
         }
