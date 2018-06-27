@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -31,52 +29,11 @@ namespace Extenso
         #endregion Fields
 
         /// <summary>
-        /// Adds a pair of double quotes to the specified System.String.
+        /// Appends copies of the specified strings to the given string.
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public static string AddDoubleQuotes(this string source)
-        {
-            return $"\"{source}\"";
-        }
-
-        /// <summary>
-        /// Adds a pair of single quotes to the specified System.String.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public static string AddSingleQuotes(this string source)
-        {
-            return $"'{source}'";
-        }
-
-        public static bool Any(this string source, params char[] chars)
-        {
-            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
-            {
-                return false;
-            }
-
-            Array.Sort(chars);
-
-            for (var i = 0; i < source.Length; i++)
-            {
-                char current = source[i];
-                if (Array.BinarySearch(chars, current) >= 0)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Adds the specified System.String values to the end of this System.String.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="source">The string to append values to.</param>
+        /// <param name="values">An array of strings to append to source.</param>
+        /// <returns>A new string after the append operation has completed.</returns>
         public static string Append(this string source, params string[] values)
         {
             var items = new string[values.Length + 1];
@@ -86,11 +43,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Adds the specified System.Object values to the end of this System.String.
+        /// Appends the string representations of the specified objects to the given string.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="source">The string to append values to.</param>
+        /// <param name="values">An array of objects to append to source.</param>
+        /// <returns>A new string after the append operation has completed.</returns>
         public static string Append(this string source, params object[] values)
         {
             var items = new object[values.Length + 1];
@@ -99,29 +56,35 @@ namespace Extenso
             return string.Concat(items);
         }
 
+        /// <summary>
+        /// Gets a value indicating whether any of the given values are null or an empty string.
+        /// </summary>
+        /// <param name="values">The strings to test.</param>
+        /// <returns>true if any of the values are null or an empty string (""); otherwise, false.</returns>
+        /// <example><code>bool valid = StringExtensions.AreAnyNullOrEmpty(foo, bar, baz);</code></example>
         public static bool AreAnyNullOrEmpty(params string[] values)
         {
             return values.Any(x => string.IsNullOrEmpty(x));
         }
 
+        /// <summary>
+        /// Gets a value indicating whether any of the given values are null, empty or consists only of white-space characters.
+        /// </summary>
+        /// <param name="values">The strings to test.</param>
+        /// <returns>true if any of the values are null, an empty string ("") or consist exclusively of white-space characters.</returns>
+        /// <example><code>bool valid = StringExtensions.AreAnyNullOrWhiteSpace(foo, bar, baz);</code></example>
         public static bool AreAnyNullOrWhiteSpace(params string[] values)
         {
             return values.Any(x => string.IsNullOrWhiteSpace(x));
         }
 
-        //[Obsolete("Use StringExtensions.Base64Deserialize<T> instead")]
-        //public static string Base64Decode(this string encodedData)
-        //{
-        //    if (string.IsNullOrEmpty(encodedData))
-        //    {
-        //        return encodedData;
-        //    }
-
-        //    byte[] bytes = Convert.FromBase64String(encodedData);
-        //    return Encoding.UTF8.GetString(bytes);
-        //}
-
-        public static T Base64Deserialize<T>(this string source) where T : ISerializable
+        /// <summary>
+        /// Decodes and deserializes the Base64 encoded string to an object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of object to decode and deserialize the Base64 encoded string to.</typeparam>
+        /// <param name="source">The Base64 encoded string to decode and deserialize.</param>
+        /// <returns>The decoded and deserialized object from the Base64 encoded string.</returns>
+        public static T Base64Deserialize<T>(this string source)
         {
             // We need to know the exact length of the string - Base64 can sometimes pad us by a byte or two
             int lengthDelimiterPosition = source.IndexOf(':');
@@ -144,48 +107,19 @@ namespace Extenso
             }
         }
 
-        //[Obsolete("Use ObjectExtensions.Base64Serialize<T> instead")]
-        //public static string Base64Encode(this string plainText)
-        //{
-        //    if (string.IsNullOrEmpty(plainText))
-        //    {
-        //        return plainText;
-        //    }
-
-        //    byte[] bytes = Encoding.UTF8.GetBytes(plainText);
-        //    return Convert.ToBase64String(bytes);
-        //}
-
-        //public static T Base64Deserialize<T>(this string s)
-        //{
-        //    // We need to know the exact length of the string - Base64 can sometimes pad us by a byte or two
-        //    int lengthDelimiterPosition = s.IndexOf(':');
-
-        //    if (lengthDelimiterPosition == -1)
-        //    {
-        //        var bytes = Convert.FromBase64String(s);
-        //        return bytes.BinaryDeserialize<T>();
-        //    }
-        //    else
-        //    {
-        //        int length = int.Parse(s.Substring(0, lengthDelimiterPosition));
-
-        //        var bytes = Convert.FromBase64String(s.Substring(lengthDelimiterPosition + 1));
-        //        using (var memoryStream = new MemoryStream(bytes, 0, length))
-        //        {
-        //            var binaryFormatter = new BinaryFormatter();
-        //            return (T)binaryFormatter.Deserialize(memoryStream);
-        //        }
-        //    }
-        //}
-
         /// <summary>
-        /// Returns the characters between and exclusive of the two search characters; [from] and [to].
+        /// Gets the characters between and exclusive of the two search characters; [left] and [right].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract the result.</param>
+        /// <param name="left">The character to the left of the desired result.</param>
+        /// <param name="right">The character to the right of the desired result.</param>
+        /// <returns>All characters in source that occur between [left] and [right].</returns>
+        /// <example>
+        /// <code>
+        /// string test = "[Numero Uno]";
+        /// string result = test.Between('[', ']');
+        /// </code>
+        /// </example>
         public static string Between(this string source, char left, char right)
         {
             int indexFrom = source.IndexOf(left);
@@ -201,48 +135,26 @@ namespace Extenso
             return string.Empty;
         }
 
-        public static string CamelFriendly(this string camel)
-        {
-            if (string.IsNullOrWhiteSpace(camel))
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder(camel);
-
-            for (int i = camel.Length - 1; i > 0; i--)
-            {
-                var current = sb[i];
-                if ('A' <= current && current <= 'Z')
-                {
-                    sb.Insert(i, ' ');
-                }
-            }
-
-            return sb.ToString();
-        }
-
         /// <summary>
-        /// Returns the number of times that the specified character appears in this System.String.
+        /// Gets a value indicating the number of times that the specified Unicode character appears in the given string.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="c"></param>
-        /// <returns></returns>
+        /// <param name="source">The string to search for the specified Unicode character.</param>
+        /// <param name="c">The Unicode character to search the string for.</param>
+        /// <returns>A System.Int32 indicating the number of times the specified Unicode character appears in the given string.</returns>
         public static int CharacterCount(this string source, char c)
         {
             return source.ToCharArray().Where(x => x == c).Count();
         }
 
         /// <summary>
-        /// <para>Returns a value indicating whether the specified System.String object occurs</para>
-        /// <para>within this string.</para>
+        /// Returns a value indicating whether a specified substring occurs within the given string.
+        /// A parameter specifies the type of search to use for the specified substring.
         /// </summary>
-        /// <param name="source">This instance of System.String.</param>
-        /// <param name="value">The System.String object to seek.</param>
-        /// <param name="comparisonType">One of the System.StringComparison values.</param>
+        /// <param name="source">The string to examine.</param>
+        /// <param name="value">The string to seek.</param>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>
-        /// <para>true if the value parameter occurs within this string, or if value is the</para>
-        /// <para>empty string (""); otherwise, false.</para>
+        /// true if the value parameter occurs within the given string; otherwise, false.
         /// </returns>
         public static bool Contains(this string source, string value, StringComparison comparisonType)
         {
@@ -250,12 +162,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Returns a value indicating whether all of the specified System.String objects</para>
-        /// <para>occur within this string.</para>
+        /// Gets a value indicating whether all of the specified strings occur within the given string.
         /// </summary>
-        /// <param name="source">The string</param>
-        /// <param name="values">The strings to seek</param>
-        /// <returns>true if all values are contained in this string; otherwise, false.</returns>
+        /// <param name="source">The string to examine.</param>
+        /// <param name="values">The strings to seek.</param>
+        /// <returns>true if all of the specified strings are contained in source; otherwise, false.</returns>
         public static bool ContainsAll(this string source, params string[] values)
         {
             foreach (string value in values)
@@ -267,29 +178,27 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Returns a value indicating whether all of the specified System.Char objects</para>
-        /// <para>occur within this string.</para>
+        /// Gets a value indicating whether all of the specified Unicode characters occur within the given string.
         /// </summary>
-        /// <param name="source">The string</param>
-        /// <param name="values">The characters to seek</param>
-        /// <returns>true if all values are contained in this string; otherwise, false.</returns>
+        /// <param name="source">The string to examine.</param>
+        /// <param name="values">The Unicode characters to seek</param>
+        /// <returns>true if all of the specified characters are contained in source; otherwise, false.</returns>
         public static bool ContainsAll(this string source, params char[] values)
         {
             foreach (char value in values)
             {
-                if (!source.Contains(value.ToString()))
+                if (!source.Any(x => x == value))
                 { return false; }
             }
             return true;
         }
 
         /// <summary>
-        /// <para>Returns a value indicating whether any of the specified System.String objects</para>
-        /// <para>occur within this string.</para>
+        /// Gets a value indicating whether any of the specified strings occur within the given string.
         /// </summary>
-        /// <param name="source">The string</param>
-        /// <param name="values">The strings to seek</param>
-        /// <returns>true if any value is contained in this string; otherwise, false.</returns>
+        /// <param name="source">The string to examine.</param>
+        /// <param name="values">The strings to seek.</param>
+        /// <returns>true if any of the specified strings are contained in source; otherwise, false.</returns>
         public static bool ContainsAny(this string source, params string[] values)
         {
             foreach (string value in values)
@@ -301,29 +210,38 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Returns a value indicating whether any of the specified System.Char objects</para>
-        /// <para>occur within this string.</para>
+        /// Gets a value indicating whether any of the specified Unicode characters occur within the given string.
         /// </summary>
-        /// <param name="source">The string</param>
-        /// <param name="values">The characters to seek</param>
-        /// <returns>true if any value is contained in this string; otherwise, false.</returns>
-        public static bool ContainsAny(this string source, params char[] values)
+        /// <param name="source">The string to examine.</param>
+        /// <param name="chars">The Unicode characters to seek.</param>
+        /// <returns>true if any of the specified characters occur within source; otherwise, false.</returns>
+        public static bool ContainsAny(this string source, params char[] chars)
         {
-            foreach (char value in values)
+            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
             {
-                if (source.Contains(value.ToString()))
-                { return true; }
+                return false;
             }
+
+            Array.Sort(chars);
+
+            for (var i = 0; i < source.Length; i++)
+            {
+                char current = source[i];
+                if (Array.BinarySearch(chars, current) >= 0)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
         /// <summary>
-        /// <para>Returns a value indicating whether any of the System.String objects from the</para>
-        /// <para>specified IEnumerable&lt;string&gt; occur within this string.</para>
+        /// Gets a value indicating whether any of the specified strings occur within the given string.
         /// </summary>
-        /// <param name="source">The string</param>
-        /// <param name="values">The strings to seek</param>
-        /// <returns>true if any value is contained in this string; otherwise, false.</returns>
+        /// <param name="source">The string to examine.</param>
+        /// <param name="values">The strings to seek.</param>
+        /// <returns>true if any of the specified strings are contained in source; otherwise, false.</returns>
         public static bool ContainsAny(this string source, IEnumerable<string> values)
         {
             foreach (string value in values)
@@ -336,11 +254,21 @@ namespace Extenso
             return false;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the given string contains any white-space characters.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static bool ContainsWhiteSpace(this string source)
         {
             return source.Any(char.IsWhiteSpace);
         }
 
+        /// <summary>
+        /// Compresses the given string using the Deflate algorithm and returns a Base64 encoded string of compressed data.
+        /// </summary>
+        /// <param name="source">The string to compress.</param>
+        /// <returns>A Base64 encoded string of compressed data.</returns>
         public static string DeflateCompress(this string source)
         {
             var bytes = Encoding.UTF8.GetBytes(source);
@@ -351,8 +279,9 @@ namespace Extenso
                 {
                     deflateStream.Write(bytes, 0, bytes.Length);
                 }
+
                 memoryStream.Position = 0;
-                var compressed = new byte[memoryStream.Length];
+                byte[] compressed = new byte[memoryStream.Length];
                 memoryStream.Read(compressed, 0, compressed.Length);
                 var gZipBuffer = new byte[compressed.Length + 4];
                 Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
@@ -361,6 +290,11 @@ namespace Extenso
             }
         }
 
+        /// <summary>
+        /// Decompresses the given Base64 encoded string using the Deflate algorithm and returns a string of decompressed data.
+        /// </summary>
+        /// <param name="source">The Base64 encoded string to decompress.</param>
+        /// <returns>A string of decompressed data.</returns>
         public static string DeflateDecompress(this string source)
         {
             var compressedBuffer = Convert.FromBase64String(source);
@@ -379,12 +313,48 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Determines whether the end of this string instance matches</para>
-        /// <para>one of the specified strings.</para>
+        /// Encrypts the given string using the specified System.Security.Cryptography.ICryptoTransform and returns
+        /// the data as a byte array. A parameter specifies the character encoding to use.
         /// </summary>
-        /// <param name="source">The string</param>
-        /// <param name="values">The strings to compare</param>
-        /// <returns>true if any value matches the end of this string; otherwise, false.</returns>
+        /// <param name="source">The string to encrypt.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="cryptoTransform">The System.Security.Cryptography.ICryptoTransform to use.</param>
+        /// <returns>An encryped string as a byte array.</returns>
+        public static byte[] Encrypt(this string source, Encoding encoding, ICryptoTransform cryptoTransform)
+        {
+            using (var memoryStream = new MemoryStream())
+            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
+            {
+                byte[] bytes = encoding.GetBytes(source);
+
+                cryptoStream.Write(bytes, 0, bytes.Length);
+                cryptoStream.FlushFinalBlock();
+
+                return memoryStream.ToArray();
+            }
+        }
+
+        //TODO: More of these (for each SymmetricAlgorithm)? Will need Decrypt() methods in ByteArrayExtensions as well...
+        /// <summary>
+        /// Encrypts the given string using the TripleDES symmetric algorithm and returns the data as a byte array.
+        /// A parameter specifies the character encoding to use.
+        /// </summary>
+        /// <param name="source">The string to encrypt.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="key">The secret key to use for the symmetric algorithm.</param>
+        /// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
+        /// <returns>An encryped string as a byte array.</returns>
+        public static byte[] EncryptTripleDES(this string source, Encoding encoding, byte[] key, byte[] initializationVector)
+        {
+            return source.Encrypt(encoding, new TripleDESCryptoServiceProvider().CreateEncryptor(key, initializationVector));
+        }
+
+        /// <summary>
+        /// Determines whether the end of the given string matches any of the specified strings.
+        /// </summary>
+        /// <param name="source">The string to examine.</param>
+        /// <param name="values">The strings to compare to the substring at the end of [source].</param>
+        /// <returns>true if any of the specified strings match the end of the given string; otherwise, false.</returns>
         public static bool EndsWithAny(this string source, params string[] values)
         {
             foreach (string value in values)
@@ -395,6 +365,31 @@ namespace Extenso
             return false;
         }
 
+        /// <summary>
+        /// Encloses the given System.String in double quotes.
+        /// </summary>
+        /// <param name="source">The string to be enquoted.</param>
+        /// <returns>A new System.String consisting of the original enquoted in double quotes.</returns>
+        public static string EnquoteDouble(this string source)
+        {
+            return $"\"{source}\"";
+        }
+
+        /// <summary>
+        /// Encloses the given System.String in single quotes.
+        /// </summary>
+        /// <param name="source">The string to be enquoted.</param>
+        /// <returns>A new System.String consisting of the original enquoted in single quotes.</returns>
+        public static string EnquoteSingle(this string source)
+        {
+            return $"'{source}'";
+        }
+
+        /// <summary>
+        /// Compresses the given string using the GZip algorithm and returns a Base64 encoded string of compressed data.
+        /// </summary>
+        /// <param name="source">The string to compress.</param>
+        /// <returns>A Base64 encoded string of compressed data.</returns>
         public static string GZipCompress(this string source)
         {
             var bytes = Encoding.UTF8.GetBytes(source);
@@ -415,6 +410,11 @@ namespace Extenso
             }
         }
 
+        /// <summary>
+        /// Decompresses the given Base64 encoded string using the GZip algorithm and returns a string of decompressed data.
+        /// </summary>
+        /// <param name="source">The Base64 encoded string to decompress.</param>
+        /// <returns>A string of decompressed data.</returns>
         public static string GZipDecompress(this string source)
         {
             var gZipBuffer = Convert.FromBase64String(source);
@@ -452,33 +452,12 @@ namespace Extenso
             return HttpUtility.HtmlEncode(source);
         }
 
-        //public static bool IsNullOrUndefined(this string source)
-        //{
-        //    if (string.IsNullOrWhiteSpace(source) || source.ToLowerInvariant() == "undefined")
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
         /// <summary>
-        /// <para>Indicates whether a specified string is null, empty, or consists only of</para>
-        /// <para>white-space characters.</para>
+        /// Gets a value indicating whether the given string consists of any right-to-left text.
+        /// Note: Only Hebrew and Arabic are supported
         /// </summary>
         /// <param name="source">The string to test.</param>
-        /// <returns>
-        /// <para>true if the value parameter is null or System.String.Empty, or if value consists</para>
-        /// <para>exclusively of white-space characters.</para>
-        /// </returns>
-        public static bool IsNullOrWhiteSpace(this string source)
-        {
-            if (source != null)
-            {
-                return source.All(char.IsWhiteSpace);
-            }
-            return true;
-        }
-
+        /// <returns>true if the given string consists of any right-to-left text; otherwise false.</returns>
         public static bool IsRightToLeft(this string source)
         {
             if (Regex.IsMatch(source, RegexArabicAndHebrew, RegexOptions.IgnoreCase))
@@ -488,89 +467,73 @@ namespace Extenso
             return false;
         }
 
-        public static bool IsValidUrlSegment(this string source)
-        {
-            // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
-            // the relevant bits:
-            // isegment    = *ipchar
-            // ipchar      = iunreserved / pct-encoded / sub-delims / ":" / "@"
-            // iunreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" / ucschar
-            // pct-encoded = "%" HEXDIG HEXDIG
-            // sub-delims  = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-            // ucschar     = %xA0-D7FF / %xF900-FDCF / %xFDF0-FFEF / %x10000-1FFFD / %x20000-2FFFD / %x30000-3FFFD / %x40000-4FFFD / %x50000-5FFFD / %x60000-6FFFD / %x70000-7FFFD / %x80000-8FFFD / %x90000-9FFFD / %xA0000-AFFFD / %xB0000-BFFFD / %xC0000-CFFFD / %xD0000-DFFFD / %xE1000-EFFFD
-            //
-            // rough blacklist regex == m/^[^/?#[]@"^{}|\s`<>]+$/ (leaving off % to keep the regex simple)
-
-            return !source.Any(validSegmentChars);
-        }
-
         /// <summary>
         /// Encodes a string for JavaScript.
         /// </summary>
-        /// <param name="source">A string to encode.</param>
-        /// <returns></returns>
+        /// <param name="source">The string to encode.</param>
+        /// <returns>An encoded string.</returns>
         public static string JavaScriptStringEncode(this string source)
         {
             return HttpUtility.JavaScriptStringEncode(source);
         }
 
+        /// <summary>
+        /// Deserializes the JSON to the specified .NET type using Newtonsoft.Json.JsonSerializerSettings.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
+        /// <param name="source">The JSON to deserialize.</param>
+        /// <param name="settings">
+        /// The Newtonsoft.Json.JsonSerializerSettings used to deserialize the object. If
+        /// this is null, default serialization settings will be used.
+        /// </param>
+        /// <returns>The deserialized object from the JSON string.</returns>
         public static T JsonDeserialize<T>(this string source, JsonSerializerSettings settings = null)
         {
-            if (string.IsNullOrWhiteSpace(source))
-            {
-                return default(T);
-            }
-
-            if (settings == null)
-            {
-                return JsonConvert.DeserializeObject<T>(source);
-            }
-
             return JsonConvert.DeserializeObject<T>(source, settings);
         }
 
+        /// <summary>
+        /// Deserializes the JSON to the specified .NET type using Newtonsoft.Json.JsonSerializerSettings.
+        /// </summary>
+        /// <param name="source">The JSON to deserialize.</param>
+        /// <param name="type">The type of the object to deserialize to.</param>
+        /// <param name="settings">
+        /// The Newtonsoft.Json.JsonSerializerSettings used to deserialize the object. If
+        /// this is null, default serialization settings will be used.
+        /// </param>
+        /// <returns></returns>
         public static object JsonDeserialize(this string source, Type type, JsonSerializerSettings settings = null)
         {
-            if (string.IsNullOrWhiteSpace(source))
-            {
-                return null;
-            }
-
-            if (settings == null)
-            {
-                return JsonConvert.DeserializeObject(source, type);
-            }
-
             return JsonConvert.DeserializeObject(source, type, settings);
         }
 
         /// <summary>
-        /// Gets specified number of characters from left of string
+        /// Retrieves a substring from the given string. The substring starts at 0 and has a specified length.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public static string Left(this string source, int count)
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="length">The number of characters in the substring.</param>
+        /// <returns>A string that is equivalent to the substring of length that starts at 0.</returns>
+        public static string Left(this string source, int length)
         {
             if (source == null)
             {
                 return null;
             }
 
-            if (source.Length <= count)
+            if (source.Length <= length)
             {
                 return source;
             }
 
-            return source.Substring(0, count);
+            return source.Substring(0, length);
         }
 
         /// <summary>
-        /// Returns all characters to the left of the first occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at 0 and ends at the first occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The Unicode character to seek the first occurrence of.</param>
+        /// <returns>A substring of [source] that starts at 0 and ends at the first occurrence of [value].</returns>
         public static string LeftOf(this string source, char value)
         {
             if (source == null)
@@ -587,12 +550,12 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the left of the [n]th occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at 0 and ends at the [n]th occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <param name="n"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The Unicode character to seek the [n]th occurrence of.</param>
+        /// <param name="n">A System.Int32 indicating which occurence of [value] to seek.</param>
+        /// <returns>A substring of [source] that starts at 0 and ends at the [n]th occurrence of [value].</returns>
         public static string LeftOf(this string source, char value, int n)
         {
             if (source == null)
@@ -616,11 +579,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the left of the first occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at 0 and ends at the first occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The substring to seek the first occurrence of.</param>
+        /// <returns>A substring of [source] that starts at 0 and ends at the first occurrence of [value].</returns>
         public static string LeftOf(this string source, string value)
         {
             if (value == null)
@@ -637,11 +600,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the left of the last occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at 0 and ends at the last occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The Unicode character to seek the last occurrence of.</param>
+        /// <returns>A substring of [source] that starts at 0 and ends at the last occurrence of [value].</returns>
         public static string LeftOfLastIndexOf(this string source, char value)
         {
             if (source == null)
@@ -659,11 +622,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the left of the last occurrence of [value] in this System.String.
+        ///  Retrieves a substring from the given string. The substring starts at 0 and ends at the last occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The substring to seek the last occurrence of.</param>
+        /// <returns>A substring of [source] that starts at 0 and ends at the last occurrence of [value].</returns>
         public static string LeftOfLastIndexOf(this string source, string value)
         {
             if (source == null)
@@ -680,27 +643,27 @@ namespace Extenso
             return ret;
         }
 
-        public static T? ParseNullable<T>(this string source) where T : struct
-        {
-            var result = new T?();
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(source))
-                {
-                    TypeConverter conv = TypeDescriptor.GetConverter(typeof(T));
-                    result = (T)conv.ConvertFrom(source);
-                }
-            }
-            catch { }
-            return result;
-        }
+        //public static T? ParseNullable<T>(this string source) where T : struct
+        //{
+        //    var result = new T?();
+        //    try
+        //    {
+        //        if (!string.IsNullOrWhiteSpace(source))
+        //        {
+        //            TypeConverter conv = TypeDescriptor.GetConverter(typeof(T));
+        //            result = (T)conv.ConvertFrom(source);
+        //        }
+        //    }
+        //    catch { }
+        //    return result;
+        //}
 
         /// <summary>
-        /// Adds the specified System.String values to the beginning of this System.String.
+        /// Prepends copies of the specified strings to the given string.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="source">The string to prepend values to.</param>
+        /// <param name="values">An array of strings to prepend to source.</param>
+        /// <returns>A new string after the prepend operation has completed.</returns>
         public static string Prepend(this string source, params string[] values)
         {
             var items = new string[values.Length + 1];
@@ -710,11 +673,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Adds the specified System.Object values to the beginning of this System.String.
+        /// Prepends the string representations of the specified objects to the given string.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
+        /// <param name="source">The string to prepend values to.</param>
+        /// <param name="values">An array of objects to prepend to source.</param>
+        /// <returns>A new string after the prepend operation has completed.</returns>
         public static string Prepend(this string source, params object[] values)
         {
             var items = new object[values.Length + 1];
@@ -724,18 +687,19 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Escapes a minimal set of metacharacters (\, *, +, ?, |, {, [, (,), ^, $,.,</para>
-        /// <para>#, and white space) by replacing them with their escape codes.</para>
+        /// Escapes a minimal set of characters (\, *, +, ?, |, {, [, (,), ^, $,., #, and
+        /// white space) by replacing them with their escape codes. This instructs the regular
+        /// expression engine to interpret these characters literally rather than as metacharacters.
         /// </summary>
-        /// <param name="source">The input string containing the text to convert.</param>
-        /// <returns>A string of characters with any metacharacters converted to their escaped form.</returns>
+        /// <param name="source">The input string that contains the text to convert.</param>
+        /// <returns>A string of characters with metacharacters converted to their escaped form.</returns>
         public static string RegexEscape(this string source)
         {
             return Regex.Escape(source);
         }
 
         /// <summary>
-        /// Unescapes any escaped characters in the input string (for Regex).
+        /// Converts any escaped characters in the input string.
         /// </summary>
         /// <param name="source">The input string containing the text to convert.</param>
         /// <returns>A string of characters with any escaped characters converted to their unescaped form.</returns>
@@ -744,49 +708,12 @@ namespace Extenso
             return Regex.Unescape(source);
         }
 
-        public static string RemoveBetween(this string source, char begin, char end)
-        {
-            var regex = new Regex(string.Format("\\{0}.*?\\{1}", begin, end));
-            return regex.Replace(source, string.Empty);
-        }
-
-        public static string RemoveTags(this string html)
-        {
-            if (string.IsNullOrEmpty(html))
-            {
-                return string.Empty;
-            }
-
-            var result = new char[html.Length];
-
-            var cursor = 0;
-            var inside = false;
-            for (var i = 0; i < html.Length; i++)
-            {
-                char current = html[i];
-
-                switch (current)
-                {
-                    case '<': inside = true; continue;
-                    case '>': inside = false; continue;
-                }
-
-                if (!inside)
-                {
-                    result[cursor++] = current;
-                }
-            }
-
-            return new string(result, 0, cursor);
-        }
-
         /// <summary>
-        /// <para>Takes a System.String and returns a new System.String of the original</para>
-        /// <para>repeated [n] number of times</para>
+        /// Initializes a new string to the value indicated by [source] repeated a specified number of times.
         /// </summary>
-        /// <param name="source">The String</param>
-        /// <param name="count">The number of times to repeat the String</param>
-        /// <returns>A new System.String of the original repeated [n] number of times</returns>
+        /// <param name="source">The string to repeat [count] times.</param>
+        /// <param name="count">The number of times to repeat [source]</param>
+        /// <returns>A System.String consisting of [source] repeated [count] times.</returns>
         public static string Repeat(this string source, byte count)
         {
             if (count == 0)
@@ -804,12 +731,22 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Replaces all occurrences of the specified System.Strings in this instance</para>
-        /// <para>with specified System.Strings from the given System.Collections.Generic.IDictionary.</para>
+        /// Replaces all occurrences of the specified strings in [source] with specified strings from the given System.Collections.Generic.IDictionary`2.
         /// </summary>
-        /// <param name="source">This System.String instance</param>
-        /// <param name="replacements">The given IDictionary. Keys found in this System.String will be replaced by corresponding Values</param>
-        /// <returns></returns>
+        /// <param name="source">The string to modify.</param>
+        /// <param name="replacements">The given dictionary. Dictionary Keys found in [source] will be replaced by the corresponding Values.</param>
+        /// <returns>A System.String equal to [source] where all occurrences of Keys in [replacements] are replaced with the corresponding Values.</returns>
+        /// <example>
+        /// <code>
+        /// string test = "Hello {FirstName} {LastName}!";
+        /// var replacements = new Dictionary&lt;string, string&gt;
+        /// {
+        ///     { "{FirstName}", "John" },
+        ///     { "{LastName}", "Smith" }
+        /// };
+        /// string result = test.Replace(replacements);
+        /// </code>
+        /// </example>
         public static string Replace(this string source, IDictionary<string, string> replacements)
         {
             var regex = new Regex(replacements.Keys.Join(a => string.Concat("(", Regex.Escape(a), ")"), "|"));
@@ -817,32 +754,32 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Gets specified number of characters from right of string
+        /// Retrieves a substring from the given string. The substring starts at [length] characters before the end of [source].
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public static string Right(this string source, int count)
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="length">The number of characters in the substring.</param>
+        /// <returns>A string that is equivalent to the substring of length that starts at [length] characters before the end of [source].</returns>
+        public static string Right(this string source, int length)
         {
             if (source == null)
             {
                 return null;
             }
 
-            if (source.Length <= count)
+            if (source.Length <= length)
             {
                 return source;
             }
 
-            return source.Substring(source.Length - count, count);
+            return source.Substring(source.Length - length, length);
         }
 
         /// <summary>
-        /// Returns all characters to the right of the first occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at first occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The Unicode character to seek the first occurrence of.</param>
+        /// <returns>A substring of [source] that starts at the first occurrence of [value].</returns>
         public static string RightOf(this string source, char value)
         {
             if (source == null)
@@ -859,12 +796,12 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the right of the [n]th occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at the [n]th occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <param name="n"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The Unicode character to seek the [n]th occurrence of.</param>
+        /// <param name="n">A System.Int32 indicating which occurence of [value] to seek.</param>
+        /// <returns>A substring of [source] that starts at the [n]th occurrence of [value].</returns>
         public static string RightOf(this string source, char value, int n)
         {
             if (source == null)
@@ -889,11 +826,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the right of the first occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at the first occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The substring to seek the first occurrence of.</param>
+        /// <returns>A substring of [source] that starts at the first occurrence of [value].</returns>
         public static string RightOf(this string source, string value)
         {
             if (source == null)
@@ -910,11 +847,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the right of the last occurrence of [value] in this System.String.
+        /// Retrieves a substring from the given string. The substring starts at the last occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The Unicode character to seek the last occurrence of.</param>
+        /// <returns>A substring of [source] that starts at the last occurrence of [value].</returns>
         public static string RightOfLastIndexOf(this string source, char value)
         {
             if (source == null)
@@ -932,11 +869,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Returns all characters to the right of the last occurrence of [value] in this System.String.
+        ///  Retrieves a substring from the given string. The substring starts at the last occurrence of [value].
         /// </summary>
-        /// <param name="source">This System.String.</param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// <param name="source">The string from which to extract a substring.</param>
+        /// <param name="value">The substring to seek the last occurrence of.</param>
+        /// <returns>A substring of [source] that starts at the last occurrence of [value].</returns>
         public static string RightOfLastIndexOf(this string source, string value)
         {
             if (source == null)
@@ -953,6 +890,18 @@ namespace Extenso
             return ret;
         }
 
+        /// <summary>
+        /// Removes all leading and trailing occurrences of a set of characters specified
+        /// in an array from the given string. No exception is thrown if [source] is null or empty.
+        /// </summary>
+        /// <param name="source">The string to trim.</param>
+        /// <param name="trimChars">An array of Unicode characters to remove, or null.</param>
+        /// <returns>
+        /// The string that remains after all occurrences of the characters in the trimChars
+        /// parameter are removed from the start and end of [source]. If trimChars
+        /// is null or an empty array, white-space characters are removed instead. If no
+        /// characters can be trimmed from [source], the method returns [source] unchanged.
+        /// </returns>
         public static string SafeTrim(this string source, params char[] trimChars)
         {
             if (string.IsNullOrEmpty(source))
@@ -963,18 +912,22 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Give Pascal Text and will return separate words. For example:</para>
-        /// <para>MyPascalText will become "My Pascal Text"</para>
+        /// Modifies the given string to split Pascal-cased text into separate words.
+        /// For example: "MyPascalText" will become "My Pascal Text".
         /// </summary>
-        /// <param name="pascalText"></param>
-        /// <returns></returns>
-        public static string SpacePascal(this string pascalText)
+        /// <param name="source">The string to modify.</param>
+        /// <returns>
+        /// A new string that contains the same content as [source], but where all Pascal-cased text
+        /// has been split into separate words.
+        /// </returns>
+        /// <example><code>string name = MyEnum.SomePascalCasedMember.ToString().SplitPascal();</code></example>
+        public static string SplitPascal(this string source)
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < pascalText.Length; i++)
+            for (int i = 0; i < source.Length; i++)
             {
-                char a = pascalText[i];
-                if (char.IsUpper(a) && i + 1 < pascalText.Length && !char.IsUpper(pascalText[i + 1]))
+                char a = source[i];
+                if (char.IsUpper(a) && i + 1 < source.Length && !char.IsUpper(source[i + 1]))
                 {
                     if (sb.Length > 0)
                     { sb.Append(' '); }
@@ -987,12 +940,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// <para>Determines whether the beginning of this string instance matches</para>
-        /// <para>one of the specified strings.</para>
+        /// Determines whether the beginning of the given string matches any of the specified strings.
         /// </summary>
-        /// <param name="source">The string</param>
-        /// <param name="values">The strings to compare</param>
-        /// <returns>true if any value matches the beginning of this string; otherwise, false.</returns>
+        /// <param name="source">The string to examine.</param>
+        /// <param name="values">The strings to compare to the substring at the beginning of [source].</param>
+        /// <returns>true if any of the specified strings match the beginning of the given string; otherwise, false.</returns>
         public static bool StartsWithAny(this string source, params string[] values)
         {
             foreach (string value in values)
@@ -1003,6 +955,11 @@ namespace Extenso
             return false;
         }
 
+        /// <summary>
+        /// Converts the specified string to camel case.
+        /// </summary>
+        /// <param name="source">The string to convert to camel case.</param>
+        /// <returns>The specified string converted to camel case.</returns>
         public static string ToCamelCase(this string source)
         {
             string pascal = source.ToPascalCase();
@@ -1010,10 +967,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Writes the instance of System.String to a new file or overwrites the existing file.
+        /// Creates a new file, writes the given string to the file, and then closes
+        /// the file. If the target file already exists, it is overwritten.
         /// </summary>
         /// <param name="source">The string to write to file.</param>
-        /// <param name="filePath">The file to write the string to.</param>
+        /// <param name="filePath">The file to write to.</param>
         /// <returns>true if successful; otherwise false.</returns>
         public static bool ToFile(this string source, string filePath)
         {
@@ -1044,10 +1002,10 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Splits the given string by new line characters and returns the result in an IEnumerable&lt;string&gt;.
+        /// Splits the given string by newline characters and returns the result as a collection of strings.
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        /// <param name="source">The string to split into lines.</param>
+        /// <returns>A collection of strings.</returns>
         public static IEnumerable<string> ToLines(this string source)
         {
             if (!string.IsNullOrEmpty(source))
@@ -1059,71 +1017,55 @@ namespace Extenso
         }
 
         /// <summary>
-        ///  Converts the specified string to Pascal Case.
+        /// Converts the specified string to pascal case.
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        /// <param name="source">The string to convert to pascal case.</param>
+        /// <returns>The specified string converted to pascal case.</returns>
         public static string ToPascalCase(this string source)
         {
             return source.ToTitleCase().Replace(" ", string.Empty);
-            //return s.SpacePascal().ToTitleCase().Replace(" ", string.Empty);
         }
 
-        public static MemoryStream ToStream(this string source)
+        /// <summary>
+        ///  Initializes a new non-resizable instance of the System.IO.MemoryStream class
+        ///  based on the encoded sequence of bytes of the given string. A parameter
+        ///  specifies the character encoding to use.
+        /// </summary>
+        /// <param name="source">The string to create the new System.IO.MemoryStream from.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <returns>A new non-resizable instance of System.IO.MemoryStream initialized with the encoded sequence of bytes from [source].</returns>
+        public static MemoryStream ToStream(this string source, Encoding encoding = null)
         {
-            return source.ToStream(Encoding.UTF8);
-        }
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
 
-        public static MemoryStream ToStream(this string source, Encoding encoding)
-        {
             byte[] bytes = encoding.GetBytes(source);
             return new MemoryStream(bytes);
         }
 
         /// <summary>
-        /// Converts the specified string to Title Case using the Current Culture.
+        /// Converts the specified string to title case using the current culture (except
+        /// for words that are entirely in uppercase, which are considered to be acronyms).
         /// </summary>
-        /// <param name="source">The string to convert.</param>
-        /// <returns>The specified string converted to Title Case.</returns>
+        /// <param name="source">The string to convert to title case.</param>
+        /// <returns>The specified string converted to title case.</returns>
         public static string ToTitleCase(this string source)
         {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(source);
         }
 
         /// <summary>
-        /// Converts the specified string to Title Case.
+        /// Converts the specified string to title case using the specified culture (except
+        /// for words that are entirely in uppercase, which are considered to be acronyms).
         /// </summary>
-        /// <param name="source">The string to convert.</param>
-        /// <param name="cultureInfo">The System.Globalization.CultureInfo to use for converting to Title Case.</param>
-        /// <returns>The specified string converted to Title Case.</returns>
+        /// <param name="source">The string to convert to title case.</param>
+        /// <param name="cultureInfo">The System.Globalization.CultureInfo to use for converting to title case.</param>
+        /// <returns>The specified string converted to title case.</returns>
         public static string ToTitleCase(this string source, CultureInfo cultureInfo)
         {
             return cultureInfo.TextInfo.ToTitleCase(source);
-        }
-
-        /// <summary>
-        /// Encrypts the specified System.String using the TripleDES symmetric algorithm and returns the data as a System.Byte[].
-        /// </summary>
-        /// <param name="source">The System.String to encrypt.</param>
-        /// <param name="encoding">The System.Text.Encoding to use.</param>
-        /// <param name="key">The secret key to use for the symmetric algorithm.</param>
-        /// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
-        /// <returns>Encryped System.String as a System.Byte[].</returns>
-        public static byte[] TripleDESEncrypt(this string source, Encoding encoding, byte[] key, byte[] initializationVector)
-        {
-            using (var memoryStream = new MemoryStream())
-            using (var cryptoStream = new CryptoStream(
-                 memoryStream,
-                 new TripleDESCryptoServiceProvider().CreateEncryptor(key, initializationVector),
-                 CryptoStreamMode.Write))
-            {
-                byte[] bytes = encoding.GetBytes(source);
-
-                cryptoStream.Write(bytes, 0, bytes.Length);
-                cryptoStream.FlushFinalBlock();
-
-                return memoryStream.ToArray();
-            }
         }
 
         /// <summary>
@@ -1147,21 +1089,32 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Gets the number of words in the specified System.String.
+        /// Gets a value indicating the number of words in the give string.
         /// </summary>
         /// <param name="source">The string to get a word count from.</param>
-        /// <returns>A System.Int32 specifying the number of words in the given System.String.</returns>
+        /// <returns>A System.Int32 specifying the number of words in the given string.</returns>
         public static int WordCount(this string source)
         {
             return source.Split(' ').Count();
         }
 
         /// <summary>
-        /// Deserializes the XML data contained by the specified System.String
+        /// Gets a value indicating the number of times that the specified word appears in the given string.
         /// </summary>
-        /// <typeparam name="T">The type of System.Object to be deserialized</typeparam>
-        /// <param name="source">The System.String containing XML data</param>
-        /// <returns>The System.Object being deserialized.</returns>
+        /// <param name="source">The string to search for the specified word.</param>
+        /// <param name="word">The word to search the string for.</param>
+        /// <returns>A System.Int32 indicating the number of times the specified word appears in the given string.</returns>
+        public static int WordCount(this string source, string word)
+        {
+            return source.Split(' ').Where(x => x == word).Count();
+        }
+
+        /// <summary>
+        /// Deserializes the XML contained within the given string to an object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of object to deserialize the XML to.</typeparam>
+        /// <param name="source">The string to deserialize.</param>
+        /// <returns>The deserialized object from the XML data in [source].</returns>
         public static T XmlDeserialize<T>(this string source)
         {
             if (string.IsNullOrEmpty(source))
@@ -1182,10 +1135,6 @@ namespace Extenso
                     return item;
                 }
             }
-            //catch
-            //{
-            //    return default(T);
-            //}
             finally
             {
                 reader.Close();
@@ -1193,11 +1142,11 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Deserializes the XML data contained by the specified System.String
+        /// Deserializes the XML contained within the given string to an object of the specified type.
         /// </summary>
-        /// <param name="source">The System.String containing XML data</param>
-        /// <param name="type"></param>
-        /// <returns>The System.Object being deserialized.</returns>
+        /// <param name="source">The string to deserialize.</param>
+        /// <param name="type">The type of object to deserialize the XML to.</param>
+        /// <returns>The deserialized object from the XML data in [source].</returns>
         public static object XmlDeserialize(this string source, Type type)
         {
             if (string.IsNullOrEmpty(source))
@@ -1218,10 +1167,6 @@ namespace Extenso
                     return item;
                 }
             }
-            //catch
-            //{
-            //    return null;
-            //}
             finally
             {
                 reader.Close();

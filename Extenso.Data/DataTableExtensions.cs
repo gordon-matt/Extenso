@@ -68,7 +68,7 @@ namespace Extenso.Data
                 {
                     string value = row[column].ToString();
 
-                    sb.Append(value.Contains(",") ? value.AddDoubleQuotes() : value);
+                    sb.Append(value.Contains(",") ? value.EnquoteDouble() : value);
 
                     sb.Append(',');
                 }
@@ -115,7 +115,7 @@ namespace Extenso.Data
                 {
                     string value = row[column].ToString();
 
-                    sb.Append(value.Contains(",") ? value.AddDoubleQuotes() : value);
+                    sb.Append(value.Contains(",") ? value.EnquoteDouble() : value);
 
                     sb.Append(',');
                 }

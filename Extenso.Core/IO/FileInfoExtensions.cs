@@ -17,7 +17,7 @@ namespace Extenso.IO
         /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
         /// <param name="fileInfo">The binary file to deserialize.</param>
         /// <returns>The deserialized object from the binary data.</returns>
-        public static T BinaryDeserialize<T>(this FileInfo fileInfo) where T : ISerializable
+        public static T BinaryDeserialize<T>(this FileInfo fileInfo)
         {
             using (var fileStream = File.Open(fileInfo.FullName, FileMode.Open))
             {

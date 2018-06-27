@@ -420,7 +420,7 @@ namespace Extenso.Data.Common
 
                 case "DBNull": return "NULL";
 
-                default: return value.ToString().AddSingleQuotes();
+                default: return value.ToString().EnquoteSingle();
             }
         }
     }
