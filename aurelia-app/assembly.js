@@ -65,6 +65,8 @@
     }
 
     showType(type) {
+        //window.setTimeout(() => $('.collapse').collapse('hide'), 200);
+        //window.setTimeout(() => $('.nav-tabs a').tab('hide'), 200);
         this.selectedType = type;
         window.setTimeout(() => $('.nav-tabs a:first').tab('show'), 200);
         window.setTimeout(() => PR.prettyPrint(), 200);
