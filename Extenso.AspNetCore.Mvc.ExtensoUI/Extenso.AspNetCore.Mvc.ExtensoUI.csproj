@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>HTML Helpers for creating common UI components (Accordions, Tabs, Panels, Modal Dialogs, etc). This package includes a default provider for Bootstrap 3.</Description>
-    <Version>1.1.0</Version>
+    <Version>1.1.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
