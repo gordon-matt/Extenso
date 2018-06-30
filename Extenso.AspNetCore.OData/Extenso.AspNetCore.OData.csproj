@@ -6,7 +6,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <Version>1.1.0</Version>
+    <Version>1.1.2</Version>
     <Description></Description>
   </PropertyGroup>
 
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0-Nightly201806192313" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

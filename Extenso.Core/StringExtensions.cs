@@ -1089,7 +1089,7 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Gets a value indicating the number of words in the give string.
+        /// Gets a value indicating the number of words in the given string.
         /// </summary>
         /// <param name="source">The string to get a word count from.</param>
         /// <returns>A System.Int32 specifying the number of words in the given string.</returns>

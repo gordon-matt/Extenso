@@ -84,7 +84,7 @@ namespace Extenso
         }
 
         /// <summary>
-        /// Gets a collection of values that are used for display in the UI. If an given enum value is decorated with a
+        /// Gets a collection of values that are used for display in the UI. If a given enum value is decorated with a
         /// System.ComponentModel.DataAnnotations.DisplayAttribute, the Name property of that is used.
         /// Otherwise, the text value of the enum value is treated as pascal case and thus spaces
         /// are added in front of each capital letter.

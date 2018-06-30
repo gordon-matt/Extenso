@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>This library provides a generic repository interface and base class, as well as other data-related extension methods and helper classes.</Description>
-    <Version>1.1.0</Version>
+    <Version>1.1.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -16,8 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
