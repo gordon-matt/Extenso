@@ -7,7 +7,7 @@
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>MVC-related extension methods and other helper classes. Includes a FluentTagBuilder, an IRazorViewRenderService (to render Razor views to a string), various HTML Helpers and more</Description>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
