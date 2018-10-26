@@ -1,6 +1,6 @@
 ﻿using Demo.Extenso.AspNetCore.Mvc.OData.Data.Domain;
+using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
-using Extenso.Web.OData;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers.Api
 {

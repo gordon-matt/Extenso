@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Extenso.Web.OData
+namespace Extenso.AspNetCore.OData
 {
     /// <summary>
     /// A generic, abstract CRUD controller for OData, with support for checking policy based permissions for users.

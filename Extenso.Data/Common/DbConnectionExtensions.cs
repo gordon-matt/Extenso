@@ -11,8 +11,19 @@ using Extenso.Reflection;
 
 namespace Extenso.Data.Common
 {
+    /// <summary>
+    /// Provides a set of static methods for System.Data.Common.DbConnection.
+    /// </summary>
     public static class DbConnectionExtensions
     {
+        /// <summary>
+        /// Returns a new instance of the provider's class that implements the System.Data.Common.DbParameter class
+        /// and sets both the name and value from the given parameters.
+        /// </summary>
+        /// <param name="connection">A DbConnection for which to create the DbParameter.</param>
+        /// <param name="parameterName">The name to set for the parameter.</param>
+        /// <param name="value">The value to set for the parameter.</param>
+        /// <returns>A new instance of System.Data.Common.DbParameter.</returns>
         public static DbParameter CreateParameter(this DbConnection connection, string parameterName, object value)
         {
             var param = GetDbProviderFactory(connection).CreateParameter();
@@ -21,6 +32,14 @@ namespace Extenso.Data.Common
             return param;
         }
 
+        /// <summary>
+        /// Executes the query and returns the first column of the first row in the result
+        /// set returned by the query. All other columns and rows are ignored.
+        /// This overload assumes the return type is an integer.
+        /// </summary>
+        /// <param name="connection">A DbConnection to execute [queryText] upon.</param>
+        /// <param name="queryText">The T-SQL statement to execute.</param>
+        /// <returns>The first column of the first row in the result set.</returns>
         public static int ExecuteScalar(this DbConnection connection, string queryText)
         {
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
@@ -33,6 +52,15 @@ namespace Extenso.Data.Common
             return connection.ExecuteScalar<int>(queryText);
         }
 
+        /// <summary>
+        /// Executes the query and returns the first column of the first row in the result
+        /// set returned by the query. All other columns and rows are ignored.
+        /// A generic parameter specifies the return type.
+        /// </summary>
+        /// <typeparam name="T">The expected return type.</typeparam>
+        /// <param name="connection">A DbConnection to execute [queryText] upon.</param>
+        /// <param name="queryText">The T-SQL statement to execute.</param>
+        /// <returns>The first column of the first row in the result set.</returns>
         public static T ExecuteScalar<T>(this DbConnection connection, string queryText)
         {
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
@@ -51,6 +79,11 @@ namespace Extenso.Data.Common
             }
         }
 
+        /// <summary>
+        /// Gets the associated provider factory for the given System.Data.Common.DbConnection.
+        /// </summary>
+        /// <param name="connection">A DbConnection for which to find the associated provider factory.</param>
+        /// <returns>An instance of the provider factory associated with the given connection.</returns>
         public static DbProviderFactory GetDbProviderFactory(this DbConnection connection)
         {
             if (connection is SqlConnection)
@@ -67,13 +100,29 @@ namespace Extenso.Data.Common
             //return DbProviderFactories.GetFactory(connection);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="storedProcedure"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static DataSet ExecuteStoredProcedure(this DbConnection connection, string storedProcedure, IEnumerable<DbParameter> parameters)
         {
             Dictionary<string, object> outputValues;
             return connection.ExecuteStoredProcedure(storedProcedure, parameters, out outputValues);
         }
 
-        public static DataSet ExecuteStoredProcedure(this DbConnection connection, string storedProcedure, IEnumerable<DbParameter> parameters, out Dictionary<string, object> outputValues)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="storedProcedure"></param>
+        /// <param name="parameters"></param>
+        /// <param name="outputValues"></param>
+        /// <returns></returns>
+        public static DataSet ExecuteStoredProcedure(
+            this DbConnection connection, string storedProcedure, IEnumerable<DbParameter> parameters, out Dictionary<string, object> outputValues)
         {
             using (var command = connection.CreateCommand())
             {
@@ -104,6 +153,13 @@ namespace Extenso.Data.Common
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="storedProcedure"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static int ExecuteNonQueryStoredProcedure(this DbConnection connection, string storedProcedure, IEnumerable<DbParameter> parameters)
         {
             using (var command = connection.CreateCommand())
@@ -132,14 +188,13 @@ namespace Extenso.Data.Common
         }
 
         /// <summary>
-        /// <para>Inserts the specified entity into the specified Table. Property names are used to match</para>
-        /// <para>with Sql Column Names.</para>
+        /// Inserts [entity] into the specified table. The object's property names are matched to column names.
         /// </summary>
-        /// <typeparam name="T">The type of entity to persist to Sql database.</typeparam>
-        /// <param name="connection">This DbConnection.</param>
-        /// <param name="entity">The entity to persist to Sql database.</param>
-        /// <param name="tableName">The table to insert the entity into.</param>
-        /// <returns>Number of rows affected.</returns>
+        /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
+        /// <param name="connection">The DbConnection to use.</param>
+        /// <param name="entity">The entity to persist to the database.</param>
+        /// <param name="tableName">The name of the table to insert the entity into.</param>
+        /// <returns>The number of rows affected.</returns>
         public static int Insert<T>(this DbConnection connection, T entity, string tableName)
         {
             var mappings = typeof(T).GetTypeInfo().GetProperties()
@@ -149,18 +204,18 @@ namespace Extenso.Data.Common
         }
 
         /// <summary>
-        /// <para>Inserts the specified entity into the specified Table. Properties are matched</para>
-        /// <para>with Sql Column Names by using the specified mappings dictionary.</para>
+        /// Inserts [entity] into the specified table. The object's property names are matched to column names
+        /// by using the specified mappings dictionary.
         /// </summary>
-        /// <typeparam name="T">The type of entity to persist to Sql database.</typeparam>
-        /// <param name="connection">This DbConnection.</param>
-        /// <param name="entity">The entity to persist to Sql database.</param>
-        /// <param name="tableName">The table to insert the entity into.</param>
+        /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
+        /// <param name="connection">The DbConnection to use.</param>
+        /// <param name="entity">The entity to persist to the database.</param>
+        /// <param name="tableName">The name of the table to insert the entity into.</param>
         /// <param name="mappings">
-        ///     <para>A Dictionary to use to map properties to Sql columns.</para>
-        ///     <para>Key = Property Name, Value = Sql Column Name.</para>
+        /// A System.Collection.Generic.IDictionary`2 used to map object properties to column names.
+        /// Key = Property Name, Value = Column Name.
         /// </param>
-        /// <returns>Number of rows affected.</returns>
+        /// <returns>The number of rows affected.</returns>
         public static int Insert<T>(this DbConnection connection, T entity, string tableName, IDictionary<string, string> mappings)
         {
             const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
@@ -204,34 +259,35 @@ namespace Extenso.Data.Common
         }
 
         /// <summary>
-        /// <para>Inserts the specified entities into the specified Table. Property names are used to match</para>
-        /// <para>with Sql Column Names.</para>
+        /// Inserts [entities] into the specified table. The objects' property names are matched to column names.
         /// </summary>
-        /// <typeparam name="T">The type of entity to persist to Sql database.</typeparam>
-        /// <param name="connection">This DbConnection.</param>
-        /// <param name="entities">The entities to persist to Sql database.</param>
-        /// <param name="tableName">The table to insert the entities into.</param>
-        public static void InsertCollection<T>(this DbConnection connection, IEnumerable<T> entities, string tableName)
+        /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
+        /// <param name="connection">The DbConnection to use.</param>
+        /// <param name="entities">The entities to persist to the database.</param>
+        /// <param name="tableName">The name of the table to insert the entity into.</param>
+        /// <returns>The number of rows affected.</returns>
+        public static int InsertCollection<T>(this DbConnection connection, IEnumerable<T> entities, string tableName)
         {
             var mappings = typeof(T).GetTypeInfo().GetProperties()
                 .ToDictionary(k => k.Name, v => v.Name);
 
-            connection.InsertCollection(entities, tableName, mappings);
+            return connection.InsertCollection(entities, tableName, mappings);
         }
 
         /// <summary>
-        /// <para>Inserts the specified entities into the specified Table. Properties are matched</para>
-        /// <para>with Sql Column Names by using the specified mappings dictionary.</para>
+        /// Inserts [entities] into the specified table. The objects' property names are matched to column names
+        /// by using the specified mappings dictionary.
         /// </summary>
-        /// <typeparam name="T">The type of entity to persist to Sql database.</typeparam>
-        /// <param name="connection">This DbConnection.</param>
-        /// <param name="entities">The entities to persist to Sql database.</param>
-        /// <param name="tableName">The table to insert the entities into.</param>
+        /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
+        /// <param name="connection">The DbConnection to use.</param>
+        /// <param name="entities">The entities to persist to the database.</param>
+        /// <param name="tableName">The name of the table to insert the entity into.</param>
         /// <param name="mappings">
-        ///     <para>A Dictionary to use to map properties to Sql columns.</para>
-        ///     <para>Key = Property Name, Value = Sql Column Name.</para>
+        /// A System.Collection.Generic.IDictionary`2 used to map object properties to column names.
+        /// Key = Property Name, Value = Column Name.
         /// </param>
-        public static void InsertCollection<T>(this DbConnection connection, IEnumerable<T> entities, string tableName, IDictionary<string, string> mappings)
+        /// <returns>The number of rows affected.</returns>
+        public static int InsertCollection<T>(this DbConnection connection, IEnumerable<T> entities, string tableName, IDictionary<string, string> mappings)
         {
             const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
             string fieldNames = mappings.Values.Join(",");
@@ -261,6 +317,7 @@ namespace Extenso.Data.Common
                     connection.Open();
                 }
 
+                int rowsAffected = 0;
                 foreach (T entity in entities)
                 {
                     properties.ForEach(property =>
@@ -268,13 +325,15 @@ namespace Extenso.Data.Common
                         command.Parameters["@" + property.Name].Value =
                             GetFormattedValue(property.PropertyType, property.GetValue(entity, null));
                     });
-                    command.ExecuteNonQuery();
+                    rowsAffected += command.ExecuteNonQuery();
                 }
 
                 if (!alreadyOpen)
                 {
                     connection.Close();
                 }
+
+                return rowsAffected;
             }
         }
 
