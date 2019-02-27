@@ -90,7 +90,7 @@
                         case JoinType.LeftJoin: joinString = "LEFT JOIN"; break;
                         case JoinType.RightJoin: joinString = "RIGHT JOIN"; break;
                     }
-                    joinString += " " + clause.ToTable + " ON ";
+                    joinString += " " + EncloseTable(clause.ToTable) + " ON ";
 
                     string fromField = CreateFieldName(clause.FromTable, clause.FromColumn);
                     string toField = CreateFieldName(clause.ToTable, clause.ToColumn);
