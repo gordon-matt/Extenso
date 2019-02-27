@@ -159,7 +159,7 @@ namespace Extenso.AspNetCore.OData
                 OnAfterSave(entity);
                 return Updated(entity);
             }
-            catch (DbUpdateConcurrencyException x)
+            catch (DbUpdateConcurrencyException)
             {
                 if (!EntityExists(key))
                 {
@@ -234,7 +234,7 @@ namespace Extenso.AspNetCore.OData
                 await Repository.UpdateAsync(entity);
                 //db.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException x)
+            catch (DbUpdateConcurrencyException)
             {
                 if (!EntityExists(key))
                 {

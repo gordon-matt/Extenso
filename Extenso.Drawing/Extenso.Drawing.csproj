@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Matt Gordon</Authors>
+    <Description>Drawing-related extension methods and other helper classes.</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+  </ItemGroup>
+
+</Project>

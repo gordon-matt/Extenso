@@ -8,7 +8,6 @@ namespace Extenso.AspNetCore.Mvc.Rendering
     public class FluentTagBuilder
     {
         private readonly TagBuilder tagBuilder;
-        private readonly TagRenderMode renderMode;
         private readonly FluentTagBuilder parent;
         private readonly StringBuilder stringBuilder;
 

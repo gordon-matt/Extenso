@@ -106,11 +106,11 @@ namespace Extenso.Data.QueryBuilder
         {
             var join = new JoinClause(
                 joinType,
-                EncloseTable(toTableName),
-                EncloseIdentifier(toColumnName),
+                toTableName,
+                toColumnName,
                 comparisonOperator,
-                EncloseTable(fromTableName),
-                EncloseIdentifier(fromColumnName));
+                fromTableName,
+                fromColumnName);
 
             joins.Add(join);
             return this;
@@ -276,10 +276,10 @@ namespace Extenso.Data.QueryBuilder
                     case ComparisonOperator.Like: output = fieldName + " LIKE " + FormatSQLValue(value); break;
                     case ComparisonOperator.NotLike: output = "NOT " + fieldName + " LIKE " + FormatSQLValue(value); break;
                     case ComparisonOperator.In: output = fieldName + " IN (" + FormatSQLValue(value) + ")"; break;
-                    case ComparisonOperator.Contains: output = string.Format("{0} LIKE ({1})", fieldName, FormatSQLValue("%" + value + "%")); break;
+                    case ComparisonOperator.Contains: output = string.Format("{0} LIKE {1}", fieldName, FormatSQLValue("%" + value + "%")); break;
                     case ComparisonOperator.NotContains: output = string.Format("NOT {0} LIKE {1}", fieldName, FormatSQLValue("%" + value + "%")); break;
-                    case ComparisonOperator.StartsWith: output = string.Format("{0} LIKE ({1})", fieldName, FormatSQLValue(value + "%")); break;
-                    case ComparisonOperator.EndsWith: output = string.Format("{0} LIKE ({1})", fieldName, FormatSQLValue("%" + value)); break;
+                    case ComparisonOperator.StartsWith: output = string.Format("{0} LIKE {1}", fieldName, FormatSQLValue(value + "%")); break;
+                    case ComparisonOperator.EndsWith: output = string.Format("{0} LIKE {1}", fieldName, FormatSQLValue("%" + value)); break;
                 }
             }
             else // value==null	|| value==DBNull.Value
@@ -352,9 +352,9 @@ namespace Extenso.Data.QueryBuilder
                         formattedValue = string.Join("','", collection.OfType<Guid>().Select(x => x.ToString())).EnquoteSingle();
                         break;
 
-                    //case "SqlLiteral":
-                    //    formattedValue = string.Join(",", collection.OfType<SqlLiteral>().Select(x => x.Value));
-                    //    break;
+                    case "SqlLiteral":
+                        formattedValue = string.Join(",", collection.OfType<SqlLiteral>().Select(x => x.Value));
+                        break;
 
                     case "DBNull": formattedValue = "NULL"; break;
                     default: formattedValue = string.Join(",", collection.OfType<object>()); break;
@@ -368,7 +368,7 @@ namespace Extenso.Data.QueryBuilder
                     case "DateTime": formattedValue = string.Format("'{0:yyyy/MM/dd HH:mm:ss}'", (DateTime)someValue); break;
                     case "Guid": formattedValue = string.Format("'{0}'", (Guid)someValue); break;
                     case "Boolean": formattedValue = (bool)someValue ? "1" : "0"; break;
-                    //case "SqlLiteral": formattedValue = ((SqlLiteral)someValue).Value; break;
+                    case "SqlLiteral": formattedValue = ((SqlLiteral)someValue).Value; break;
                     case "DBNull": formattedValue = "NULL"; break;
                     default: formattedValue = someValue.ToString(); break;
                 }
