@@ -104,7 +104,6 @@ ORDER BY table_name";
             const string CMD_FOREIGN_KEYS_FORMAT =
 @"SELECT
 	FK.""table_name"" AS FK_Table,
-
     CU.""column_name"" AS FK_Column,
     PK.""table_name"" AS PK_Table,
     PT.""column_name"" AS PK_Column,
@@ -121,9 +120,10 @@ INNER JOIN
     WHERE i1.""constraint_type"" = 'PRIMARY KEY'
 ) PT ON PT.""table_name"" = PK.""table_name""
 WHERE FK.""table_name"" = '{0}'
+AND FK.""table_schema"" = '{1}'
 ORDER BY 1,2,3,4";
 
-            ForeignKeyInfoCollection foreignKeyData = new ForeignKeyInfoCollection();
+            var foreignKeyData = new ForeignKeyInfoCollection();
 
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -132,7 +132,7 @@ ORDER BY 1,2,3,4";
                 connection.Open();
             }
 
-            using (var command = new NpgsqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName), connection))
+            using (var command = new NpgsqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName, schema), connection))
             {
                 command.CommandType = CommandType.Text;
                 using (var reader = command.ExecuteReader())
@@ -163,14 +163,16 @@ ORDER BY 1,2,3,4";
             const string CMD_COLUMN_INFO_FORMAT =
 @"SELECT ""column_name"", ""column_default"", ""data_type"", ""character_maximum_length"", ""is_nullable"", ""ordinal_position"", ""numeric_precision"", ""numeric_scale""
 FROM information_schema.""columns""
-WHERE TABLE_NAME = '{0}';";
+WHERE TABLE_NAME = '{0}'
+AND ""table_schema"" = '{1}';";
 
             const string CMD_IS_PRIMARY_KEY_FORMAT =
 @"SELECT ""column_name""
 FROM information_schema.""key_column_usage"" kcu
 INNER JOIN information_schema.""table_constraints"" tc ON kcu.""constraint_name"" = tc.""constraint_name""
 WHERE kcu.""table_name"" = '{0}'
-AND tc.""constraint_type"" = 'PRIMARY KEY'";
+AND tc.""constraint_type"" = 'PRIMARY KEY'
+AND kcu.""table_schema"" = '{1}'";
 
             var list = new ColumnInfoCollection();
 
@@ -178,14 +180,14 @@ AND tc.""constraint_type"" = 'PRIMARY KEY'";
 
             try
             {
-                var foreignKeyColumns = connection.GetForeignKeyData(tableName);
+                var foreignKeyColumns = connection.GetForeignKeyData(tableName, schema);
 
                 if (!alreadyOpen)
                 {
                     connection.Open();
                 }
 
-                using (var command = new NpgsqlCommand(string.Format(CMD_COLUMN_INFO_FORMAT, tableName), connection))
+                using (var command = new NpgsqlCommand(string.Format(CMD_COLUMN_INFO_FORMAT, tableName, schema), connection))
                 {
                     command.CommandType = CommandType.Text;
                     using (var reader = command.ExecuteReader())
@@ -312,7 +314,7 @@ AND tc.""constraint_type"" = 'PRIMARY KEY'";
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = string.Format(CMD_IS_PRIMARY_KEY_FORMAT, tableName);
+                command.CommandText = string.Format(CMD_IS_PRIMARY_KEY_FORMAT, tableName, schema);
 
                 alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -326,7 +328,7 @@ AND tc.""constraint_type"" = 'PRIMARY KEY'";
                     while (reader.Read())
                     {
                         string pkColumn = reader.GetString(0);
-                        ColumnInfo match = list[pkColumn];
+                        var match = list[pkColumn];
                         if (match != null)
                         {
                             match.KeyType = KeyType.PrimaryKey;
@@ -347,11 +349,10 @@ AND tc.""constraint_type"" = 'PRIMARY KEY'";
 
         public static ColumnInfoCollection GetColumnData(this NpgsqlConnection connection, string tableName, IEnumerable<string> columnNames, string schema = "public")
         {
-            var data = from x in connection.GetColumnData(tableName, schema: schema)
-                       where columnNames.Contains(x.ColumnName)
-                       select x;
+            var data = connection.GetColumnData(tableName, schema: schema)
+                .Where(x => columnNames.Contains(x.ColumnName));
 
-            ColumnInfoCollection collection = new ColumnInfoCollection();
+            var collection = new ColumnInfoCollection();
             collection.AddRange(data);
             return collection;
         }
