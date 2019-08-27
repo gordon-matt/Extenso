@@ -376,12 +376,12 @@ namespace Extenso.Collections
         {
             var table = new DataTable();
             var rowName = ((MemberExpression)rowSelector.Body).Member.Name;
-            table.Columns.Add(new DataColumn(rowName));
+            table.Columns.Add(new DataColumn(rowName, typeof(TRow)));
             var columns = source.Select(columnSelector).Distinct();
 
             foreach (var column in columns)
             {
-                table.Columns.Add(new DataColumn(column.ToString()));
+                table.Columns.Add(new DataColumn(column.ToString(), typeof(TData)));
             }
 
             var rows = source
@@ -401,6 +401,143 @@ namespace Extenso.Collections
                 var dataRow = table.NewRow();
                 var items = row.Values.Cast<object>().ToList();
                 items.Insert(0, row.Key);
+                dataRow.ItemArray = items.ToArray();
+                table.Rows.Add(dataRow);
+            }
+
+            return table;
+        }
+
+        /// <summary>
+        /// Creates a System.Data.DataTable with the columns, rows and data determined by the given selector functions.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <typeparam name="TColumn">The type of the result returned by columnSelector.</typeparam>
+        /// <typeparam name="TRow1">The type of the result returned by row1Selector.</typeparam>
+        /// <typeparam name="TRow2">The type of the result returned by row2Selector.</typeparam>
+        /// <typeparam name="TData">The type of the result returned by dataSelector.</typeparam>
+        /// <param name="source">The collection from which to create a System.Data.DataTable.</param>
+        /// <param name="columnSelector">A function to extract values from the elements which are to determine the columns.</param>
+        /// <param name="row1Selector">A function to extract values from the elements which are to determine the first set of rows.</param>
+        /// <param name="row2Selector">A function to extract values from the elements which are to determine the second set of rows.</param>
+        /// <param name="dataSelector">A function to extract values from the elements which are to determine the data.</param>
+        /// <returns>A System.Data.DataTable with the columns, rows and data determined by the given selector functions.</returns>
+        public static DataTable ToPivotTable<T, TColumn, TRow1, TRow2, TData>(
+            this IEnumerable<T> source,
+            Func<T, TColumn> columnSelector,
+            Expression<Func<T, TRow1>> row1Selector,
+            Expression<Func<T, TRow2>> row2Selector,
+            Func<IEnumerable<T>, TData> dataSelector)
+        {
+            var table = new DataTable();
+
+            var row1Name = ((MemberExpression)row1Selector.Body).Member.Name;
+            table.Columns.Add(new DataColumn(row1Name, typeof(TRow1)));
+
+            var row2Name = ((MemberExpression)row2Selector.Body).Member.Name;
+            table.Columns.Add(new DataColumn(row2Name, typeof(TRow2)));
+
+            var columns = source.Select(columnSelector).Distinct();
+
+            foreach (var column in columns)
+            {
+                table.Columns.Add(new DataColumn(column.ToString(), typeof(TData)));
+            }
+
+            var rows = source
+                .GroupBy(x => new { Row1Value = row1Selector.Compile()(x), Row2Value = row2Selector.Compile()(x) })
+                .Select(rowGroup => new
+                {
+                    Row1Value = rowGroup.Key.Row1Value,
+                    Row2Value = rowGroup.Key.Row2Value,
+                    Values = columns.GroupJoin(
+                        rowGroup,
+                        c => c,
+                        r => columnSelector(r),
+                        (c, columnGroup) => dataSelector(columnGroup))
+                });
+
+            foreach (var row in rows)
+            {
+                var dataRow = table.NewRow();
+                var items = row.Values.Cast<object>().ToList();
+                items.Insert(0, row.Row2Value);
+                items.Insert(0, row.Row1Value);
+                dataRow.ItemArray = items.ToArray();
+                table.Rows.Add(dataRow);
+            }
+
+            return table;
+        }
+
+        /// <summary>
+        /// Creates a System.Data.DataTable with the columns, rows and data determined by the given selector functions.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <typeparam name="TColumn">The type of the result returned by columnSelector.</typeparam>
+        /// <typeparam name="TRow1">The type of the result returned by row1Selector.</typeparam>
+        /// <typeparam name="TRow2">The type of the result returned by row2Selector.</typeparam>
+        /// <typeparam name="TRow3">The type of the result returned by row3Selector.</typeparam>
+        /// <typeparam name="TData">The type of the result returned by dataSelector.</typeparam>
+        /// <param name="source">The collection from which to create a System.Data.DataTable.</param>
+        /// <param name="columnSelector">A function to extract values from the elements which are to determine the columns.</param>
+        /// <param name="row1Selector">A function to extract values from the elements which are to determine the first set of rows.</param>
+        /// <param name="row2Selector">A function to extract values from the elements which are to determine the second set of rows.</param>
+        /// <param name="row3Selector">A function to extract values from the elements which are to determine the third set of rows.</param>
+        /// <param name="dataSelector">A function to extract values from the elements which are to determine the data.</param>
+        /// <returns>A System.Data.DataTable with the columns, rows and data determined by the given selector functions.</returns>
+        public static DataTable ToPivotTable<T, TColumn, TRow1, TRow2, TRow3, TData>(
+            this IEnumerable<T> source,
+            Func<T, TColumn> columnSelector,
+            Expression<Func<T, TRow1>> row1Selector,
+            Expression<Func<T, TRow2>> row2Selector,
+            Expression<Func<T, TRow3>> row3Selector,
+            Func<IEnumerable<T>, TData> dataSelector)
+        {
+            var table = new DataTable();
+
+            var row1Name = ((MemberExpression)row1Selector.Body).Member.Name;
+            table.Columns.Add(new DataColumn(row1Name, typeof(TRow1)));
+
+            var row2Name = ((MemberExpression)row2Selector.Body).Member.Name;
+            table.Columns.Add(new DataColumn(row2Name, typeof(TRow2)));
+
+            var row3Name = ((MemberExpression)row3Selector.Body).Member.Name;
+            table.Columns.Add(new DataColumn(row3Name, typeof(TRow3)));
+
+            var columns = source.Select(columnSelector).Distinct();
+
+            foreach (var column in columns)
+            {
+                table.Columns.Add(new DataColumn(column.ToString(), typeof(TData)));
+            }
+
+            var rows = source
+                .GroupBy(x => new
+                {
+                    Row1Value = row1Selector.Compile()(x),
+                    Row2Value = row2Selector.Compile()(x),
+                    Row3Value = row3Selector.Compile()(x)
+                })
+                .Select(rowGroup => new
+                {
+                    Row1Value = rowGroup.Key.Row1Value,
+                    Row2Value = rowGroup.Key.Row2Value,
+                    Row3Value = rowGroup.Key.Row3Value,
+                    Values = columns.GroupJoin(
+                        rowGroup,
+                        c => c,
+                        r => columnSelector(r),
+                        (c, columnGroup) => dataSelector(columnGroup))
+                });
+
+            foreach (var row in rows)
+            {
+                var dataRow = table.NewRow();
+                var items = row.Values.Cast<object>().ToList();
+                items.Insert(0, row.Row3Value);
+                items.Insert(0, row.Row2Value);
+                items.Insert(0, row.Row1Value);
                 dataRow.ItemArray = items.ToArray();
                 table.Rows.Add(dataRow);
             }
