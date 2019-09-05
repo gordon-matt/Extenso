@@ -61,7 +61,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{5CF10B41-5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QueryBuilder", "QueryBuilder", "{50793D41-3796-444D-A9A5-F0A1C83ED59B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Data.QueryBuilder", "Demo.Data.QueryBuilder\Demo.Data.QueryBuilder.csproj", "{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Data.QueryBuilder", "Demo.Data.QueryBuilder\Demo.Data.QueryBuilder.csproj", "{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Sandbox", "Extenso.Sandbox\Extenso.Sandbox.csproj", "{D923E155-2C52-4690-800B-C7E53305AD9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -161,6 +163,10 @@ Global
 		{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D923E155-2C52-4690-800B-C7E53305AD9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D923E155-2C52-4690-800B-C7E53305AD9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D923E155-2C52-4690-800B-C7E53305AD9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D923E155-2C52-4690-800B-C7E53305AD9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,6 +185,7 @@ Global
 		{5CF10B41-54F9-44DF-9FA0-8A53205C791D} = {4ABD18F5-B7DA-4590-9CB1-1200B6EBEB58}
 		{50793D41-3796-444D-A9A5-F0A1C83ED59B} = {5CF10B41-54F9-44DF-9FA0-8A53205C791D}
 		{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2} = {50793D41-3796-444D-A9A5-F0A1C83ED59B}
+		{D923E155-2C52-4690-800B-C7E53305AD9C} = {4ABD18F5-B7DA-4590-9CB1-1200B6EBEB58}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -447,6 +448,76 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             builder = builder.EndTag(); // </tbody>
 
             return new HtmlString(builder.ToString());
+        }
+        
+        public static IHtmlContent CulturesDropDownList<TModel>(
+            this IHtmlHelper<TModel> html, string name, string selectedValue = null, object htmlAttributes = null, string emptyText = null)
+        {
+            var cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
+
+            var selectList = cultures
+                .OrderBy(x => x.DisplayName)
+                .ToSelectList(
+                    value => value.Name,
+                    text => text.DisplayName,
+                    selectedValue,
+                    emptyText);
+
+            return html.DropDownList(name, selectList, htmlAttributes);
+        }
+
+        public static IHtmlContent CulturesDropDownListFor<TModel>(
+            this IHtmlHelper<TModel> html, Expression<Func<TModel, string>> expression, object htmlAttributes = null, string emptyText = null)
+        {
+            var cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
+
+            var func = expression.Compile();
+            var selectedValue = func(html.ViewData.Model);
+
+            var selectList = cultures
+                .OrderBy(x => x.DisplayName)
+                .ToSelectList(
+                    value => value.Name,
+                    text => text.DisplayName,
+                    selectedValue,
+                    emptyText);
+
+            return html.DropDownListFor(expression, selectList, htmlAttributes);
+        }
+
+        public static IHtmlContent TimeZonesDropDownList<TModel>(
+            this IHtmlHelper<TModel> html, string name, string selectedValue = null, object htmlAttributes = null, string emptyText = null)
+        {
+            var timeZones = TimeZoneInfo.GetSystemTimeZones();
+
+            var selectList = timeZones
+                .OrderBy(x => x.DisplayName)
+                .ToSelectList(
+                    value => value.Id,
+                    text => text.DisplayName,
+                    selectedValue,
+                    emptyText);
+
+            return html.DropDownList(name, selectList, htmlAttributes);
+        }
+
+        public static IHtmlContent TimeZonesDropDownListFor<TModel>(
+            this IHtmlHelper<TModel> html, Expression<Func<TModel, string>> expression, object htmlAttributes = null, string emptyText = null)
+        {
+            var timeZones = TimeZoneInfo.GetSystemTimeZones();
+
+            var func = expression.Compile();
+            var selectedValue = func(html.ViewData.Model);
+
+            var selectList = timeZones
+                .OrderBy(x => x.DisplayName)
+                .ToSelectList(
+                    value => value.Id,
+                    text => text.DisplayName,
+                    selectedValue,
+                    emptyText);
+
+            return html.DropDownListFor(expression, selectList, htmlAttributes);
         }
     }
 }

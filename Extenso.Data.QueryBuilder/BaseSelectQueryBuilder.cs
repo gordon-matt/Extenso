@@ -223,7 +223,7 @@ namespace Extenso.Data.QueryBuilder
             sb.Append("WHERE ");
 
             bool isFirst = true;
-            foreach (var clause in statement.Clauses)
+            foreach (var clause in statement)
             {
                 CreateWhereClause(clause, sb, isFirst);
                 isFirst = false;
@@ -243,7 +243,6 @@ namespace Extenso.Data.QueryBuilder
 
             sb.Append("(");
             sb.Append(CreateComparisonClause(fieldName, clause.ComparisonOperator, clause.Value));
-            sb.Append(") ");
             sb.Append(" ");
 
             if (!clause.SubClauses.IsNullOrEmpty())
@@ -258,28 +257,35 @@ namespace Extenso.Data.QueryBuilder
                 }
                 sb.Append(") ");
             }
+
+            sb.Append(") ");
+            sb.Append(" ");
         }
 
         protected virtual string CreateComparisonClause(string fieldName, ComparisonOperator comparisonOperator, object value)
         {
             string output = string.Empty;
-            if (value != null && value != System.DBNull.Value)
+            if (value != null && value != DBNull.Value)
             {
                 switch (comparisonOperator)
                 {
-                    case ComparisonOperator.EqualTo: output = fieldName + " = " + FormatSQLValue(value); break;
-                    case ComparisonOperator.NotEqualTo: output = fieldName + " <> " + FormatSQLValue(value); break;
-                    case ComparisonOperator.GreaterThan: output = fieldName + " > " + FormatSQLValue(value); break;
-                    case ComparisonOperator.GreaterThanOrEqualTo: output = fieldName + " >= " + FormatSQLValue(value); break;
-                    case ComparisonOperator.LessThan: output = fieldName + " < " + FormatSQLValue(value); break;
-                    case ComparisonOperator.LessThanOrEqualTo: output = fieldName + " <= " + FormatSQLValue(value); break;
-                    case ComparisonOperator.Like: output = fieldName + " LIKE " + FormatSQLValue(value); break;
-                    case ComparisonOperator.NotLike: output = "NOT " + fieldName + " LIKE " + FormatSQLValue(value); break;
-                    case ComparisonOperator.In: output = fieldName + " IN (" + FormatSQLValue(value) + ")"; break;
-                    case ComparisonOperator.Contains: output = string.Format("{0} LIKE {1}", fieldName, FormatSQLValue("%" + value + "%")); break;
-                    case ComparisonOperator.NotContains: output = string.Format("NOT {0} LIKE {1}", fieldName, FormatSQLValue("%" + value + "%")); break;
-                    case ComparisonOperator.StartsWith: output = string.Format("{0} LIKE {1}", fieldName, FormatSQLValue(value + "%")); break;
-                    case ComparisonOperator.EndsWith: output = string.Format("{0} LIKE {1}", fieldName, FormatSQLValue("%" + value)); break;
+                    case ComparisonOperator.EqualTo: output = $"{fieldName} = {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.NotEqualTo: output = $"{fieldName} <> {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.GreaterThan: output = $"{fieldName} > {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.GreaterThanOrEqualTo: output = $"{fieldName} >= {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.LessThan: output = $"{fieldName} < {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.LessThanOrEqualTo: output = $"{fieldName} <= {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.Like: output = $"{fieldName} LIKE {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.NotLike: output = $"NOT {fieldName} LIKE {FormatSQLValue(value)}"; break;
+                    case ComparisonOperator.In:
+                        {
+                            output = $"{fieldName} IN ({FormatSQLValue(value)})";
+                        }
+                        break;
+                    case ComparisonOperator.Contains: output = $"{fieldName} LIKE {FormatSQLValue("%" + value + "%")}"; break;
+                    case ComparisonOperator.NotContains: output = $"NOT {fieldName} LIKE {FormatSQLValue("%" + value + "%")}"; break;
+                    case ComparisonOperator.StartsWith: output = $"{fieldName} LIKE {FormatSQLValue(value + "%")}"; break;
+                    case ComparisonOperator.EndsWith: output = $"{fieldName} LIKE {FormatSQLValue("%" + value)}"; break;
                 }
             }
             else // value==null	|| value==DBNull.Value
