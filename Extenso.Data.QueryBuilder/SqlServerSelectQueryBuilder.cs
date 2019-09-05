@@ -98,7 +98,7 @@ namespace Extenso.Data.QueryBuilder
             }
 
             // Output where statement
-            if (!whereStatement.Clauses.IsNullOrEmpty())
+            if (!whereStatement.IsNullOrEmpty())
             {
                 query.Append(" ");
                 query.Append(CreateWhereStatement(whereStatement));
@@ -121,7 +121,7 @@ namespace Extenso.Data.QueryBuilder
             }
 
             // Output having statement
-            if (!havingStatement.Clauses.IsNullOrEmpty())
+            if (!havingStatement.IsNullOrEmpty())
             {
                 // Check if a Group By Clause was set
                 if (groupByColumns.Count == 0)
