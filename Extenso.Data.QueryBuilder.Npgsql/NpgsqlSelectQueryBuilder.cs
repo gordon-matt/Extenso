@@ -93,10 +93,10 @@
                     }
                     joinString += " " + EncloseTable(clause.ToTable) + " ON ";
 
-                    string fromField = CreateFieldName(clause.FromTable, clause.FromColumn);
+                    //string fromField = CreateFieldName(clause.FromTable, clause.FromColumn);
                     string toField = CreateFieldName(clause.ToTable, clause.ToColumn);
 
-                    joinString += CreateComparisonClause(fromField, clause.ComparisonOperator, new SqlLiteral(toField));
+                    joinString += CreateComparisonClause(clause.FromTable, clause.FromColumn, clause.ComparisonOperator, new SqlLiteral(toField));
 
                     query.Append(joinString);
                     query.Append(' ');

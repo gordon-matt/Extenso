@@ -12,6 +12,8 @@ namespace Extenso.Data.QueryBuilder
 
         ISelectQueryBuilder Select(IEnumerable<TableColumnPair> columns);
 
+        ISelectQueryBuilder Select(SqlLiteral literal);
+
         ISelectQueryBuilder SelectCount();
 
         ISelectQueryBuilder Distinct(bool isDistinct = true);
@@ -23,6 +25,8 @@ namespace Extenso.Data.QueryBuilder
         ISelectQueryBuilder Join(JoinType joinType, string toTableName, string toColumnName, ComparisonOperator comparisonOperator, string fromTableName, string fromColumnName);
 
         ISelectQueryBuilder Where(string tableName, string column, ComparisonOperator comparisonOperator, object value, LogicOperator logicOperator = LogicOperator.And);
+
+        ISelectQueryBuilder Where(WhereClause whereClause);
 
         ISelectQueryBuilder Where(WhereStatement whereStatement);
 

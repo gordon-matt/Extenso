@@ -24,5 +24,10 @@ namespace Extenso.Data.QueryBuilder
             FieldName = field;
             SortDirection = order;
         }
+
+        public override string ToString()
+        {
+            return $"{FieldName} {SortDirection}";
+        }
     }
 }

@@ -80,7 +80,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
             return new HtmlString(builder.Build());
         }
-        
+
         #endregion Images
 
         #region NumbersDropDown
@@ -146,7 +146,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
         /// <returns></returns>
         public static IHtmlContent JsonObject<TEntity>(this IHtmlHelper html, string name, TEntity item)
         {
-            return new HtmlString(string.Format("var {0} = {1};", name, item.JsonSerialize()));
+            return new HtmlString($"var {name} = {item.JsonSerialize()};");
         }
 
         #endregion Other
@@ -398,58 +398,8 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             return new HtmlString(sb.ToString());
         }
 
-        public static IHtmlContent EnumMultiDropDownListFor<TModel, TEnum>(this IHtmlHelper<TModel> html, Expression<Func<TModel, IEnumerable<TEnum>>> expression, string emptyText = null, object htmlAttributes = null) where TEnum : struct
-        {
-            var func = expression.Compile();
-            var selectedValues = func(html.ViewData.Model);
+        #region Cultures
 
-            var parsedSelectedValues = Enumerable.Empty<long>();
-
-            if (selectedValues != null)
-            {
-                parsedSelectedValues = selectedValues.Select(x => Convert.ToInt64(x));
-            }
-
-            var multiSelectList = EnumExtensions.ToMultiSelectList<TEnum>(parsedSelectedValues, emptyText);
-
-            return html.ListBoxFor(expression, multiSelectList, htmlAttributes);
-        }
-
-        //TODO: Test
-        public static IHtmlContent Table<T>(this IHtmlHelper html, IEnumerable<T> items, object htmlAttributes = null)
-        {
-            var builder = new FluentTagBuilder("table")
-                .MergeAttributes(htmlAttributes)
-                .StartTag("thead")
-                    .StartTag("tr");
-
-            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (var property in properties)
-            {
-                builder = builder.StartTag("th").SetInnerHtml(property.Name).EndTag();
-            }
-
-            builder
-                .EndTag() // </tr>
-                .EndTag() // </thead>
-                .StartTag("tbody");
-
-            foreach (var item in items)
-            {
-                builder = builder.StartTag("tr");
-                foreach (var property in properties)
-                {
-                    string value = property.GetValue(item).ToString();
-                    builder = builder.StartTag("td").SetInnerHtml(value).EndTag();
-                }
-                builder = builder.EndTag(); // </tr>
-            }
-            builder = builder.EndTag(); // </tbody>
-
-            return new HtmlString(builder.ToString());
-        }
-        
         public static IHtmlContent CulturesDropDownList<TModel>(
             this IHtmlHelper<TModel> html, string name, string selectedValue = null, object htmlAttributes = null, string emptyText = null)
         {
@@ -485,6 +435,68 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             return html.DropDownListFor(expression, selectList, htmlAttributes);
         }
 
+        #endregion Cultures
+
+        public static IHtmlContent EnumMultiDropDownListFor<TModel, TEnum>(
+            this IHtmlHelper<TModel> html,
+            Expression<Func<TModel, IEnumerable<TEnum>>> expression,
+            string emptyText = null,
+            object htmlAttributes = null) where TEnum : struct
+        {
+            var func = expression.Compile();
+            var selectedValues = func(html.ViewData.Model);
+
+            var parsedSelectedValues = Enumerable.Empty<long>();
+
+            if (selectedValues != null)
+            {
+                parsedSelectedValues = selectedValues.Select(x => Convert.ToInt64(x));
+            }
+
+            var multiSelectList = EnumExtensions.ToMultiSelectList<TEnum>(parsedSelectedValues, emptyText);
+
+            return html.ListBoxFor(expression, multiSelectList, htmlAttributes);
+        }
+
+        public static IHtmlContent Table<T>(this IHtmlHelper html, IEnumerable<T> items, object htmlAttributes = null)
+        {
+            var builder = new FluentTagBuilder("table")
+                .MergeAttributes(htmlAttributes)
+                .StartTag("thead")
+                    .StartTag("tr");
+
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                builder = builder
+                    .StartTag("th")
+                        .SetInnerHtml(property.Name.SplitPascal())
+                    .EndTag();
+            }
+
+            builder = builder
+                .EndTag() // </tr>
+                .EndTag() // </thead>
+                .StartTag("tbody");
+
+            foreach (var item in items)
+            {
+                builder = builder.StartTag("tr");
+                foreach (var property in properties)
+                {
+                    string value = property.GetValue(item).ToString();
+                    builder = builder.StartTag("td").SetInnerHtml(value).EndTag();
+                }
+                builder = builder.EndTag(); // </tr>
+            }
+            builder = builder.EndTag(); // </tbody>
+
+            return new HtmlString(builder.ToString());
+        }
+
+        #region Time Zones
+
         public static IHtmlContent TimeZonesDropDownList<TModel>(
             this IHtmlHelper<TModel> html, string name, string selectedValue = null, object htmlAttributes = null, string emptyText = null)
         {
@@ -519,5 +531,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
             return html.DropDownListFor(expression, selectList, htmlAttributes);
         }
+
+        #endregion Time Zones
     }
 }

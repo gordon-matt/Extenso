@@ -32,5 +32,10 @@ namespace Extenso.Data.QueryBuilder
             ToTable = toTableName;
             ToColumn = toColumnName;
         }
+
+        public override string ToString()
+        {
+            return $"{JoinType} {FromTable}.{FromColumn} {ComparisonOperator} {ToTable}.{ToColumn}";
+        }
     }
 }
