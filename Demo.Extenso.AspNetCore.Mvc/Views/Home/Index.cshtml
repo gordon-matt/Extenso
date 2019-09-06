@@ -1,0 +1,14 @@
+﻿@using Extenso.AspNetCore.Mvc.Rendering
+@model IEnumerable<PersonModel>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@Html.Table(Model, new { @class = "table" })
+
+<hr />
+
+@Html.CulturesDropDownList("Cultures", htmlAttributes: new { @class = "form-control" })
+
+@Html.TimeZonesDropDownList("TimeZones", htmlAttributes: new { @class = "form-control" })

@@ -8,22 +8,28 @@ namespace Extenso.Sandbox
     {
         private static void Main(string[] args)
         {
-            string viewName = "EnginePackageView";
+            string tableName = "EnginePackageView";
             
-            var clause1 = new WhereClause(LogicOperator.And, viewName, "BookingDate", ComparisonOperator.GreaterThanOrEqualTo, new DateTime(2019, 1, 1));
-            clause1.SubClauses.Add(new WhereClause(LogicOperator.And, viewName, "BookingDate", ComparisonOperator.LessThan, new DateTime(2019, 1, 2)));
-
-            var clause2 = new WhereClause(LogicOperator.Or, viewName, "BookingDate", ComparisonOperator.GreaterThanOrEqualTo, new DateTime(2019, 1, 3));
-            clause2.SubClauses.Add(new WhereClause(LogicOperator.And, viewName, "BookingDate", ComparisonOperator.LessThan, new DateTime(2019, 1, 4)));
-
             var query = new NpgsqlSelectQueryBuilder("dbo")
-                .SelectAll()
-                .From(viewName)
-                .Where(new WhereStatement()
-                    .AddClause(clause1)
-                    .AddClause(clause2)
+                .SelectAs(tableName, "BookingDate", "Booking Date")
+                .SelectAs(tableName, "BookingConfirmRef", "Confirm Ref")
+                .Select(new SqlLiteral(@"GetProductTypeNameFull(""ProductType"") AS ""Product Type"""))
+                .From(tableName)
+                .Where(tableName, "BookingDate", ComparisonOperator.In, new DateTime[]
+                {
+                    new DateTime(2019, 4, 4),
+                    new DateTime(2019, 4, 6)
+                })
+                .Where(tableName, "ProductType", ComparisonOperator.HasFlag, 32)
+                .Where(WhereClause.CreateContainer(LogicOperator.And)
+                    .AddSubClause(WhereClause.CreateContainer(LogicOperator.And)
+                        .AddSubClause(new WhereClause(LogicOperator.And, tableName, "BookingConfirmRef", ComparisonOperator.StartsWith, "ODH"))
+                        .AddSubClause(new WhereClause(LogicOperator.And, tableName, "BookingConfirmRef", ComparisonOperator.EndsWith, "1")))
+                    .AddSubClause(WhereClause.CreateContainer(LogicOperator.Or)
+                        .AddSubClause(new WhereClause(LogicOperator.And, tableName, "BookingConfirmRef", ComparisonOperator.StartsWith, "ODH"))
+                        .AddSubClause(new WhereClause(LogicOperator.And, tableName, "BookingConfirmRef", ComparisonOperator.EndsWith, "2")))
                 )
-                .OrderBy(viewName, "BookingDate", SortDirection.Descending)
+                .OrderBy(tableName, "BookingDate", SortDirection.Descending)
                 .Take(25);
 
             string queryText = query.BuildQuery();

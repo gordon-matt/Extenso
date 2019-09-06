@@ -66,6 +66,12 @@ namespace Extenso.Data.QueryBuilder
             return this;
         }
 
+        public virtual ISelectQueryBuilder Select(SqlLiteral literal)
+        {
+            selectedColumns.Add(literal.Value, null);
+            return this;
+        }
+
         public virtual ISelectQueryBuilder SelectCount()
         {
             selectedColumns.Clear();
@@ -125,6 +131,12 @@ namespace Extenso.Data.QueryBuilder
                 comparisonOperator,
                 value);
 
+            whereStatement.AddClause(whereClause);
+            return this;
+        }
+
+        public virtual ISelectQueryBuilder Where(WhereClause whereClause)
+        {
             whereStatement.AddClause(whereClause);
             return this;
         }
@@ -214,7 +226,7 @@ namespace Extenso.Data.QueryBuilder
 
         protected virtual string CreateFieldName(string tableName, string column)
         {
-            return string.Concat(EncloseTable(tableName), '.', EncloseIdentifier(column));
+            return $"{EncloseTable(tableName)}.{EncloseIdentifier(column)}";
         }
 
         protected virtual string CreateWhereStatement(WhereStatement statement)
@@ -232,38 +244,59 @@ namespace Extenso.Data.QueryBuilder
             return sb.ToString();
         }
 
-        protected virtual void CreateWhereClause(WhereClause clause, StringBuilder sb, bool isFirst = false)
+        protected virtual void CreateWhereClause(WhereClause clause, StringBuilder sb, bool isFirst)
         {
             if (!isFirst)
             {
                 sb.Append(clause.LogicOperator == LogicOperator.Or ? "OR " : "AND ");
             }
 
-            string fieldName = string.Concat(EncloseTable(clause.Table), '.', EncloseIdentifier(clause.Column));
+            // Encapsulate if this is a container OR if there are subclauses
+            bool doEncapsulateOuter = clause.IsContainerOnly || !clause.SubClauses.IsNullOrEmpty();
 
-            sb.Append("(");
-            sb.Append(CreateComparisonClause(fieldName, clause.ComparisonOperator, clause.Value));
-            sb.Append(" ");
+            if (doEncapsulateOuter)
+            {
+                sb.Append("(");
+            }
+
+            if (!clause.IsContainerOnly)
+            {
+                sb.Append(CreateComparisonClause(clause.Table, clause.Column, clause.ComparisonOperator, clause.Value));
+                sb.Append(" ");
+            }
 
             if (!clause.SubClauses.IsNullOrEmpty())
             {
-                sb.Append("AND (");
+                bool doEncapsulateInner = (!clause.IsContainerOnly);
 
-                isFirst = true;
-                foreach (var subClause in clause.SubClauses)
+                if (doEncapsulateInner)
                 {
-                    CreateWhereClause(subClause, sb, isFirst);
-                    isFirst = false;
+                    sb.Append("AND (");
                 }
+
+                for (int i = 0; i < clause.SubClauses.Count; i++)
+                {
+                    var subClause = clause.SubClauses.ElementAt(i);
+                    CreateWhereClause(subClause, sb, i == 0);
+                }
+                if (doEncapsulateInner)
+                {
+                    sb.Append(") ");
+                }
+            }
+
+            if (doEncapsulateOuter)
+            {
                 sb.Append(") ");
             }
 
-            sb.Append(") ");
             sb.Append(" ");
         }
 
-        protected virtual string CreateComparisonClause(string fieldName, ComparisonOperator comparisonOperator, object value)
+        protected virtual string CreateComparisonClause(string tableName, string columnName, ComparisonOperator comparisonOperator, object value)
         {
+            string fieldName = CreateFieldName(tableName, columnName);
+
             string output = string.Empty;
             if (value != null && value != DBNull.Value)
             {
@@ -279,13 +312,32 @@ namespace Extenso.Data.QueryBuilder
                     case ComparisonOperator.NotLike: output = $"NOT {fieldName} LIKE {FormatSQLValue(value)}"; break;
                     case ComparisonOperator.In:
                         {
+                            var type = value.GetType();
+                            if (type.IsCollection())
+                            {
+                                var collection = (value as IEnumerable);
+                                var collectionType = GetCollectionType(collection, type);
+                                if (collectionType == typeof(DateTime))
+                                {
+                                    // IN() won't work for dates. Need to substitue multiple date ranges instead..
+                                    //  ..for the start and end of each day in `value`
+                                    var values = collection.OfType<DateTime>().ToArray();
+                                    var clause = GetDateRangesForInOperator(tableName, columnName, values);
+                                    var sb = new StringBuilder();
+                                    CreateWhereClause(clause, sb, true);
+                                    return sb.ToString();
+                                }
+                            }
+
                             output = $"{fieldName} IN ({FormatSQLValue(value)})";
                         }
                         break;
+
                     case ComparisonOperator.Contains: output = $"{fieldName} LIKE {FormatSQLValue("%" + value + "%")}"; break;
                     case ComparisonOperator.NotContains: output = $"NOT {fieldName} LIKE {FormatSQLValue("%" + value + "%")}"; break;
                     case ComparisonOperator.StartsWith: output = $"{fieldName} LIKE {FormatSQLValue(value + "%")}"; break;
                     case ComparisonOperator.EndsWith: output = $"{fieldName} LIKE {FormatSQLValue("%" + value)}"; break;
+                    case ComparisonOperator.HasFlag: output = $"{fieldName} & {value} <> 0"; break;
                 }
             }
             else // value==null	|| value==DBNull.Value
@@ -298,8 +350,8 @@ namespace Extenso.Data.QueryBuilder
                 {
                     switch (comparisonOperator)
                     {
-                        case ComparisonOperator.EqualTo: output = fieldName + " IS NULL"; break;
-                        case ComparisonOperator.NotEqualTo: output = "NOT " + fieldName + " IS NULL"; break;
+                        case ComparisonOperator.EqualTo: output = $"{fieldName} IS NULL"; break;
+                        case ComparisonOperator.NotEqualTo: output = $"{fieldName} IS NOT NULL"; break;
                     }
                 }
             }
@@ -323,25 +375,11 @@ namespace Extenso.Data.QueryBuilder
             if (type.IsCollection())
             {
                 var collection = (someValue as IEnumerable);
-                Type collectionType;
-
-                var typeInfo = type.GetTypeInfo();
-                if (typeInfo.IsGenericType)
+                var collectionType = GetCollectionType(collection, type);
+                if (collectionType == null)
                 {
-                    collectionType = typeInfo.GetGenericArguments().Single();
-                }
-                else
-                {
-                    var firstItem = collection.OfType<object>().FirstOrDefault();
-                    if (firstItem == null)
-                    {
-                        formattedValue = "NULL";
-                        return formattedValue;
-                    }
-                    else
-                    {
-                        collectionType = firstItem.GetType();
-                    }
+                    formattedValue = "NULL";
+                    return formattedValue;
                 }
 
                 switch (collectionType.Name)
@@ -351,7 +389,7 @@ namespace Extenso.Data.QueryBuilder
                         break;
 
                     case "DateTime":
-                        formattedValue = string.Join("','", collection.OfType<DateTime>().Select(x => x.ToString("yyyy/MM/dd HH:mm:ss"))).EnquoteSingle();
+                        formattedValue = string.Join("','", collection.OfType<DateTime>().Select(x => x.ToString("yyyy-MM-dd HH:mm:ss"))).EnquoteSingle();
                         break;
 
                     case "Guid":
@@ -380,6 +418,48 @@ namespace Extenso.Data.QueryBuilder
                 }
             }
             return formattedValue;
+        }
+
+        private Type GetCollectionType(IEnumerable collection, Type parentType)
+        {
+            var typeInfo = parentType.GetTypeInfo();
+            if (typeInfo.IsGenericType)
+            {
+                return typeInfo.GetGenericArguments().Single();
+            }
+            else
+            {
+                var firstItem = collection.OfType<object>().FirstOrDefault();
+                if (firstItem != null)
+                {
+                    return firstItem.GetType();
+                }
+            }
+
+            return null;
+        }
+
+        private WhereClause GetDateRangesForInOperator(string tableName, string columnName, IEnumerable<DateTime> values)
+        {
+            var outerContainer = WhereClause.CreateContainer(LogicOperator.And);
+
+            int count = values.Count();
+            for (int i = 0; i < count; i++)
+            {
+                var dateTime = values.ElementAt(i);
+
+                var innerContainer = WhereClause.CreateContainer(i == 0 ? LogicOperator.And : LogicOperator.Or);
+
+                var clauseFrom = new WhereClause(LogicOperator.And, tableName, columnName, ComparisonOperator.GreaterThanOrEqualTo, dateTime.Date);
+                var clauseTo = new WhereClause(LogicOperator.And, tableName, columnName, ComparisonOperator.LessThan, dateTime.Date.AddDays(1));
+
+                innerContainer.AddSubClause(clauseFrom);
+                innerContainer.AddSubClause(clauseTo);
+
+                outerContainer.AddSubClause(innerContainer);
+            }
+
+            return outerContainer;
         }
 
         #endregion Non-Public Methods

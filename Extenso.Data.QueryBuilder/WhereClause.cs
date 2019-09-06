@@ -4,14 +4,31 @@ namespace Extenso.Data.QueryBuilder
 
     public class WhereClause
     {
+        public bool IsContainerOnly { get; private set; }
+
+        private WhereClause()
+        {
+            SubClauses = new List<WhereClause>();
+        }
+
         public WhereClause(LogicOperator logicOperator, string table, string column, ComparisonOperator comparisonOperator, object value)
         {
-            this.LogicOperator = logicOperator;
-            this.Table = table;
-            this.Column = column;
-            this.ComparisonOperator = comparisonOperator;
-            this.Value = value;
-            this.SubClauses = new List<WhereClause>();
+            LogicOperator = logicOperator;
+            Table = table;
+            Column = column;
+            ComparisonOperator = comparisonOperator;
+            Value = value;
+            SubClauses = new List<WhereClause>();
+            IsContainerOnly = false;
+        }
+
+        public static WhereClause CreateContainer(LogicOperator logicOperator)
+        {
+            return new WhereClause
+            {
+                IsContainerOnly = true,
+                LogicOperator = logicOperator
+            };
         }
 
         public LogicOperator LogicOperator { get; private set; }
@@ -30,6 +47,16 @@ namespace Extenso.Data.QueryBuilder
         {
             SubClauses.Add(clause);
             return this;
+        }
+
+        public override string ToString()
+        {
+            if (IsContainerOnly)
+            {
+                return "Container";
+            }
+
+            return $"{LogicOperator} {Table}.{Column} {ComparisonOperator.ToString()} {Value} - Sub Clauses: {SubClauses.Count}";
         }
     }
 }
