@@ -12,17 +12,16 @@ namespace Extenso.Data.Entity
 
         private bool isContextOwner;
         private bool disposed;
-        private readonly DbContext context;
 
         #endregion Private Members
 
-        public DbContext Context => context;
+        public DbContext Context { get; }
 
         #region Constructor / Destructor
 
         public EntityFrameworkRepositoryConnection(DbContext context, bool isContextOwner)
         {
-            this.context = context;
+            this.Context = context;
             this.isContextOwner = isContextOwner;
         }
 
@@ -37,12 +36,12 @@ namespace Extenso.Data.Entity
 
         public virtual IQueryable<TEntity> Query()
         {
-            return context.Set<TEntity>().AsNoTracking();
+            return Context.Set<TEntity>().AsNoTracking();
         }
 
         public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression)
         {
-            return context.Set<TEntity>().AsNoTracking().Where(filterExpression);
+            return Context.Set<TEntity>().AsNoTracking().Where(filterExpression);
         }
 
         #endregion IRepositoryConnection<TEntity> Members
@@ -69,9 +68,9 @@ namespace Extenso.Data.Entity
 
             if (disposing)
             {
-                if (context != null)
+                if (Context != null)
                 {
-                    context.Dispose();
+                    Context.Dispose();
                 }
             }
 
