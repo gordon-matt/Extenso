@@ -871,10 +871,10 @@ namespace Extenso.Data.Entity
         }
 
         /// <summary>
-        /// Updates all rows using an expression without retrieving entities.
+        /// Asynchronously updates all rows using an expression without retrieving entities.
         /// </summary>
         /// <param name="updateFactory">The update expression.</param>
-        /// <returns>The number of rows affected.</returns>
+        /// <returns>A task with the number of rows affected.</returns>
         public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory)
         {
             using (var context = GetContext())
@@ -884,11 +884,11 @@ namespace Extenso.Data.Entity
         }
 
         /// <summary>
-        /// Updates all rows that match the given predicate using an expression without retrieving entities.
+        /// Asynchronously updates all rows that match the given predicate using an expression without retrieving entities.
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <param name="updateFactory">The update expression.</param>
-        /// <returns>The number of rows affected.</returns>
+        /// <returns>A task with the number of rows affected.</returns>
         public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory)
         {
             using (var context = GetContext())
@@ -898,11 +898,11 @@ namespace Extenso.Data.Entity
         }
 
         /// <summary>
-        /// Updates all rows from the query using an expression without retrieving entities.
+        /// Asynchronously updates all rows from the query using an expression without retrieving entities.
         /// </summary>
         /// <param name="query">The query to update rows from without retrieving entities.</param>
         /// <param name="updateFactory">The update expression.</param>
-        /// <returns>The number of rows affected.</returns>
+        /// <returns>A task with the number of rows affected.</returns>
         public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory)
         {
             return await query.UpdateAsync(updateFactory);
