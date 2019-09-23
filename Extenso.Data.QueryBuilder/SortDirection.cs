@@ -2,7 +2,8 @@
 {
     public enum SortDirection : byte
     {
-        Ascending,
-        Descending
+        Ascending = 0,
+
+        Descending = 1
     }
 }

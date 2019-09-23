@@ -28,9 +28,6 @@
             ForeignKeyName = foreignKeyName;
         }
 
-        public override string ToString()
-        {
-            return ForeignKeyName;
-        }
+        public override string ToString() => ForeignKeyName;
     }
 }

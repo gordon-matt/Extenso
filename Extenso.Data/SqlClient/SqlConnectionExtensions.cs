@@ -45,22 +45,6 @@ namespace Extenso.Data.SqlClient
 
         public static ForeignKeyInfoCollection GetForeignKeyData(this SqlConnection connection, string tableName)
         {
-            #region Testing
-
-            //string oleConnectionString = connection.ConnectionString;
-
-            //if (!oleConnectionString.Contains("Provider"))
-            //{
-            //    oleConnectionString = oleConnectionString.Prepend("Provider=SQLOLEDB;");
-            //}
-
-            //using (OleDbConnection oleConnection = new OleDbConnection(oleConnectionString))
-            //{
-            //    return oleConnection.GetForeignKeyData(tableName);
-            //}
-
-            #endregion Testing
-
             const string CMD_FOREIGN_KEYS_FORMAT =
 @"SELECT FK_Table = FK.TABLE_NAME,
     FK_Column = CU.COLUMN_NAME,
@@ -119,7 +103,7 @@ ORDER BY 1,2,3,4";
 
         public static int GetRowCount(this SqlConnection connection, string tableName)
         {
-            return connection.ExecuteScalar(string.Format("SELECT COUNT(*) FROM [{0}]", tableName));
+            return connection.ExecuteScalar($"SELECT COUNT(*) FROM [{tableName}]");
         }
 
         public static IEnumerable<string> GetTableNames(this SqlConnection connection, bool includeViews = false)
@@ -137,11 +121,11 @@ ORDER BY 1,2,3,4";
 
             if (includeViews)
             {
-                query = string.Concat("USE ", databaseName, " SELECT [name] FROM sys.Tables WHERE [name] <> 'sysdiagrams' UNION SELECT [name] FROM sys.Views WHERE [name] <> 'sysdiagrams' ORDER BY [name]");
+                query = $"USE {databaseName} SELECT [name] FROM sys.Tables WHERE [name] <> 'sysdiagrams' UNION SELECT [name] FROM sys.Views WHERE [name] <> 'sysdiagrams' ORDER BY [name]";
             }
             else
             {
-                query = string.Concat("USE ", databaseName, " SELECT [name] FROM sys.Tables WHERE [name] <> 'sysdiagrams' ORDER BY [name]");
+                query = $"USE {databaseName} SELECT [name] FROM sys.Tables WHERE [name] <> 'sysdiagrams' ORDER BY [name]";
             }
 
             var tables = new List<string>();
@@ -186,7 +170,7 @@ ORDER BY 1,2,3,4";
 
         public static IEnumerable<string> GetViewNames(this SqlConnection connection, string databaseName)
         {
-            string query = string.Concat("USE ", databaseName, " SELECT [name] FROM sys.Views WHERE [name] <> 'sysdiagrams' ORDER BY [name]");
+            string query = $"USE {databaseName} [name] FROM sys.Views WHERE [name] <> 'sysdiagrams' ORDER BY [name]";
 
             var tables = new List<string>();
 
@@ -221,22 +205,6 @@ ORDER BY 1,2,3,4";
 
         public static ColumnInfoCollection GetColumnData(this SqlConnection connection, string tableName)
         {
-            #region Testing
-
-            //string oleConnectionString = connection.ConnectionString;
-
-            //if (!oleConnectionString.Contains("Provider"))
-            //{
-            //    oleConnectionString = oleConnectionString.Prepend("Provider=SQLOLEDB;");
-            //}
-
-            //using (OleDbConnection oleConnection = new OleDbConnection(oleConnectionString))
-            //{
-            //    return oleConnection.GetColumnData(tableName);
-            //}
-
-            #endregion Testing
-
             const string CMD_COLUMN_INFO_FORMAT =
 @"SELECT
     COLUMN_NAME,

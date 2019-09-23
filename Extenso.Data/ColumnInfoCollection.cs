@@ -5,14 +5,10 @@ namespace Extenso.Data
 {
     public sealed class ColumnInfoCollection : List<ColumnInfo>
     {
-        public ColumnInfo this[string name]
-        {
-            get { return this.SingleOrDefault(x => x.ColumnName == name); }
-        }
+        public ColumnInfo this[string name] =>
+            this.SingleOrDefault(x => x.ColumnName == name);
 
-        public override string ToString()
-        {
-            return string.Concat("Count: ", this.Count);
-        }
+        public override string ToString() =>
+            string.Concat("Count: ", Count);
     }
 }
