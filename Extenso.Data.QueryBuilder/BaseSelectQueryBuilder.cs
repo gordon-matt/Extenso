@@ -147,6 +147,12 @@ namespace Extenso.Data.QueryBuilder
             return this;
         }
 
+        public virtual ISelectQueryBuilder Where(string literal)
+        {
+            whereStatement = WhereStatement.CreateFromLiteral(literal);
+            return this;
+        }
+
         public virtual ISelectQueryBuilder OrderBy(string tableName, string column, SortDirection order)
         {
             var orderByClause = new OrderByClause(
@@ -231,17 +237,24 @@ namespace Extenso.Data.QueryBuilder
 
         protected virtual string CreateWhereStatement(WhereStatement statement)
         {
-            var sb = new StringBuilder();
-            sb.Append("WHERE ");
-
-            bool isFirst = true;
-            foreach (var clause in statement)
+            if (!string.IsNullOrEmpty(statement.Literal))
             {
-                CreateWhereClause(clause, sb, isFirst);
-                isFirst = false;
+                return statement.Literal;
             }
+            else
+            {
+                var sb = new StringBuilder();
+                sb.Append("WHERE ");
 
-            return sb.ToString();
+                bool isFirst = true;
+                foreach (var clause in statement)
+                {
+                    CreateWhereClause(clause, sb, isFirst);
+                    isFirst = false;
+                }
+
+                return sb.ToString();
+            }
         }
 
         protected virtual void CreateWhereClause(WhereClause clause, StringBuilder sb, bool isFirst)

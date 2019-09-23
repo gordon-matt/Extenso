@@ -104,7 +104,7 @@
             }
 
             // Output where statement
-            if (!whereStatement.IsNullOrEmpty())
+            if (!whereStatement.IsNullOrEmpty() || !string.IsNullOrEmpty(whereStatement.Literal))
             {
                 query.Append(" ");
                 query.Append(CreateWhereStatement(whereStatement));
@@ -127,7 +127,7 @@
             }
 
             // Output having statement
-            if (!havingStatement.IsNullOrEmpty())
+            if (!havingStatement.IsNullOrEmpty() || !string.IsNullOrEmpty(havingStatement.Literal))
             {
                 // Check if a Group By Clause was set
                 if (groupByColumns.Count == 0)

@@ -34,9 +34,6 @@ namespace Extenso.Data
         /// </summary>
         public bool IsAutoIncremented { get; set; }
 
-        public override string ToString()
-        {
-            return ColumnName;
-        }
+        public override string ToString() => ColumnName;
     }
 }

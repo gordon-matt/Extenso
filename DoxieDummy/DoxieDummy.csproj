@@ -28,6 +28,7 @@
     <ProjectReference Include="..\Extenso.Data.QueryBuilder.Npgsql\Extenso.Data.QueryBuilder.Npgsql.csproj" />
     <ProjectReference Include="..\Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj" />
     <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
+    <ProjectReference Include="..\Extenso.Drawing\Extenso.Drawing.csproj" />
   </ItemGroup>
 
 </Project>

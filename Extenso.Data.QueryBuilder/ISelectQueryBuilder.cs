@@ -30,6 +30,8 @@ namespace Extenso.Data.QueryBuilder
 
         ISelectQueryBuilder Where(WhereStatement whereStatement);
 
+        ISelectQueryBuilder Where(string literal);
+
         ISelectQueryBuilder OrderBy(string tableName, string column, SortDirection sortDirection);
 
         ISelectQueryBuilder GroupBy(string tableName, params string[] columns);
