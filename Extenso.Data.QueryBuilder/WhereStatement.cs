@@ -5,9 +5,9 @@ namespace Extenso.Data.QueryBuilder
 
     public class WhereStatement : List<WhereClause>
     {
-        public string Literal { get; private set; }
+        public string Literal { get; set; }
 
-        internal static WhereStatement CreateFromLiteral(string literal)
+        public static WhereStatement CreateFromLiteral(string literal)
         {
             if (string.IsNullOrEmpty(literal))
             {

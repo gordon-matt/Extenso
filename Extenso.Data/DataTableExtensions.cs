@@ -67,9 +67,7 @@ namespace Extenso.Data
                 foreach (DataColumn column in table.Columns)
                 {
                     string value = row[column].ToString();
-
-                    sb.Append(value.Contains(",") ? value.EnquoteDouble() : value);
-
+                    sb.Append(value.EnquoteDouble());
                     sb.Append(',');
                 }
 

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using Extenso.Collections;
+using Extenso.Data;
 using Extenso.Data.QueryBuilder;
 using Extenso.Data.QueryBuilder.Npgsql;
 
@@ -7,6 +10,48 @@ namespace Extenso.Sandbox
     internal class Program
     {
         private static void Main(string[] args)
+        {
+            //QueryBuilder();
+
+            DataTableExtensions();
+
+            Console.ReadLine();
+        }
+
+        private static void DataTableExtensions()
+        {
+            var people = new List<Person>
+            {
+                new Person
+                {
+                    FamilyName = "Anderson",
+                    GivenNames = "James",
+                    Notes = @"Some
+notes
+with new
+lines"
+                },
+                new Person
+                {
+                    FamilyName = "Anderson",
+                    GivenNames = "Jane",
+                    Notes = @"Some
+notes
+with new
+lines 2"
+                }
+            };
+
+            var table = people.ToDataTable();
+
+            string csv = table.ToCsv();
+
+            string csv2 = people.ToCsv();
+
+            Console.WriteLine("CSV: " + csv);
+        }
+
+        private static void QueryBuilder()
         {
             string tableName = "EnginePackageView";
 
@@ -44,8 +89,15 @@ namespace Extenso.Sandbox
 
             string queryText = query.BuildQuery();
             Console.WriteLine(queryText);
-
-            Console.ReadLine();
         }
+    }
+
+    public class Person
+    {
+        public string FamilyName { get; set; }
+
+        public string GivenNames { get; set; }
+
+        public string Notes { get; set; }
     }
 }
