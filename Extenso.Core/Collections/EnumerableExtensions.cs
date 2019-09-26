@@ -284,7 +284,7 @@ namespace Extenso.Collections
                 foreach (var propertyInfo in properties)
                 {
                     string value = propertyInfo.GetValue(element).ToString();
-                    sb.Append(value.Contains(",") ? value.EnquoteDouble() : value);
+                    sb.Append(value.EnquoteDouble());
                     sb.Append(',');
                 }
 
