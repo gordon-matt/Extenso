@@ -105,7 +105,7 @@
             if (!whereStatement.IsNullOrEmpty() || !string.IsNullOrEmpty(whereStatement.Literal))
             {
                 query.Append(" ");
-                query.Append(CreateWhereStatement(whereStatement));
+                query.Append(CreateWhereStatement(whereStatement, false));
 
                 //query.Append(" WHERE ");
                 //query.Append(whereStatement.BuildWhereStatement());
@@ -133,7 +133,7 @@
                     throw new Exception("Having statement was set without Group By");
                 }
                 query.Append(" ");
-                query.Append(CreateWhereStatement(havingStatement));
+                query.Append(CreateWhereStatement(havingStatement, true));
                 //query.Append(" HAVING ");
                 //query.Append(havingStatement.BuildWhereStatement());
             }

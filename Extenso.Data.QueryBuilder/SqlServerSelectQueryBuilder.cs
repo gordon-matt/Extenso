@@ -101,10 +101,7 @@ namespace Extenso.Data.QueryBuilder
             if (!whereStatement.IsNullOrEmpty() || !string.IsNullOrEmpty(whereStatement.Literal))
             {
                 query.Append(" ");
-                query.Append(CreateWhereStatement(whereStatement));
-
-                //query.Append(" WHERE ");
-                //query.Append(whereStatement.BuildWhereStatement());
+                query.Append(CreateWhereStatement(whereStatement, false));
             }
 
             // Output GroupBy statement
@@ -129,9 +126,7 @@ namespace Extenso.Data.QueryBuilder
                     throw new Exception("Having statement was set without Group By");
                 }
                 query.Append(" ");
-                query.Append(CreateWhereStatement(havingStatement));
-                //query.Append(" HAVING ");
-                //query.Append(havingStatement.BuildWhereStatement());
+                query.Append(CreateWhereStatement(havingStatement, true));
             }
 
             // Output OrderBy statement
