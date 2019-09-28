@@ -155,7 +155,7 @@ namespace Extenso.Data.QueryBuilder
 
         public virtual ISelectQueryBuilder OrderBy(string column, SortDirection order)
         {
-            orderByStatement.Add(new OrderByClause(column, order));
+            orderByStatement.Add(new OrderByClause(EncloseIdentifier(column), order));
             return this;
         }
 
