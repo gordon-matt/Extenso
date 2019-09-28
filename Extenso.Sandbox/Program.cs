@@ -84,7 +84,7 @@ lines 2"
                 .From(tableName)
                 // Added new Where() overload, in case you want to build your own filters with something like jQuery QueryBuilder (https://querybuilder.js.org/)
                 .Where($@"""BookingDate"" >= '2019-01-01' AND ""BookingDate"" < '2019-02-01' AND ""ProductType"" & 32 <> 0")
-                .OrderBy(@"""Product Type""", SortDirection.Descending)
+                .OrderBy("Product Type", SortDirection.Descending)
                 .Take(25);
 
             string queryText = query.BuildQuery();
