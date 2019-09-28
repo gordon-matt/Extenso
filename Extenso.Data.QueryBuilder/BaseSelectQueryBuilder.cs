@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Extenso.Collections;
+using Extenso.Reflection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Extenso.Collections;
-using Extenso.Reflection;
 
 namespace Extenso.Data.QueryBuilder
 {
@@ -153,13 +153,15 @@ namespace Extenso.Data.QueryBuilder
             return this;
         }
 
+        public virtual ISelectQueryBuilder OrderBy(string column, SortDirection order)
+        {
+            orderByStatement.Add(new OrderByClause(column, order));
+            return this;
+        }
+
         public virtual ISelectQueryBuilder OrderBy(string tableName, string column, SortDirection order)
         {
-            var orderByClause = new OrderByClause(
-                string.Concat(EncloseTable(tableName), '.', EncloseIdentifier(column)),
-                order);
-
-            orderByStatement.Add(orderByClause);
+            orderByStatement.Add(new OrderByClause(CreateFieldName(tableName, column), order));
             return this;
         }
 
@@ -195,9 +197,21 @@ namespace Extenso.Data.QueryBuilder
             return this;
         }
 
+        public virtual ISelectQueryBuilder Having(WhereClause whereClause)
+        {
+            havingStatement.AddClause(whereClause);
+            return this;
+        }
+
         public virtual ISelectQueryBuilder Having(WhereStatement havingStatement)
         {
             this.havingStatement = havingStatement;
+            return this;
+        }
+
+        public virtual ISelectQueryBuilder Having(string literal)
+        {
+            havingStatement = WhereStatement.CreateFromLiteral(literal);
             return this;
         }
 
@@ -235,16 +249,21 @@ namespace Extenso.Data.QueryBuilder
             return $"{EncloseTable(tableName)}.{EncloseIdentifier(column)}";
         }
 
-        protected virtual string CreateWhereStatement(WhereStatement statement)
+        protected virtual string CreateWhereStatement(WhereStatement statement, bool isHaving)
         {
             if (!string.IsNullOrEmpty(statement.Literal))
             {
-                return statement.Literal;
+                if (isHaving)
+                {
+                    return $"HAVING {statement.Literal}";
+                }
+
+                return $"WHERE {statement.Literal}";
             }
             else
             {
                 var sb = new StringBuilder();
-                sb.Append("WHERE ");
+                sb.Append(isHaving ? "HAVING " : "WHERE ");
 
                 bool isFirst = true;
                 foreach (var clause in statement)

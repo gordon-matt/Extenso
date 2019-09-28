@@ -32,6 +32,8 @@ namespace Extenso.Data.QueryBuilder
 
         ISelectQueryBuilder Where(string literal);
 
+        ISelectQueryBuilder OrderBy(string column, SortDirection order);
+
         ISelectQueryBuilder OrderBy(string tableName, string column, SortDirection sortDirection);
 
         ISelectQueryBuilder GroupBy(string tableName, params string[] columns);
@@ -40,7 +42,11 @@ namespace Extenso.Data.QueryBuilder
 
         ISelectQueryBuilder Having(string tableName, string column, ComparisonOperator comparisonOperator, object value, LogicOperator logicOperator = LogicOperator.And);
 
+        ISelectQueryBuilder Having(WhereClause whereClause);
+
         ISelectQueryBuilder Having(WhereStatement havingStatement);
+
+        ISelectQueryBuilder Having(string literal);
 
         ISelectQueryBuilder Skip(int count);
 

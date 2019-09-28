@@ -14,12 +14,6 @@ namespace Extenso.Data.QueryBuilder
                 throw new ArgumentNullException(nameof(literal));
             }
 
-            literal = literal.Trim();
-            if (!literal.StartsWith("WHERE ", StringComparison.InvariantCultureIgnoreCase))
-            {
-                literal = $"WHERE {literal} ";
-            }
-
             return new WhereStatement
             {
                 Literal = literal
