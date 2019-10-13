@@ -9,6 +9,25 @@
 
 <hr />
 
-@Html.CulturesDropDownList("Cultures", htmlAttributes: new { @class = "form-control" })
-
-@Html.TimeZonesDropDownList("TimeZones", htmlAttributes: new { @class = "form-control" })
+<form>
+    <div class="form-group">
+        <label>Cultures</label>
+        @Html.CulturesDropDownList("Cultures", htmlAttributes: new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label>Time Zones</label>
+        @Html.TimeZonesDropDownList("TimeZones", htmlAttributes: new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label>CheckBox List</label>
+        @Html.CheckBoxList(
+            "DaysOfWeek",
+            Html.GetEnumSelectList<DayOfWeek>(),
+            null,
+            new { @class = "form-check-label" },
+            new { @class = "form-check-input" },
+            inputInsideLabel: true,
+            wrapInDiv: true,
+            wrapperHtmlAttributes: new { @class = "form-check" })
+    </div>
+</form>

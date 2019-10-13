@@ -258,6 +258,32 @@ namespace Extenso.Collections
         /// <returns>A string containing the elements of source in CSV format.</returns>
         public static string ToCsv<T>(this IEnumerable<T> source, bool outputColumnNames = true)
         {
+            return ToDelimited(source, ",", outputColumnNames);
+        }
+
+        /// <summary>
+        /// Writes the elements to file in CSV format.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a CSV formatted file from.</param>
+        /// <param name="filePath">The full path of the file to write to.</param>
+        /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
+        /// <returns>true if successful; otherwise false.</returns>
+        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath, bool outputColumnNames = true)
+        {
+            return ToDelimited(source, ",", filePath, outputColumnNames);
+        }
+
+        /// <summary>
+        /// Returns a delimited string containing the elements of source.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a delimited string from.</param>
+        /// <param name="delimiter">The character(s) used to separate the property values of each element in source.</param>
+        /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
+        /// <returns>A delimited string containing the elements of source.</returns>
+        public static string ToDelimited<T>(this IEnumerable<T> source, string delimiter = ",", bool outputColumnNames = true)
+        {
             var sb = new StringBuilder(2000);
 
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -269,7 +295,7 @@ namespace Extenso.Collections
                 foreach (var propertyInfo in properties)
                 {
                     sb.Append(propertyInfo.Name);
-                    sb.Append(',');
+                    sb.Append(delimiter);
                 }
                 sb.Remove(sb.Length - 1, 1);
                 sb.Append(Environment.NewLine);
@@ -283,9 +309,9 @@ namespace Extenso.Collections
             {
                 foreach (var propertyInfo in properties)
                 {
-                    string value = propertyInfo.GetValue(element).ToString();
+                    string value = propertyInfo.GetValue(element).ToString().Replace("\"", "\"\"");
                     sb.Append(value.EnquoteDouble());
-                    sb.Append(',');
+                    sb.Append(delimiter);
                 }
 
                 // Remove trailing comma
@@ -299,16 +325,17 @@ namespace Extenso.Collections
         }
 
         /// <summary>
-        /// Writes the elements to file in CSV format.
+        /// Writes the elements to file using the specified delimiter.
         /// </summary>
         /// <typeparam name="T">The type of the elements of source.</typeparam>
-        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a CSV formatted file from.</param>
+        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a delimited file from.</param>
+        /// <param name="delimiter">The character(s) used to separate the property values of each element in source.</param>
         /// <param name="filePath">The full path of the file to write to.</param>
         /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
         /// <returns>true if successful; otherwise false.</returns>
-        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath, bool outputColumnNames = true)
+        public static bool ToDelimited<T>(this IEnumerable<T> source, string filePath, string delimiter = ",", bool outputColumnNames = true)
         {
-            return source.ToCsv(outputColumnNames).ToFile(filePath);
+            return source.ToDelimited(delimiter, outputColumnNames).ToFile(filePath);
         }
 
         /// <summary>

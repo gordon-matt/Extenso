@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Extenso.AspNetCore.Mvc.ViewFeatures;
+using Extenso.Collections;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,13 +13,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Extenso.AspNetCore.Mvc.ViewFeatures;
-using Extenso.Collections;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
 namespace Extenso.AspNetCore.Mvc.Rendering
 {
@@ -40,7 +40,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
                 base64 = Convert.ToBase64String(memoryStream.ToArray());
             }
 
-            return Image(helper, urlHelper, string.Concat("data:image/jpg;base64,", base64), alt, htmlAttributes);
+            return Image(helper, urlHelper, $"data:image/jpg;base64,{base64}", alt, htmlAttributes);
         }
 
         public static IHtmlContent Image(this IHtmlHelper helper, IUrlHelper urlHelper, string src, string alt, object htmlAttributes = null)
@@ -151,14 +151,159 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
         #endregion Other
 
+        //public static IHtmlContent CheckBoxList(
+        //    this IHtmlHelper html,
+        //    string name,
+        //    IEnumerable<SelectListItem> selectList,
+        //    IEnumerable<string> selectedValues,
+        //    byte numberOfColumns = 1,
+        //    object labelHtmlAttributes = null,
+        //    object checkboxHtmlAttributes = null)
+        //{
+        //    string fullHtmlFieldName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
+        //    string fullHtmlFieldId = html.ViewData.TemplateInfo.GetFullHtmlFieldId(name);
+
+        //    var values = new List<string>();
+        //    if (selectedValues != null)
+        //    {
+        //        values.AddRange(selectedValues);
+        //    }
+
+        //    if (selectList.IsNullOrEmpty())
+        //    {
+        //        return HtmlString.Empty;
+        //    }
+
+        //    int index = 0;
+
+        //    var sb = new StringBuilder();
+
+        //    bool groupByCategory = (selectList.First() is ExtendedSelectListItem);
+
+        //    if (groupByCategory)
+        //    {
+        //        var items = selectList.Cast<ExtendedSelectListItem>().ToList();
+        //        var groups = items.GroupBy(x => x.Category);
+
+        //        foreach (var @group in groups)
+        //        {
+        //            sb.Append($@"<label class=""checkbox-list-group-label"">{group.Key}</label>");
+
+        //            foreach (var item in group)
+        //            {
+        //                string checkbox = CreateCheckBox(item, values, fullHtmlFieldId, fullHtmlFieldName, index, labelHtmlAttributes, checkboxHtmlAttributes);
+        //                sb.Append(checkbox);
+        //                index++;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var rows = (int)Math.Ceiling((selectList.Count() * 1d) / numberOfColumns);
+        //        var columnWidth = (int)Math.Ceiling(12d / numberOfColumns);
+
+        //        for (var i = 0; i < numberOfColumns; i++)
+        //        {
+        //            var items = selectList.Skip(i * rows).Take(rows);
+        //            sb.Append($"<div class=\"col-md-{columnWidth}\">");
+
+        //            foreach (var item in items)
+        //            {
+        //                string checkbox = CreateCheckBox(item, values, fullHtmlFieldId, fullHtmlFieldName, index, labelHtmlAttributes, checkboxHtmlAttributes);
+        //                sb.Append(checkbox);
+        //                index++;
+        //            }
+
+        //            sb.Append("</div>");
+        //        }
+        //    }
+
+        //    return new HtmlString(sb.ToString());
+        //}
+
+        //public static IHtmlContent CheckBoxListFor<TModel, TProperty>(
+        //    this IHtmlHelper<TModel> html,
+        //    Expression<Func<TModel, IEnumerable<TProperty>>> expression,
+        //    IEnumerable<SelectListItem> selectList,
+        //    byte numberOfColumns = 1,
+        //    object labelHtmlAttributes = null,
+        //    object checkboxHtmlAttributes = null) where TModel : class
+        //{
+        //    string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+        //    string fullHtmlFieldName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
+        //    string fullHtmlFieldId = html.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName);
+
+        //    var func = expression.Compile();
+        //    var selectedValues = func(html.ViewData.Model);
+
+        //    var values = new List<string>();
+        //    if (selectedValues != null)
+        //    {
+        //        values.AddRange(selectedValues.Select(x => Convert.ToString(x)));
+        //    }
+
+        //    if (selectList == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(selectList));
+        //    }
+
+        //    int index = 0;
+
+        //    var sb = new StringBuilder();
+
+        //    bool groupByCategory = (selectList.First() is ExtendedSelectListItem);
+
+        //    if (groupByCategory)
+        //    {
+        //        var items = selectList.Cast<ExtendedSelectListItem>().ToList();
+        //        var groups = items.GroupBy(x => x.Category);
+
+        //        foreach (var @group in groups)
+        //        {
+        //            sb.Append($"<strong>{group.Key}</strong>");
+
+        //            foreach (var item in group)
+        //            {
+        //                string checkbox = CreateCheckBox(item, values, fullHtmlFieldId, fullHtmlFieldName, index, labelHtmlAttributes, checkboxHtmlAttributes);
+        //                sb.Append(checkbox);
+        //                index++;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var rows = (int)Math.Ceiling((selectList.Count() * 1d) / numberOfColumns);
+        //        var columnWidth = (int)Math.Ceiling(12d / numberOfColumns);
+
+        //        for (var i = 0; i < numberOfColumns; i++)
+        //        {
+        //            var items = selectList.Skip(i * rows).Take(rows);
+        //            sb.Append($"<div class=\"col-md-{columnWidth}\">");
+
+        //            foreach (var item in items)
+        //            {
+        //                string checkbox = CreateCheckBox(item, values, fullHtmlFieldId, fullHtmlFieldName, index, labelHtmlAttributes, checkboxHtmlAttributes);
+        //                sb.Append(checkbox);
+        //                index++;
+        //            }
+
+        //            sb.Append("</div>");
+        //        }
+        //    }
+
+        //    return new HtmlString(sb.ToString());
+        //}
+
         public static IHtmlContent CheckBoxList(
             this IHtmlHelper html,
             string name,
             IEnumerable<SelectListItem> selectList,
             IEnumerable<string> selectedValues,
-            byte numberOfColumns = 1,
             object labelHtmlAttributes = null,
-            object checkboxHtmlAttributes = null)
+            object checkboxHtmlAttributes = null,
+            bool inputInsideLabel = true,
+            bool wrapInDiv = true,
+            object wrapperHtmlAttributes = null)
         {
             string fullHtmlFieldName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
             string fullHtmlFieldId = html.ViewData.TemplateInfo.GetFullHtmlFieldId(name);
@@ -187,86 +332,45 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
                 foreach (var @group in groups)
                 {
-                    sb.AppendFormat(@"<label class=""checkbox-list-group-label"">{0}</label>", group.Key);
+                    sb.Append($@"<label class=""checkbox-list-group-label"">{group.Key}</label>");
 
                     foreach (var item in group)
                     {
-                        var isChecked = values.Contains(item.Value);
+                        string checkbox = CreateCheckBox(
+                            item,
+                            values,
+                            fullHtmlFieldId,
+                            fullHtmlFieldName,
+                            index,
+                            labelHtmlAttributes,
+                            checkboxHtmlAttributes,
+                            inputInsideLabel,
+                            wrapInDiv,
+                            wrapperHtmlAttributes);
 
-                        var tagBuilder = new FluentTagBuilder("label")
-                            .MergeAttribute("for", fullHtmlFieldName)
-                            .MergeAttributes(labelHtmlAttributes)
-                            .StartTag("input", TagRenderMode.SelfClosing)
-                                .MergeAttribute("type", "checkbox")
-                                .MergeAttribute("name", fullHtmlFieldName)
-                                .MergeAttribute("id", fullHtmlFieldId + "_" + index)
-                                .MergeAttribute("value", item.Value);
-
-                        if (isChecked)
-                        {
-                            tagBuilder = tagBuilder.MergeAttribute("checked", "checked");
-                        }
-
-                        if (checkboxHtmlAttributes != null)
-                        {
-                            tagBuilder = tagBuilder.MergeAttributes(checkboxHtmlAttributes);
-                        }
-
-                        tagBuilder = tagBuilder.EndTag(); //end checkbox
-                        tagBuilder = tagBuilder
-                            .StartTag("span")
-                                .SetInnerHtml(item.Text)
-                            .EndTag();
-
-                        sb.Append(tagBuilder.ToString());
+                        sb.Append(checkbox);
                         index++;
                     }
                 }
             }
             else
             {
-                var rows = (int)Math.Ceiling((selectList.Count() * 1d) / numberOfColumns);
-                var columnWidth = (int)Math.Ceiling(12d / numberOfColumns);
-
-                for (var i = 0; i < numberOfColumns; i++)
+                foreach (var item in selectList)
                 {
-                    var items = selectList.Skip(i * rows).Take(rows);
-                    sb.AppendFormat("<div class=\"col-md-{0}\">", columnWidth);
+                    string checkbox = CreateCheckBox(
+                        item,
+                        values,
+                        fullHtmlFieldId,
+                        fullHtmlFieldName,
+                        index,
+                        labelHtmlAttributes,
+                        checkboxHtmlAttributes,
+                        inputInsideLabel,
+                        wrapInDiv,
+                        wrapperHtmlAttributes);
 
-                    foreach (var item in items)
-                    {
-                        var isChecked = values.Contains(item.Value);
-
-                        var tagBuilder = new FluentTagBuilder("label")
-                            .MergeAttribute("for", fullHtmlFieldName)
-                            .MergeAttributes(labelHtmlAttributes)
-                            .StartTag("input", TagRenderMode.SelfClosing)
-                                .MergeAttribute("type", "checkbox")
-                                .MergeAttribute("name", fullHtmlFieldName)
-                                .MergeAttribute("id", fullHtmlFieldId + "_" + index)
-                                .MergeAttribute("value", item.Value);
-
-                        if (isChecked)
-                        {
-                            tagBuilder = tagBuilder.MergeAttribute("checked", "checked");
-                        }
-
-                        if (checkboxHtmlAttributes != null)
-                        {
-                            tagBuilder = tagBuilder.MergeAttributes(checkboxHtmlAttributes);
-                        }
-
-                        tagBuilder = tagBuilder.EndTag(); //end checkbox
-                        tagBuilder = tagBuilder
-                            .StartTag("span")
-                                .SetInnerHtml(item.Text)
-                            .EndTag();
-
-                        sb.Append(tagBuilder.ToString());
-                        index++;
-                    }
-
-                    sb.Append("</div>");
+                    sb.Append(checkbox);
+                    index++;
                 }
             }
 
@@ -277,9 +381,11 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             this IHtmlHelper<TModel> html,
             Expression<Func<TModel, IEnumerable<TProperty>>> expression,
             IEnumerable<SelectListItem> selectList,
-            byte numberOfColumns = 1,
             object labelHtmlAttributes = null,
-            object checkboxHtmlAttributes = null) where TModel : class
+            object checkboxHtmlAttributes = null,
+            bool inputInsideLabel = true,
+            bool wrapInDiv = true,
+            object wrapperHtmlAttributes = null) where TModel : class
         {
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
             string fullHtmlFieldName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
@@ -312,90 +418,121 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
                 foreach (var @group in groups)
                 {
-                    sb.AppendFormat("<strong>{0}</strong>", group.Key);
+                    sb.Append($"<strong>{group.Key}</strong>");
 
                     foreach (var item in group)
                     {
-                        var isChecked = values.Contains(item.Value);
+                        string checkbox = CreateCheckBox(
+                            item,
+                            values,
+                            fullHtmlFieldId,
+                            fullHtmlFieldName,
+                            index,
+                            labelHtmlAttributes,
+                            checkboxHtmlAttributes,
+                            inputInsideLabel,
+                            wrapInDiv,
+                            wrapperHtmlAttributes);
 
-                        var tagBuilder = new FluentTagBuilder("label")
-                            .MergeAttribute("for", fullHtmlFieldName)
-                            .MergeAttributes(labelHtmlAttributes)
-                            .StartTag("input", TagRenderMode.SelfClosing)
-                                .MergeAttribute("type", "checkbox")
-                                .MergeAttribute("name", fullHtmlFieldName)
-                                .MergeAttribute("id", fullHtmlFieldId + "_" + index)
-                                .MergeAttribute("value", item.Value);
-
-                        if (isChecked)
-                        {
-                            tagBuilder = tagBuilder.MergeAttribute("checked", "checked");
-                        }
-
-                        if (checkboxHtmlAttributes != null)
-                        {
-                            tagBuilder = tagBuilder.MergeAttributes(checkboxHtmlAttributes);
-                        }
-
-                        tagBuilder = tagBuilder.EndTag(); //end checkbox
-                        tagBuilder = tagBuilder
-                            .StartTag("span")
-                                .SetInnerHtml(item.Text)
-                            .EndTag();
-
-                        sb.Append(tagBuilder.ToString());
+                        sb.Append(checkbox);
                         index++;
                     }
                 }
             }
             else
             {
-                var rows = (int)Math.Ceiling((selectList.Count() * 1d) / numberOfColumns);
-                var columnWidth = (int)Math.Ceiling(12d / numberOfColumns);
-
-                for (var i = 0; i < numberOfColumns; i++)
+                foreach (var item in selectList)
                 {
-                    var items = selectList.Skip(i * rows).Take(rows);
-                    sb.AppendFormat("<div class=\"col-md-{0}\">", columnWidth);
+                    string checkbox = CreateCheckBox(
+                        item,
+                        values,
+                        fullHtmlFieldId,
+                        fullHtmlFieldName,
+                        index,
+                        labelHtmlAttributes,
+                        checkboxHtmlAttributes,
+                        inputInsideLabel,
+                        wrapInDiv,
+                        wrapperHtmlAttributes);
 
-                    foreach (var item in items)
-                    {
-                        var isChecked = values.Contains(item.Value);
-
-                        var tagBuilder = new FluentTagBuilder("label")
-                            .MergeAttribute("for", fullHtmlFieldName)
-                            .MergeAttributes(labelHtmlAttributes)
-                            .StartTag("input", TagRenderMode.SelfClosing)
-                                .MergeAttribute("type", "checkbox")
-                                .MergeAttribute("name", fullHtmlFieldName)
-                                .MergeAttribute("id", fullHtmlFieldId + "_" + index)
-                                .MergeAttribute("value", item.Value);
-
-                        if (isChecked)
-                        {
-                            tagBuilder = tagBuilder.MergeAttribute("checked", "checked");
-                        }
-
-                        if (checkboxHtmlAttributes != null)
-                        {
-                            tagBuilder = tagBuilder.MergeAttributes(checkboxHtmlAttributes);
-                        }
-
-                        tagBuilder = tagBuilder.EndTag(); //end checkbox
-                        tagBuilder = tagBuilder
-                            .StartTag("span")
-                                .SetInnerHtml(item.Text)
-                            .EndTag();
-
-                        sb.Append(tagBuilder.ToString());
-                        index++;
-                    }
-
-                    sb.Append("</div>");
+                    sb.Append(checkbox);
+                    index++;
                 }
             }
 
             return new HtmlString(sb.ToString());
+        }
+
+        private static string CreateCheckBox(
+            SelectListItem item,
+            IEnumerable<string> values,
+            string fullHtmlFieldId,
+            string fullHtmlFieldName,
+            int index,
+            object labelHtmlAttributes,
+            object checkboxHtmlAttributes,
+            bool inputInsideLabel,
+            bool wrapInDiv,
+            object wrapperHtmlAttributes)
+        {
+            FluentTagBuilder tagBuilder = null;
+
+            if (wrapInDiv)
+            {
+                tagBuilder = new FluentTagBuilder("div")
+                    .MergeAttributes(wrapperHtmlAttributes ?? new { @class = "extenso-checkbox" })
+                    .StartTag("label");
+            }
+            else
+            {
+                tagBuilder = new FluentTagBuilder("label");
+            }
+
+            tagBuilder = tagBuilder
+                .MergeAttribute("for", fullHtmlFieldName)
+                .MergeAttributes(labelHtmlAttributes);
+
+            if (!inputInsideLabel)
+            {
+                tagBuilder = tagBuilder.EndTag(); // end label
+            }
+
+            #region CheckBox Input
+
+            tagBuilder = tagBuilder
+                .StartTag("input", TagRenderMode.SelfClosing)
+                    .MergeAttribute("type", "checkbox")
+                    .MergeAttribute("name", fullHtmlFieldName)
+                    .MergeAttribute("id", $"{fullHtmlFieldId}_{index}")
+                    .MergeAttribute("value", item.Value);
+
+            bool isChecked = values.Contains(item.Value);
+            if (isChecked)
+            {
+                tagBuilder = tagBuilder.MergeAttribute("checked", "checked");
+            }
+
+            if (checkboxHtmlAttributes != null)
+            {
+                tagBuilder = tagBuilder.MergeAttributes(checkboxHtmlAttributes);
+            }
+
+            tagBuilder = tagBuilder.EndTag(); //end checkbox
+
+            #endregion CheckBox Input
+
+            // CheckBox Texts
+            tagBuilder = tagBuilder
+                .StartTag("span")
+                    .SetInnerHtml(item.Text)
+                .EndTag(); // end span
+
+            if (inputInsideLabel)
+            {
+                tagBuilder = tagBuilder.EndTag(); // end label
+            }
+
+            return tagBuilder.ToString(); // final div or label ended automatically
         }
 
         #region Cultures
