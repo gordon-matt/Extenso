@@ -9,6 +9,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
         {
         }
 
+        // TODO: Support html attributes
         public PanelSection BeginHeader(string title)
         {
             return new PanelSection(Element.Provider, PanelSectionType.Heading, TextWriter, title);

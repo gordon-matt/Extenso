@@ -18,6 +18,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
 
         public PanelSectionType SectionType { get; private set; }
 
+        // TODO: Support html attributes
         internal PanelSection(IExtensoUIProvider provider, PanelSectionType sectionType, TextWriter writer, string title = null)
         {
             this.provider = provider;

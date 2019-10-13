@@ -36,12 +36,17 @@ namespace Extenso.Data
             return (T)Convert.ChangeType(table.Compute(string.Format("{1}({0})", columnName, functionName), string.Empty), typeof(T));
         }
 
-        public static string ToCsv(this DataTable table)
+        public static string ToCsv(this DataTable table, bool outputColumnNames = true)
         {
-            return table.ToCsv(true);
+            return ToDelimited(table, ",", outputColumnNames);
         }
 
-        public static string ToCsv(this DataTable table, bool outputColumnNames)
+        public static bool ToCsv(this DataTable table, string filePath, bool outputColumnNames = true)
+        {
+            return ToDelimited(table, filePath, ",", outputColumnNames);
+        }
+
+        public static string ToDelimited(this DataTable table, string delimiter = ",", bool outputColumnNames = true)
         {
             var sb = new StringBuilder(2000);
 
@@ -52,7 +57,7 @@ namespace Extenso.Data
                 foreach (DataColumn column in table.Columns)
                 {
                     sb.Append(column.ColumnName);
-                    sb.Append(',');
+                    sb.Append(delimiter);
                 }
                 sb.Remove(sb.Length - 1, 1);
                 sb.Append(Environment.NewLine);
@@ -66,9 +71,9 @@ namespace Extenso.Data
             {
                 foreach (DataColumn column in table.Columns)
                 {
-                    string value = row[column].ToString();
+                    string value = row[column].ToString().Replace("\"", "\"\"");
                     sb.Append(value.EnquoteDouble());
-                    sb.Append(',');
+                    sb.Append(delimiter);
                 }
 
                 //Remove Last ','
@@ -81,53 +86,9 @@ namespace Extenso.Data
             return sb.ToString();
         }
 
-        public static bool ToCsv(this DataTable table, string filePath)
+        public static bool ToDelimited(this DataTable table, string filePath, string delimiter = ",", bool outputColumnNames = true)
         {
-            return table.ToCsv(filePath, true);
-        }
-
-        public static bool ToCsv(this DataTable table, string filePath, bool outputColumnNames)
-        {
-            var sb = new StringBuilder(2000);
-
-            #region Column Names
-
-            if (outputColumnNames)
-            {
-                foreach (DataColumn column in table.Columns)
-                {
-                    sb.Append(column.ColumnName);
-                    sb.Append(',');
-                }
-                sb.Remove(sb.Length - 1, 1);
-                sb.Append(Environment.NewLine);
-            }
-
-            #endregion Column Names
-
-            #region Rows (Data)
-
-            foreach (DataRow row in table.Rows)
-            {
-                foreach (DataColumn column in table.Columns)
-                {
-                    string value = row[column].ToString();
-
-                    sb.Append(value.Contains(",") ? value.EnquoteDouble() : value);
-
-                    sb.Append(',');
-                }
-
-                //Remove Last ','
-                sb.Remove(sb.Length - 1, 1);
-                sb.Append(Environment.NewLine);
-            }
-
-            #endregion Rows (Data)
-
-            bool result = sb.ToString().ToFile(filePath);
-
-            return result;
+            return table.ToDelimited(delimiter, outputColumnNames).ToFile(filePath);
         }
     }
 }

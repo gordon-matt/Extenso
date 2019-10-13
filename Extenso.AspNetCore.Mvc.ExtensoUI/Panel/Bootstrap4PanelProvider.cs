@@ -17,7 +17,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
             switch (panel.State)
             {
                 case State.Default: panel.EnsureClass("card"); break;
-                default: panel.EnsureClass("card text-white"); break;
+                default: panel.EnsureClass("card"); break;
             }
 
             var builder = new FluentTagBuilder("div", TagRenderMode.StartTag)
@@ -48,7 +48,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
             {
                 case PanelSectionType.Heading:
                     {
-                        writer.Write($@"<div class=""card-header {headerClass}"">{title}");
+                        writer.Write($@"<div class=""card-header {headerClass} text-white"">{title}");
                     }
                     break;
 
