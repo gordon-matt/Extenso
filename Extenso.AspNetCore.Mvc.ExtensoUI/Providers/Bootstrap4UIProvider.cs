@@ -85,13 +85,14 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers
         {
             switch (state)
             {
-                case State.Danger: return "btn btn-danger";
-                case State.Default: return "btn btn-secondary";
-                case State.Info: return "btn btn-info";
-                case State.Inverse: return "btn btn-dark";
                 case State.Primary: return "btn btn-primary";
+                case State.Secondary: return "btn btn-secondary";
                 case State.Success: return "btn btn-success";
+                case State.Danger: return "btn btn-danger";
                 case State.Warning: return "btn btn-warning";
+                case State.Info: return "btn btn-info";
+                case State.Light: return "btn btn-light";
+                case State.Dark: return "btn btn-dark";
                 default: return "btn btn-secondary";
             }
         }

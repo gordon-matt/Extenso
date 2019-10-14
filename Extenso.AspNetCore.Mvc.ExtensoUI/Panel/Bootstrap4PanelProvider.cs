@@ -14,11 +14,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
         {
             this.panel = panel;
 
-            switch (panel.State)
-            {
-                case State.Default: panel.EnsureClass("card"); break;
-                default: panel.EnsureClass("card"); break;
-            }
+            panel.EnsureClass("card");
 
             var builder = new FluentTagBuilder("div", TagRenderMode.StartTag)
                 .MergeAttributes(panel.HtmlAttributes);
@@ -34,12 +30,13 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
 
             switch (panel.State)
             {
-                case State.Default: headerClass = "bg-light"; break;
-                case State.Danger: headerClass = "bg-danger"; break;
-                case State.Info: headerClass = "bg-info"; break;
-                case State.Inverse: headerClass = "bg-dark"; break;
+                case State.Secondary: headerClass = "bg-secondary"; break;
                 case State.Success: headerClass = "bg-success"; break;
+                case State.Danger: headerClass = "bg-danger"; break;
                 case State.Warning: headerClass = "bg-warning"; break;
+                case State.Info: headerClass = "bg-info"; break;
+                case State.Light: headerClass = "bg-light"; break;
+                case State.Dark: headerClass = "bg-dark"; break;
                 case State.Primary:
                 default: headerClass = "bg-primary"; break;
             }

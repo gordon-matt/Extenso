@@ -29,13 +29,14 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Foundation
         {
             switch (state)
             {
-                case State.Danger: return "button alert";
-                case State.Default: return "button secondary";
-                case State.Info: return "button primary";
-                case State.Inverse: return "button secondary";
                 case State.Primary: return "button primary";
+                case State.Secondary: return "button secondary";
                 case State.Success: return "button success";
+                case State.Danger: return "button alert";
                 case State.Warning: return "button warning";
+                case State.Info: return "button primary";
+                case State.Light: return "button secondary";
+                case State.Dark: return "button primary";
                 default: return "button";
             }
         }
