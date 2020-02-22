@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Demo.Extenso.AspNetCore.Mvc.OData.Data;
 using Demo.Extenso.AspNetCore.Mvc.OData.Infrastructure;
 using Demo.Extenso.AspNetCore.Mvc.OData.Models;
@@ -19,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData
 {
@@ -31,10 +31,8 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
 
         public IConfiguration Configuration { get; }
 
-        public IServiceProvider ServiceProvider { get; private set; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -48,20 +46,18 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
 
             services.AddOData();
 
-            services.AddMvc();
-
-            ServiceProvider = InitializeContainer(services);
-            return ServiceProvider;
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -82,13 +78,14 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
             }
 
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseMvc(routes =>
             {
                 // Enable all OData functions
                 routes.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
 
-                var registrars = ServiceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
+                var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
                 foreach (var registrar in registrars)
                 {
                     registrar.Register(routes, app.ApplicationServices);
@@ -100,11 +97,8 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
             });
         }
 
-        private static IServiceProvider InitializeContainer(IServiceCollection services)
+        public void ConfigureContainer(ContainerBuilder builder)
         {
-            var builder = new ContainerBuilder();
-            builder.Populate(services);
-
             builder.RegisterType<ApplicationDbContextFactory>().As<IDbContextFactory>().SingleInstance();
 
             builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
@@ -112,9 +106,6 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
-
-            var container = builder.Build();
-            return new AutofacServiceProvider(container);
         }
     }
 }

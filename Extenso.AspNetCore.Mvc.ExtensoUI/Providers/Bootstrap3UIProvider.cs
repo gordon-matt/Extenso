@@ -31,14 +31,13 @@
         {
             switch (state)
             {
-                case State.Primary: return "btn btn-primary";
-                case State.Secondary: return "btn btn-default";
-                case State.Success: return "btn btn-success";
                 case State.Danger: return "btn btn-danger";
-                case State.Warning: return "btn btn-warning";
+                case State.Default: return "btn btn-default";
                 case State.Info: return "btn btn-info";
-                case State.Dark: return "btn btn-inverse";
-                case State.Light: return "btn btn-default";
+                case State.Inverse: return "btn btn-inverse";
+                case State.Primary: return "btn btn-primary";
+                case State.Success: return "btn btn-success";
+                case State.Warning: return "btn btn-warning";
                 default: return "btn btn-default";
             }
         }

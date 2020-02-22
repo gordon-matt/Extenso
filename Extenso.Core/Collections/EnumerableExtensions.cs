@@ -407,17 +407,6 @@ namespace Extenso.Collections
         }
 
         /// <summary>
-        /// Creates a System.Collections.Generic.HashSet`1 from an System.Collections.Generic.IEnumerable`1.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of source.</typeparam>
-        /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a System.Collections.Generic.HashSet`1 from.</param>
-        /// <returns>A System.Collections.Generic.HashSet`1 that contains elements from the input sequence.</returns>
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
-        {
-            return new HashSet<T>(source);
-        }
-
-        /// <summary>
         /// Creates a System.Collections.Generic.List`1 by converting each element in the specified System.Collections.Generic.IEnumerable`1 to the specified type.
         /// </summary>
         /// <typeparam name="T">The type to convert the elements of source to.</typeparam>

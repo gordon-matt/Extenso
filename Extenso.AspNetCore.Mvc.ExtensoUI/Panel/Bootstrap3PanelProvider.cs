@@ -12,14 +12,13 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
         {
             switch (panel.State)
             {
-                case State.Primary: panel.EnsureClass("panel panel-primary"); break;
-                case State.Secondary: panel.EnsureClass("panel panel-default"); break;
-                case State.Success: panel.EnsureClass("panel panel-success"); break;
+                case State.Default: panel.EnsureClass("panel panel-default"); break;
                 case State.Danger: panel.EnsureClass("panel panel-danger"); break;
-                case State.Warning: panel.EnsureClass("panel panel-warning"); break;
                 case State.Info: panel.EnsureClass("panel panel-info"); break;
-                case State.Light: panel.EnsureClass("panel panel-default"); break;
-                case State.Dark: panel.EnsureClass("panel panel-inverse"); break;
+                case State.Inverse: panel.EnsureClass("panel panel-inverse"); break;
+                case State.Primary: panel.EnsureClass("panel panel-primary"); break;
+                case State.Success: panel.EnsureClass("panel panel-success"); break;
+                case State.Warning: panel.EnsureClass("panel panel-warning"); break;
             }
 
             var builder = new FluentTagBuilder("div", TagRenderMode.StartTag)

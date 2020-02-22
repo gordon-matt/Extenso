@@ -2,13 +2,12 @@
 {
     public enum State : byte
     {
+        Default,
         Primary,
-        Secondary,
-        Success,
-        Danger,
-        Warning,
         Info,
-        Light,
-        Dark
+        Success,
+        Warning,
+        Danger,
+        Inverse
     }
 }
