@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Extensions.Internal;
 
 namespace Extenso.Data.Entity
 {
@@ -16,11 +15,23 @@ namespace Extenso.Data.Entity
             return condition ? source.Include(path) : source;
         }
 
+        //public static async Task<HashSet<TSource>> ToHashSetAsync<TSource>(
+        //    this IAsyncEnumerable<TSource> source, CancellationToken cancellationToken = default)
+        //{
+        //    var list = new List<TSource>();
+        //    await foreach (var element in source.WithCancellation(cancellationToken))
+        //    {
+        //        list.Add(element);
+        //    }
+
+        //    return list;
+        //}
+
         public static async Task<HashSet<TSource>> ToHashSetAsync<TSource>(
             this IQueryable<TSource> source,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var asyncEnumerator = source.AsAsyncEnumerable().GetEnumerator();
+            var asyncEnumerator = source.AsAsyncEnumerable().GetAsyncEnumerator(cancellationToken);
 
             var hashSet = new HashSet<TSource>();
 
@@ -28,7 +39,7 @@ namespace Extenso.Data.Entity
             {
                 while (true)
                 {
-                    if (await asyncEnumerator.MoveNext(cancellationToken))
+                    if (await asyncEnumerator.MoveNextAsync())
                     {
                         hashSet.Add(asyncEnumerator.Current);
                     }
@@ -39,7 +50,7 @@ namespace Extenso.Data.Entity
             {
                 if (asyncEnumerator != null)
                 {
-                    asyncEnumerator.Dispose();
+                    await asyncEnumerator.DisposeAsync();
                 }
             }
             asyncEnumerator = null;

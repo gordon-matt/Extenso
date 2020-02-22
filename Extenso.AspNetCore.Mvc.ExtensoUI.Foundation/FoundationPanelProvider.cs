@@ -12,14 +12,13 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Foundation
         {
             switch (panel.State)
             {
-                case State.Primary: panel.EnsureClass("callout primary"); break;
-                case State.Secondary: panel.EnsureClass("callout secondary"); break;
-                case State.Success: panel.EnsureClass("callout success"); break;
                 case State.Danger: panel.EnsureClass("callout alert"); break;
+                case State.Info: panel.EnsureClass("callout secondary"); break;
+                case State.Inverse: panel.EnsureClass("callout secondary"); break;
+                case State.Primary: panel.EnsureClass("callout primary"); break;
+                case State.Success: panel.EnsureClass("callout success"); break;
                 case State.Warning: panel.EnsureClass("callout warning"); break;
-                case State.Info: panel.EnsureClass("callout primary"); break;
-                case State.Light: panel.EnsureClass("callout secondary"); break;
-                case State.Dark: panel.EnsureClass("callout primary"); break;
+                case State.Default:
                 default: panel.EnsureClass("callout"); break;
             }
 
