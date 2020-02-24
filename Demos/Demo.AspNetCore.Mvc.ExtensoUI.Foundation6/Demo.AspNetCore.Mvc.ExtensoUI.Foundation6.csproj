@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation.csproj" />
     <ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />
   </ItemGroup>
