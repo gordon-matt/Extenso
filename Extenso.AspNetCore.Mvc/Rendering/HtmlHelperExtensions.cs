@@ -1,11 +1,4 @@
-﻿using Extenso.AspNetCore.Mvc.ViewFeatures;
-using Extenso.Collections;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -13,6 +6,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using Extenso.AspNetCore.Mvc.ViewFeatures;
+using Extenso.Collections;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Extenso.AspNetCore.Mvc.Rendering
 {
@@ -387,7 +386,10 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             bool wrapInDiv = true,
             object wrapperHtmlAttributes = null) where TModel : class
         {
-            string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+            var expresionProvider = html.ViewContext.HttpContext.RequestServices
+                .GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
+
+            string htmlFieldName = expresionProvider.GetExpressionText(expression);
             string fullHtmlFieldName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
             string fullHtmlFieldId = html.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName);
 

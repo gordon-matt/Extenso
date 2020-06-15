@@ -158,20 +158,6 @@ namespace Extenso
         /// <summary>
         /// Converts the string representation of the name or numeric value of one or more
         /// enumerated constants to an equivalent enumerated object. A parameter specifies
-        /// whether the operation is case-insensitive.
-        /// </summary>
-        /// <typeparam name="T">The type of the enumeration.</typeparam>
-        /// <param name="source">The string containing the name or value to convert.</param>
-        /// <param name="ignoreCase">true to ignore case; false to regard case.</param>
-        /// <returns>An object of type T whose value is represented by source.</returns>
-        public static T ToEnum<T>(this string source, bool ignoreCase = true) where T : struct
-        {
-            return Parse<T>(source, ignoreCase);
-        }
-
-        /// <summary>
-        /// Converts the string representation of the name or numeric value of one or more
-        /// enumerated constants to an equivalent enumerated object. A parameter specifies
         /// whether the operation is case-sensitive. Another parameter specifies the
         /// value to use in case the operation fails.
         /// </summary>
@@ -180,15 +166,14 @@ namespace Extenso
         /// <param name="ignoreCase">true to ignore case; false to regard case.</param>
         /// <param name="fallback">The value to use in case the operation fails.</param>
         /// <returns>An object of type T whose value is represented by source.</returns>
-        public static T ToEnum<T>(this string source, bool ignoreCase = true, T fallback = default(T)) where T : struct
+        public static T ToEnum<T>(this string source, bool ignoreCase = true, T fallback = default) where T : struct
         {
             if (string.IsNullOrWhiteSpace(source))
             {
                 return fallback;
             }
 
-            T result;
-            if (TryParse(source, out result, ignoreCase))
+            if (TryParse(source, out T result, ignoreCase))
             {
                 return result;
             }

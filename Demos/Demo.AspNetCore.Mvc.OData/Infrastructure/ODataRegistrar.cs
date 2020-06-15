@@ -11,11 +11,21 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Infrastructure
     {
         public void Register(IRouteBuilder routes, IServiceProvider services)
         {
-            ODataModelBuilder builder = new ODataConventionModelBuilder(services);
-
-            builder.EntitySet<Person>("PersonApi");
-
+            var builder = GetBuilder(services);
             routes.MapODataServiceRoute("OData", "odata", builder.GetEdmModel());
+        }
+
+        public void Register(IEndpointRouteBuilder endpoints, IServiceProvider services)
+        {
+            var builder = GetBuilder(services);
+            endpoints.MapODataRoute("OData", "odata", builder.GetEdmModel());
+        }
+
+        private ODataModelBuilder GetBuilder(IServiceProvider services)
+        {
+            ODataModelBuilder builder = new ODataConventionModelBuilder(services);
+            builder.EntitySet<Person>("PersonApi");
+            return builder;
         }
     }
 }
