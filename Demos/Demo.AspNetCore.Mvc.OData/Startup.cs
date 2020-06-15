@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,10 +45,8 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
 
             services.AddOData();
 
-            services.AddMvc(options =>
-            {
-                options.EnableEndpointRouting = false;
-            });
+            services.AddControllersWithViews();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,30 +67,33 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
             // Add support for node_modules but only during development
             if (env.IsDevelopment())
             {
-                app.UseStaticFiles(new StaticFileOptions()
+                app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"node_modules")),
                     RequestPath = new PathString("/vendor")
                 });
             }
 
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                // Enable all OData functions
-                routes.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
+                endpoints.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
 
                 var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
                 foreach (var registrar in registrars)
                 {
-                    registrar.Register(routes, app.ApplicationServices);
+                    registrar.Register(endpoints, app.ApplicationServices);
                 }
 
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapRazorPages();
             });
         }
 
