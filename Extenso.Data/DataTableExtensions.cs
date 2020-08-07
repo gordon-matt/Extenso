@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Extenso.Data
 {
@@ -36,17 +37,17 @@ namespace Extenso.Data
             return (T)Convert.ChangeType(table.Compute(string.Format("{1}({0})", columnName, functionName), string.Empty), typeof(T));
         }
 
-        public static string ToCsv(this DataTable table, bool outputColumnNames = true)
+        public static string ToCsv(this DataTable table, bool outputColumnNames = true, bool alwaysEnquote = true)
         {
-            return ToDelimited(table, ",", outputColumnNames);
+            return ToDelimited(table, ",", outputColumnNames, alwaysEnquote);
         }
 
-        public static bool ToCsv(this DataTable table, string filePath, bool outputColumnNames = true)
+        public static bool ToCsv(this DataTable table, string filePath, bool outputColumnNames = true, bool alwaysEnquote = true)
         {
-            return ToDelimited(table, filePath, ",", outputColumnNames);
+            return ToDelimited(table, filePath, ",", outputColumnNames, alwaysEnquote);
         }
 
-        public static string ToDelimited(this DataTable table, string delimiter = ",", bool outputColumnNames = true)
+        public static string ToDelimited(this DataTable table, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
         {
             var sb = new StringBuilder(2000);
 
@@ -72,7 +73,18 @@ namespace Extenso.Data
                 foreach (DataColumn column in table.Columns)
                 {
                     string value = row[column].ToString().Replace("\"", "\"\"");
-                    sb.Append(value.EnquoteDouble());
+
+                    if (alwaysEnquote || value.Contains(delimiter))
+                    {
+                        sb.Append(value.EnquoteDouble());
+                    }
+                    else
+                    {
+                        value = Regex.Replace(value, @"\r\n", " ");
+                        value = Regex.Replace(value, @"\t|\r|\n", " ");
+                        sb.Append(value);
+                    }
+
                     sb.Append(delimiter);
                 }
 
@@ -86,9 +98,9 @@ namespace Extenso.Data
             return sb.ToString();
         }
 
-        public static bool ToDelimited(this DataTable table, string filePath, string delimiter = ",", bool outputColumnNames = true)
+        public static bool ToDelimited(this DataTable table, string filePath, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
         {
-            return table.ToDelimited(delimiter, outputColumnNames).ToFile(filePath);
+            return table.ToDelimited(delimiter, outputColumnNames, alwaysEnquote).ToFile(filePath);
         }
     }
 }

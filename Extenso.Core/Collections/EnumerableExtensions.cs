@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Extenso.Collections
 {
@@ -256,9 +257,9 @@ namespace Extenso.Collections
         /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a CSV formatted string from.</param>
         /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
         /// <returns>A string containing the elements of source in CSV format.</returns>
-        public static string ToCsv<T>(this IEnumerable<T> source, bool outputColumnNames = true)
+        public static string ToCsv<T>(this IEnumerable<T> source, bool outputColumnNames = true, bool alwaysEnquote = true)
         {
-            return ToDelimited(source, ",", outputColumnNames);
+            return ToDelimited(source, ",", outputColumnNames, alwaysEnquote);
         }
 
         /// <summary>
@@ -269,9 +270,9 @@ namespace Extenso.Collections
         /// <param name="filePath">The full path of the file to write to.</param>
         /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
         /// <returns>true if successful; otherwise false.</returns>
-        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath, bool outputColumnNames = true)
+        public static bool ToCsv<T>(this IEnumerable<T> source, string filePath, bool outputColumnNames = true, bool alwaysEnquote = true)
         {
-            return ToDelimited(source, ",", filePath, outputColumnNames);
+            return ToDelimited(source, ",", filePath, outputColumnNames, alwaysEnquote);
         }
 
         /// <summary>
@@ -282,7 +283,7 @@ namespace Extenso.Collections
         /// <param name="delimiter">The character(s) used to separate the property values of each element in source.</param>
         /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
         /// <returns>A delimited string containing the elements of source.</returns>
-        public static string ToDelimited<T>(this IEnumerable<T> source, string delimiter = ",", bool outputColumnNames = true)
+        public static string ToDelimited<T>(this IEnumerable<T> source, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
         {
             var sb = new StringBuilder(2000);
 
@@ -310,7 +311,18 @@ namespace Extenso.Collections
                 foreach (var propertyInfo in properties)
                 {
                     string value = propertyInfo.GetValue(element).ToString().Replace("\"", "\"\"");
-                    sb.Append(value.EnquoteDouble());
+
+                    if (alwaysEnquote || value.Contains(delimiter))
+                    {
+                        sb.Append(value.EnquoteDouble());
+                    }
+                    else
+                    {
+                        value = Regex.Replace(value, @"\r\n", " ");
+                        value = Regex.Replace(value, @"\t|\r|\n", " ");
+                        sb.Append(value);
+                    }
+
                     sb.Append(delimiter);
                 }
 
@@ -333,9 +345,9 @@ namespace Extenso.Collections
         /// <param name="filePath">The full path of the file to write to.</param>
         /// <param name="outputColumnNames">Specifies whether to output column names or not.</param>
         /// <returns>true if successful; otherwise false.</returns>
-        public static bool ToDelimited<T>(this IEnumerable<T> source, string filePath, string delimiter = ",", bool outputColumnNames = true)
+        public static bool ToDelimited<T>(this IEnumerable<T> source, string filePath, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
         {
-            return source.ToDelimited(delimiter, outputColumnNames).ToFile(filePath);
+            return source.ToDelimited(delimiter, outputColumnNames, alwaysEnquote).ToFile(filePath);
         }
 
         /// <summary>

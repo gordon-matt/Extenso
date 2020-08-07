@@ -6,21 +6,24 @@ namespace Extenso.Data
 {
     public static class DataSetExtensions
     {
-        public static IDictionary<int, string> ToDelimited(this DataSet dataSet, string delimiter = ",", bool outputColumnNames = true)
+        public static IDictionary<int, string> ToDelimited(this DataSet dataSet, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
         {
             var results = new Dictionary<int, string>();
 
             for (int i = 0; i < dataSet.Tables.Count; i++)
             {
                 var table = dataSet.Tables[i];
-                string csv = table.ToDelimited(delimiter, outputColumnNames);
+                string csv = table.ToDelimited(
+                    delimiter,
+                    outputColumnNames: outputColumnNames,
+                    alwaysEnquote: alwaysEnquote);
                 results.Add(i, csv);
             }
 
             return results;
         }
 
-        public static void ToDelimited(this DataSet dataSet, string directoryPath, string delimiter = ",", bool outputColumnNames = true)
+        public static void ToDelimited(this DataSet dataSet, string directoryPath, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
         {
             string tableName = string.Empty;
             int tableCount = 0;
@@ -37,7 +40,11 @@ namespace Extenso.Data
                 }
 
                 string filePath = Path.Combine(directoryPath, $"{tableName}.csv");
-                table.ToDelimited(filePath, delimiter, outputColumnNames);
+                table.ToDelimited(
+                    filePath,
+                    delimiter,
+                    outputColumnNames: outputColumnNames,
+                    alwaysEnquote: alwaysEnquote);
             }
         }
     }
