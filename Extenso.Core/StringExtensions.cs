@@ -392,6 +392,11 @@ namespace Extenso
         /// <returns>A Base64 encoded string of compressed data.</returns>
         public static string GZipCompress(this string source)
         {
+            if (string.IsNullOrEmpty(source))
+            {
+                return null;
+            }
+
             var bytes = Encoding.UTF8.GetBytes(source);
 
             using (var memoryStream = new MemoryStream())

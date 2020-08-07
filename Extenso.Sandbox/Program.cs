@@ -11,9 +11,9 @@ namespace Extenso.Sandbox
     {
         private static void Main(string[] args)
         {
-            QueryBuilder();
+            //QueryBuilder();
 
-            //DataTableExtensions();
+            DataTableExtensions();
 
             Console.ReadLine();
         }
@@ -24,11 +24,11 @@ namespace Extenso.Sandbox
             {
                 new Person
                 {
-                    FamilyName = "Anderson",
+                    FamilyName = "Anderson	",
                     GivenNames = "James",
                     Notes = @"Some
 notes
-with new
+with 	new
 lines"
                 },
                 new Person
@@ -38,13 +38,13 @@ lines"
                     Notes = @"Some
 notes
 with new
-lines 2"
+lines 	2"
                 }
             };
 
             var table = people.ToDataTable();
 
-            string csv = table.ToCsv();
+            string csv = table.ToDelimited(delimiter: "|", alwaysEnquote: false);
 
             string csv2 = people.ToCsv();
 
