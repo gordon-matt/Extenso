@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Extenso.Collections
 {
@@ -35,6 +36,28 @@ namespace Extenso.Collections
             {
                 source.Add(value);
             }
+        }
+
+        public static bool RemoveFirst<T>(this ICollection<T> source)
+        {
+            if (source.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            var item = source.First();
+            return source.Remove(item);
+        }
+
+        public static bool RemoveLast<T>(this ICollection<T> source)
+        {
+            if (source.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            var item = source.Last();
+            return source.Remove(item);
         }
 
         /// <summary>
