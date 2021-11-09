@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Extenso.AspNetCore.OData\Extenso.AspNetCore.OData.csproj" />
-    <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
-    <ProjectReference Include="..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
-    <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
+    <ProjectReference Include="..\..\Extenso.AspNetCore.OData\Extenso.AspNetCore.OData.csproj" />
+    <ProjectReference Include="..\..\Extenso.Core\Extenso.Core.csproj" />
+    <ProjectReference Include="..\..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
+    <ProjectReference Include="..\..\Extenso.Data\Extenso.Data.csproj" />
   </ItemGroup>
 
 </Project>
