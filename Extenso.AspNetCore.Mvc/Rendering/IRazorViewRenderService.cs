@@ -23,15 +23,18 @@ namespace Extenso.AspNetCore.Mvc.Rendering
     {
         private static ActionContext reusableActionContext;
 
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IServiceProvider serviceProvider;
         private readonly IRazorViewEngine razorViewEngine;
         private readonly ITempDataProvider tempDataProvider;
 
         public RazorViewRenderService(
+            IHttpContextAccessor httpContextAccessor,
             IServiceProvider serviceProvider,
             IRazorViewEngine razorViewEngine,
             ITempDataProvider tempDataProvider)
         {
+            this.httpContextAccessor = httpContextAccessor;
             this.serviceProvider = serviceProvider;
             this.razorViewEngine = razorViewEngine;
             this.tempDataProvider = tempDataProvider;
@@ -44,7 +47,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
                 if (reusableActionContext == null)
                 {
                     reusableActionContext = new ActionContext(
-                        new DefaultHttpContext { RequestServices = serviceProvider },
+                        httpContextAccessor == null ? new DefaultHttpContext { RequestServices = serviceProvider } : httpContextAccessor.HttpContext,
                         new RouteData(),
                         new ActionDescriptor());
                 }
@@ -62,7 +65,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             else
             {
                 actionContext = new ActionContext(
-                    new DefaultHttpContext { RequestServices = serviceProvider },
+                    httpContextAccessor == null ? new DefaultHttpContext { RequestServices = serviceProvider } : httpContextAccessor.HttpContext,
                     routeData,
                     new ActionDescriptor());
             }

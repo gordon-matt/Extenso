@@ -76,10 +76,5 @@ namespace Extenso.Collections
                 }
             }
         }
-
-        public static TProp MostOccurring<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func)
-        {
-            return items.GroupBy(func).OrderByDescending(x => x.Count()).First().Key;
-        }
     }
 }
