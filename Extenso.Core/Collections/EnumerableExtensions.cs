@@ -201,6 +201,21 @@ namespace Extenso.Collections
             return source.Select(selector).Join(separator);
         }
 
+        public static TProp MostOccurring<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func)
+        {
+            return items.GroupBy(func).OrderByDescending(x => x.Count()).First().Key;
+        }
+
+        public static TProp MostOccurringOrDefault<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func)
+        {
+            if (items.IsNullOrEmpty())
+            {
+                return default;
+            }
+
+            return items.MostOccurring(func);
+        }
+
         /// <summary>
         /// Produces the set union of two sequences by using the default equality comparer. If either of the sequences is null or empty, the other sequence is returned.
         /// </summary>
