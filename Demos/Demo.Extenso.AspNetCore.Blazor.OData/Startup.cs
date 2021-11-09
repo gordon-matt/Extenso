@@ -51,7 +51,6 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddSingleton<WeatherForecastService>();
 
             services.AddBlazorise(options =>
             {
