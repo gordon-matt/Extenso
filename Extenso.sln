@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Core", "Extenso.Core\Extenso.Core.csproj", "{51162094-170C-4014-ADA5-E5D41ACFD1FF}"
 EndProject
@@ -65,7 +65,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Data.QueryBuilder", "D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Sandbox", "Extenso.Sandbox\Extenso.Sandbox.csproj", "{D923E155-2C52-4690-800B-C7E53305AD9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Extenso.AspNetCore.Mvc", "Demo.Extenso.AspNetCore.Mvc\Demo.Extenso.AspNetCore.Mvc.csproj", "{A408BF84-8BB9-4E60-9118-99930508B7DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Extenso.AspNetCore.Mvc", "Demo.Extenso.AspNetCore.Mvc\Demo.Extenso.AspNetCore.Mvc.csproj", "{A408BF84-8BB9-4E60-9118-99930508B7DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Extenso.AspNetCore.Blazor.OData", "Demo.Extenso.AspNetCore.Blazor.OData\Demo.Extenso.AspNetCore.Blazor.OData.csproj", "{44A64035-109B-48CC-A11D-25C75BF64C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -173,6 +175,10 @@ Global
 		{A408BF84-8BB9-4E60-9118-99930508B7DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A408BF84-8BB9-4E60-9118-99930508B7DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A408BF84-8BB9-4E60-9118-99930508B7DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44A64035-109B-48CC-A11D-25C75BF64C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44A64035-109B-48CC-A11D-25C75BF64C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44A64035-109B-48CC-A11D-25C75BF64C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44A64035-109B-48CC-A11D-25C75BF64C16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -193,6 +199,7 @@ Global
 		{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2} = {50793D41-3796-444D-A9A5-F0A1C83ED59B}
 		{D923E155-2C52-4690-800B-C7E53305AD9C} = {4ABD18F5-B7DA-4590-9CB1-1200B6EBEB58}
 		{A408BF84-8BB9-4E60-9118-99930508B7DF} = {376F048F-9868-4FAF-A7C5-1F468DBBE3A0}
+		{44A64035-109B-48CC-A11D-25C75BF64C16} = {376F048F-9868-4FAF-A7C5-1F468DBBE3A0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}
