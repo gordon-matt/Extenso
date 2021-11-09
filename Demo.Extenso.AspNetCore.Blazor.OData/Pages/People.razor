@@ -1,0 +1,98 @@
+﻿@using Demo.Extenso.AspNetCore.Blazor.OData.Data.Domain
+
+@page "/people"
+@inherits BaseDataPage<Person, int>
+
+<h1>People</h1>
+
+<Row id="grid-section" hidden="@(ShowEditMode == true)">
+    <Column ColumnSize="ColumnSize.Is12" Class="mb-3">
+        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="Create">
+            <Icon Name="IconName.PlusCircle"></Icon>
+            Create
+        </RadzenButton>
+    </Column>
+
+    <Column ColumnSize="ColumnSize.Is12">
+        <RadzenDataGrid @ref="DataGrid"
+                        IsLoading="@IsLoading"
+                        LoadData="@LoadGridAsync"
+                        Data="Records"
+                        Count="@RecordCount"
+                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                        FilterMode="FilterMode.Advanced"
+                        AllowSorting="true"
+                        AllowFiltering="true"
+                        AllowPaging="true"
+                        PageSize="10"
+                        TItem="Person"
+                        ColumnWidth="200px">
+            <Columns>
+                <RadzenDataGridColumn TItem="Person" Property="FamilyName" Title="Family Name" Width="150px" />
+                <RadzenDataGridColumn TItem="Person" Property="GivenNames" Title="Given Name/s" />
+                <RadzenDataGridColumn TItem="Person" Property="DateOfBirth" Title="Date of Birth" FormatString="{0:d}" />
+                <RadzenDataGridColumn TItem="Person" Context="record" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                    <Template Context="record">
+                        <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Size="ButtonSize.Medium" Click="@(args => EditAsync(record.Id))" @onclick:stopPropagation="true"></RadzenButton>
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Medium" Click="@(args => DeleteAsync(record.Id))" @onclick:stopPropagation="true"></RadzenButton>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </Column>
+</Row>
+
+<Row id="form-section" hidden="@(ShowEditMode == false)">
+    <Column ColumnSize="ColumnSize.Is12">
+        <Card>
+            <CardHeader Class="text-white bg-primary">Details</CardHeader>
+            <CardBody>
+                <EditForm id="form-section-form" class="form-horizontal" Model="Model" OnValidSubmit="OnValidSumbitAsync">
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field Horizontal="true">
+                                <FieldLabel For="FamilyName" ColumnSize="ColumnSize.Is3">Family Name</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is9">
+                                    <RadzenTextBox id="FamilyName" @bind-Value="Model.FamilyName" Style="width:100%" />
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field Horizontal="true">
+                                <FieldLabel For="GivenNames" ColumnSize="ColumnSize.Is3">Given Name/s</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is9">
+                                    <RadzenTextBox id="GivenNames" @bind-Value="Model.GivenNames" Style="width:100%" />
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field Horizontal="true">
+                                <FieldLabel For="DateOfBirth" ColumnSize="ColumnSize.Is3">Date of Birth</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is9">
+                                    <RadzenDatePicker id="DateOfBirth" @bind-Value=Model.DateOfBirth DateFormat="yyyy-MM-dd" Style="width:100%" />
+                                </FieldBody>
+                            </Field>
+                        </Column>
+                    </Row>
+                    <hr />
+                    <Row Class="float-right">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field Horizontal="true">
+                                <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Secondary" Click="Cancel">
+                                    Cancel
+                                </RadzenButton>
+                                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary">
+                                    <Icon Name="IconName.Save"></Icon> Save
+                                </RadzenButton>
+                            </Field>
+                        </Column>
+                    </Row>
+                </EditForm>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
