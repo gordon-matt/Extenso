@@ -61,13 +61,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{5CF10B41-5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QueryBuilder", "QueryBuilder", "{50793D41-3796-444D-A9A5-F0A1C83ED59B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Data.QueryBuilder", "Demo.Data.QueryBuilder\Demo.Data.QueryBuilder.csproj", "{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Data.QueryBuilder", "Demos\Demo.Data.QueryBuilder\Demo.Data.QueryBuilder.csproj", "{EF54D2C6-1E83-4167-B9AF-323DDDDFD9D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Sandbox", "Extenso.Sandbox\Extenso.Sandbox.csproj", "{D923E155-2C52-4690-800B-C7E53305AD9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Extenso.AspNetCore.Mvc", "Demo.Extenso.AspNetCore.Mvc\Demo.Extenso.AspNetCore.Mvc.csproj", "{A408BF84-8BB9-4E60-9118-99930508B7DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Extenso.AspNetCore.Mvc", "Demos\Demo.Extenso.AspNetCore.Mvc\Demo.Extenso.AspNetCore.Mvc.csproj", "{A408BF84-8BB9-4E60-9118-99930508B7DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Extenso.AspNetCore.Blazor.OData", "Demo.Extenso.AspNetCore.Blazor.OData\Demo.Extenso.AspNetCore.Blazor.OData.csproj", "{44A64035-109B-48CC-A11D-25C75BF64C16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Extenso.AspNetCore.Blazor.OData", "Demos\Demo.Extenso.AspNetCore.Blazor.OData\Demo.Extenso.AspNetCore.Blazor.OData.csproj", "{44A64035-109B-48CC-A11D-25C75BF64C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

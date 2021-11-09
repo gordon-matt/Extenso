@@ -287,3 +287,5 @@ Demos/Demo.AspNetCore.Mvc.ExtensoUI.Foundation6/wwwroot/lib
 Demos/Demo.AspNetCore.Mvc.ExtensoUI.JQueryUI/wwwroot/lib
 Demos/Demo.AspNetCore.Mvc.ExtensoUI.KendoBootstrap3/wwwroot/lib
 Demos/Demo.AspNetCore.Mvc.OData/wwwroot/lib
+Demos/Demo.Extenso.AspNetCore.Blazor.OData/wwwroot/lib
+Demos/Demo.Extenso.AspNetCore.Mvc/wwwroot/lib
