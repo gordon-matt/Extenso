@@ -1,31 +1,51 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!--<link rel="stylesheet" type="text/css" media="screen" href="/jspm_packages/npm/bootstrap@4.1.1/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/jspm_packages/npm/font-awesome@4.7.0/css/font-awesome.min.css" />-->
-	
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.1/yeti/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="css/site.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Extenso</title>
+    <base href="/Extenso/" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link href="_content/Blazorise/blazorise.css" rel="stylesheet" />
+    <link href="_content/Blazorise.Bootstrap/blazorise.bootstrap.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/splash.css" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css" />
     <link rel="stylesheet" href="css/prettify-visual-studio.css" />
+    <!--<link href="Doxie.BlazorClient.styles.css" rel="stylesheet" />-->
 </head>
-<body>
-	<div aurelia-app="aurelia-app/main">
-		<div class="splash">
-			<div class="message">Loading...</div>
-			<i class="fa fa-spinner fa-spin"></i>
-		</div>
 
-		<script src="jspm_packages/system.js"></script>
-		<script src="config.js"></script>
-		<script>
-			SystemJS.import('aurelia-bootstrapper');
-		</script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
-	</div>
+<body>
+    <div id="app">
+        <div class="splash">
+            <div class="message">Loading...</div>
+            <i class="fa fa-spinner fa-spin"></i>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+
+    <script src="_content/Blazorise/blazorise.js"></script>
+    <script src="_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+
+    <script type="text/javascript">
+        function onShowType() {
+            window.setTimeout(() => $(".nav-tabs a:not(:hidden):first").tab("show"), 200);
+            window.setTimeout(() => PR.prettyPrint(), 200);
+        };
+    </script>
 </body>
+
 </html>

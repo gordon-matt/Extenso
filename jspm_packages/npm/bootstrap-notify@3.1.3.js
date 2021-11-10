@@ -1,1 +1,0 @@
-module.exports = require("npm:bootstrap-notify@3.1.3/bootstrap-notify.js");
