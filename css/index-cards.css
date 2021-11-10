@@ -1,0 +1,38 @@
+﻿.card:hover, .card:focus, .card:active {
+    background-color: #99b3ff;
+    cursor: pointer;
+}
+
+.card-deck {
+    display: grid;
+}
+
+@media (min-width: 0) {
+    .card-deck {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+@media (min-width: 576px) {
+    .card-deck {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .card-deck {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 992px) {
+    .card-deck {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .card-deck {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
