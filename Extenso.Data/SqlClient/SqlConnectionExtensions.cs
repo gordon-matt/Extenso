@@ -7,203 +7,10 @@ using Extenso.Data.Common;
 
 namespace Extenso.Data.SqlClient
 {
+    // TODO: Use parameterized queries to prevent the risk of SQL injection attacks. Do the same everywhere else as well..
     public static class SqlConnectionExtensions
     {
-        public static IEnumerable<string> GetDatabaseNames(this SqlConnection connection)
-        {
-            const string CMD_SELECT_DATABASE_NAMES = "SELECT NAME FROM SYS.DATABASES ORDER BY NAME";
-            var databaseNames = new List<string>();
-
-            bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = CMD_SELECT_DATABASE_NAMES;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        databaseNames.Add(reader.GetString(0));
-                    }
-                }
-            }
-
-            if (!alreadyOpen)
-            {
-                connection.Close();
-            }
-
-            return databaseNames;
-        }
-
-        public static ForeignKeyInfoCollection GetForeignKeyData(this SqlConnection connection, string tableName)
-        {
-            const string CMD_FOREIGN_KEYS_FORMAT =
-@"SELECT FK_Table = FK.TABLE_NAME,
-    FK_Column = CU.COLUMN_NAME,
-	PK_Table = PK.TABLE_NAME,
-    PK_Column = PT.COLUMN_NAME,
-	Constraint_Name = C.CONSTRAINT_NAME
-FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS C
-INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS FK ON C.CONSTRAINT_NAME = FK.CONSTRAINT_NAME
-INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS PK ON C.UNIQUE_CONSTRAINT_NAME = PK.CONSTRAINT_NAME
-INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME
-INNER JOIN
-(
-	SELECT i1.TABLE_NAME, i2.COLUMN_NAME
-	FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1
-	INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2 ON
-		i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME
-	WHERE i1.CONSTRAINT_TYPE = 'PRIMARY KEY'
-) PT ON PT.TABLE_NAME = PK.TABLE_NAME
-WHERE FK.TABLE_NAME = '{0}'
-ORDER BY 1,2,3,4";
-
-            var foreignKeyData = new ForeignKeyInfoCollection();
-
-            bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var command = new SqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName), connection))
-            {
-                command.CommandType = CommandType.Text;
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        foreignKeyData.Add(new ForeignKeyInfo(
-                            reader.GetString(0),
-                            reader.GetString(1),
-                            reader.GetString(2),
-                            reader.GetString(3),
-                            string.Empty,
-                            reader.GetString(4)));
-                    }
-                }
-            }
-
-            if (!alreadyOpen)
-            {
-                connection.Close();
-            }
-
-            return foreignKeyData;
-        }
-
-        public static int GetRowCount(this SqlConnection connection, string tableName)
-        {
-            return connection.ExecuteScalar($"SELECT COUNT(*) FROM [{tableName}]");
-        }
-
-        public static IEnumerable<string> GetTableNames(this SqlConnection connection, bool includeViews = false)
-        {
-            if (!string.IsNullOrEmpty(connection.Database))
-            {
-                return connection.GetTableNames(connection.Database, includeViews);
-            }
-            else { return new List<string>(); }
-        }
-
-        public static IEnumerable<string> GetTableNames(this SqlConnection connection, string databaseName, bool includeViews = false)
-        {
-            string query = string.Empty;
-
-            if (includeViews)
-            {
-                query = $"USE {databaseName} SELECT [name] FROM sys.Tables WHERE [name] <> 'sysdiagrams' UNION SELECT [name] FROM sys.Views WHERE [name] <> 'sysdiagrams' ORDER BY [name]";
-            }
-            else
-            {
-                query = $"USE {databaseName} SELECT [name] FROM sys.Tables WHERE [name] <> 'sysdiagrams' ORDER BY [name]";
-            }
-
-            var tables = new List<string>();
-
-            bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = query;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        tables.Add(reader.GetString(0));
-                    }
-                }
-            }
-
-            if (!alreadyOpen)
-            {
-                connection.Close();
-            }
-
-            return tables;
-        }
-
-        public static IEnumerable<string> GetViewNames(this SqlConnection connection)
-        {
-            if (!string.IsNullOrEmpty(connection.Database))
-            {
-                return connection.GetViewNames(connection.Database);
-            }
-            else { return new List<string>(); }
-        }
-
-        public static IEnumerable<string> GetViewNames(this SqlConnection connection, string databaseName)
-        {
-            string query = $"USE {databaseName} [name] FROM sys.Views WHERE [name] <> 'sysdiagrams' ORDER BY [name]";
-
-            var tables = new List<string>();
-
-            bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = query;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        tables.Add(reader.GetString(0));
-                    }
-                }
-            }
-
-            if (!alreadyOpen)
-            {
-                connection.Close();
-            }
-
-            return tables;
-        }
-
-        public static ColumnInfoCollection GetColumnData(this SqlConnection connection, string tableName)
+        public static ColumnInfoCollection GetColumnData(this SqlConnection connection, string tableName, string schema = "dbo")
         {
             const string CMD_COLUMN_INFO_FORMAT =
 @"SELECT
@@ -217,15 +24,17 @@ ORDER BY 1,2,3,4";
     NUMERIC_SCALE,
     COLUMNPROPERTY(object_id(TABLE_SCHEMA + '.' + TABLE_NAME), COLUMN_NAME, 'IsIdentity') AS 'IsIdentity'
 FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME = '{0}'";
+WHERE TABLE_NAME = '{0}'
+AND TABLE_SCHEMA = '{1}'";
 
             const string CMD_IS_PRIMARY_KEY_FORMAT =
 @"SELECT CU.COLUMN_NAME
 FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS T, INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CU
 WHERE CU.CONSTRAINT_NAME = T.Constraint_Name
 AND CU.TABLE_NAME = T.TABLE_NAME
-AND CONSTRAINT_TYPE = 'PRIMARY KEY'
-AND CU.TABLE_NAME = '{0}'";
+AND T.CONSTRAINT_TYPE = 'PRIMARY KEY'
+AND CU.TABLE_NAME = '{0}'
+AND T.CONSTRAINT_SCHEMA = '{1}'";
 
             var list = new ColumnInfoCollection();
 
@@ -233,14 +42,15 @@ AND CU.TABLE_NAME = '{0}'";
 
             try
             {
-                var foreignKeyColumns = connection.GetForeignKeyData(tableName);
+                var foreignKeyColumns = connection.GetForeignKeyData(tableName, schema);
 
                 if (!alreadyOpen)
                 {
                     connection.Open();
                 }
 
-                using (var command = new SqlCommand(string.Format(CMD_COLUMN_INFO_FORMAT, tableName), connection))
+                string cmdText = string.Format(CMD_COLUMN_INFO_FORMAT, tableName, schema);
+                using (var command = new SqlCommand(cmdText, connection))
                 {
                     command.CommandType = CommandType.Text;
                     using (var reader = command.ExecuteReader())
@@ -268,7 +78,9 @@ AND CU.TABLE_NAME = '{0}'";
                             //{
                             try
                             {
-                                columnInfo.DataType = DataTypeConvertor.GetDbType(reader.GetString(2).ToEnum<SqlDbType>(true));
+                                string type = reader.GetString(2);
+                                columnInfo.DataTypeNative = type;
+                                columnInfo.DataType = DataTypeConvertor.GetDbType(type.ToEnum<SqlDbType>(true));
                             }
                             catch (ArgumentNullException)
                             {
@@ -319,7 +131,7 @@ AND CU.TABLE_NAME = '{0}'";
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = string.Format(CMD_IS_PRIMARY_KEY_FORMAT, tableName);
+                command.CommandText = string.Format(CMD_IS_PRIMARY_KEY_FORMAT, tableName, schema);
 
                 alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -352,16 +164,271 @@ AND CU.TABLE_NAME = '{0}'";
             return list;
         }
 
-        public static ColumnInfoCollection GetColumnData(this SqlConnection connection, string tableName, IEnumerable<string> columnNames)
+        public static ColumnInfoCollection GetColumnData(this SqlConnection connection, string tableName, IEnumerable<string> columnNames, string schema = "dbo")
         {
-            var collection = new ColumnInfoCollection();
-
             var filteredColumns = connection
-                .GetColumnData(tableName)
+                .GetColumnData(tableName, schema)
                 .Where(x => columnNames.Contains(x.ColumnName));
 
+            var collection = new ColumnInfoCollection();
             collection.AddRange(filteredColumns);
             return collection;
+        }
+
+        public static IEnumerable<string> GetSchemaNames(this SqlConnection connection)
+        {
+            const string CMD_SELECT_SCHEMA_NAMES =
+@"SELECT s.[name] as [Name]
+FROM sys.schemas S
+WHERE [schema_id] < 1000
+ORDER BY S.[name]";
+
+            var schemaNames = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_SELECT_SCHEMA_NAMES;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        schemaNames.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return schemaNames;
+        }
+
+        public static IEnumerable<string> GetDatabaseNames(this SqlConnection connection)
+        {
+            const string CMD_SELECT_DATABASE_NAMES = "SELECT NAME FROM SYS.DATABASES ORDER BY NAME";
+            var databaseNames = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_SELECT_DATABASE_NAMES;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        databaseNames.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return databaseNames;
+        }
+
+        public static ForeignKeyInfoCollection GetForeignKeyData(this SqlConnection connection, string tableName, string schema = "dbo")
+        {
+            const string CMD_FOREIGN_KEYS_FORMAT =
+@"SELECT FK_Table = FK.TABLE_NAME,
+    FK_Column = CU.COLUMN_NAME,
+	PK_Table = PK.TABLE_NAME,
+    PK_Column = PT.COLUMN_NAME,
+	Constraint_Name = C.CONSTRAINT_NAME
+FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS C
+INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS FK ON C.CONSTRAINT_NAME = FK.CONSTRAINT_NAME
+INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS PK ON C.UNIQUE_CONSTRAINT_NAME = PK.CONSTRAINT_NAME
+INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME
+INNER JOIN
+(
+	SELECT i1.TABLE_NAME, i2.COLUMN_NAME
+	FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1
+	INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2 ON
+		i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME
+	WHERE i1.CONSTRAINT_TYPE = 'PRIMARY KEY'
+) PT ON PT.TABLE_NAME = PK.TABLE_NAME
+WHERE FK.TABLE_NAME = '{0}'
+AND C.CONSTRAINT_SCHEMA = '{1}'
+ORDER BY 1,2,3,4";
+
+            var foreignKeyData = new ForeignKeyInfoCollection();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = new SqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName, schema), connection))
+            {
+                command.CommandType = CommandType.Text;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        foreignKeyData.Add(new ForeignKeyInfo(
+                            reader.GetString(0),
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetString(3),
+                            string.Empty,
+                            reader.GetString(4)));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return foreignKeyData;
+        }
+
+        public static int GetRowCount(this SqlConnection connection, string schema, string tableName)
+        {
+            return connection.ExecuteScalar($"SELECT COUNT(*) FROM {schema}.[{tableName}]");
+        }
+
+        public static IEnumerable<string> GetTableNames(this SqlConnection connection, bool includeViews = false, string schema = "dbo")
+        {
+            if (!string.IsNullOrEmpty(connection.Database))
+            {
+                return connection.GetTableNames(connection.Database, includeViews, schema);
+            }
+            else { return new List<string>(); }
+        }
+
+        public static IEnumerable<string> GetTableNames(this SqlConnection connection, string databaseName, bool includeViews = false, string schema = "dbo")
+        {
+            string query;
+            if (includeViews)
+            {
+                query =
+$@"USE {databaseName};
+SELECT [name]
+FROM sys.Tables
+WHERE [name] <> 'sysdiagrams'
+AND SCHEMA_NAME([schema_id]) = '{schema}'
+UNION
+SELECT [name]
+FROM sys.Views
+WHERE [name] <> 'sysdiagrams'
+AND SCHEMA_NAME([schema_id]) = '{schema}'
+ORDER BY [name]";
+            }
+            else
+            {
+                query =
+$@"USE {databaseName};
+SELECT [name]
+FROM sys.Tables
+WHERE [name] <> 'sysdiagrams'
+AND SCHEMA_NAME([schema_id]) = '{schema}'
+ORDER BY [name]";
+            }
+
+            var tables = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = query;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        tables.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return tables;
+        }
+
+        public static IEnumerable<string> GetViewNames(this SqlConnection connection, string schema = "dbo")
+        {
+            if (!string.IsNullOrEmpty(connection.Database))
+            {
+                return connection.GetViewNames(connection.Database, schema);
+            }
+            else { return new List<string>(); }
+        }
+
+        public static IEnumerable<string> GetViewNames(this SqlConnection connection, string databaseName, string schema = "dbo")
+        {
+            string query =
+$@"USE {databaseName};
+SELECT [name]
+FROM sys.Views
+WHERE [name] <> 'sysdiagrams'
+AND SCHEMA_NAME([schema_id]) = '{schema}'
+ORDER BY [name]";
+
+            var views = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = query;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        views.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return views;
         }
     }
 }

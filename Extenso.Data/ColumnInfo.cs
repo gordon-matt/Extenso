@@ -21,6 +21,8 @@ namespace Extenso.Data
 
         public DbType DataType { get; set; }
 
+        public string DataTypeNative { get; set; }
+
         public long MaximumLength { get; set; }
 
         public int Precision { get; set; }
