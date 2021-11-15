@@ -9,155 +9,6 @@ namespace Extenso.Data.Npgsql
 {
     public static class NpgsqlConnectionExtensions
     {
-        public static int GetRowCount(this NpgsqlConnection connection, string schema, string tableName)
-        {
-            return (int)connection.ExecuteScalar<long>(string.Format(@"SELECT COUNT(*) FROM {0}.""{1}""", schema, tableName));
-        }
-
-        public static IEnumerable<string> GetDatabaseNames(this NpgsqlConnection connection)
-        {
-            const string CMD_SELECT_DATABASE_NAMES = "SELECT datname FROM pg_database ORDER BY datname;";
-            var databaseNames = new List<string>();
-
-            bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = CMD_SELECT_DATABASE_NAMES;
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        databaseNames.Add(reader.GetString(0));
-                    }
-                }
-            }
-
-            if (!alreadyOpen)
-            {
-                connection.Close();
-            }
-
-            return databaseNames;
-        }
-
-        public static IEnumerable<string> GetTableNames(this NpgsqlConnection connection, bool includeViews = false, string schema = "public")
-        {
-            string query = string.Empty;
-
-            if (includeViews)
-            {
-                query = @"SELECT table_name
-FROM information_schema.tables
-WHERE table_schema = '{0}'
-ORDER BY table_name";
-            }
-            else
-            {
-                query = @"SELECT table_name
-FROM information_schema.tables
-WHERE table_schema = '{0}'
-AND table_type = 'BASE TABLE'
-ORDER BY table_name";
-            }
-
-            var tables = new List<string>();
-
-            bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = string.Format(query, schema);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        tables.Add(reader.GetString(0));
-                    }
-                }
-            }
-
-            if (!alreadyOpen)
-            {
-                connection.Close();
-            }
-
-            return tables;
-        }
-
-        public static ForeignKeyInfoCollection GetForeignKeyData(this NpgsqlConnection connection, string tableName, string schema = "public")
-        {
-            const string CMD_FOREIGN_KEYS_FORMAT =
-@"SELECT
-	FK.""table_name"" AS FK_Table,
-    CU.""column_name"" AS FK_Column,
-    PK.""table_name"" AS PK_Table,
-    PT.""column_name"" AS PK_Column,
-    C.""constraint_name"" AS Constraint_Name
-FROM information_schema.""referential_constraints"" C
-INNER JOIN information_schema.""table_constraints"" FK ON C.""constraint_name"" = FK.""constraint_name""
-INNER JOIN information_schema.""table_constraints"" PK ON C.""unique_constraint_name"" = PK.""constraint_name""
-INNER JOIN information_schema.""key_column_usage"" CU ON C.""constraint_name"" = CU.""constraint_name""
-INNER JOIN
-(
-    SELECT i1.""table_name"", i2.""column_name""
-    FROM information_schema.""table_constraints"" i1
-    INNER JOIN information_schema.""key_column_usage"" i2 ON i1.""constraint_name"" = i2.""constraint_name""
-    WHERE i1.""constraint_type"" = 'PRIMARY KEY'
-) PT ON PT.""table_name"" = PK.""table_name""
-WHERE FK.""table_name"" = '{0}'
-AND FK.""table_schema"" = '{1}'
-ORDER BY 1,2,3,4";
-
-            var foreignKeyData = new ForeignKeyInfoCollection();
-
-            bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var command = new NpgsqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName, schema), connection))
-            {
-                command.CommandType = CommandType.Text;
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        foreignKeyData.Add(new ForeignKeyInfo(
-                            reader.GetString(0),
-                            reader.GetString(1),
-                            reader.GetString(2),
-                            reader.GetString(3),
-                            string.Empty,
-                            reader.GetString(4)));
-                    }
-                }
-            }
-
-            if (!alreadyOpen)
-            {
-                connection.Close();
-            }
-
-            return foreignKeyData;
-        }
-
         public static ColumnInfoCollection GetColumnData(this NpgsqlConnection connection, string tableName, string schema = "public")
         {
             const string CMD_COLUMN_INFO_FORMAT =
@@ -217,6 +68,8 @@ AND kcu.""table_schema"" = '{1}'";
                             {
                                 // TODO: SqlDbType won't work for PG!! Need to update this ASAP... get System.Type from PG type
                                 string type = reader.GetString(2).ToLowerInvariant();
+                                columnInfo.DataTypeNative = type;
+
                                 switch (type)
                                 {
                                     case "bigint": columnInfo.DataType = DbType.Int64; break;
@@ -349,12 +202,237 @@ AND kcu.""table_schema"" = '{1}'";
 
         public static ColumnInfoCollection GetColumnData(this NpgsqlConnection connection, string tableName, IEnumerable<string> columnNames, string schema = "public")
         {
-            var data = connection.GetColumnData(tableName, schema: schema)
+            var filteredColumns = connection
+                .GetColumnData(tableName, schema: schema)
                 .Where(x => columnNames.Contains(x.ColumnName));
 
             var collection = new ColumnInfoCollection();
-            collection.AddRange(data);
+            collection.AddRange(filteredColumns);
             return collection;
+        }
+
+        public static IEnumerable<string> GetSchemaNames(this NpgsqlConnection connection)
+        {
+            const string CMD_SELECT_SCHEMA_NAMES = "SELECT nspname FROM pg_catalog.pg_namespace ORDER BY nspname;";
+            var schemaNames = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_SELECT_SCHEMA_NAMES;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        schemaNames.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return schemaNames;
+        }
+
+        public static IEnumerable<string> GetDatabaseNames(this NpgsqlConnection connection)
+        {
+            const string CMD_SELECT_DATABASE_NAMES = "SELECT datname FROM pg_database ORDER BY datname;";
+            var databaseNames = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_SELECT_DATABASE_NAMES;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        databaseNames.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return databaseNames;
+        }
+
+        public static ForeignKeyInfoCollection GetForeignKeyData(this NpgsqlConnection connection, string tableName, string schema = "public")
+        {
+            const string CMD_FOREIGN_KEYS_FORMAT =
+@"SELECT
+	FK.""table_name"" AS FK_Table,
+    CU.""column_name"" AS FK_Column,
+    PK.""table_name"" AS PK_Table,
+    PT.""column_name"" AS PK_Column,
+    C.""constraint_name"" AS Constraint_Name
+FROM information_schema.""referential_constraints"" C
+INNER JOIN information_schema.""table_constraints"" FK ON C.""constraint_name"" = FK.""constraint_name""
+INNER JOIN information_schema.""table_constraints"" PK ON C.""unique_constraint_name"" = PK.""constraint_name""
+INNER JOIN information_schema.""key_column_usage"" CU ON C.""constraint_name"" = CU.""constraint_name""
+INNER JOIN
+(
+    SELECT i1.""table_name"", i2.""column_name""
+    FROM information_schema.""table_constraints"" i1
+    INNER JOIN information_schema.""key_column_usage"" i2 ON i1.""constraint_name"" = i2.""constraint_name""
+    WHERE i1.""constraint_type"" = 'PRIMARY KEY'
+) PT ON PT.""table_name"" = PK.""table_name""
+WHERE FK.""table_name"" = '{0}'
+AND FK.""table_schema"" = '{1}'
+ORDER BY 1,2,3,4";
+
+            var foreignKeyData = new ForeignKeyInfoCollection();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = new NpgsqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName, schema), connection))
+            {
+                command.CommandType = CommandType.Text;
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        foreignKeyData.Add(new ForeignKeyInfo(
+                            reader.GetString(0),
+                            reader.GetString(1),
+                            reader.GetString(2),
+                            reader.GetString(3),
+                            string.Empty,
+                            reader.GetString(4)));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return foreignKeyData;
+        }
+
+        public static int GetRowCount(this NpgsqlConnection connection, string schema, string tableName)
+        {
+            return (int)connection.ExecuteScalar<long>($@"SELECT COUNT(*) FROM {schema}.""{tableName}""");
+        }
+
+        public static IEnumerable<string> GetTableNames(this NpgsqlConnection connection, bool includeViews = false, string schema = "public")
+        {
+            string query;
+            if (includeViews)
+            {
+                query =
+@"SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = '{0}'
+ORDER BY table_name";
+            }
+            else
+            {
+                query =
+@"SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = '{0}'
+AND table_type = 'BASE TABLE'
+ORDER BY table_name";
+            }
+
+            var tables = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = string.Format(query, schema);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        tables.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return tables;
+        }
+
+        public static IEnumerable<string> GetViewNames(this NpgsqlConnection connection, string schema = "public")
+        {
+            string query =
+$@"SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = '{schema}'
+AND table_type = 'VIEW'
+ORDER BY table_name";
+
+            var views = new List<string>();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = query;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        views.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return views;
         }
     }
 }
