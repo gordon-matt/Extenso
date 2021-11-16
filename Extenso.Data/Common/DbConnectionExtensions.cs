@@ -40,7 +40,7 @@ namespace Extenso.Data.Common
         /// <param name="connection">A DbConnection to execute [queryText] upon.</param>
         /// <param name="queryText">The T-SQL statement to execute.</param>
         /// <returns>The first column of the first row in the result set.</returns>
-        public static int ExecuteScalar(this DbConnection connection, string queryText)
+        public static int ExecuteScalar(this DbConnection connection, string queryText, params DbParameter[] parameters)
         {
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -49,7 +49,7 @@ namespace Extenso.Data.Common
                 connection.Open();
             }
 
-            return connection.ExecuteScalar<int>(queryText);
+            return connection.ExecuteScalar<int>(queryText, parameters);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Extenso.Data.Common
         /// <param name="connection">A DbConnection to execute [queryText] upon.</param>
         /// <param name="queryText">The T-SQL statement to execute.</param>
         /// <returns>The first column of the first row in the result set.</returns>
-        public static T ExecuteScalar<T>(this DbConnection connection, string queryText)
+        public static T ExecuteScalar<T>(this DbConnection connection, string queryText, params DbParameter[] parameters)
         {
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -72,9 +72,15 @@ namespace Extenso.Data.Common
 
             using (var command = connection.CreateCommand())
             {
+                command.CommandTimeout = 300;
                 command.CommandType = CommandType.Text;
                 command.CommandText = queryText;
-                command.CommandTimeout = 300;
+
+                if (!parameters.IsNullOrEmpty())
+                {
+                    command.Parameters.AddRange(parameters);
+                }
+
                 return (T)command.ExecuteScalar();
             }
         }

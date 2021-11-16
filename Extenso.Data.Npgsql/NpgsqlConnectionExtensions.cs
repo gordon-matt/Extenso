@@ -14,16 +14,16 @@ namespace Extenso.Data.Npgsql
             const string CMD_COLUMN_INFO_FORMAT =
 @"SELECT ""column_name"", ""column_default"", ""data_type"", ""character_maximum_length"", ""is_nullable"", ""ordinal_position"", ""numeric_precision"", ""numeric_scale""
 FROM information_schema.""columns""
-WHERE TABLE_NAME = '{0}'
-AND ""table_schema"" = '{1}';";
+WHERE TABLE_NAME = @TableName
+AND ""table_schema"" = @SchemaName;";
 
             const string CMD_IS_PRIMARY_KEY_FORMAT =
 @"SELECT ""column_name""
 FROM information_schema.""key_column_usage"" kcu
 INNER JOIN information_schema.""table_constraints"" tc ON kcu.""constraint_name"" = tc.""constraint_name""
-WHERE kcu.""table_name"" = '{0}'
+WHERE kcu.""table_name"" = @TableName
 AND tc.""constraint_type"" = 'PRIMARY KEY'
-AND kcu.""table_schema"" = '{1}'";
+AND kcu.""table_schema"" = @SchemaName";
 
             var list = new ColumnInfoCollection();
 
@@ -38,9 +38,26 @@ AND kcu.""table_schema"" = '{1}'";
                     connection.Open();
                 }
 
-                using (var command = new NpgsqlCommand(string.Format(CMD_COLUMN_INFO_FORMAT, tableName, schema), connection))
+                using (var command = new NpgsqlCommand(CMD_COLUMN_INFO_FORMAT, connection))
                 {
                     command.CommandType = CommandType.Text;
+
+                    command.Parameters.Add(new NpgsqlParameter
+                    {
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.String,
+                        ParameterName = "@TableName",
+                        Value = tableName
+                    });
+
+                    command.Parameters.Add(new NpgsqlParameter
+                    {
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.String,
+                        ParameterName = "@SchemaName",
+                        Value = schema
+                    });
+
                     using (var reader = command.ExecuteReader())
                     {
                         ColumnInfo columnInfo = null;
@@ -167,7 +184,24 @@ AND kcu.""table_schema"" = '{1}'";
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = string.Format(CMD_IS_PRIMARY_KEY_FORMAT, tableName, schema);
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_IS_PRIMARY_KEY_FORMAT;
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
 
                 alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -299,8 +333,8 @@ INNER JOIN
     INNER JOIN information_schema.""key_column_usage"" i2 ON i1.""constraint_name"" = i2.""constraint_name""
     WHERE i1.""constraint_type"" = 'PRIMARY KEY'
 ) PT ON PT.""table_name"" = PK.""table_name""
-WHERE FK.""table_name"" = '{0}'
-AND FK.""table_schema"" = '{1}'
+WHERE FK.""table_name"" = @TableName
+AND FK.""table_schema"" = @SchemaName
 ORDER BY 1,2,3,4";
 
             var foreignKeyData = new ForeignKeyInfoCollection();
@@ -312,9 +346,26 @@ ORDER BY 1,2,3,4";
                 connection.Open();
             }
 
-            using (var command = new NpgsqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName, schema), connection))
+            using (var command = new NpgsqlCommand(CMD_FOREIGN_KEYS_FORMAT, connection))
             {
                 command.CommandType = CommandType.Text;
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
+
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -340,7 +391,8 @@ ORDER BY 1,2,3,4";
 
         public static int GetRowCount(this NpgsqlConnection connection, string schema, string tableName)
         {
-            return (int)connection.ExecuteScalar<long>($@"SELECT COUNT(*) FROM {schema}.""{tableName}""");
+            var commandBuilder = new NpgsqlCommandBuilder();
+            return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
         }
 
         public static IEnumerable<string> GetTableNames(this NpgsqlConnection connection, bool includeViews = false, string schema = "public")
@@ -351,7 +403,7 @@ ORDER BY 1,2,3,4";
                 query =
 @"SELECT table_name
 FROM information_schema.tables
-WHERE table_schema = '{0}'
+WHERE table_schema = @SchemaName
 ORDER BY table_name";
             }
             else
@@ -359,7 +411,7 @@ ORDER BY table_name";
                 query =
 @"SELECT table_name
 FROM information_schema.tables
-WHERE table_schema = '{0}'
+WHERE table_schema = @SchemaName
 AND table_type = 'BASE TABLE'
 ORDER BY table_name";
             }
@@ -376,7 +428,15 @@ ORDER BY table_name";
             using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
-                command.CommandText = string.Format(query, schema);
+                command.CommandText = query;
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -398,9 +458,9 @@ ORDER BY table_name";
         public static IEnumerable<string> GetViewNames(this NpgsqlConnection connection, string schema = "public")
         {
             string query =
-$@"SELECT table_name
+@"SELECT table_name
 FROM information_schema.tables
-WHERE table_schema = '{schema}'
+WHERE table_schema = @SchemaName
 AND table_type = 'VIEW'
 ORDER BY table_name";
 
@@ -417,6 +477,14 @@ ORDER BY table_name";
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = query;
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
 
                 using (var reader = command.ExecuteReader())
                 {
