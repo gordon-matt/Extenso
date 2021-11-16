@@ -24,8 +24,8 @@ namespace Extenso.Data.SqlClient
     NUMERIC_SCALE,
     COLUMNPROPERTY(object_id(TABLE_SCHEMA + '.' + TABLE_NAME), COLUMN_NAME, 'IsIdentity') AS 'IsIdentity'
 FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME = '{0}'
-AND TABLE_SCHEMA = '{1}'";
+WHERE TABLE_NAME = @TableName
+AND TABLE_SCHEMA = @SchemaName";
 
             const string CMD_IS_PRIMARY_KEY_FORMAT =
 @"SELECT CU.COLUMN_NAME
@@ -33,8 +33,8 @@ FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS T, INFORMATION_SCHEMA.CONSTRAINT_COLUM
 WHERE CU.CONSTRAINT_NAME = T.Constraint_Name
 AND CU.TABLE_NAME = T.TABLE_NAME
 AND T.CONSTRAINT_TYPE = 'PRIMARY KEY'
-AND CU.TABLE_NAME = '{0}'
-AND T.CONSTRAINT_SCHEMA = '{1}'";
+AND CU.TABLE_NAME = @TableName
+AND T.CONSTRAINT_SCHEMA = @SchemaName";
 
             var list = new ColumnInfoCollection();
 
@@ -49,10 +49,26 @@ AND T.CONSTRAINT_SCHEMA = '{1}'";
                     connection.Open();
                 }
 
-                string cmdText = string.Format(CMD_COLUMN_INFO_FORMAT, tableName, schema);
-                using (var command = new SqlCommand(cmdText, connection))
+                using (var command = new SqlCommand(CMD_COLUMN_INFO_FORMAT, connection))
                 {
                     command.CommandType = CommandType.Text;
+
+                    command.Parameters.Add(new SqlParameter
+                    {
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.String,
+                        ParameterName = "@TableName",
+                        Value = tableName
+                    });
+
+                    command.Parameters.Add(new SqlParameter
+                    {
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.String,
+                        ParameterName = "@SchemaName",
+                        Value = schema
+                    });
+
                     using (var reader = command.ExecuteReader())
                     {
                         ColumnInfo columnInfo = null;
@@ -131,7 +147,24 @@ AND T.CONSTRAINT_SCHEMA = '{1}'";
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = string.Format(CMD_IS_PRIMARY_KEY_FORMAT, tableName, schema);
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_IS_PRIMARY_KEY_FORMAT;
+
+                command.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
+
+                command.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
 
                 alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -268,12 +301,11 @@ INNER JOIN
 		i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME
 	WHERE i1.CONSTRAINT_TYPE = 'PRIMARY KEY'
 ) PT ON PT.TABLE_NAME = PK.TABLE_NAME
-WHERE FK.TABLE_NAME = '{0}'
-AND C.CONSTRAINT_SCHEMA = '{1}'
+WHERE FK.TABLE_NAME = @TableName
+AND C.CONSTRAINT_SCHEMA = @SchemaName
 ORDER BY 1,2,3,4";
 
             var foreignKeyData = new ForeignKeyInfoCollection();
-
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
 
             if (!alreadyOpen)
@@ -281,9 +313,26 @@ ORDER BY 1,2,3,4";
                 connection.Open();
             }
 
-            using (var command = new SqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName, schema), connection))
+            using (var command = new SqlCommand(CMD_FOREIGN_KEYS_FORMAT, connection))
             {
                 command.CommandType = CommandType.Text;
+
+                command.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
+
+                command.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
+
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -309,7 +358,8 @@ ORDER BY 1,2,3,4";
 
         public static int GetRowCount(this SqlConnection connection, string schema, string tableName)
         {
-            return connection.ExecuteScalar($"SELECT COUNT(*) FROM {schema}.[{tableName}]");
+            var commandBuilder = new SqlCommandBuilder();
+            return connection.ExecuteScalar($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
         }
 
         public static IEnumerable<string> GetTableNames(this SqlConnection connection, bool includeViews = false, string schema = "dbo")
@@ -323,30 +373,32 @@ ORDER BY 1,2,3,4";
 
         public static IEnumerable<string> GetTableNames(this SqlConnection connection, string databaseName, bool includeViews = false, string schema = "dbo")
         {
+            var commandBuilder = new SqlCommandBuilder();
+
             string query;
             if (includeViews)
             {
                 query =
-$@"USE {databaseName};
+$@"USE {commandBuilder.QuoteIdentifier(databaseName)};
 SELECT [name]
 FROM sys.Tables
 WHERE [name] <> 'sysdiagrams'
-AND SCHEMA_NAME([schema_id]) = '{schema}'
+AND SCHEMA_NAME([schema_id]) = @SchemaName
 UNION
 SELECT [name]
 FROM sys.Views
 WHERE [name] <> 'sysdiagrams'
-AND SCHEMA_NAME([schema_id]) = '{schema}'
+AND SCHEMA_NAME([schema_id]) = @SchemaName
 ORDER BY [name]";
             }
             else
             {
                 query =
-$@"USE {databaseName};
+$@"USE {commandBuilder.QuoteIdentifier(databaseName)};
 SELECT [name]
 FROM sys.Tables
 WHERE [name] <> 'sysdiagrams'
-AND SCHEMA_NAME([schema_id]) = '{schema}'
+AND SCHEMA_NAME([schema_id]) = @SchemaName
 ORDER BY [name]";
             }
 
@@ -363,6 +415,14 @@ ORDER BY [name]";
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = query;
+
+                command.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -392,12 +452,14 @@ ORDER BY [name]";
 
         public static IEnumerable<string> GetViewNames(this SqlConnection connection, string databaseName, string schema = "dbo")
         {
+            var commandBuilder = new SqlCommandBuilder();
+
             string query =
-$@"USE {databaseName};
+$@"USE {commandBuilder.QuoteIdentifier(databaseName)};
 SELECT [name]
 FROM sys.Views
 WHERE [name] <> 'sysdiagrams'
-AND SCHEMA_NAME([schema_id]) = '{schema}'
+AND SCHEMA_NAME([schema_id]) = @SchemaName
 ORDER BY [name]";
 
             var views = new List<string>();
@@ -413,6 +475,14 @@ ORDER BY [name]";
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = query;
+
+                command.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
 
                 using (var reader = command.ExecuteReader())
                 {

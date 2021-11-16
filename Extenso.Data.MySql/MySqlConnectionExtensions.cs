@@ -14,13 +14,13 @@ namespace Extenso.Data.MySql
             const string CMD_COLUMN_INFO_FORMAT =
 @"SELECT column_name, column_default, data_type, character_maximum_length, is_nullable, ordinal_position, numeric_precision, numeric_scale
 FROM information_schema.columns
-WHERE table_name = '{0}';";
+WHERE table_name = @TableName;";
 
             const string CMD_IS_PRIMARY_KEY_FORMAT =
 @"SELECT column_name
 FROM information_schema.key_column_usage kcu
 INNER JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name
-WHERE kcu.table_name = '{0}'
+WHERE kcu.table_name = @TableName
 AND tc.constraint_type = 'PRIMARY KEY'";
 
             ColumnInfoCollection list = new ColumnInfoCollection();
@@ -36,9 +36,18 @@ AND tc.constraint_type = 'PRIMARY KEY'";
                     connection.Open();
                 }
 
-                using (var command = new MySqlCommand(string.Format(CMD_COLUMN_INFO_FORMAT, tableName), connection))
+                using (var command = new MySqlCommand(CMD_COLUMN_INFO_FORMAT, connection))
                 {
                     command.CommandType = CommandType.Text;
+
+                    command.Parameters.Add(new MySqlParameter
+                    {
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.String,
+                        ParameterName = "@TableName",
+                        Value = tableName
+                    });
+
                     using (var reader = command.ExecuteReader())
                     {
                         ColumnInfo columnInfo = null;
@@ -197,7 +206,16 @@ AND tc.constraint_type = 'PRIMARY KEY'";
 
             using (var command = connection.CreateCommand())
             {
-                command.CommandText = string.Format(CMD_IS_PRIMARY_KEY_FORMAT, tableName);
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_IS_PRIMARY_KEY_FORMAT;
+
+                command.Parameters.Add(new MySqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
 
                 alreadyOpen = (connection.State != ConnectionState.Closed);
 
@@ -285,7 +303,7 @@ AND tc.constraint_type = 'PRIMARY KEY'";
     REFERENCED_COLUMN_NAME AS PK_Column,
     CONSTRAINT_NAME AS Constraint_Name
 FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-WHERE TABLE_NAME = 'kore_blogposts'
+WHERE TABLE_NAME = @TableName
 AND CONSTRAINT_NAME <> 'PRIMARY';";
 
             var foreignKeyData = new ForeignKeyInfoCollection();
@@ -297,9 +315,17 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
                 connection.Open();
             }
 
-            using (var command = new MySqlCommand(string.Format(CMD_FOREIGN_KEYS_FORMAT, tableName), connection))
+            using (var command = new MySqlCommand(CMD_FOREIGN_KEYS_FORMAT, connection))
             {
                 command.CommandType = CommandType.Text;
+                command.Parameters.Add(new MySqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
+
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -325,7 +351,8 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
 
         public static int GetRowCount(this MySqlConnection connection, string tableName)
         {
-            return connection.ExecuteScalar(string.Format("SELECT COUNT(*) FROM `{0}`", tableName));
+            var commandBuilder = new MySqlCommandBuilder();
+            return connection.ExecuteScalar($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(tableName)}");
         }
 
         public static IEnumerable<string> GetTableNames(this MySqlConnection connection, bool includeViews = false)
@@ -339,15 +366,15 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
 
         public static IEnumerable<string> GetTableNames(this MySqlConnection connection, string databaseName, bool includeViews = false)
         {
-            string query = string.Empty;
-
+            var commandBuilder = new MySqlCommandBuilder();
+            string query;
             if (includeViews)
             {
-                query = string.Concat("USE ", databaseName, "; SHOW FULL TABLES IN ", connection.Database);
+                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN USE { commandBuilder.QuoteIdentifier(databaseName)};";
             }
             else
             {
-                query = string.Concat("USE ", databaseName, "; SHOW FULL TABLES IN ", connection.Database, " WHERE TABLE_TYPE LIKE 'BASE TABLE';");
+                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN USE { commandBuilder.QuoteIdentifier(databaseName)} WHERE TABLE_TYPE LIKE 'BASE TABLE';";
             }
 
             var tables = new List<string>();
@@ -392,8 +419,6 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
 
         public static IEnumerable<string> GetViewNames(this MySqlConnection connection, string databaseName)
         {
-            string query = string.Concat("USE ", databaseName, "; SHOW FULL TABLES IN ", connection.Database, " WHERE TABLE_TYPE LIKE 'VIEW';");
-
             var tables = new List<string>();
 
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
@@ -406,7 +431,8 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
             using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
-                command.CommandText = query;
+                var commandBuilder = new MySqlCommandBuilder();
+                command.CommandText = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN @DatabaseName WHERE TABLE_TYPE LIKE 'VIEW';";
 
                 using (var reader = command.ExecuteReader())
                 {
