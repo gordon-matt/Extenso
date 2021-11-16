@@ -370,11 +370,11 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
             string query;
             if (includeViews)
             {
-                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN USE { commandBuilder.QuoteIdentifier(databaseName)};";
+                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN { commandBuilder.QuoteIdentifier(databaseName)};";
             }
             else
             {
-                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN USE { commandBuilder.QuoteIdentifier(databaseName)} WHERE TABLE_TYPE LIKE 'BASE TABLE';";
+                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN { commandBuilder.QuoteIdentifier(databaseName)} WHERE TABLE_TYPE LIKE 'BASE TABLE';";
             }
 
             var tables = new List<string>();
@@ -432,7 +432,7 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
             {
                 command.CommandType = CommandType.Text;
                 var commandBuilder = new MySqlCommandBuilder();
-                command.CommandText = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN @DatabaseName WHERE TABLE_TYPE LIKE 'VIEW';";
+                command.CommandText = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN {commandBuilder.QuoteIdentifier(databaseName)} WHERE TABLE_TYPE LIKE 'VIEW';";
 
                 using (var reader = command.ExecuteReader())
                 {
