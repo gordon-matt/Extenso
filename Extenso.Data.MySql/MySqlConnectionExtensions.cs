@@ -70,7 +70,7 @@ AND tc.constraint_type = 'PRIMARY KEY'";
                             }
 
                             if (!reader.IsDBNull(3))
-                            { columnInfo.MaximumLength = reader.GetInt32(3); }
+                            { columnInfo.MaximumLength = reader.GetInt64(3); }
 
                             try
                             {
@@ -352,7 +352,7 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
         public static int GetRowCount(this MySqlConnection connection, string tableName)
         {
             var commandBuilder = new MySqlCommandBuilder();
-            return connection.ExecuteScalar($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(tableName)}");
+            return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(tableName)}");
         }
 
         public static IEnumerable<string> GetTableNames(this MySqlConnection connection, bool includeViews = false)

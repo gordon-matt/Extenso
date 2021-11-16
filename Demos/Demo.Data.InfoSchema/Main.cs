@@ -1,91 +1,170 @@
 ﻿using System;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using Extenso;
 using Extenso.Data.Common;
+using Extenso.Data.MySql;
+using Extenso.Data.Npgsql;
 using Extenso.Data.SqlClient;
+using MySql.Data.MySqlClient;
+using Npgsql;
 
 namespace Demo.Data.InfoSchema
 {
     public partial class Main : Form
     {
-        private const string SQL_CONNECTION_STRING_FORMAT = "Data Source={0};Initial Catalog={1};User={2}Password={3}";
-        private const string SQL_CONNECTION_STRING_FORMAT_WA = "Data Source={0};Initial Catalog={1};Integrated Security=true";
-
-        private string ConnectionString
-        {
-            get
-            {
-                if (cbUseWindowsAuthentication.Checked)
-                {
-                    return string.Format(
-                        SQL_CONNECTION_STRING_FORMAT_WA,
-                        cmbServer.SelectedItem.ToString(),
-                        cmbDatabase.SelectedIndex != -1 ? cmbDatabase.SelectedItem.ToString() : "master");
-                }
-                else
-                {
-                    return string.Format(
-                        SQL_CONNECTION_STRING_FORMAT,
-                        cmbServer.SelectedItem.ToString(),
-                        cmbDatabase.SelectedIndex != -1 ? cmbDatabase.SelectedItem.ToString() : "master",
-                        txtUserName.Text.Trim(),
-                        txtPassword.Text);
-                }
-            }
-        }
-
         public Main()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private enum DataSource : byte
         {
-            cmbServer.Items.AddRange(new[] { "." });
+            SqlServer,
+            MySql,
+            PostgreSql
         }
 
+        private string ConnectionString => txtConnectionString.Text;
+
+        private DataSource SelectedDataSource => (DataSource)cmdDataSource.SelectedItem;
+
+        private string SelectedDatabase => cmbDatabase.Text;
+
+        private string SelectedSchema => cmbSchema.Text;
+
+        private DbConnection CreateConnection() => SelectedDataSource switch
+        {
+            DataSource.SqlServer => new SqlConnection(ConnectionString),
+            DataSource.MySql => new MySqlConnection(ConnectionString),
+            DataSource.PostgreSql => new NpgsqlConnection(ConnectionString),
+            _ => null,
+        };
+
+        #region Event Handlers
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            using (var connection = new SqlConnection(ConnectionString))
+            using var connection = CreateConnection();
+            if (!connection.Validate())
             {
-                if (!connection.Validate())
-                { return; }
-
-                cmbDatabase.DataSource = connection.GetDatabaseNames();
-                //cmbDatabase.Items.AddRange(connection.GetDatabaseNames());
+                return;
             }
+
+            switch (SelectedDataSource)
+            {
+                case DataSource.SqlServer: cmbDatabase.DataSource = (connection as SqlConnection).GetDatabaseNames(); break;
+                case DataSource.MySql: cmbDatabase.DataSource = (connection as MySqlConnection).GetDatabaseNames(); break;
+                case DataSource.PostgreSql: cmbDatabase.DataSource = (connection as NpgsqlConnection).GetDatabaseNames(); break;
+                default: break;
+            }
+
+            cmbDatabase.Select();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         private void cmbDatabase_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbDatabase.SelectedIndex != -1)
             {
-                //lbTables.Items.Clear();
-                using (var connection = new SqlConnection(ConnectionString))
+                using var connection = CreateConnection();
+                connection.Open();
+                connection.ChangeDatabase(SelectedDatabase);
+                switch (SelectedDataSource)
                 {
-                    lbTables.DataSource = connection.GetTableNames();
-                    //lbTables.Items.AddRange(connection.GetTableNames());
+                    case DataSource.SqlServer:
+                        cmbSchema.DataSource = (connection as SqlConnection).GetSchemaNames();
+                        cmbSchema.Select();
+                        break;
+                    case DataSource.MySql:
+                        lbTables.DataSource = (connection as MySqlConnection).GetTableNames();
+                        lbTables.Select();
+                        break;
+                    case DataSource.PostgreSql:
+                        cmbSchema.DataSource = (connection as NpgsqlConnection).GetSchemaNames();
+                        cmbSchema.Select();
+                        break;
+                    default: break;
                 }
             }
         }
 
-        private void cbUseWindowsAuthentication_CheckedChanged(object sender, EventArgs e)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        private void cmbSchema_SelectedIndexChanged(object sender, EventArgs e)
         {
-            txtUserName.Enabled = txtPassword.Enabled = !cbUseWindowsAuthentication.Checked;
+            if (cmbSchema.SelectedIndex != -1)
+            {
+                using var connection = CreateConnection();
+                connection.Open();
+                connection.ChangeDatabase(SelectedDatabase);
+                switch (SelectedDataSource)
+                {
+                    case DataSource.SqlServer: lbTables.DataSource = (connection as SqlConnection).GetTableNames(includeViews: true, SelectedSchema); break;
+                    case DataSource.MySql: lbTables.DataSource = (connection as MySqlConnection).GetTableNames(); break;
+                    case DataSource.PostgreSql: lbTables.DataSource = (connection as NpgsqlConnection).GetTableNames(includeViews: true, SelectedSchema); break;
+                    default: break;
+                }
+            }
+
+            lbTables.Select();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         private void lbTables_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lbTables.SelectedIndex != -1)
             {
-                using (var connection = new SqlConnection(ConnectionString))
+                using var connection = CreateConnection();
+                connection.Open();
+                connection.ChangeDatabase(SelectedDatabase);
+                string tableName = lbTables.SelectedItem.ToString();
+
+                switch (SelectedDataSource)
                 {
-                    string tableName = lbTables.SelectedItem.ToString();
-                    lblCount.Text = $"Row Count: {connection.GetRowCount("dbo", tableName)}";
-                    dgvForeignKeyInfo.DataSource = connection.GetForeignKeyData(tableName);
-                    dgvColumnInfo.DataSource = connection.GetColumnData(tableName);
+                    case DataSource.SqlServer:
+                        {
+                            var sqlConnection = connection as SqlConnection;
+                            lblCount.Text = $"Row Count: {sqlConnection.GetRowCount(SelectedSchema, tableName)}";
+                            dgvForeignKeyInfo.DataSource = sqlConnection.GetForeignKeyData(tableName, SelectedSchema);
+                            dgvColumnInfo.DataSource = sqlConnection.GetColumnData(tableName, SelectedSchema);
+                        }
+                        break;
+
+                    case DataSource.MySql:
+                        {
+                            var mySqlConnection = connection as MySqlConnection;
+                            lblCount.Text = $"Row Count: {mySqlConnection.GetRowCount(tableName)}";
+                            dgvForeignKeyInfo.DataSource = mySqlConnection.GetForeignKeyData(tableName);
+                            dgvColumnInfo.DataSource = mySqlConnection.GetColumnData(tableName);
+                        }
+                        break;
+
+                    case DataSource.PostgreSql:
+                        {
+                            var npgsqlConnection = connection as NpgsqlConnection;
+                            lblCount.Text = $"Row Count: {npgsqlConnection.GetRowCount(SelectedSchema, tableName)}";
+                            dgvForeignKeyInfo.DataSource = npgsqlConnection.GetForeignKeyData(tableName, SelectedSchema);
+                            dgvColumnInfo.DataSource = npgsqlConnection.GetColumnData(tableName, SelectedSchema);
+                        }
+                        break;
+
+                    default: break;
                 }
             }
+        }
+
+        private void Main_Load(object sender, EventArgs e)
+        {
+            cmdDataSource.DataSource = EnumExtensions.GetValues<DataSource>();
+        }
+
+        #endregion Event Handlers
+
+        private void cmdDataSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cmbSchema.Enabled = SelectedDataSource != DataSource.MySql;
         }
     }
 }

@@ -150,7 +150,7 @@ AND kcu.""table_schema"" = @SchemaName";
                             //}
 
                             if (!reader.IsDBNull(3))
-                            { columnInfo.MaximumLength = reader.GetInt32(3); }
+                            { columnInfo.MaximumLength = reader.GetInt64(3); }
 
                             if (!reader.IsDBNull(4))
                             {

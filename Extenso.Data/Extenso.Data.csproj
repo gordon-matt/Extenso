@@ -7,7 +7,7 @@
     <Description>Data-related extension methods and other helper classes.</Description>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
-    <Version>5.0.1</Version>
+    <Version>5.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

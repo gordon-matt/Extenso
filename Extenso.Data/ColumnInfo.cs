@@ -13,7 +13,7 @@ namespace Extenso.Data
     {
         public string ColumnName { get; set; }
 
-        public long OrdinalPosition { get; set; }
+        public int OrdinalPosition { get; set; }
 
         public string DefaultValue { get; set; }
 
