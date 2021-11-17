@@ -8,16 +8,17 @@ using Demo.Extenso.AspNetCore.Mvc.OData.Models;
 using Demo.Extenso.AspNetCore.Mvc.OData.Services;
 using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
-using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OData;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData
 {
@@ -43,9 +44,22 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
-            services.AddOData();
+            //services.AddOData();
 
-            services.AddControllersWithViews();
+            services.AddSingleton<IODataRegistrar, ODataRegistrar>(); // What about others???
+
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson()
+                .AddOData(options =>
+                {
+                    options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
+
+                    var registrars = services.BuildServiceProvider().GetRequiredService<IEnumerable<IODataRegistrar>>();
+                    foreach (var registrar in registrars)
+                    {
+                        registrar.Register(options);
+                    }
+                });
             services.AddRazorPages();
         }
 
@@ -74,6 +88,18 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
                 });
             }
 
+            // Use odata route debug, /$odata
+            app.UseODataRouteDebug();
+
+            // If you want to use /$openapi, enable the middleware.
+            //app.UseODataOpenApi();
+
+            // Add OData /$query middleware
+            app.UseODataQueryRequest();
+
+            // Add the OData Batch middleware to support OData $Batch
+            //app.UseODataBatching();
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -81,14 +107,6 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
-
-                var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
-                foreach (var registrar in registrars)
-                {
-                    registrar.Register(endpoints, app.ApplicationServices);
-                }
-
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -105,7 +123,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
                 .As(typeof(IRepository<>))
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
+            //builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
         }
     }
 }

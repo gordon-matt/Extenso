@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Autofac;
 using Blazorise;
 using Blazorise.Bootstrap;
@@ -12,15 +11,16 @@ using Demo.Extenso.AspNetCore.Blazor.OData.Infrastructure;
 using Demo.Extenso.AspNetCore.Blazor.OData.Services;
 using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
-using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OData;
 using Radzen;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData
@@ -45,9 +45,23 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddOData();
+            //services.AddOData();
 
-            services.AddRazorPages();
+            services.AddSingleton<IODataRegistrar, ODataRegistrar>(); // What about others???
+
+            services.AddRazorPages()
+                .AddNewtonsoftJson()
+                .AddOData(options =>
+                {
+                    options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
+
+                    var registrars = services.BuildServiceProvider().GetRequiredService<IEnumerable<IODataRegistrar>>();
+                    foreach (var registrar in registrars)
+                    {
+                        registrar.Register(options);
+                    }
+                });
+
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -78,6 +92,18 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // Use odata route debug, /$odata
+            app.UseODataRouteDebug();
+
+            // If you want to use /$openapi, enable the middleware.
+            //app.UseODataOpenApi();
+
+            // Add OData /$query middleware
+            app.UseODataQueryRequest();
+
+            // Add the OData Batch middleware to support OData $Batch
+            //app.UseODataBatching();
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -85,14 +111,6 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
-
-                var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
-                foreach (var registrar in registrars)
-                {
-                    registrar.Register(endpoints, app.ApplicationServices);
-                }
-
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
@@ -107,7 +125,7 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
                 .As(typeof(IRepository<>))
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
+            //builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
 
             // Radzen
             builder.RegisterType<DialogService>().AsSelf().InstancePerLifetimeScope();
