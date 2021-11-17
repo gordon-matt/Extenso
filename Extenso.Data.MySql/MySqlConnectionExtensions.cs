@@ -12,16 +12,25 @@ namespace Extenso.Data.MySql
         public static ColumnInfoCollection GetColumnData(this MySqlConnection connection, string tableName)
         {
             const string CMD_COLUMN_INFO_FORMAT =
-@"SELECT column_name, column_default, data_type, character_maximum_length, is_nullable, ordinal_position, numeric_precision, numeric_scale
-FROM information_schema.columns
-WHERE table_name = @TableName;";
+@"SELECT
+	`COLUMN_NAME`,
+    `COLUMN_DEFAULT`,
+    `DATA_TYPE`,
+    `CHARACTER_MAXIMUM_LENGTH`,
+    `IS_NULLABLE`,
+    `ORDINAL_POSITION`,
+    `NUMERIC_PRECISION`,
+    `NUMERIC_SCALE`
+FROM `INFORMATION_SCHEMA`.`COLUMNS`
+WHERE `TABLE_SCHEMA` = @DatabaseName
+AND `TABLE_NAME` = @TableName;";
 
             const string CMD_IS_PRIMARY_KEY_FORMAT =
-@"SELECT column_name
-FROM information_schema.key_column_usage kcu
-INNER JOIN information_schema.table_constraints tc ON kcu.constraint_name = tc.constraint_name
-WHERE kcu.table_name = @TableName
-AND tc.constraint_type = 'PRIMARY KEY'";
+@"SELECT `COLUMN_NAME`
+FROM `INFORMATION_SCHEMA`.`COLUMNS`
+WHERE `TABLE_SCHEMA` = 'HotelOffer'
+AND `TABLE_NAME` = 'airport'
+AND `COLUMN_KEY` = 'PRI';";
 
             ColumnInfoCollection list = new ColumnInfoCollection();
 
@@ -39,6 +48,14 @@ AND tc.constraint_type = 'PRIMARY KEY'";
                 using (var command = new MySqlCommand(CMD_COLUMN_INFO_FORMAT, connection))
                 {
                     command.CommandType = CommandType.Text;
+
+                    command.Parameters.Add(new MySqlParameter
+                    {
+                        Direction = ParameterDirection.Input,
+                        DbType = DbType.String,
+                        ParameterName = "@DatabaseName",
+                        Value = connection.Database
+                    });
 
                     command.Parameters.Add(new MySqlParameter
                     {
@@ -213,6 +230,14 @@ AND tc.constraint_type = 'PRIMARY KEY'";
                 {
                     Direction = ParameterDirection.Input,
                     DbType = DbType.String,
+                    ParameterName = "@DatabaseName",
+                    Value = connection.Database
+                });
+
+                command.Parameters.Add(new MySqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
                     ParameterName = "@TableName",
                     Value = tableName
                 });
@@ -331,12 +356,12 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
                     while (reader.Read())
                     {
                         foreignKeyData.Add(new ForeignKeyInfo(
-                            reader.GetString(0),
-                            reader.GetString(1),
-                            reader.GetString(2),
-                            reader.GetString(3),
+                            reader.IsDBNull(0) ? null : reader.GetString(0),
+                            reader.IsDBNull(1) ? null : reader.GetString(1),
+                            reader.IsDBNull(2) ? null : reader.GetString(2),
+                            reader.IsDBNull(3) ? null : reader.GetString(3),
                             string.Empty,
-                            reader.GetString(4)));
+                            reader.IsDBNull(4) ? null : reader.GetString(4)));
                     }
                 }
             }
