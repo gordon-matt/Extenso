@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Extenso.Collections;
 using Extenso.Data;
 using Extenso.Data.QueryBuilder;
@@ -11,11 +12,39 @@ namespace Extenso.Sandbox
     {
         private static void Main(string[] args)
         {
+            //string humanized = "thisIsACamelCasedString".SplitPascal();
+            string humanized = SeparatorReplacement("thisIsACamelCasedString", " ", true);
+
             //QueryBuilder();
 
-            DataTableExtensions();
+            //DataTableExtensions();
 
             Console.ReadLine();
+        }
+        private static string SeparatorReplacement(string value, string separator, bool capitalizeFirstChar)
+        {
+            if (!capitalizeFirstChar && Regex.IsMatch(value[1..], separator))
+            {
+                return value;
+            }
+
+            string firstChar = value[..1];
+            if (capitalizeFirstChar)
+            {
+                firstChar = firstChar.ToUpper();
+            }
+
+            value = firstChar + value[1..].Replace("_", string.Empty);
+            var matches = Regex.Matches(value, "(?<min>[a-z])(?<may>[A-Z])");
+
+            foreach (Match match in matches)
+            {
+                value = Regex.Replace(
+                    value,
+                    $"{match.Groups["min"].Value}{match.Groups["may"].Value}",
+                    $"{match.Groups["min"].Value}{separator}{match.Groups["may"].Value}");
+            }
+            return value;
         }
 
         private static void DataTableExtensions()
