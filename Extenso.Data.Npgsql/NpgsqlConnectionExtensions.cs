@@ -371,12 +371,12 @@ ORDER BY 1,2,3,4";
                     while (reader.Read())
                     {
                         foreignKeyData.Add(new ForeignKeyInfo(
-                            reader.GetString(0),
-                            reader.GetString(1),
-                            reader.GetString(2),
-                            reader.GetString(3),
+                            reader.IsDBNull(0) ? null : reader.GetString(0),
+                            reader.IsDBNull(1) ? null : reader.GetString(1),
+                            reader.IsDBNull(2) ? null : reader.GetString(2),
+                            reader.IsDBNull(3) ? null : reader.GetString(3),
                             string.Empty,
-                            reader.GetString(4)));
+                            reader.IsDBNull(4) ? null : reader.GetString(4)));
                     }
                 }
             }
