@@ -931,14 +931,18 @@ namespace Extenso
             var sb = new StringBuilder();
             for (int i = 0; i < source.Length; i++)
             {
-                char a = source[i];
-                if (char.IsUpper(a) && i + 1 < source.Length && !char.IsUpper(source[i + 1]))
+                char current = source[i];
+                char next = source[i + 1];
+
+                if (char.IsUpper(current) && i + 1 < source.Length && !char.IsUpper(next))
                 {
                     if (sb.Length > 0)
-                    { sb.Append(' '); }
-                    sb.Append(a);
+                    {
+                        sb.Append(' ');
+                    }
+                    sb.Append(current);
                 }
-                else { sb.Append(a); }
+                else { sb.Append(current); }
             }
 
             return sb.ToString();
