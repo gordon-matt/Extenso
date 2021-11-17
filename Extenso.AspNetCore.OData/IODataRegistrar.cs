@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.OData;
 
 namespace Extenso.AspNetCore.OData
 {
@@ -12,15 +11,7 @@ namespace Extenso.AspNetCore.OData
         /// <summary>
         /// Registers one or more OData routes for use in the application.
         /// </summary>
-        /// <param name="routes">An instance of Microsoft.AspNetCore.Routing.IRouteBuilder to add the OData routes to.</param>
-        /// <param name="services">The System.IServiceProvider that provides access to the application's service container</param>
-        void Register(IRouteBuilder routes, IServiceProvider services);
-
-        /// <summary>
-        /// Registers one or more OData endpoints for use in the application.
-        /// </summary>
-        /// <param name="endpoints">An instance of Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add the OData endpoints to.</param>
-        /// <param name="services">The System.IServiceProvider that provides access to the application's service container</param>
-        void Register(IEndpointRouteBuilder endpoints, IServiceProvider services);
+        /// <param name="options">The OData options used to configure the services with.</param>
+        void Register(ODataOptions options);
     }
 }

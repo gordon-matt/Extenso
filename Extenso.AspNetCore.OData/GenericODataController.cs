@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Extenso.Collections;
 using Extenso.Data.Entity;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Extenso.AspNetCore.OData
@@ -98,6 +99,8 @@ namespace Extenso.AspNetCore.OData
             var response = await Task.FromResult((results as IQueryable<TEntity>).ToHashSet());
             return Ok(response);
         }
+
+        // TODO: Can't do $expand, because entity is not from an IQueryable.. and also we don't have a ODataQueryOptions here..
 
         /// <summary>
         /// Gets the record associated with the given key.
