@@ -5,12 +5,26 @@
 
 <h1>People</h1>
 
+<Card>
+    <CardBody>
+        <RadzenLabel Text="Family Name:"></RadzenLabel>
+        <RadzenTextBox @ref="FamilyNameTextBox" id="FamilyName" />
+        
+        <RadzenLabel Text="Given Name/s:"></RadzenLabel>
+        <RadzenTextBox @ref="GivenNamesTextBox" id="GivenNames" />
+
+        <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="search" Size="ButtonSize.Medium" Click="SearchAsync"></RadzenButton>
+    </CardBody>
+</Card>
+
 <Row id="grid-section" hidden="@(ShowEditMode == true)">
     <Column ColumnSize="ColumnSize.Is12" Class="mb-3">
         <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="Create">
             <Icon Name="IconName.PlusCircle"></Icon>
             Create
         </RadzenButton>
+        <RadzenButton Text="Excel" Icon="grid_on" Click="@(args => Export("excel"))"></RadzenButton>
+        <RadzenButton Text="CSV" Icon="wrap_text" Click="@(args => Export("csv"))"></RadzenButton>
     </Column>
 
     <Column ColumnSize="ColumnSize.Is12">
