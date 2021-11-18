@@ -10,6 +10,7 @@
 	  <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
 	  <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.7" />
 	  <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.7" />
+	  <PackageReference Include="EPPlus" Version="5.8.2" />
 	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.11" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.11" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.11" />
