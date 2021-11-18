@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Demo.Extenso.AspNetCore.Blazor.OData.Extensions;
 using Demo.Extenso.AspNetCore.Blazor.OData.Services;
 using Extenso;
 using Extenso.Data.Entity;
@@ -43,11 +44,14 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Pages
         protected virtual async Task LoadGridAsync(LoadDataArgs args)
         {
             IsLoading = true;
-            var result = await ODataService.FindAsync(filter: args.Filter, top: args.Top, skip: args.Skip, orderby: args.OrderBy, count: true);
+            string odataFilter = GetODataFilter(args);
+            var result = await ODataService.FindAsync(filter: odataFilter, top: args.Top, skip: args.Skip, orderby: args.OrderBy, count: true);
             Records = result.Value.AsODataEnumerable();
             RecordCount = result.Count;
             IsLoading = false;
         }
+
+        protected virtual string GetODataFilter(LoadDataArgs args) => args.Filter;
 
         protected virtual void Create()
         {

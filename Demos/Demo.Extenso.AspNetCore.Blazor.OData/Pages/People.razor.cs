@@ -1,4 +1,7 @@
-﻿using Demo.Extenso.AspNetCore.Blazor.OData.Data.Domain;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Demo.Extenso.AspNetCore.Blazor.OData.Extensions;
+using Extenso.Collections;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
@@ -13,9 +16,44 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; }
 
-        public void SearchAsync()
+        protected override string GetODataFilter(LoadDataArgs args)
         {
-            // ??
+            var filters = new List<FilterDescriptor>();
+
+            if (!string.IsNullOrEmpty(FamilyNameTextBox.Value))
+            {
+                filters.Add(new FilterDescriptor
+                {
+                    FilterOperator = FilterOperator.Contains,
+                    FilterValue = FamilyNameTextBox.Value,
+                    LogicalFilterOperator = LogicalFilterOperator.And,
+                    Property = "FamilyName"
+                });
+            }
+
+            if (!string.IsNullOrEmpty(GivenNamesTextBox.Value))
+            {
+                filters.Add(new FilterDescriptor
+                {
+                    FilterOperator = FilterOperator.Contains,
+                    FilterValue = GivenNamesTextBox.Value,
+                    LogicalFilterOperator = LogicalFilterOperator.And,
+                    Property = "GivenNames"
+                });
+            }
+
+            if (filters.IsNullOrEmpty())
+            {
+                return args.Filter;
+            }
+
+            return filters.ToODataFilterString(DataGrid);
+        }
+
+        public async Task SearchAsync()
+        {
+            DataGrid.Reset();
+            await DataGrid.Reload();
         }
 
         public void Export(string type)
