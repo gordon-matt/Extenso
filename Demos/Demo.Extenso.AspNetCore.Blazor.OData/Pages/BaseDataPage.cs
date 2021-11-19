@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Demo.Extenso.AspNetCore.Blazor.OData.Extensions;
 using Demo.Extenso.AspNetCore.Blazor.OData.Services;
 using Extenso;
 using Extenso.Data.Entity;
