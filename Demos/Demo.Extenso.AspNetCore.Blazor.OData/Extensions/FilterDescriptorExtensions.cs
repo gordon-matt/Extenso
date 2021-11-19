@@ -94,7 +94,7 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Extensions
                     filterPropertyType == typeof(DateTimeOffset) ||
                     filterPropertyType == typeof(DateTimeOffset?))
             {
-                return $"{property} {ODataFilterOperators[columnFilterOperator]} {DateTime.Parse(value, null, System.Globalization.DateTimeStyles.RoundtripKind).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")}";
+                return $"{property} {ODataFilterOperators[columnFilterOperator]} {DateTime.Parse(value, null, System.Globalization.DateTimeStyles.RoundtripKind):yyyy-MM-ddTHH:mm:ss.fffZ}";
             }
             else if (filterPropertyType == typeof(Guid) || filterPropertyType == typeof(Guid?))
             {
@@ -106,7 +106,7 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Extensions
 
         public static string ToODataFilterString<T>(this IEnumerable<FilterDescriptor> columns, RadzenDataGrid<T> dataGrid)
         {
-            Func<FilterDescriptor, bool> canFilter = (c) => c.Property != null &&
+            static bool canFilter(FilterDescriptor c) => c.Property != null &&
                 !(c.FilterValue == null || c.FilterValue as string == string.Empty) && c.Property != null;
 
             if (columns.Where(canFilter).Any())
