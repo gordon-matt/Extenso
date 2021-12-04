@@ -13,8 +13,10 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
         public FluentTagBuilder(string tagName, TagRenderMode renderMode = TagRenderMode.Normal, FluentTagBuilder parent = null)
         {
-            tagBuilder = new TagBuilder(tagName);
-            tagBuilder.TagRenderMode = renderMode;
+            tagBuilder = new TagBuilder(tagName)
+            {
+                TagRenderMode = renderMode
+            };
             this.parent = parent;
             stringBuilder = new StringBuilder();
         }
