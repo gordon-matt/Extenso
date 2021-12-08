@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Extenso.Collections;
 using Extenso.Data;
@@ -18,6 +19,13 @@ namespace Extenso.Sandbox
             //QueryBuilder();
 
             //DataTableExtensions();
+
+            //string sample = "key:value";
+            //string key = sample.LeftOf(':');
+            //string value = sample.RightOf(':');
+
+            string desc = "the quick brown fox jumped over the lazy dog";
+            string result = desc.AsSpan()[..19].ToString();
 
             Console.ReadLine();
         }

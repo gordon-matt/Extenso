@@ -49,6 +49,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
             services.AddSingleton<IODataRegistrar, ODataRegistrar>(); // What about others???
 
             services.AddControllersWithViews()
+                //.AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
                 .AddNewtonsoftJson()
                 .AddOData(options =>
                 {

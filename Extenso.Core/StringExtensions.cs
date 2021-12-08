@@ -24,7 +24,7 @@ namespace Extenso
         #region Fields
 
         private const string RegexArabicAndHebrew = @"[\u0600-\u06FF,\u0590-\u05FF]+";
-        private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+        //private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
 
         #endregion Fields
 
@@ -96,9 +96,9 @@ namespace Extenso
             }
             else
             {
-                int length = int.Parse(source.Substring(0, lengthDelimiterPosition));
+                int length = int.Parse(source[..lengthDelimiterPosition]);
 
-                var bytes = Convert.FromBase64String(source.Substring(lengthDelimiterPosition + 1));
+                var bytes = Convert.FromBase64String(source[(lengthDelimiterPosition + 1)..]);
                 using (var memoryStream = new MemoryStream(bytes, 0, length))
                 {
                     var binaryFormatter = new BinaryFormatter();
@@ -129,7 +129,7 @@ namespace Extenso
                 int indexTo = source.IndexOf(right, indexFrom);
                 if (indexTo != -1)
                 {
-                    return source.Substring(indexFrom, indexTo - indexFrom);
+                    return source[indexFrom..indexTo];
                 }
             }
             return string.Empty;
@@ -530,7 +530,7 @@ namespace Extenso
                 return source;
             }
 
-            return source.Substring(0, length);
+            return source[..length];
         }
 
         /// <summary>
@@ -549,7 +549,7 @@ namespace Extenso
             int index = source.IndexOf(value);
             if (index != -1)
             {
-                return source.Substring(0, index);
+                return source[..index];
             }
             return source;
         }
@@ -578,7 +578,7 @@ namespace Extenso
             }
             if (index != -1)
             {
-                return source.Substring(0, index);
+                return source[..index];
             }
             return source;
         }
@@ -599,7 +599,7 @@ namespace Extenso
             int index = source.IndexOf(value);
             if (index != -1)
             {
-                return source.Substring(0, index);
+                return source[..index];
             }
             return source;
         }
@@ -621,7 +621,7 @@ namespace Extenso
             int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = source.Substring(0, index);
+                ret = source[..index];
             }
             return ret;
         }
@@ -643,7 +643,7 @@ namespace Extenso
             int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = source.Substring(0, index);
+                ret = source[..index];
             }
             return ret;
         }
@@ -673,7 +673,7 @@ namespace Extenso
         {
             var items = new string[values.Length + 1];
             values.CopyTo(items, 0);
-            items[items.Length - 1] = source;
+            items[^1] = source;
             return string.Concat(items);
         }
 
@@ -687,7 +687,7 @@ namespace Extenso
         {
             var items = new object[values.Length + 1];
             values.CopyTo(items, 0);
-            items[items.Length - 1] = source;
+            items[^1] = source;
             return string.Concat(items);
         }
 
@@ -795,7 +795,7 @@ namespace Extenso
             int index = source.IndexOf(value);
             if (index != -1)
             {
-                return source.Substring(index + 1);
+                return source[(index + 1)..];
             }
             return source;
         }
@@ -825,7 +825,7 @@ namespace Extenso
 
             if (index != -1)
             {
-                return source.Substring(index + 1);
+                return source[(index + 1)..];
             }
             return source;
         }
@@ -846,7 +846,7 @@ namespace Extenso
             int index = source.IndexOf(value);
             if (index != -1)
             {
-                return source.Substring(index + 1);
+                return source[(index + 1)..];
             }
             return source;
         }
@@ -868,7 +868,7 @@ namespace Extenso
             int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = source.Substring(index + 1);
+                ret = source[(index + 1)..];
             }
             return ret;
         }
@@ -890,7 +890,7 @@ namespace Extenso
             int index = source.LastIndexOf(value);
             if (index != -1)
             {
-                ret = source.Substring(index + 1);
+                ret = source[(index + 1)..];
             }
             return ret;
         }
@@ -968,7 +968,7 @@ namespace Extenso
         public static string ToCamelCase(this string source)
         {
             string pascal = source.ToPascalCase();
-            return string.Concat(pascal[0].ToString().ToLower(), pascal.Substring(1));
+            return string.Concat(pascal[0].ToString().ToLower(), pascal[1..]);
         }
 
         /// <summary>
@@ -1124,7 +1124,7 @@ namespace Extenso
         {
             if (string.IsNullOrEmpty(source))
             {
-                return default(T);
+                return default;
             }
 
             var locker = new object();
