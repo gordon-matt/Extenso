@@ -5,16 +5,37 @@
 
 <h1>People</h1>
 
-<Row id="grid-section" hidden="@(ShowEditMode == true)">
+<Row hidden="@(ShowEditMode == true)">
     <Column ColumnSize="ColumnSize.Is12" Class="mb-3">
-        <RadzenButton ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Primary" Click="Create">
+        <Card>
+            <CardBody>
+                <RadzenLabel Text="Family Name:"></RadzenLabel>
+                <RadzenTextBox @ref="FamilyNameTextBox" id="FamilyName" />
+        
+                <RadzenLabel Text="Given Name/s:"></RadzenLabel>
+                <RadzenTextBox @ref="GivenNamesTextBox" id="GivenNames" />
+
+                <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="search" Size="ButtonSize.Medium" Click="SearchAsync"></RadzenButton>
+            </CardBody>
+        </Card>
+    </Column>
+
+    <Column ColumnSize="ColumnSize.Is12" Class="mb-3">
+        <RadzenButton Click="Create">
             <Icon Name="IconName.PlusCircle"></Icon>
             Create
+        </RadzenButton>
+        <RadzenButton Text="Excel" Click="@(args => Export("excel"))">
+            Export to Excel
+        </RadzenButton>
+        <RadzenButton Text="CSV" Click="@(args => Export("csv"))">
+            Export to CSV
         </RadzenButton>
     </Column>
 
     <Column ColumnSize="ColumnSize.Is12">
         <RadzenDataGrid @ref="DataGrid"
+                        TItem="Person"
                         IsLoading="@IsLoading"
                         LoadData="@LoadGridAsync"
                         Data="Records"
@@ -25,13 +46,12 @@
                         AllowFiltering="true"
                         AllowPaging="true"
                         PageSize="10"
-                        TItem="Person"
                         ColumnWidth="200px">
             <Columns>
                 <RadzenDataGridColumn TItem="Person" Property="FamilyName" Title="Family Name" Width="150px" />
                 <RadzenDataGridColumn TItem="Person" Property="GivenNames" Title="Given Name/s" />
                 <RadzenDataGridColumn TItem="Person" Property="DateOfBirth" Title="Date of Birth" FormatString="{0:d}" />
-                <RadzenDataGridColumn TItem="Person" Context="record" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                <RadzenDataGridColumn TItem="Person" Context="record" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="50px">
                     <Template Context="record">
                         <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Size="ButtonSize.Medium" Click="@(args => EditAsync(record.Id))" @onclick:stopPropagation="true"></RadzenButton>
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Medium" Click="@(args => DeleteAsync(record.Id))" @onclick:stopPropagation="true"></RadzenButton>
@@ -47,13 +67,13 @@
         <Card>
             <CardHeader Class="text-white bg-primary">Details</CardHeader>
             <CardBody>
-                <EditForm id="form-section-form" class="form-horizontal" Model="Model" OnValidSubmit="OnValidSumbitAsync">
+                <EditForm class="form-horizontal" Model="Model" OnValidSubmit="OnValidSumbitAsync">
                     <Row>
                         <Column ColumnSize="ColumnSize.Is12">
                             <Field Horizontal="true">
                                 <FieldLabel For="FamilyName" ColumnSize="ColumnSize.Is3">Family Name</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is9">
-                                    <RadzenTextBox id="FamilyName" @bind-Value="Model.FamilyName" Style="width:100%" />
+                                    <RadzenTextBox @bind-Value="Model.FamilyName" Style="width:100%" />
                                 </FieldBody>
                             </Field>
                         </Column>
@@ -63,7 +83,7 @@
                             <Field Horizontal="true">
                                 <FieldLabel For="GivenNames" ColumnSize="ColumnSize.Is3">Given Name/s</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is9">
-                                    <RadzenTextBox id="GivenNames" @bind-Value="Model.GivenNames" Style="width:100%" />
+                                    <RadzenTextBox @bind-Value="Model.GivenNames" Style="width:100%" />
                                 </FieldBody>
                             </Field>
                         </Column>
@@ -73,7 +93,7 @@
                             <Field Horizontal="true">
                                 <FieldLabel For="DateOfBirth" ColumnSize="ColumnSize.Is3">Date of Birth</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is9">
-                                    <RadzenDatePicker id="DateOfBirth" @bind-Value=Model.DateOfBirth DateFormat="yyyy-MM-dd" Style="width:100%" />
+                                    <RadzenDatePicker @bind-Value=Model.DateOfBirth DateFormat="yyyy-MM-dd" Style="width:100%" />
                                 </FieldBody>
                             </Field>
                         </Column>

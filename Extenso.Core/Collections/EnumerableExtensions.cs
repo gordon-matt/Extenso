@@ -136,31 +136,25 @@ namespace Extenso.Collections
                 //throw new ArgumentNullException("source");
             }
 
-            var array = source as T[];
-
-            if (array != null)
+            if (source is T[] array)
             {
                 return array.Length > n;
             }
 
-            var collection = source as ICollection<T>;
-
-            if (collection != null)
+            if (source is ICollection<T> collection)
             {
                 return collection.Count > n;
             }
 
-            using (var enumerator = source.GetEnumerator())
+            using var enumerator = source.GetEnumerator();
+            for (int i = 0; i < n + 1; i++)
             {
-                for (int i = 0; i < n + 1; i++)
+                if (!enumerator.MoveNext())
                 {
-                    if (!enumerator.MoveNext())
-                    {
-                        return false;
-                    };
-                }
-                return true;
+                    return false;
+                };
             }
+            return true;
         }
 
         /// <summary>
@@ -684,16 +678,12 @@ namespace Extenso.Collections
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var array = source as TSource[];
-
-            if (array != null)
+            if (source is TSource[] array)
             {
                 return array.Length > 0;
             }
 
-            var collection = source as ICollection<TSource>;
-
-            if (collection != null)
+            if (source is ICollection<TSource> collection)
             {
                 return collection.Count > 0;
             }

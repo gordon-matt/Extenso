@@ -27,11 +27,13 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
 
         public GenericODataService(string entitySetName)
         {
-            httpClientHandler = new HttpClientHandler();
-            httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            httpClientHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
             httpClient = new HttpClient(httpClientHandler);
 
-            baseUri = new Uri("https://localhost:44326/odata/"); // TODO: detect, do NOT hard code
+            baseUri = new Uri(Program.ODataBaseUri);
             this.entitySetName = entitySetName;
         }
 
@@ -62,8 +64,10 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
         public virtual async Task<TEntity> InsertAsync(TEntity entity)
         {
             var uri = new Uri(baseUri, entitySetName);
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, uri);
-            httpRequestMessage.Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json");
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, uri)
+            {
+                Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json")
+            };
             var response = await httpClient.SendAsync(httpRequestMessage);
             return await response.ReadAsync<TEntity>();
         }
@@ -71,8 +75,10 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
         public virtual async Task<TEntity> UpdateAsync(TKey key, TEntity entity)
         {
             var uri = new Uri(baseUri, $"{entitySetName}({key})");
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uri);
-            httpRequestMessage.Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json");
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uri)
+            {
+                Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json")
+            };
             var response = await httpClient.SendAsync(httpRequestMessage);
             return await response.ReadAsync<TEntity>();
         }

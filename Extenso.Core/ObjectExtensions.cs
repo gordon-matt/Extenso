@@ -92,6 +92,16 @@ namespace Extenso
             }
         }
 
+        public static byte[] ComputeMD5Hash(this object source)
+        {
+            return ComputeHash(source, new MD5CryptoServiceProvider());
+        }
+
+        public static byte[] ComputeSHA1Hash(this object source)
+        {
+            return ComputeHash(source, new SHA1CryptoServiceProvider());
+        }
+
         /// <summary>
         /// Returns an object of the specified type and whose value is equivalent to the specified object.
         /// </summary>
@@ -209,7 +219,7 @@ namespace Extenso
         /// <returns>true if source is equal to the default value of its type; otherwise false.</returns>
         public static bool IsDefault<T>(this T source)
         {
-            return source.GenericEquals(default(T));
+            return source.GenericEquals(default);
         }
 
         /// <summary>

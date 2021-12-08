@@ -97,6 +97,7 @@ namespace Extenso.AspNetCore.OData
             //return await (results as IQueryable<TEntity>).ToHashSetAsync();
 
             var response = await Task.FromResult((results as IQueryable<TEntity>).ToHashSet());
+            //string jsonTest = response.JsonSerialize();
             return Ok(response);
         }
 
@@ -388,8 +389,6 @@ namespace Extenso.AspNetCore.OData
 
         private bool disposedValue = false; // To detect redundant calls
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -427,7 +426,5 @@ namespace Extenso.AspNetCore.OData
         }
 
         #endregion IDisposable Support
-
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }
