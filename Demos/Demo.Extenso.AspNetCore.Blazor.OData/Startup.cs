@@ -6,7 +6,7 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Demo.Extenso.AspNetCore.Blazor.OData.Areas.Identity;
 using Demo.Extenso.AspNetCore.Blazor.OData.Data;
-using Demo.Extenso.AspNetCore.Blazor.OData.Data.Domain;
+using Demo.Extenso.AspNetCore.Blazor.OData.Data.Entities;
 using Demo.Extenso.AspNetCore.Blazor.OData.Infrastructure;
 using Demo.Extenso.AspNetCore.Blazor.OData.Services;
 using Extenso.AspNetCore.OData;

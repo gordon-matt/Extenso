@@ -5,24 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData.Data.Entities
 {
-    public class Person : IEntity
+    public class Person : BaseEntity<int>
     {
-        public int Id { get; set; }
-
         public string FamilyName { get; set; }
 
         public string GivenNames { get; set; }
 
         public DateTime DateOfBirth { get; set; }
-
-        #region IEntity Members
-
-        public object[] KeyValues
-        {
-            get { return new object[] { Id }; }
-        }
-
-        #endregion IEntity Members
     }
 
     public class PersonMap : IEntityTypeConfiguration<Person>

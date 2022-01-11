@@ -1,4 +1,4 @@
-﻿using Demo.Extenso.AspNetCore.Blazor.OData.Data.Domain;
+﻿using Demo.Extenso.AspNetCore.Blazor.OData.Data.Entities;
 using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
 
