@@ -1,4 +1,4 @@
-﻿using Demo.Extenso.AspNetCore.Mvc.OData.Data.Domain;
+﻿using Demo.Extenso.AspNetCore.Mvc.OData.Data.Entities;
 using Extenso.AspNetCore.OData;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;

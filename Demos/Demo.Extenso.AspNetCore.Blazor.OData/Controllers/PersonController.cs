@@ -1,5 +1,5 @@
 ﻿using Demo.Extenso.AspNetCore.Blazor.OData.Data;
-using Demo.Extenso.AspNetCore.Blazor.OData.Data.Domain;
+using Demo.Extenso.AspNetCore.Blazor.OData.Data.Entities;
 using Demo.Extenso.AspNetCore.Blazor.OData.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
