@@ -51,11 +51,11 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
 
             services.AddRazorPages()
                 .AddNewtonsoftJson()
-                .AddOData(options =>
+                .AddOData((options, serviceProvider) =>
                 {
                     options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
 
-                    var registrars = services.BuildServiceProvider().GetRequiredService<IEnumerable<IODataRegistrar>>();
+                    var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
                     foreach (var registrar in registrars)
                     {
                         registrar.Register(options);
@@ -125,7 +125,7 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
                 .As(typeof(IRepository<>))
                 .InstancePerLifetimeScope();
 
-            //builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
+            builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
 
             // Radzen
             builder.RegisterType<DialogService>().AsSelf().InstancePerLifetimeScope();

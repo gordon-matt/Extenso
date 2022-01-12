@@ -44,18 +44,14 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
-            //services.AddOData();
-
-            services.AddSingleton<IODataRegistrar, ODataRegistrar>(); // What about others???
-
             services.AddControllersWithViews()
                 //.AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
                 .AddNewtonsoftJson()
-                .AddOData(options =>
+                .AddOData((options, serviceProvider) =>
                 {
                     options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
 
-                    var registrars = services.BuildServiceProvider().GetRequiredService<IEnumerable<IODataRegistrar>>();
+                    var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
                     foreach (var registrar in registrars)
                     {
                         registrar.Register(options);
@@ -124,7 +120,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
                 .As(typeof(IRepository<>))
                 .InstancePerLifetimeScope();
 
-            //builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
+            builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
         }
     }
 }
