@@ -78,7 +78,7 @@ namespace Extenso.Data.Entity
                 connection.Open();
             }
 
-            var result = connection.ExecuteNonQueryStoredProcedure(storedProcedure, parameters);
+            int result = connection.ExecuteNonQueryStoredProcedure(storedProcedure, parameters);
 
             if (!isOpen)
             {

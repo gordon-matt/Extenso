@@ -50,11 +50,11 @@ namespace Extenso.Collections
         /// <returns>A collection of elements that contains the descendant elements of the same type in source.</returns>
         public static IEnumerable<T> Descendants<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> descendBy)
         {
-            foreach (T value in source)
+            foreach (var value in source)
             {
                 yield return value;
 
-                foreach (T child in descendBy(value).Descendants<T>(descendBy))
+                foreach (var child in descendBy(value).Descendants<T>(descendBy))
                 {
                     yield return child;
                 }
@@ -115,7 +115,7 @@ namespace Extenso.Collections
         /// <param name="action">The System.Action`1 delegate to perform on each element of the System.Collections.Generic.IEnumerable`1.</param>
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
-            foreach (T item in source)
+            foreach (var item in source)
             {
                 action(item);
             }
@@ -389,9 +389,9 @@ namespace Extenso.Collections
             {
                 table.Columns.Add(new DataColumn("Value", typeof(string)));
 
-                foreach (T item in source)
+                foreach (var item in source)
                 {
-                    DataRow row = table.NewRow();
+                    var row = table.NewRow();
 
                     row["Value"] = item.ToString();
 
@@ -405,16 +405,16 @@ namespace Extenso.Collections
 
             #region Else Normal Collection
 
-            foreach (PropertyInfo property in properties)
+            foreach (var property in properties)
             {
                 table.Columns.Add(new DataColumn(property.Name, property.PropertyType));
             }
 
-            foreach (T item in source)
+            foreach (var item in source)
             {
-                DataRow row = table.NewRow();
+                var row = table.NewRow();
 
-                foreach (PropertyInfo property in properties)
+                foreach (var property in properties)
                 {
                     row[property.Name] = property.GetValue(item, null);
                 }
@@ -458,7 +458,7 @@ namespace Extenso.Collections
             Func<IEnumerable<T>, TData> dataSelector)
         {
             var table = new DataTable();
-            var rowName = ((MemberExpression)rowSelector.Body).Member.Name;
+            string rowName = ((MemberExpression)rowSelector.Body).Member.Name;
             table.Columns.Add(new DataColumn(rowName, typeof(TRow)));
             var columns = source.Select(columnSelector).Distinct();
 
@@ -514,10 +514,10 @@ namespace Extenso.Collections
         {
             var table = new DataTable();
 
-            var row1Name = ((MemberExpression)row1Selector.Body).Member.Name;
+            string row1Name = ((MemberExpression)row1Selector.Body).Member.Name;
             table.Columns.Add(new DataColumn(row1Name, typeof(TRow1)));
 
-            var row2Name = ((MemberExpression)row2Selector.Body).Member.Name;
+            string row2Name = ((MemberExpression)row2Selector.Body).Member.Name;
             table.Columns.Add(new DataColumn(row2Name, typeof(TRow2)));
 
             var columns = source.Select(columnSelector).Distinct();
@@ -579,13 +579,13 @@ namespace Extenso.Collections
         {
             var table = new DataTable();
 
-            var row1Name = ((MemberExpression)row1Selector.Body).Member.Name;
+            string row1Name = ((MemberExpression)row1Selector.Body).Member.Name;
             table.Columns.Add(new DataColumn(row1Name, typeof(TRow1)));
 
-            var row2Name = ((MemberExpression)row2Selector.Body).Member.Name;
+            string row2Name = ((MemberExpression)row2Selector.Body).Member.Name;
             table.Columns.Add(new DataColumn(row2Name, typeof(TRow2)));
 
-            var row3Name = ((MemberExpression)row3Selector.Body).Member.Name;
+            string row3Name = ((MemberExpression)row3Selector.Body).Member.Name;
             table.Columns.Add(new DataColumn(row3Name, typeof(TRow3)));
 
             var columns = source.Select(columnSelector).Distinct();
@@ -637,7 +637,7 @@ namespace Extenso.Collections
         public static Queue<T> ToQueue<T>(this IEnumerable<T> source)
         {
             var queue = new Queue<T>();
-            foreach (T item in source)
+            foreach (var item in source)
             {
                 queue.Enqueue(item);
             }
@@ -664,7 +664,7 @@ namespace Extenso.Collections
         public static Stack<T> ToStack<T>(this IEnumerable<T> source)
         {
             var stack = new Stack<T>();
-            foreach (T item in source.Reverse())
+            foreach (var item in source.Reverse())
             {
                 stack.Push(item);
             }

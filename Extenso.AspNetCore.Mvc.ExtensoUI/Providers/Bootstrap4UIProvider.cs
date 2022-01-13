@@ -65,17 +65,13 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers
 
         #region Special
 
-        public override IAccordionProvider AccordionProvider =>
-            accordionProvider ?? (accordionProvider = new Bootstrap4AccordionProvider());
+        public override IAccordionProvider AccordionProvider => accordionProvider ??= new Bootstrap4AccordionProvider();
 
-        public override IModalProvider ModalProvider =>
-            modalProvider ?? (modalProvider = new Bootstrap4ModalProvider());
+        public override IModalProvider ModalProvider => modalProvider ??= new Bootstrap4ModalProvider();
 
-        public override IPanelProvider PanelProvider =>
-            panelProvider ?? (panelProvider = new Bootstrap4PanelProvider());
+        public override IPanelProvider PanelProvider => panelProvider ??= new Bootstrap4PanelProvider();
 
-        public override ITabsProvider TabsProvider =>
-            tabsProvider ?? (tabsProvider = new Bootstrap4TabsProvider());
+        public override ITabsProvider TabsProvider => tabsProvider ??= new Bootstrap4TabsProvider();
 
         #endregion Special
 

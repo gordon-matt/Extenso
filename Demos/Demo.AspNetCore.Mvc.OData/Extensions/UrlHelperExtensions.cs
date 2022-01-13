@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Demo.Extenso.AspNetCore.Mvc.OData.Controllers;
 
 namespace Microsoft.AspNetCore.Mvc

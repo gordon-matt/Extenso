@@ -81,7 +81,7 @@
             // Output joins
             if (joins.Count > 0)
             {
-                foreach (JoinClause clause in joins)
+                foreach (var clause in joins)
                 {
                     string joinString = string.Empty;
                     switch (clause.JoinType)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Extenso.Collections;
 using Extenso.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -77,7 +76,7 @@ namespace Extenso.Data.Entity
         {
             using (var context = GetContext())
             {
-                IQueryable<TEntity> query = context.Set<TEntity>().AsNoTracking();
+                var query = context.Set<TEntity>().AsNoTracking();
 
                 foreach (var path in includePaths)
                 {
@@ -118,7 +117,7 @@ namespace Extenso.Data.Entity
         {
             using (var context = GetContext())
             {
-                IQueryable<TEntity> query = context.Set<TEntity>().AsNoTracking();
+                var query = context.Set<TEntity>().AsNoTracking();
 
                 foreach (var path in includePaths)
                 {

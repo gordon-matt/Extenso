@@ -8,6 +8,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
     {
         // Fields
         protected readonly T Element;
+
         protected readonly TextWriter TextWriter;
         protected readonly IHtmlHelper<TModel> HtmlHelper;
 

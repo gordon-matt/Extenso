@@ -12,7 +12,7 @@ namespace Extenso.Data
 
         public static Type ToSystemType(this DbType dbType)
         {
-            Type type = DataTypeConvertor.GetSystemType(dbType);
+            var type = DataTypeConvertor.GetSystemType(dbType);
             return type == null ? typeof(object) : type;
         }
     }

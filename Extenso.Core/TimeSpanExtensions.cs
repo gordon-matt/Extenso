@@ -11,7 +11,7 @@
 //    public static class TimeSpanExtensions
 //    {
 //        /// <summary>
-//        /// 
+//        ///
 //        /// </summary>
 //        /// <param name="source"></param>
 //        /// <param name="useShorthand"></param>

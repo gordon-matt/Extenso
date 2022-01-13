@@ -91,9 +91,9 @@ namespace Extenso.Collections
         public static Dictionary<TKey, TValue> Union<TKey, TValue>(this IDictionary<TKey, TValue> source, IDictionary<TKey, TValue> other)
         {
             var result = new Dictionary<TKey, TValue>(source);
-            foreach (KeyValuePair<TKey, TValue> kv in other)
+            foreach (var kv in other)
             {
-                TValue value = result.GetOrCreate(kv.Key, kv.Value);
+                var value = result.GetOrCreate(kv.Key, kv.Value);
             }
             return result;
         }

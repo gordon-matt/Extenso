@@ -153,7 +153,10 @@ namespace Extenso.Reflection
         public static bool IsCollection(this Type type)
         {
             // string implements IEnumerable (it's a collection of System.Char), but for our purposes we don't consider it a collection.
-            if (type == typeof(string)) return false;
+            if (type == typeof(string))
+            {
+                return false;
+            }
 
             var interfaces = from @interface in type.GetTypeInfo().GetInterfaces()
                              where @interface == typeof(IEnumerable) ||

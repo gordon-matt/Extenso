@@ -78,14 +78,17 @@ namespace Demo.Data.InfoSchema
                         cmbSchema.DataSource = (connection as SqlConnection).GetSchemaNames();
                         cmbSchema.Select();
                         break;
+
                     case DataSource.MySql:
                         lbTables.DataSource = (connection as MySqlConnection).GetTableNames();
                         lbTables.Select();
                         break;
+
                     case DataSource.PostgreSql:
                         cmbSchema.DataSource = (connection as NpgsqlConnection).GetSchemaNames();
                         cmbSchema.Select();
                         break;
+
                     default: break;
                 }
             }
