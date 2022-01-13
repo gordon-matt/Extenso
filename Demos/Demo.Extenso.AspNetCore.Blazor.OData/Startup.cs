@@ -45,10 +45,6 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //services.AddOData();
-
-            services.AddSingleton<IODataRegistrar, ODataRegistrar>(); // What about others???
-
             services.AddRazorPages()
                 .AddNewtonsoftJson()
                 .AddOData((options, serviceProvider) =>
