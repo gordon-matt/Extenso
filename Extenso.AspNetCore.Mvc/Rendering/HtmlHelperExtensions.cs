@@ -44,8 +44,10 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
         public static IHtmlContent Image(this IHtmlHelper helper, IUrlHelper urlHelper, string src, string alt, object htmlAttributes = null)
         {
-            var builder = new TagBuilder("img");
-            builder.TagRenderMode = TagRenderMode.SelfClosing;
+            var builder = new TagBuilder("img")
+            {
+                TagRenderMode = TagRenderMode.SelfClosing
+            };
             builder.MergeAttribute("src", urlHelper.Content(src));
 
             if (!string.IsNullOrEmpty(alt))
@@ -119,8 +121,10 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
         public static IHtmlContent FileUpload(this IHtmlHelper html, string name, object htmlAttributes = null)
         {
-            var builder = new TagBuilder("input");
-            builder.TagRenderMode = TagRenderMode.SelfClosing;
+            var builder = new TagBuilder("input")
+            {
+                TagRenderMode = TagRenderMode.SelfClosing
+            };
             builder.MergeAttribute("type", "file");
             builder.GenerateId(name, "_");
 
@@ -561,7 +565,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             var cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
 
             var func = expression.Compile();
-            var selectedValue = func(html.ViewData.Model);
+            string selectedValue = func(html.ViewData.Model);
 
             var selectList = cultures
                 .OrderBy(x => x.DisplayName)
@@ -658,7 +662,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             var timeZones = TimeZoneInfo.GetSystemTimeZones();
 
             var func = expression.Compile();
-            var selectedValue = func(html.ViewData.Model);
+            string selectedValue = func(html.ViewData.Model);
 
             var selectList = timeZones
                 .OrderBy(x => x.DisplayName)

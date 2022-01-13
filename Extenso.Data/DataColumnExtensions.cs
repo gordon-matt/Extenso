@@ -10,7 +10,7 @@ namespace Extenso.Data
         {
             string temp = "_1_TEMP_1_";
 
-            DataColumn newColumn = new DataColumn(column.ColumnName + temp, typeof(T));
+            var newColumn = new DataColumn(column.ColumnName + temp, typeof(T));
             column.Table.Columns.Add(newColumn);
 
             if (column.Table.Rows.Count > 0)
@@ -34,14 +34,14 @@ namespace Extenso.Data
                 }
                 else
                 {
-                    T test = default(T);
+                    var test = default(T);
                     bool success = column.Table.Rows[0][column].ToString().TryParseOrDefault(out test);
 
                     if (success)
                     {
                         foreach (DataRow row in column.Table.Rows)
                         {
-                            T value = default(T);
+                            var value = default(T);
                             if (row[column].ToString().TryParseOrDefault(out value))
                             {
                                 row[newColumn] = value;

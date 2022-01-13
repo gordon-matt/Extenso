@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>Matt Gordon</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.22" />
+    <PackageReference Include="MySql.Data" Version="8.0.27" />
   </ItemGroup>
 
   <ItemGroup>

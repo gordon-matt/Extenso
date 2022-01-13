@@ -32,8 +32,8 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Controllers
 
                 if (query.ContainsKey("$expand"))
                 {
-                    var propertiesToExpand = query["$orderBy"].ToString().Split(',');
-                    foreach (var p in propertiesToExpand)
+                    string[] propertiesToExpand = query["$orderBy"].ToString().Split(',');
+                    foreach (string p in propertiesToExpand)
                     {
                         items = items.Include(p);
                     }

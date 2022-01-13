@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Extenso.Collections;
 using Extenso.Data.Entity;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Extenso.AspNetCore.OData
@@ -96,8 +97,11 @@ namespace Extenso.AspNetCore.OData
             //return await (results as IQueryable<TEntity>).ToHashSetAsync();
 
             var response = await Task.FromResult((results as IQueryable<TEntity>).ToHashSet());
+            //string jsonTest = response.JsonSerialize();
             return Ok(response);
         }
+
+        // TODO: Can't do $expand, because entity is not from an IQueryable.. and also we don't have a ODataQueryOptions here..
 
         /// <summary>
         /// Gets the record associated with the given key.
@@ -215,7 +219,7 @@ namespace Extenso.AspNetCore.OData
                 return BadRequest(ModelState);
             }
 
-            TEntity entity = await Repository.FindOneAsync(key);
+            var entity = await Repository.FindOneAsync(key);
 
             if (entity == null)
             {
@@ -254,7 +258,7 @@ namespace Extenso.AspNetCore.OData
         [HttpDelete]
         public virtual async Task<IActionResult> Delete([FromODataUri] TKey key)
         {
-            TEntity entity = await Repository.FindOneAsync(key);
+            var entity = await Repository.FindOneAsync(key);
 
             if (entity == null)
             {
@@ -385,8 +389,6 @@ namespace Extenso.AspNetCore.OData
 
         private bool disposedValue = false; // To detect redundant calls
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -424,7 +426,5 @@ namespace Extenso.AspNetCore.OData
         }
 
         #endregion IDisposable Support
-
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }

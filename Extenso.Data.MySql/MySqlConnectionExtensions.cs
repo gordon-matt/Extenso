@@ -32,13 +32,13 @@ WHERE `TABLE_SCHEMA` = 'HotelOffer'
 AND `TABLE_NAME` = 'airport'
 AND `COLUMN_KEY` = 'PRI';";
 
-            ColumnInfoCollection list = new ColumnInfoCollection();
+            var list = new ColumnInfoCollection();
 
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
 
             try
             {
-                ForeignKeyInfoCollection foreignKeyColumns = connection.GetForeignKeyData(tableName);
+                var foreignKeyColumns = connection.GetForeignKeyData(tableName);
 
                 if (!alreadyOpen)
                 {
@@ -254,7 +254,7 @@ AND `COLUMN_KEY` = 'PRI';";
                     while (reader.Read())
                     {
                         string pkColumn = reader.GetString(0);
-                        ColumnInfo match = list[pkColumn];
+                        var match = list[pkColumn];
                         if (match != null)
                         {
                             match.KeyType = KeyType.PrimaryKey;
@@ -287,7 +287,7 @@ AND `COLUMN_KEY` = 'PRI';";
         public static IEnumerable<string> GetDatabaseNames(this MySqlConnection connection)
         {
             const string CMD_SELECT_DATABASE_NAMES = "SHOW DATABASES;";
-            List<string> databaseNames = new List<string>();
+            var databaseNames = new List<string>();
 
             bool alreadyOpen = (connection.State != ConnectionState.Closed);
 

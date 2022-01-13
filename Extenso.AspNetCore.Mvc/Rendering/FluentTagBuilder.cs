@@ -67,14 +67,14 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
         public FluentTagBuilder MergeAttributes(object attributes)
         {
-            IDictionary<string, object> htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(attributes);
+            var htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(attributes);
             tagBuilder.MergeAttributes(htmlAttributes);
             return this;
         }
 
         public FluentTagBuilder MergeAttributes(object attributes, bool replaceExisting)
         {
-            IDictionary<string, object> htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(attributes);
+            var htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(attributes);
             tagBuilder.MergeAttributes(htmlAttributes, replaceExisting);
             return this;
         }

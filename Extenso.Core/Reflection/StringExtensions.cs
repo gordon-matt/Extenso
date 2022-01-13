@@ -51,7 +51,7 @@ namespace Extenso.Reflection
 
             if (parseMethod != null)
             {
-                var value = parseMethod.Invoke(null, new string[] { input });
+                object value = parseMethod.Invoke(null, new string[] { input });
                 return (value is T ? (T)value : defaultValue);
             }
             else { return defaultValue; }
@@ -100,8 +100,8 @@ namespace Extenso.Reflection
 
             if (parseMethod != null)
             {
-                var parameters = new object[] { input, result };
-                var value = parseMethod.Invoke(null, parameters);
+                object[] parameters = new object[] { input, result };
+                object value = parseMethod.Invoke(null, parameters);
 
                 if (value is bool)
                 {

@@ -1,22 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>aspnet-Demo.Extenso.AspNetCore.Blazor.OData-B75A265A-5CD9-4A58-8AD5-24C98674A921</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
 	  <PackageReference Include="Autofac" Version="6.3.0" />
-	  <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
-	  <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.7" />
-	  <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.7" />
-	  <PackageReference Include="EPPlus" Version="5.8.2" />
-	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.11" />
-	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.11" />
-	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.11" />
-	  <PackageReference Include="Radzen.Blazor" Version="3.11.12" />
+	  <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
+	  <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.4" />
+	  <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.4" />
+	  <PackageReference Include="EPPlus" Version="5.8.4" />
+	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Radzen.Blazor" Version="3.14.0" />
   </ItemGroup>
 
   <ItemGroup>

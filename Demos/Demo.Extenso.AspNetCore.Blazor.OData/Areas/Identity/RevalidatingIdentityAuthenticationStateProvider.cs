@@ -1,14 +1,13 @@
-using Microsoft.AspNetCore.Components;
+using System;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData.Areas.Identity
 {
@@ -66,8 +65,8 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Areas.Identity
             }
             else
             {
-                var principalStamp = principal.FindFirstValue(_options.ClaimsIdentity.SecurityStampClaimType);
-                var userStamp = await userManager.GetSecurityStampAsync(user);
+                string principalStamp = principal.FindFirstValue(_options.ClaimsIdentity.SecurityStampClaimType);
+                string userStamp = await userManager.GetSecurityStampAsync(user);
                 return principalStamp == userStamp;
             }
         }

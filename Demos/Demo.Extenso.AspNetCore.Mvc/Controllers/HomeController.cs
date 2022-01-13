@@ -10,11 +10,12 @@ namespace Demo.Extenso.AspNetCore.Mvc.Controllers
     {
         public IActionResult Index()
         {
-            var model = new List<PersonModel>();
-
-            model.Add(new PersonModel { Id = 1, FamilyName = "Jordan", GivenNames = "Michael", DateOfBirth = new DateTime(1963, 2, 17) });
-            model.Add(new PersonModel { Id = 2, FamilyName = "Johnson", GivenNames = "Dwayne", DateOfBirth = new DateTime(1972, 5, 2) });
-            model.Add(new PersonModel { Id = 3, FamilyName = "Froning", GivenNames = "Rich", DateOfBirth = new DateTime(1987, 7, 21) });
+            var model = new List<PersonModel>
+            {
+                new PersonModel { Id = 1, FamilyName = "Jordan", GivenNames = "Michael", DateOfBirth = new DateTime(1963, 2, 17) },
+                new PersonModel { Id = 2, FamilyName = "Johnson", GivenNames = "Dwayne", DateOfBirth = new DateTime(1972, 5, 2) },
+                new PersonModel { Id = 3, FamilyName = "Froning", GivenNames = "Rich", DateOfBirth = new DateTime(1987, 7, 21) }
+            };
 
             return View(model);
         }
