@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-
 //using System.Data.OleDb;
 using System.Data.SqlTypes;
 using System.Linq;
@@ -10,8 +9,8 @@ namespace Extenso.Data.Common
 {
     internal static class SqlDbTypeConverter
     {
-        private static Lazy<TupleHashSet<SqlDbType, Type>> netTypes;
-        private static Lazy<TupleHashSet<SqlDbType, DbType>> dbTypes;
+        private static readonly Lazy<TupleHashSet<SqlDbType, Type>> netTypes;
+        private static readonly Lazy<TupleHashSet<SqlDbType, DbType>> dbTypes;
 
         static SqlDbTypeConverter()
         {

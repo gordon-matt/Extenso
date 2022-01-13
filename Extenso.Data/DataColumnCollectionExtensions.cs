@@ -15,7 +15,7 @@ namespace Extenso.Data
 
         public static void AddRange(this DataColumnCollection dataColumns, params DataColumn[] columns)
         {
-            foreach (DataColumn column in columns)
+            foreach (var column in columns)
             {
                 dataColumns.Add(column);
             }

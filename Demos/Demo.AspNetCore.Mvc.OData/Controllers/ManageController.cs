@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Demo.Extenso.AspNetCore.Mvc.OData.Models;
+using Demo.Extenso.AspNetCore.Mvc.OData.Models.ManageViewModels;
+using Demo.Extenso.AspNetCore.Mvc.OData.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Demo.Extenso.AspNetCore.Mvc.OData.Models;
-using Demo.Extenso.AspNetCore.Mvc.OData.Models.ManageViewModels;
-using Demo.Extenso.AspNetCore.Mvc.OData.Services;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
 {
@@ -82,7 +80,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var email = user.Email;
+            string email = user.Email;
             if (model.Email != email)
             {
                 var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
@@ -92,7 +90,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
                 }
             }
 
-            var phoneNumber = user.PhoneNumber;
+            string phoneNumber = user.PhoneNumber;
             if (model.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
@@ -121,9 +119,9 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-            var email = user.Email;
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+            string email = user.Email;
             await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
             StatusMessage = "Verification email sent. Please check your email.";
@@ -139,7 +137,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
+            bool hasPassword = await _userManager.HasPasswordAsync(user);
             if (!hasPassword)
             {
                 return RedirectToAction(nameof(SetPassword));
@@ -187,7 +185,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
+            bool hasPassword = await _userManager.HasPasswordAsync(user);
 
             if (hasPassword)
             {
@@ -253,7 +251,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             // Request a redirect to the external login provider to link a login for the current user
-            var redirectUrl = Url.Action(nameof(LinkLoginCallback));
+            string redirectUrl = Url.Action(nameof(LinkLoginCallback));
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
             return new ChallengeResult(provider, properties);
         }
@@ -395,9 +393,9 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
             }
 
             // Strip spaces and hypens
-            var verificationCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
+            string verificationCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
-            var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
+            bool is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
                 user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
 
             if (!is2faTokenValid)
@@ -418,7 +416,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
         [HttpGet]
         public IActionResult ShowRecoveryCodes()
         {
-            var recoveryCodes = (string[])TempData[RecoveryCodesKey];
+            string[] recoveryCodes = (string[])TempData[RecoveryCodesKey];
             if (recoveryCodes == null)
             {
                 return RedirectToAction(nameof(TwoFactorAuthentication));
@@ -529,7 +527,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
 
         private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user, EnableAuthenticatorViewModel model)
         {
-            var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            string unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(unformattedKey))
             {
                 await _userManager.ResetAuthenticatorKeyAsync(user);
@@ -540,6 +538,6 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
             model.AuthenticatorUri = GenerateQrCodeUri(user.Email, unformattedKey);
         }
 
-        #endregion
+        #endregion Helpers
     }
 }

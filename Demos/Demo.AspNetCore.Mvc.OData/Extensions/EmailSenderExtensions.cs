@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Demo.Extenso.AspNetCore.Mvc.OData.Services;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Services
 {

@@ -25,11 +25,11 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Extensions
 
         private static string GetColumnODataFilter<T>(RadzenDataGrid<T> dataGrid, FilterDescriptor column, bool second = false)
         {
-            var property = column.Property.Replace('.', '/');
+            string property = column.Property.Replace('.', '/');
 
             var columnFilterOperator = !second ? column.FilterOperator : column.SecondFilterOperator;
 
-            var value = !second ? (string)Convert.ChangeType(column.FilterValue, typeof(string)) :
+            string value = !second ? (string)Convert.ChangeType(column.FilterValue, typeof(string)) :
                 (string)Convert.ChangeType(column.SecondFilterValue, typeof(string));
 
             var filterPropertyType = column.Property.GetType();
@@ -112,25 +112,25 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Extensions
             if (columns.Where(canFilter).Any())
             {
                 var gridLogicalFilterOperator = columns.FirstOrDefault()?.LogicalFilterOperator;
-                var gridBooleanOperator = gridLogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
+                string gridBooleanOperator = gridLogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
 
                 var whereList = new List<string>();
                 foreach (var column in columns.Where(canFilter))
                 {
-                    var property = column.Property.Replace('.', '/');
+                    string property = column.Property.Replace('.', '/');
 
-                    var value = (string)Convert.ChangeType(column.FilterValue, typeof(string));
-                    var secondValue = (string)Convert.ChangeType(column.SecondFilterValue, typeof(string));
+                    string value = (string)Convert.ChangeType(column.FilterValue, typeof(string));
+                    string secondValue = (string)Convert.ChangeType(column.SecondFilterValue, typeof(string));
 
                     if (!string.IsNullOrEmpty(value))
                     {
-                        var linqOperator = ODataFilterOperators[column.FilterOperator];
+                        string linqOperator = ODataFilterOperators[column.FilterOperator];
                         if (linqOperator == null)
                         {
                             linqOperator = "==";
                         }
 
-                        var booleanOperator = column.LogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
+                        string booleanOperator = column.LogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
 
                         if (string.IsNullOrEmpty(secondValue))
                         {

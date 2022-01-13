@@ -97,7 +97,7 @@ $@"$('#{modalId}-close-button')
 .bind('click', function() {{
     $('#{modalId}').dialog('close');
 }});");
-            
+
             return new HtmlString(builder.ToString());
         }
 

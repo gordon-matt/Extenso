@@ -133,7 +133,7 @@ namespace Extenso.Reflection
         /// <returns>An object containing the return value of the invoked extension method.</returns>
         public static object InvokeExtensionMethod<T>(this T obj, Assembly extensionsAssembly, string methodName, params object[] parameters)
         {
-            var newParameters = new object[parameters.Length + 1];
+            object[] newParameters = new object[parameters.Length + 1];
             newParameters[0] = obj;
 
             for (byte b = 0; b < parameters.Length; b++)
@@ -149,7 +149,7 @@ namespace Extenso.Reflection
             }
 
             var methodInfo = typeof(T).GetExtensionMethod(extensionsAssembly, methodName, types);
-            var value = methodInfo.Invoke(obj, newParameters);
+            object value = methodInfo.Invoke(obj, newParameters);
 
             return value;
         }
@@ -176,7 +176,7 @@ namespace Extenso.Reflection
         /// <returns>A collection of objects containing the return values of the invoked extension method.</returns>
         public static IEnumerable<object> InvokeExtensionMethodForCollection<T>(this T obj, Assembly extensionsAssembly, string methodName, params object[] parameters)
         {
-            var newParameters = new object[parameters.Length + 1];
+            object[] newParameters = new object[parameters.Length + 1];
             newParameters[0] = obj;
 
             for (byte b = 0; b < parameters.Length; b++)
@@ -192,7 +192,7 @@ namespace Extenso.Reflection
             }
 
             var methodInfo = typeof(T).GetExtensionMethod(extensionsAssembly, methodName, types);
-            var value = methodInfo.Invoke(obj, newParameters);
+            object value = methodInfo.Invoke(obj, newParameters);
 
             if (value == null)
             {
@@ -230,7 +230,7 @@ namespace Extenso.Reflection
             }
 
             var methodInfo = typeof(T).GetTypeInfo().GetMethod(methodName, types);
-            var value = methodInfo.Invoke(obj, parameters);
+            object value = methodInfo.Invoke(obj, parameters);
             return value;
         }
 
@@ -320,11 +320,11 @@ namespace Extenso.Reflection
             var propertyType = property.PropertyType;
             string valueAsString = value.ToString();
 
-            if (propertyType == typeof(String))
+            if (propertyType == typeof(string))
             {
                 property.SetValue(obj, valueAsString, null);
             }
-            else if (propertyType == typeof(Int32))
+            else if (propertyType == typeof(int))
             {
                 property.SetValue(obj, Convert.ToInt32(valueAsString), null);
             }
@@ -334,10 +334,10 @@ namespace Extenso.Reflection
             }
             else if (propertyType.GetTypeInfo().IsEnum)
             {
-                var enumValue = Enum.Parse(propertyType, valueAsString);
+                object enumValue = Enum.Parse(propertyType, valueAsString);
                 property.SetValue(obj, enumValue, null);
             }
-            else if (propertyType == typeof(Boolean))
+            else if (propertyType == typeof(bool))
             {
                 property.SetValue(obj, Convert.ToBoolean(valueAsString), null);
             }
@@ -345,47 +345,47 @@ namespace Extenso.Reflection
             {
                 property.SetValue(obj, Convert.ToDateTime(valueAsString), null);
             }
-            else if (propertyType == typeof(Single))
+            else if (propertyType == typeof(float))
             {
                 property.SetValue(obj, Convert.ToSingle(valueAsString), null);
             }
-            else if (propertyType == typeof(Decimal))
+            else if (propertyType == typeof(decimal))
             {
                 property.SetValue(obj, Convert.ToDecimal(valueAsString), null);
             }
-            else if (propertyType == typeof(Byte))
+            else if (propertyType == typeof(byte))
             {
                 property.SetValue(obj, Convert.ToByte(valueAsString), null);
             }
-            else if (propertyType == typeof(Int16))
+            else if (propertyType == typeof(short))
             {
                 property.SetValue(obj, Convert.ToInt16(valueAsString), null);
             }
-            else if (propertyType == typeof(Int64))
+            else if (propertyType == typeof(long))
             {
                 property.SetValue(obj, Convert.ToInt64(valueAsString), null);
             }
-            else if (propertyType == typeof(Double))
+            else if (propertyType == typeof(double))
             {
                 property.SetValue(obj, Convert.ToDouble(valueAsString), null);
             }
-            else if (propertyType == typeof(UInt32))
+            else if (propertyType == typeof(uint))
             {
                 property.SetValue(obj, Convert.ToUInt32(valueAsString), null);
             }
-            else if (propertyType == typeof(UInt16))
+            else if (propertyType == typeof(ushort))
             {
                 property.SetValue(obj, Convert.ToUInt16(valueAsString), null);
             }
-            else if (propertyType == typeof(UInt64))
+            else if (propertyType == typeof(ulong))
             {
                 property.SetValue(obj, Convert.ToUInt64(valueAsString), null);
             }
-            else if (propertyType == typeof(SByte))
+            else if (propertyType == typeof(sbyte))
             {
                 property.SetValue(obj, Convert.ToSByte(valueAsString), null);
             }
-            else if (propertyType == typeof(Char))
+            else if (propertyType == typeof(char))
             {
                 property.SetValue(obj, Convert.ToChar(valueAsString), null);
             }

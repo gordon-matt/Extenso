@@ -23,11 +23,12 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
             {
                 // Populate for testing purposes
 
-                var people = new List<Person>();
-
-                people.Add(new Person { FamilyName = "Jordan", GivenNames = "Michael", DateOfBirth = new DateTime(1963, 2, 17) });
-                people.Add(new Person { FamilyName = "Johnson", GivenNames = "Dwayne", DateOfBirth = new DateTime(1972, 5, 2) });
-                people.Add(new Person { FamilyName = "Froning", GivenNames = "Rich", DateOfBirth = new DateTime(1987, 7, 21) });
+                var people = new List<Person>
+                {
+                    new Person { FamilyName = "Jordan", GivenNames = "Michael", DateOfBirth = new DateTime(1963, 2, 17) },
+                    new Person { FamilyName = "Johnson", GivenNames = "Dwayne", DateOfBirth = new DateTime(1972, 5, 2) },
+                    new Person { FamilyName = "Froning", GivenNames = "Rich", DateOfBirth = new DateTime(1987, 7, 21) }
+                };
 
                 personRepository.Insert(people);
             }

@@ -17,7 +17,7 @@ namespace Extenso
         /// <returns>A System.DateTime that represents the last day of the week for source based on endOfWeek.</returns>
         public static DateTime EndOfWeek(this DateTime source, DayOfWeek endOfWeek = DayOfWeek.Saturday)
         {
-            var diff = endOfWeek - source.DayOfWeek;
+            int diff = endOfWeek - source.DayOfWeek;
             return source.AddDays(diff).Date;
         }
 
@@ -62,7 +62,7 @@ namespace Extenso
         /// <returns>A System.DateTime that represents the first day of the week for source based on startOfWeek.</returns>
         public static DateTime StartOfWeek(this DateTime source, DayOfWeek startOfWeek = DayOfWeek.Sunday)
         {
-            var diff = source.DayOfWeek - startOfWeek;
+            int diff = source.DayOfWeek - startOfWeek;
             if (diff < 0)
             {
                 diff += 7;

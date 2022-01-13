@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using Extenso.Collections;
 using Extenso.Data;
@@ -29,6 +28,7 @@ namespace Extenso.Sandbox
 
             Console.ReadLine();
         }
+
         private static string SeparatorReplacement(string value, string separator, bool capitalizeFirstChar)
         {
             if (!capitalizeFirstChar && Regex.IsMatch(value[1..], separator))

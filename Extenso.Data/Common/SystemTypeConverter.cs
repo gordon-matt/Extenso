@@ -7,8 +7,8 @@ namespace Extenso.Data.Common
 {
     internal static class SystemTypeConverter
     {
-        private static Lazy<TupleHashSet<Type, DbType>> dbTypes;
-        private static Lazy<TupleHashSet<Type, SqlDbType>> sqlDbTypes;
+        private static readonly Lazy<TupleHashSet<Type, DbType>> dbTypes;
+        private static readonly Lazy<TupleHashSet<Type, SqlDbType>> sqlDbTypes;
 
         static SystemTypeConverter()
         {

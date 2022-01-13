@@ -36,7 +36,7 @@ namespace Extenso
             {
                 var binaryFormatter = new BinaryFormatter();
                 binaryFormatter.Serialize(memoryStream, source);
-                var bytes = memoryStream.GetBuffer();
+                byte[] bytes = memoryStream.GetBuffer();
                 return bytes.Base64Serialize(prependLength);
             }
         }

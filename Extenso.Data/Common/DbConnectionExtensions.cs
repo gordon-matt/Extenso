@@ -107,7 +107,7 @@ namespace Extenso.Data.Common
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="storedProcedure"></param>
@@ -120,7 +120,7 @@ namespace Extenso.Data.Common
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="storedProcedure"></param>
@@ -160,7 +160,7 @@ namespace Extenso.Data.Common
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="storedProcedure"></param>
@@ -324,7 +324,7 @@ namespace Extenso.Data.Common
                 }
 
                 int rowsAffected = 0;
-                foreach (T entity in entities)
+                foreach (var entity in entities)
                 {
                     properties.ForEach(property =>
                     {

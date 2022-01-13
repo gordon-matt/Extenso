@@ -31,7 +31,7 @@ namespace Extenso
                 return Convert.ToBase64String(source, 0, source.Length, Base64FormattingOptions.None);
             }
         }
-        
+
         /// <summary>
         /// Deserializes the data contained in the given byte array to an object of the specified type.
         /// </summary>

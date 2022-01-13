@@ -36,7 +36,7 @@ namespace Extenso
         /// <returns>A new string after the append operation has completed.</returns>
         public static string Append(this string source, params string[] values)
         {
-            var items = new string[values.Length + 1];
+            string[] items = new string[values.Length + 1];
             items[0] = source;
             values.CopyTo(items, 1);
             return string.Concat(items);
@@ -50,7 +50,7 @@ namespace Extenso
         /// <returns>A new string after the append operation has completed.</returns>
         public static string Append(this string source, params object[] values)
         {
-            var items = new object[values.Length + 1];
+            object[] items = new object[values.Length + 1];
             items[0] = source;
             values.CopyTo(items, 1);
             return string.Concat(items);
@@ -91,14 +91,14 @@ namespace Extenso
 
             if (lengthDelimiterPosition == -1)
             {
-                var bytes = Convert.FromBase64String(source);
+                byte[] bytes = Convert.FromBase64String(source);
                 return bytes.BinaryDeserialize<T>();
             }
             else
             {
                 int length = int.Parse(source[..lengthDelimiterPosition]);
 
-                var bytes = Convert.FromBase64String(source[(lengthDelimiterPosition + 1)..]);
+                byte[] bytes = Convert.FromBase64String(source[(lengthDelimiterPosition + 1)..]);
                 using (var memoryStream = new MemoryStream(bytes, 0, length))
                 {
                     var binaryFormatter = new BinaryFormatter();
@@ -224,7 +224,7 @@ namespace Extenso
 
             Array.Sort(chars);
 
-            for (var i = 0; i < source.Length; i++)
+            for (int i = 0; i < source.Length; i++)
             {
                 char current = source[i];
                 if (Array.BinarySearch(chars, current) >= 0)
@@ -271,7 +271,7 @@ namespace Extenso
         /// <returns>A Base64 encoded string of compressed data.</returns>
         public static string DeflateCompress(this string source)
         {
-            var bytes = Encoding.UTF8.GetBytes(source);
+            byte[] bytes = Encoding.UTF8.GetBytes(source);
 
             using (var memoryStream = new MemoryStream())
             {
@@ -283,7 +283,7 @@ namespace Extenso
                 memoryStream.Position = 0;
                 byte[] compressed = new byte[memoryStream.Length];
                 memoryStream.Read(compressed, 0, compressed.Length);
-                var gZipBuffer = new byte[compressed.Length + 4];
+                byte[] gZipBuffer = new byte[compressed.Length + 4];
                 Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
                 Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
                 return Convert.ToBase64String(gZipBuffer);
@@ -297,12 +297,12 @@ namespace Extenso
         /// <returns>A string of decompressed data.</returns>
         public static string DeflateDecompress(this string source)
         {
-            var compressedBuffer = Convert.FromBase64String(source);
+            byte[] compressedBuffer = Convert.FromBase64String(source);
             using (var memoryStream = new MemoryStream())
             {
                 int dataLength = BitConverter.ToInt32(compressedBuffer, 0);
                 memoryStream.Write(compressedBuffer, 4, compressedBuffer.Length - 4);
-                var buffer = new byte[dataLength];
+                byte[] buffer = new byte[dataLength];
                 memoryStream.Position = 0;
                 using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress))
                 {
@@ -397,7 +397,7 @@ namespace Extenso
                 return null;
             }
 
-            var bytes = Encoding.UTF8.GetBytes(source);
+            byte[] bytes = Encoding.UTF8.GetBytes(source);
 
             using (var memoryStream = new MemoryStream())
             {
@@ -406,9 +406,9 @@ namespace Extenso
                     gZipStream.Write(bytes, 0, bytes.Length);
                 }
                 memoryStream.Position = 0;
-                var compressed = new byte[memoryStream.Length];
+                byte[] compressed = new byte[memoryStream.Length];
                 memoryStream.Read(compressed, 0, compressed.Length);
-                var gZipBuffer = new byte[compressed.Length + 4];
+                byte[] gZipBuffer = new byte[compressed.Length + 4];
                 Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
                 Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
                 return Convert.ToBase64String(gZipBuffer);
@@ -422,12 +422,12 @@ namespace Extenso
         /// <returns>A string of decompressed data.</returns>
         public static string GZipDecompress(this string source)
         {
-            var gZipBuffer = Convert.FromBase64String(source);
+            byte[] gZipBuffer = Convert.FromBase64String(source);
             using (var memoryStream = new MemoryStream())
             {
                 int dataLength = BitConverter.ToInt32(gZipBuffer, 0);
                 memoryStream.Write(gZipBuffer, 4, gZipBuffer.Length - 4);
-                var buffer = new byte[dataLength];
+                byte[] buffer = new byte[dataLength];
                 memoryStream.Position = 0;
                 using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
                 {
@@ -671,7 +671,7 @@ namespace Extenso
         /// <returns>A new string after the prepend operation has completed.</returns>
         public static string Prepend(this string source, params string[] values)
         {
-            var items = new string[values.Length + 1];
+            string[] items = new string[values.Length + 1];
             values.CopyTo(items, 0);
             items[^1] = source;
             return string.Concat(items);
@@ -685,7 +685,7 @@ namespace Extenso
         /// <returns>A new string after the prepend operation has completed.</returns>
         public static string Prepend(this string source, params object[] values)
         {
-            var items = new object[values.Length + 1];
+            object[] items = new object[values.Length + 1];
             values.CopyTo(items, 0);
             items[^1] = source;
             return string.Concat(items);
@@ -982,7 +982,7 @@ namespace Extenso
         {
             try
             {
-                var directory = Path.GetDirectoryName(filePath);
+                string directory = Path.GetDirectoryName(filePath);
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
@@ -1127,7 +1127,7 @@ namespace Extenso
                 return default;
             }
 
-            var locker = new object();
+            object locker = new object();
             var stringReader = new StringReader(source);
             var reader = new XmlTextReader(stringReader);
             try
@@ -1159,7 +1159,7 @@ namespace Extenso
                 return null;
             }
 
-            var locker = new object();
+            object locker = new object();
             var stringReader = new StringReader(source);
             var reader = new XmlTextReader(stringReader);
             try
@@ -1167,7 +1167,7 @@ namespace Extenso
                 var xmlSerializer = new XmlSerializer(type);
                 lock (locker)
                 {
-                    var item = xmlSerializer.Deserialize(reader);
+                    object item = xmlSerializer.Deserialize(reader);
                     reader.Close();
                     return item;
                 }

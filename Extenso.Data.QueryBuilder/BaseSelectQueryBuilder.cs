@@ -1,11 +1,11 @@
-﻿using Extenso.Collections;
-using Extenso.Reflection;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Extenso.Collections;
+using Extenso.Reflection;
 
 namespace Extenso.Data.QueryBuilder
 {
@@ -288,13 +288,13 @@ namespace Extenso.Data.QueryBuilder
 
             if (doEncapsulateOuter)
             {
-                sb.Append("(");
+                sb.Append('(');
             }
 
             if (!clause.IsContainerOnly)
             {
                 sb.Append(CreateComparisonClause(clause.Table, clause.Column, clause.ComparisonOperator, clause.Value));
-                sb.Append(" ");
+                sb.Append(' ');
             }
 
             if (!clause.SubClauses.IsNullOrEmpty())
@@ -322,7 +322,7 @@ namespace Extenso.Data.QueryBuilder
                 sb.Append(") ");
             }
 
-            sb.Append(" ");
+            sb.Append(' ');
         }
 
         protected virtual string CreateComparisonClause(string tableName, string columnName, ComparisonOperator comparisonOperator, object value)
@@ -461,7 +461,7 @@ namespace Extenso.Data.QueryBuilder
             }
             else
             {
-                var firstItem = collection.OfType<object>().FirstOrDefault();
+                object firstItem = collection.OfType<object>().FirstOrDefault();
                 if (firstItem != null)
                 {
                     return firstItem.GetType();
