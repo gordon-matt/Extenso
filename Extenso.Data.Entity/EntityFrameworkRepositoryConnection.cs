@@ -10,7 +10,7 @@ namespace Extenso.Data.Entity
     {
         #region Private Members
 
-        private bool isContextOwner;
+        private readonly bool isContextOwner;
         private bool disposed;
 
         #endregion Private Members

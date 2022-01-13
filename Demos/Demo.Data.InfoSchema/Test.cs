@@ -10,8 +10,8 @@ namespace Demo.Data.InfoSchema
     {
         private string ConnectionString
         {
-            get { return txtConnectionString.Text; }
-            set { txtConnectionString.Text = value; }
+            get => txtConnectionString.Text;
+            set => txtConnectionString.Text = value;
         }
 
         private string Table

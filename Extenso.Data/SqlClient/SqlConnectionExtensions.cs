@@ -178,7 +178,7 @@ AND T.CONSTRAINT_SCHEMA = @SchemaName";
                     while (reader.Read())
                     {
                         string pkColumn = reader.GetString(0);
-                        ColumnInfo match = list[pkColumn];
+                        var match = list[pkColumn];
                         if (match != null)
                         {
                             match.KeyType = KeyType.PrimaryKey;

@@ -15,7 +15,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI
         }
 
         #region IAccordionProvider Members
-        
+
         public void BeginAccordion(Accordion accordion, TextWriter writer)
         {
             uiProvider.Scripts.Add(

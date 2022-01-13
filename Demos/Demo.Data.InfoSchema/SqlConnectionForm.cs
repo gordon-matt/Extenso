@@ -14,7 +14,7 @@ namespace Demo.Data.InfoSchema
 
         public bool AllowTableSelection
         {
-            get { return cmbTable.Visible; }
+            get => cmbTable.Visible;
             set
             {
                 lblTable.Visible = value;
@@ -72,20 +72,20 @@ namespace Demo.Data.InfoSchema
 
         public string UserName
         {
-            get { return txtUserName.Text.Trim(); }
-            set { txtUserName.Text = value; }
+            get => txtUserName.Text.Trim();
+            set => txtUserName.Text = value;
         }
 
         public string Password
         {
-            get { return txtPassword.Text.Trim(); }
-            set { txtPassword.Text = value; }
+            get => txtPassword.Text.Trim();
+            set => txtPassword.Text = value;
         }
 
         public bool IntegratedSecurity
         {
-            get { return rbUseWindowsAuthentication.Checked; }
-            set { rbUseWindowsAuthentication.Checked = value; }
+            get => rbUseWindowsAuthentication.Checked;
+            set => rbUseWindowsAuthentication.Checked = value;
         }
 
         public string ConnectionString

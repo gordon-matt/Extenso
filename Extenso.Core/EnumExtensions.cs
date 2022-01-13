@@ -28,7 +28,7 @@ namespace Extenso
 
             var field = typeof(T).GetField(@enum.ToString());
 
-            var displayAttribute = field.GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
+            object displayAttribute = field.GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
             if (displayAttribute != null)
             {
                 var attribute = (DisplayAttribute)displayAttribute;
@@ -65,7 +65,7 @@ namespace Extenso
 
             var field = typeof(T).GetField(@enum.ToString());
 
-            var displayAttribute = field.GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
+            object displayAttribute = field.GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
             if (displayAttribute != null)
             {
                 var attribute = (DisplayAttribute)displayAttribute;

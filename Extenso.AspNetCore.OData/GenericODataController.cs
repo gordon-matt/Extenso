@@ -219,7 +219,7 @@ namespace Extenso.AspNetCore.OData
                 return BadRequest(ModelState);
             }
 
-            TEntity entity = await Repository.FindOneAsync(key);
+            var entity = await Repository.FindOneAsync(key);
 
             if (entity == null)
             {
@@ -258,7 +258,7 @@ namespace Extenso.AspNetCore.OData
         [HttpDelete]
         public virtual async Task<IActionResult> Delete([FromODataUri] TKey key)
         {
-            TEntity entity = await Repository.FindOneAsync(key);
+            var entity = await Repository.FindOneAsync(key);
 
             if (entity == null)
             {

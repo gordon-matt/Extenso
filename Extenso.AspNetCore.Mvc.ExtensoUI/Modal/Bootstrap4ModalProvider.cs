@@ -32,7 +32,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
                 case ModalSection.Header:
                     {
                         writer.Write(@"<div class=""modal-dialog"" role=""document""><div class=""modal-content"">");
-                        
+
                         writer.Write(@"<div class=""modal-header"">");
 
                         writer.Write(

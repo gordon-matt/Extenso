@@ -9,7 +9,7 @@ namespace Extenso.IO
     /// </summary>
     public class CustomEncodingStringWriter : StringWriter
     {
-        private Encoding encoding;
+        private readonly Encoding encoding;
 
         /// <summary>
         /// Gets the System.Text.Encoding in which the output is written.

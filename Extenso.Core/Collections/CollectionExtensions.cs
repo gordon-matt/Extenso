@@ -32,7 +32,7 @@ namespace Extenso.Collections
         /// <param name="values">The collection whose elements should be added to the end of source.</param>
         public static void AddRange<T>(this ICollection<T> source, IEnumerable<T> values)
         {
-            foreach (T value in values)
+            foreach (var value in values)
             {
                 source.Add(value);
             }
@@ -68,7 +68,7 @@ namespace Extenso.Collections
         /// <param name="values">The collection whose elements should be removed from source if found therein.</param>
         public static void RemoveRange<T>(this ICollection<T> source, IEnumerable<T> values)
         {
-            foreach (T value in values)
+            foreach (var value in values)
             {
                 if (source.Contains(value))
                 {

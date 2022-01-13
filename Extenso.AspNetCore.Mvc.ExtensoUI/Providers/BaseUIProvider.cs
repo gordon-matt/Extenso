@@ -14,8 +14,8 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers
 
         public ICollection<string> Scripts
         {
-            get { return scripts ?? (scripts = new List<string>()); }
-            set { scripts = value; }
+            get => scripts ?? (scripts = new List<string>());
+            set => scripts = value;
         }
 
         #region IExtensoUIProvider Members

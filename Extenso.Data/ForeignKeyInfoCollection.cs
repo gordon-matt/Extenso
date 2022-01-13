@@ -15,9 +15,6 @@ namespace Extenso.Data
             return false;
         }
 
-        public override string ToString()
-        {
-            return string.Concat("Count: ", this.Count);
-        }
+        public override string ToString() => string.Concat("Count: ", this.Count);
     }
 }
