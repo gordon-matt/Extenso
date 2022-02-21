@@ -92,13 +92,7 @@ namespace Extenso.AspNetCore.OData
             var query = connection.Query();
             query = ApplyMandatoryFilter(query);
             var results = options.ApplyTo(query, IgnoreQueryOptions);
-
-            // Recommended not to use ToHashSetAsync(). See: https://github.com/OData/WebApi/issues/1235#issuecomment-371322404
-            //return await (results as IQueryable<TEntity>).ToHashSetAsync();
-
-            var response = await Task.FromResult((results as IQueryable<TEntity>).ToHashSet());
-            //string jsonTest = response.JsonSerialize();
-            return Ok(response);
+            return Ok(results);
         }
 
         // TODO: Can't do $expand, because entity is not from an IQueryable.. and also we don't have a ODataQueryOptions here..
