@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ namespace Extenso.AspNetCore.OData
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TKey"></typeparam>
+    [Obsolete("Use BaseODataController instead")]
     public abstract class GenericODataController<TEntity, TKey> : ODataController, IDisposable
         where TEntity : class
     {
@@ -90,7 +92,7 @@ namespace Extenso.AspNetCore.OData
             // NOTE: Change due to: https://github.com/OData/WebApi/issues/1235
             var connection = GetDisposableConnection();
             var query = connection.Query();
-            query = ApplyMandatoryFilter(query);
+            query = await ApplyMandatoryFilterAsync(query);
             var results = options.ApplyTo(query, IgnoreQueryOptions);
             return Ok(results);
         }
@@ -303,10 +305,10 @@ namespace Extenso.AspNetCore.OData
         /// </summary>
         /// <param name="query">The System.Linq.IQueryable`1 upon which to apply the filter.</param>
         /// <returns>A System.Linq.IQueryable`1 that may have had filters applied.</returns>
-        protected virtual IQueryable<TEntity> ApplyMandatoryFilter(IQueryable<TEntity> query)
+        protected virtual async Task<IQueryable<TEntity>> ApplyMandatoryFilterAsync(IQueryable<TEntity> query)
         {
             // Do nothing, by default
-            return query;
+            return await Task.FromResult(query);
         }
 
         /// <summary>
@@ -420,5 +422,42 @@ namespace Extenso.AspNetCore.OData
         }
 
         #endregion IDisposable Support
+    }
+
+    /// <summary>
+    /// A generic, abstract CRUD controller for OData, with support for checking policy based permissions for users.
+    /// Get(TKey) in BaseODataController allows for OData query options, such as $expand, whereas GenericODataController does not
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    public abstract class BaseODataController<TEntity, TKey> : GenericODataController<TEntity, TKey>
+        where TEntity : BaseEntity<TKey>
+    {
+        protected BaseODataController(IRepository<TEntity> repository)
+            : base(repository)
+        {
+        }
+
+        [EnableQuery]
+        public override async Task<IActionResult> Get([FromODataUri] TKey key)
+        {
+            var connection = GetDisposableConnection();
+            var query = connection.Query(x => x.Id.Equals(key));
+            query = await ApplyMandatoryFilterAsync(query);
+            var result = SingleResult.Create(query);
+
+            var entity = result.Queryable.FirstOrDefault();
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            if (!await CanViewEntity(entity))
+            {
+                return Unauthorized();
+            }
+
+            return Ok(result);
+        }
     }
 }
