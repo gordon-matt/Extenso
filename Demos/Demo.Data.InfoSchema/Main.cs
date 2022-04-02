@@ -80,7 +80,7 @@ namespace Demo.Data.InfoSchema
                         break;
 
                     case DataSource.MySql:
-                        lbTables.DataSource = (connection as MySqlConnection).GetTableNames();
+                        lbTables.DataSource = (connection as MySqlConnection).GetTableNames(includeViews: true);
                         lbTables.Select();
                         break;
 
@@ -105,7 +105,7 @@ namespace Demo.Data.InfoSchema
                 switch (SelectedDataSource)
                 {
                     case DataSource.SqlServer: lbTables.DataSource = (connection as SqlConnection).GetTableNames(includeViews: true, SelectedSchema); break;
-                    case DataSource.MySql: lbTables.DataSource = (connection as MySqlConnection).GetTableNames(); break;
+                    case DataSource.MySql: lbTables.DataSource = (connection as MySqlConnection).GetTableNames(includeViews: true); break;
                     case DataSource.PostgreSql: lbTables.DataSource = (connection as NpgsqlConnection).GetTableNames(includeViews: true, SelectedSchema); break;
                     default: break;
                 }

@@ -4,7 +4,7 @@ using Extenso.Data.Entity;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData.Controllers.Api
 {
-    public class PersonApiController : GenericODataController<Person, int>
+    public class PersonApiController : BaseODataController<Person, int>
     {
         public PersonApiController(IRepository<Person> repository)
             : base(repository)
