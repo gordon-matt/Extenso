@@ -459,5 +459,10 @@ namespace Extenso.AspNetCore.OData
 
             return Ok(result);
         }
+
+        protected override TKey GetId(TEntity entity)
+        {
+            return entity.Id;
+        }
     }
 }

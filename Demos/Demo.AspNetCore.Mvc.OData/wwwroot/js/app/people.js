@@ -49,7 +49,7 @@ var ViewModel = function () {
                 ]
             },
             dataBound: function (e) {
-                var body = this.element.find("tbody")[0];
+                let body = this.element.find("tbody")[0];
                 if (body) {
                     ko.cleanNode(body);
                     ko.applyBindings(ko.dataFor(body), body);
@@ -107,54 +107,29 @@ var ViewModel = function () {
         $("#form-section-legend").html("Create");
     };
 
-    self.edit = function (id) {
-        $.ajax({
-            url: self.apiUrl + "(" + id + ")",
-            type: "GET",
-            dataType: "json",
-            async: false
-        })
-        .done(function (json) {
-            self.id(json.Id);
-            self.familyName(json.FamilyName);
-            self.givenNames(json.GivenNames);
-            self.dateOfBirth(json.DateOfBirth);
+    self.edit = async function (id) {
+        const data = await getOData(`${self.apiUrl}(${id})`);
+        self.id(data.Id);
+        self.familyName(data.FamilyName);
+        self.givenNames(data.GivenNames);
+        self.dateOfBirth(data.DateOfBirth);
 
-            switchSection($("#form-section"));
-            $("#form-section-legend").html("Edit");
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            $.notify({ message: "Error when trying to retrieve record!", icon: 'fa fa-exclamation-triangle' }, { type: 'danger' });
-            console.log(textStatus + ': ' + errorThrown);
-        });
+        switchSection($("#form-section"));
+        $("#form-section-legend").html("Edit");
     };
 
-    self.remove = function (id) {
-        if (confirm("Are you sure that you want to delete this record?")) {
-            $.ajax({
-                url: self.apiUrl + "(" + id + ")",
-                type: "DELETE",
-                async: false
-            })
-            .done(function (json) {
-                self.refreshGrid();
-                $.notify({ message: "Successfully deleted record!", icon: 'fa fa-check' }, { type: 'success' });
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                $.notify({ message: "Error when trying to delete record!", icon: 'fa fa-exclamation-triangle' }, { type: 'danger' });
-                console.log(textStatus + ': ' + errorThrown);
-            });
-        }
+    self.remove = async function (id) {
+        await deleteOData(`${self.apiUrl}(${id})`);
     };
 
-    self.save = function () {
-        var isNew = (self.id() == 0);
+    self.save = async function () {
+        const isNew = (self.id() == 0);
 
         if (!$("#form-section-form").valid()) {
             return false;
         }
 
-        var record = {
+        const record = {
             Id: self.id(),
             FamilyName: self.familyName(),
             GivenNames: self.givenNames(),
@@ -162,51 +137,14 @@ var ViewModel = function () {
         };
 
         if (isNew) {
-            $.ajax({
-                url: self.apiUrl,
-                type: "POST",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(record),
-                dataType: "json",
-                async: false
-            })
-            .done(function (json) {
-                self.refreshGrid();
-                switchSection($("#grid-section"));
-                $.notify({ message: "Successfully inserted record!", icon: 'fa fa-check' }, { type: 'success' });
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                $.notify({ message: "Error when trying to insert record!", icon: 'fa fa-exclamation-triangle' }, { type: 'danger' });
-                console.log(textStatus + ': ' + errorThrown);
-            });
+            await postOData(self.apiUrl, record);
         }
         else {
-            $.ajax({
-                url: self.apiUrl + "(" + self.id() + ")",
-                type: "PUT",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(record),
-                dataType: "json",
-                async: false
-            })
-            .done(function (json) {
-                self.refreshGrid();
-                switchSection($("#grid-section"));
-                $.notify({ message: "Successfully updated record!", icon: 'fa fa-check' }, { type: 'success' });
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                $.notify({ message: "Error when trying to update record!", icon: 'fa fa-exclamation-triangle' }, { type: 'danger' });
-                console.log(textStatus + ': ' + errorThrown);
-            });
+            await putOData(`${self.apiUrl}(${self.id()})`, record);
         }
     };
 
     self.cancel = function () {
         switchSection($("#grid-section"));
-    };
-
-    self.refreshGrid = function () {
-        $('#grid').data('kendoGrid').dataSource.read();
-        $('#grid').data('kendoGrid').refresh();
     };
 };

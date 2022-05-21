@@ -64,7 +64,7 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
 
             services.AddBlazorise(options =>
             {
-                options.ChangeTextOnKeyPress = true; // optional
+                //options.ChangeTextOnKeyPress = true; // optional
             })
             .AddBootstrapProviders()
             .AddFontAwesomeIcons();
