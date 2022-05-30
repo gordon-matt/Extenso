@@ -38,9 +38,11 @@ namespace Extenso
         /// <returns>A System.DateTime equivalent for unixTimestamp</returns>
         public static DateTime ParseUnixTimestamp(int unixTimestamp)
         {
-            return new DateTime(1970, 1, 1, 0, 0, 0, 0)
-                .AddSeconds(unixTimestamp)
-                .ToLocalTime();
+            return DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).DateTime;
+
+            //return new DateTime(1970, 1, 1, 0, 0, 0, 0)
+            //    .AddSeconds(unixTimestamp)
+            //    .ToLocalTime();
         }
 
         /// <summary>
@@ -96,9 +98,9 @@ namespace Extenso
         /// </summary>
         /// <param name="source">The System.DateTime to convert to its equivalent Unix Timestamp.</param>
         /// <returns>A System.Int32 whose value represents the Unix Timestamp equivalent of the given System.DateTime.</returns>
-        public static int ToUnixTimestamp(this DateTime source)
+        public static long ToUnixTimestamp(this DateTime source)
         {
-            return (int)(source - new DateTime(1970, 1, 1).ToLocalTime()).TotalSeconds * 1000;
+            return new DateTimeOffset(source).ToUnixTimeSeconds();
         }
     }
 }
