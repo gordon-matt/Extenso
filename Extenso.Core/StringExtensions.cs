@@ -79,6 +79,26 @@ namespace Extenso
         }
 
         /// <summary>
+        /// Decodes the Base64 encoded string to a byte array.
+        /// </summary>
+        /// <param name="source">The Base64 encoded string to decode.</param>
+        /// <returns>The decoded bytes from the Base64 encoded string.</returns>
+        public static byte[] Base64Deserialize(this string source)
+        {
+            // We need to know the exact length of the string - Base64 can sometimes pad us by a byte or two
+            int lengthDelimiterPosition = source.IndexOf(':');
+
+            if (lengthDelimiterPosition == -1)
+            {
+                return Convert.FromBase64String(source);
+            }
+            else
+            {
+                return Convert.FromBase64String(source[(lengthDelimiterPosition + 1)..]);
+            }
+        }
+
+        /// <summary>
         /// Decodes and deserializes the Base64 encoded string to an object of the specified type.
         /// </summary>
         /// <typeparam name="T">The type of object to decode and deserialize the Base64 encoded string to.</typeparam>
@@ -97,7 +117,6 @@ namespace Extenso
             else
             {
                 int length = int.Parse(source[..lengthDelimiterPosition]);
-
                 byte[] bytes = Convert.FromBase64String(source[(lengthDelimiterPosition + 1)..]);
                 using (var memoryStream = new MemoryStream(bytes, 0, length))
                 {
@@ -312,42 +331,40 @@ namespace Extenso
             }
         }
 
-        /// <summary>
-        /// Encrypts the given string using the specified System.Security.Cryptography.ICryptoTransform and returns
-        /// the data as a byte array. A parameter specifies the character encoding to use.
-        /// </summary>
-        /// <param name="source">The string to encrypt.</param>
-        /// <param name="encoding">The character encoding to use.</param>
-        /// <param name="cryptoTransform">The System.Security.Cryptography.ICryptoTransform to use.</param>
-        /// <returns>An encryped string as a byte array.</returns>
-        public static byte[] Encrypt(this string source, Encoding encoding, ICryptoTransform cryptoTransform)
-        {
-            using (var memoryStream = new MemoryStream())
-            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
-            {
-                byte[] bytes = encoding.GetBytes(source);
+        ///// <summary>
+        ///// Encrypts the given string using the specified System.Security.Cryptography.ICryptoTransform and returns
+        ///// the data as a byte array. A parameter specifies the character encoding to use.
+        ///// </summary>
+        ///// <param name="source">The string to encrypt.</param>
+        ///// <param name="encoding">The character encoding to use.</param>
+        ///// <param name="cryptoTransform">The System.Security.Cryptography.ICryptoTransform to use.</param>
+        ///// <returns>An encryped string as a byte array.</returns>
+        //public static byte[] Encrypt(this string source, Encoding encoding, ICryptoTransform cryptoTransform)
+        //{
+        //    using (var memoryStream = new MemoryStream())
+        //    using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
+        //    {
+        //        byte[] bytes = encoding.GetBytes(source);
+        //        cryptoStream.Write(bytes, 0, bytes.Length);
+        //        cryptoStream.FlushFinalBlock();
+        //        return memoryStream.ToArray();
+        //    }
+        //}
 
-                cryptoStream.Write(bytes, 0, bytes.Length);
-                cryptoStream.FlushFinalBlock();
-
-                return memoryStream.ToArray();
-            }
-        }
-
-        //TODO: More of these (for each SymmetricAlgorithm)? Will need Decrypt() methods in ByteArrayExtensions as well...
-        /// <summary>
-        /// Encrypts the given string using the TripleDES symmetric algorithm and returns the data as a byte array.
-        /// A parameter specifies the character encoding to use.
-        /// </summary>
-        /// <param name="source">The string to encrypt.</param>
-        /// <param name="encoding">The character encoding to use.</param>
-        /// <param name="key">The secret key to use for the symmetric algorithm.</param>
-        /// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
-        /// <returns>An encryped string as a byte array.</returns>
-        public static byte[] EncryptTripleDES(this string source, Encoding encoding, byte[] key, byte[] initializationVector)
-        {
-            return source.Encrypt(encoding, new TripleDESCryptoServiceProvider().CreateEncryptor(key, initializationVector));
-        }
+        ////TODO: More of these (for each SymmetricAlgorithm)? Will need Decrypt() methods in ByteArrayExtensions as well...
+        ///// <summary>
+        ///// Encrypts the given string using the TripleDES symmetric algorithm and returns the data as a byte array.
+        ///// A parameter specifies the character encoding to use.
+        ///// </summary>
+        ///// <param name="source">The string to encrypt.</param>
+        ///// <param name="encoding">The character encoding to use.</param>
+        ///// <param name="key">The secret key to use for the symmetric algorithm.</param>
+        ///// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
+        ///// <returns>An encryped string as a byte array.</returns>
+        //public static byte[] EncryptTripleDES(this string source, Encoding encoding, byte[] key, byte[] initializationVector)
+        //{
+        //    return source.Encrypt(encoding, TripleDES.Create().CreateEncryptor(key, initializationVector));
+        //}
 
         /// <summary>
         /// Determines whether the end of the given string matches any of the specified strings.
@@ -965,6 +982,7 @@ namespace Extenso
         /// </summary>
         /// <param name="source">The string to convert to camel case.</param>
         /// <returns>The specified string converted to camel case.</returns>
+        [Obsolete("Use Humanizer instead. https://github.com/Humanizr/Humanizer")]
         public static string ToCamelCase(this string source)
         {
             string pascal = source.ToPascalCase();
@@ -1026,6 +1044,7 @@ namespace Extenso
         /// </summary>
         /// <param name="source">The string to convert to pascal case.</param>
         /// <returns>The specified string converted to pascal case.</returns>
+        [Obsolete("Use Humanizer instead. https://github.com/Humanizr/Humanizer")]
         public static string ToPascalCase(this string source)
         {
             return source.ToTitleCase().Replace(" ", string.Empty);
@@ -1056,6 +1075,7 @@ namespace Extenso
         /// </summary>
         /// <param name="source">The string to convert to title case.</param>
         /// <returns>The specified string converted to title case.</returns>
+        [Obsolete("Use Humanizer instead. https://github.com/Humanizr/Humanizer")]
         public static string ToTitleCase(this string source)
         {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(source);
@@ -1068,6 +1088,7 @@ namespace Extenso
         /// <param name="source">The string to convert to title case.</param>
         /// <param name="cultureInfo">The System.Globalization.CultureInfo to use for converting to title case.</param>
         /// <returns>The specified string converted to title case.</returns>
+        [Obsolete("Use Humanizer instead. https://github.com/Humanizr/Humanizer")]
         public static string ToTitleCase(this string source, CultureInfo cultureInfo)
         {
             return cultureInfo.TextInfo.ToTitleCase(source);
@@ -1177,249 +1198,5 @@ namespace Extenso
                 reader.Close();
             }
         }
-
-        #region From: WebMatrix.WebData
-
-        // TODO: Think about removing these...
-
-        //public static TValue As<TValue>(this string source)
-        //{
-        //    return source.As(default(TValue));
-        //}
-
-        //public static TValue As<TValue>(this string source, TValue defaultValue)
-        //{
-        //    try
-        //    {
-        //        TypeConverter converter = TypeDescriptor.GetConverter(typeof(TValue));
-        //        if (converter.CanConvertFrom(typeof(string)))
-        //        {
-        //            return (TValue)converter.ConvertFrom(source);
-        //        }
-        //        converter = TypeDescriptor.GetConverter(typeof(string));
-        //        if (converter.CanConvertTo(typeof(TValue)))
-        //        {
-        //            return (TValue)converter.ConvertTo(source, typeof(TValue));
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        return defaultValue;
-        //    }
-        //    return defaultValue;
-        //}
-
-        //public static bool AsBool(this string source)
-        //{
-        //    return source.AsBool(false);
-        //}
-
-        //public static bool AsBool(this string source, bool defaultValue)
-        //{
-        //    bool flag;
-        //    if (!bool.TryParse(source, out flag))
-        //    {
-        //        return defaultValue;
-        //    }
-        //    return flag;
-        //}
-
-        //public static DateTime AsDateTime(this string source)
-        //{
-        //    return source.AsDateTime(new DateTime());
-        //}
-
-        //public static DateTime AsDateTime(this string source, DateTime defaultValue)
-        //{
-        //    DateTime time;
-        //    if (!DateTime.TryParse(source, out time))
-        //    {
-        //        return defaultValue;
-        //    }
-        //    return time;
-        //}
-
-        //public static decimal AsDecimal(this string source)
-        //{
-        //    return source.As<decimal>();
-        //}
-
-        //public static decimal AsDecimal(this string source, decimal defaultValue)
-        //{
-        //    return source.As(defaultValue);
-        //}
-
-        //public static float AsFloat(this string value)
-        //{
-        //    return value.AsFloat(0f);
-        //}
-
-        //public static float AsFloat(this string source, float defaultValue)
-        //{
-        //    float num;
-        //    if (!float.TryParse(source, out num))
-        //    {
-        //        return defaultValue;
-        //    }
-        //    return num;
-        //}
-
-        //public static int AsInt(this string source)
-        //{
-        //    return source.AsInt(0);
-        //}
-
-        //public static int AsInt(this string source, int defaultValue)
-        //{
-        //    int num;
-        //    if (!int.TryParse(source, out num))
-        //    {
-        //        return defaultValue;
-        //    }
-        //    return num;
-        //}
-
-        //public static bool Is<TValue>(this string source)
-        //{
-        //    TypeConverter converter = TypeDescriptor.GetConverter(typeof(TValue));
-        //    try
-        //    {
-        //        if ((source == null) || converter.CanConvertFrom(null, source.GetType()))
-        //        {
-        //            converter.ConvertFrom(null, CultureInfo.CurrentCulture, source);
-        //            return true;
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        return false;
-        //    }
-        //    return false;
-        //}
-
-        //public static bool IsBool(this string source)
-        //{
-        //    bool flag;
-        //    return bool.TryParse(source, out flag);
-        //}
-
-        //public static bool IsDateTime(this string source)
-        //{
-        //    DateTime time;
-        //    return DateTime.TryParse(source, out time);
-        //}
-
-        //public static bool IsDecimal(this string source)
-        //{
-        //    return source.Is<decimal>();
-        //}
-
-        //public static bool IsEmpty(this string source)
-        //{
-        //    return string.IsNullOrEmpty(source);
-        //}
-
-        //public static bool IsFloat(this string source)
-        //{
-        //    float num;
-        //    return float.TryParse(source, out num);
-        //}
-
-        //public static bool IsInt(this string source)
-        //{
-        //    int num;
-        //    return int.TryParse(source, out num);
-        //}
-
-        #endregion From: WebMatrix.WebData
-
-        //#region Pluralization
-
-        //private static IDictionary<string, PluralizationService> pluralizationServices;
-
-        ///// <summary>
-        ///// Determines whether the specified word is plural.
-        ///// </summary>
-        ///// <param name="word">The value to be analyzed.</param>
-        ///// <returns>true if the word is plural; otherwise, false.</returns>
-        //public static bool IsPlural(this string word, string cultureCode = "en")
-        //{
-        //    var pluralizationService = GetPluralizationService(cultureCode);
-        //    return pluralizationService.IsPlural(word);
-        //}
-
-        ///// <summary>
-        ///// Determines whether the specified word is singular.
-        ///// </summary>
-        ///// <param name="word">The value to be analyzed.</param>
-        ///// <returns>true if the word is singular; otherwise, false.</returns>
-        //public static bool IsSingular(this string word, string cultureCode = "en")
-        //{
-        //    var pluralizationService = GetPluralizationService(cultureCode);
-        //    return pluralizationService.IsSingular(word);
-        //}
-
-        ///// <summary>
-        ///// Returns the plural form of the specified word.
-        ///// </summary>
-        ///// <param name="word">The word to be made plural.</param>
-        ///// <returns>The plural form of the input parameter.</returns>
-        //public static string Pluralize(this string word, string cultureCode = "en")
-        //{
-        //    if (string.IsNullOrWhiteSpace(word))
-        //    {
-        //        return word;
-        //    }
-
-        //    if (word.IsSingular())
-        //    {
-        //        var pluralizationService = GetPluralizationService(cultureCode);
-        //        return pluralizationService.Pluralize(word);
-        //    }
-        //    return word;
-        //}
-
-        ///// <summary>
-        ///// Returns the singular form of the specified word.
-        ///// </summary>
-        ///// <param name="word">The word to be made singular.</param>
-        ///// <returns>The singular form of the input parameter.</returns>
-        //public static string Singularize(this string word, string cultureCode = "en")
-        //{
-        //    if (string.IsNullOrWhiteSpace(word))
-        //    {
-        //        return word;
-        //    }
-        //    if (word.IsPlural())
-        //    {
-        //        var pluralizationService = GetPluralizationService(cultureCode);
-        //        return pluralizationService.Singularize(word);
-        //    }
-        //    return word;
-        //}
-
-        //private static PluralizationService GetPluralizationService(string cultureCode)
-        //{
-        //    if (pluralizationServices == null)
-        //    {
-        //        pluralizationServices = new Dictionary<string, PluralizationService>();
-        //    }
-
-        //    if (string.IsNullOrEmpty(cultureCode))
-        //    {
-        //        cultureCode = "en";
-        //    }
-
-        //    if (!pluralizationServices.ContainsKey(cultureCode))
-        //    {
-        //        var pluralizationService = PluralizationService.CreateService(new CultureInfo(cultureCode));
-        //        pluralizationServices.Add(cultureCode, pluralizationService);
-        //        return pluralizationService;
-        //    }
-
-        //    return pluralizationServices[cultureCode];
-        //}
-
-        //#endregion Pluralization
     }
 }

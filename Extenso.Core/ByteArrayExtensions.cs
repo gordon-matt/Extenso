@@ -46,67 +46,78 @@ namespace Extenso
             }
         }
 
-        /// <summary>
-        /// Encrypts data with the System.Security.Cryptography.RSA algorithm.
-        /// </summary>
-        /// <param name="source">The data to be encrypted.</param>
-        /// <param name="parameters">The parameters for System.Security.Cryptography.RSA.</param>
-        /// <param name="fOAEP">
-        /// true to perform direct System.Security.Cryptography.RSA encryption using OAEP
-        /// padding (only available on a computer running Windows XP or later); otherwise,
-        /// false to use PKCS#1 v1.5 padding.
-        /// </param>
-        /// <returns>The encrypted data.</returns>
-        public static byte[] RSAEncrypt(this byte[] source, RSAParameters parameters, bool fOAEP)
-        {
-            using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
-            {
-                rsaCryptoServiceProvider.ImportParameters(parameters);
-                return rsaCryptoServiceProvider.Encrypt(source, fOAEP);
-            }
-        }
+        //public static string Decrypt(this byte[] source, Encoding encoding, ICryptoTransform cryptoTransform)
+        //{
+        //    using (var memoryStream = new MemoryStream(source))
+        //    using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
+        //    {
+        //        byte[] bytes = new byte[source.Length];
+        //        cryptoStream.Read(bytes, 0, bytes.Length);
+        //        return encoding.GetString(bytes);
+        //    }
+        //}
 
-        /// <summary>
-        /// Decrypts data with the System.Security.Cryptography.RSA algorithm.
-        /// </summary>
-        /// <param name="source">The data to be decrypted.</param>
-        /// <param name="parameters">The parameters for System.Security.Cryptography.RSA.</param>
-        /// <param name="fOAEP">
-        /// true to perform direct System.Security.Cryptography.RSA decryption using OAEP
-        /// padding (only available on a computer running Microsoft Windows XP or later);
-        /// otherwise, false to use PKCS#1 v1.5 padding.
-        /// </param>
-        /// <returns>The decrypted data, which is the original plain text before encryption.</returns>
-        public static byte[] RSADecrypt(this byte[] source, RSAParameters parameters, bool fOAEP)
-        {
-            using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
-            {
-                rsaCryptoServiceProvider.ImportParameters(parameters);
-                return rsaCryptoServiceProvider.Decrypt(source, fOAEP);
-            }
-        }
+        ///// <summary>
+        ///// Encrypts data with the System.Security.Cryptography.RSA algorithm.
+        ///// </summary>
+        ///// <param name="source">The data to be encrypted.</param>
+        ///// <param name="parameters">The parameters for System.Security.Cryptography.RSA.</param>
+        ///// <param name="fOAEP">
+        ///// true to perform direct System.Security.Cryptography.RSA encryption using OAEP
+        ///// padding (only available on a computer running Windows XP or later); otherwise,
+        ///// false to use PKCS#1 v1.5 padding.
+        ///// </param>
+        ///// <returns>The encrypted data.</returns>
+        //public static byte[] RSAEncrypt(this byte[] source, RSAParameters parameters, bool fOAEP)
+        //{
+        //    using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+        //    {
+        //        rsaCryptoServiceProvider.ImportParameters(parameters);
+        //        return rsaCryptoServiceProvider.Encrypt(source, fOAEP);
+        //    }
+        //}
 
-        /// <summary>
-        /// Decrypts the specified byte array using the TripleDES symmetric algorithm and returns the original string.
-        /// </summary>
-        /// <param name="source">The data to be decrypted.</param>
-        /// <param name="encoding">The System.Text.Encoding to use.</param>
-        /// <param name="key">The secret key to use for the symmetric algorithm.</param>
-        /// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
-        /// <returns>The decrypted data, which is the original plain text before encryption.</returns>
-        public static string TripleDESDecrypt(this byte[] source, Encoding encoding, byte[] key, byte[] initializationVector)
-        {
-            using (var memoryStream = new MemoryStream(source))
-            using (var cryptoStream = new CryptoStream(
-                memoryStream,
-                new TripleDESCryptoServiceProvider().CreateDecryptor(key, initializationVector),
-                CryptoStreamMode.Read))
-            {
-                byte[] bytes = new byte[source.Length];
-                cryptoStream.Read(bytes, 0, bytes.Length);
-                return encoding.GetString(bytes);
-            }
-        }
+        ///// <summary>
+        ///// Decrypts data with the System.Security.Cryptography.RSA algorithm.
+        ///// </summary>
+        ///// <param name="source">The data to be decrypted.</param>
+        ///// <param name="parameters">The parameters for System.Security.Cryptography.RSA.</param>
+        ///// <param name="fOAEP">
+        ///// true to perform direct System.Security.Cryptography.RSA decryption using OAEP
+        ///// padding (only available on a computer running Microsoft Windows XP or later);
+        ///// otherwise, false to use PKCS#1 v1.5 padding.
+        ///// </param>
+        ///// <returns>The decrypted data, which is the original plain text before encryption.</returns>
+        //public static byte[] RSADecrypt(this byte[] source, RSAParameters parameters, bool fOAEP)
+        //{
+        //    using (var rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+        //    {
+        //        rsaCryptoServiceProvider.ImportParameters(parameters);
+        //        return rsaCryptoServiceProvider.Decrypt(source, fOAEP);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Decrypts the specified byte array using the TripleDES symmetric algorithm and returns the original string.
+        ///// </summary>
+        ///// <param name="source">The data to be decrypted.</param>
+        ///// <param name="encoding">The System.Text.Encoding to use.</param>
+        ///// <param name="key">The secret key to use for the symmetric algorithm.</param>
+        ///// <param name="initializationVector">The initialization vector to use for the symmetric algorithm.</param>
+        ///// <returns>The decrypted data, which is the original plain text before encryption.</returns>
+        //public static string TripleDESDecrypt(this byte[] source, Encoding encoding, byte[] key, byte[] initializationVector)
+        //{
+        //    using (var memoryStream = new MemoryStream(source))
+        //    using (var cryptoStream = new CryptoStream(
+        //        memoryStream,
+        //        TripleDES.Create().CreateDecryptor(key, initializationVector),
+        //        CryptoStreamMode.Read))
+        //    {
+        //        byte[] bytes = new byte[source.Length];
+        //        cryptoStream.Read(bytes, 0, bytes.Length);
+        //        return encoding.GetString(bytes);
+        //    }
+        //}
 
         /// <summary>
         /// Creates a new non-resizable instance of the System.IO.MemoryStream class based on the specified byte array.
