@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Text.Json;
 
 namespace Extenso.IO
 {
@@ -17,7 +18,8 @@ namespace Extenso.IO
         /// <returns>The deserialized object from the stream.</returns>
         public static T BinaryDeserialize<T>(this Stream stream)
         {
-            return (T)new BinaryFormatter().Deserialize(stream);
+            var bytes = stream.ToArray();
+            return Encoding.UTF8.GetString(bytes).JsonDeserialize<T>();
         }
 
         /// <summary>
@@ -28,7 +30,9 @@ namespace Extenso.IO
         /// <param name="obj">The object to serialize.</param>
         public static void BinarySerialize<T>(this Stream stream, T obj)
         {
-            new BinaryFormatter().Serialize(stream, obj);
+            var bytes = Encoding.UTF8.GetBytes(obj.JsonSerialize());
+            stream.Write(bytes);
+            stream.Position = 0;
         }
 
         /// <summary>
@@ -81,6 +85,18 @@ namespace Extenso.IO
             var gZipStream = new GZipStream(stream, CompressionMode.Decompress);
             gZipStream.CopyTo(memoryStream);
             return memoryStream;
+        }
+
+        /// <summary>
+        /// Writes the stream content to a byte array.
+        /// </summary>
+        /// <param name="stream">The stream to convert to a byte array.</param>
+        /// <returns>A new byte array.</returns>
+        public static byte[] ToArray(this Stream stream)
+        {
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            return memoryStream.ToArray();
         }
     }
 }

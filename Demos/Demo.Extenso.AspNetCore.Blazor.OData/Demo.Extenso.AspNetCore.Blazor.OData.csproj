@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <UserSecretsId>aspnet-Demo.Extenso.AspNetCore.Blazor.OData-B75A265A-5CD9-4A58-8AD5-24C98674A921</UserSecretsId>
   </PropertyGroup>
 
@@ -11,12 +11,12 @@
 	  <PackageReference Include="Blazorise.Bootstrap" Version="1.1.3.1" />
 	  <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.3.1" />
 	  <PackageReference Include="EPPlus" Version="6.1.0" />
-	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.11" />
-	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.11" />
-	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.11" />
-	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.11" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.11">
+	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>

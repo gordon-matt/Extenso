@@ -1,18 +1,17 @@
-﻿using System;
+﻿using Extenso.Collections;
+using Extenso.IO;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
-using Extenso.Collections;
-using Newtonsoft.Json;
 
 namespace Extenso
 {
@@ -120,8 +119,7 @@ namespace Extenso
                 byte[] bytes = Convert.FromBase64String(source[(lengthDelimiterPosition + 1)..]);
                 using (var memoryStream = new MemoryStream(bytes, 0, length))
                 {
-                    var binaryFormatter = new BinaryFormatter();
-                    return (T)binaryFormatter.Deserialize(memoryStream);
+                    return memoryStream.BinaryDeserialize<T>();
                 }
             }
         }
