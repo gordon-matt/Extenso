@@ -107,6 +107,32 @@ namespace Extenso.Collections
             }
         }
 
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> selector)
+        {
+            var queue = new Queue<T>();
+            foreach (var item in source)
+            {
+                queue.Enqueue(item);
+            }
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                yield return current;
+
+                var children = selector(current);
+                if (children == null)
+                {
+                    continue;
+                }
+
+                foreach (var child in children)
+                {
+                    queue.Enqueue(child);
+                }
+            }
+        }
+
         /// <summary>
         /// Performs the specified action on each element of the System.Collections.Generic.IEnumerable`1.
         /// </summary>

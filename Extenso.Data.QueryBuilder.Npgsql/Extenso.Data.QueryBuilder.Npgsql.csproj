@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.1\Extenso.Data.QueryBuilder.Npgsql.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net6.0\Extenso.Data.QueryBuilder.Npgsql.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
