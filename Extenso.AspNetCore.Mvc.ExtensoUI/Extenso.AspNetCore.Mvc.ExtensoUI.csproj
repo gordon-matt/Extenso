@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.1\Extenso.AspNetCore.Mvc.ExtensoUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net6.0\Extenso.AspNetCore.Mvc.ExtensoUI.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

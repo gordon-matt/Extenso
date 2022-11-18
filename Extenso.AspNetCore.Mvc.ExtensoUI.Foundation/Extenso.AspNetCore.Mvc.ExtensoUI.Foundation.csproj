@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.1\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net6.0\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
