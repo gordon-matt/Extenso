@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>This library provides a generic repository interface and base class, as well as other data-related extension methods and helper classes.</Description>
-    <Version>6.0.2</Version>
+    <Version>6.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
