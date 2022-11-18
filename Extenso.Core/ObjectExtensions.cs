@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Extenso.IO;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using Extenso.IO;
-using Newtonsoft.Json;
 
 namespace Extenso
 {
@@ -32,13 +31,10 @@ namespace Extenso
         /// <returns>A Base64 encoded string of the serialized object.</returns>
         public static string Base64Serialize<T>(this T source, bool prependLength = false)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(memoryStream, source);
-                byte[] bytes = memoryStream.GetBuffer();
-                return bytes.Base64Serialize(prependLength);
-            }
+            using var memoryStream = new MemoryStream();
+            memoryStream.BinarySerialize(source);
+            byte[] bytes = memoryStream.GetBuffer();
+            return bytes.Base64Serialize(prependLength);
         }
 
         /// <summary>
@@ -49,12 +45,9 @@ namespace Extenso
         /// <returns>A byte array of the serialized object.</returns>
         public static byte[] BinarySerialize<T>(this T source)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(memoryStream, source);
-                return memoryStream.ToArray();
-            }
+            using var memoryStream = new MemoryStream();
+            memoryStream.BinarySerialize(source);
+            return memoryStream.ToArray();
         }
 
         /// <summary>
@@ -65,12 +58,9 @@ namespace Extenso
         /// <param name="fileName">The full path of the file to save the serialized data to.</param>
         public static void BinarySerialize<T>(this T source, string fileName)
         {
-            using (var stream = File.Open(fileName, FileMode.Create))
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(stream, source);
-                stream.Close();
-            }
+            using var fileStream = File.Open(fileName, FileMode.Create);
+            fileStream.BinarySerialize(source);
+            fileStream.Close();
         }
 
         /// <summary>
@@ -84,12 +74,10 @@ namespace Extenso
         public static byte[] ComputeHash<T>(this object source, T hashAlgorithm) where T : HashAlgorithm, new()
         {
             var serializer = new DataContractSerializer(source.GetType());
-            using (var memoryStream = new MemoryStream())
-            {
-                serializer.WriteObject(memoryStream, source);
-                hashAlgorithm.ComputeHash(memoryStream.ToArray());
-                return hashAlgorithm.Hash;
-            }
+            using var memoryStream = new MemoryStream();
+            serializer.WriteObject(memoryStream, source);
+            hashAlgorithm.ComputeHash(memoryStream.ToArray());
+            return hashAlgorithm.Hash;
         }
 
         public static byte[] ComputeMD5Hash(this object source)
@@ -145,13 +133,10 @@ namespace Extenso
         /// <returns>A deep clone of source.</returns>
         public static T DeepClone<T>(this T source)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(memoryStream, source);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                return (T)binaryFormatter.Deserialize(memoryStream);
-            }
+            using var memoryStream = new MemoryStream();
+            memoryStream.BinarySerialize(source);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream.BinaryDeserialize<T>();
         }
 
         /// <summary>

@@ -40,10 +40,8 @@ namespace Extenso
         /// <returns>The deserialized object from the byte array.</returns>
         public static T BinaryDeserialize<T>(this byte[] data)
         {
-            using (var stream = new MemoryStream(data))
-            {
-                return stream.BinaryDeserialize<T>();
-            }
+            using var stream = new MemoryStream(data);
+            return stream.BinaryDeserialize<T>();
         }
 
         //public static string Decrypt(this byte[] source, Encoding encoding, ICryptoTransform cryptoTransform)
