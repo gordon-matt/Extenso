@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-//using System.Data.OleDb;
 using System.Data.SqlTypes;
 using System.Linq;
 using Extenso.Collections.Generic;
@@ -16,73 +15,75 @@ namespace Extenso.Data.Common
         {
             netTypes = new Lazy<TupleHashSet<SqlDbType, Type>>(() =>
             {
-                var hashSet = new TupleHashSet<SqlDbType, Type>();
-                hashSet.Add(SqlDbType.BigInt, typeof(Int64));
-                hashSet.Add(SqlDbType.Binary, typeof(Byte[]));
-                hashSet.Add(SqlDbType.Bit, typeof(Boolean));
-                hashSet.Add(SqlDbType.Char, typeof(String));
-                hashSet.Add(SqlDbType.Date, typeof(DateTime));
-                hashSet.Add(SqlDbType.DateTime, typeof(DateTime));
-                hashSet.Add(SqlDbType.DateTime2, typeof(DateTime));
-                hashSet.Add(SqlDbType.DateTimeOffset, typeof(DateTimeOffset));
-                hashSet.Add(SqlDbType.Decimal, typeof(Decimal));
-                hashSet.Add(SqlDbType.Float, typeof(Double));
-                hashSet.Add(SqlDbType.Int, typeof(Int32));
-                hashSet.Add(SqlDbType.Money, typeof(Decimal));
-                hashSet.Add(SqlDbType.NChar, typeof(String));
-                hashSet.Add(SqlDbType.NText, typeof(String));
-                hashSet.Add(SqlDbType.NVarChar, typeof(String));
-                hashSet.Add(SqlDbType.Real, typeof(Single));
-                hashSet.Add(SqlDbType.SmallDateTime, typeof(DateTime));
-                hashSet.Add(SqlDbType.SmallInt, typeof(Int16));
-                hashSet.Add(SqlDbType.SmallMoney, typeof(Decimal));
-                hashSet.Add(SqlDbType.Structured, typeof(Object));
-                hashSet.Add(SqlDbType.Text, typeof(String));
-                hashSet.Add(SqlDbType.Time, typeof(TimeSpan));
-                hashSet.Add(SqlDbType.Timestamp, typeof(Byte[]));
-                hashSet.Add(SqlDbType.TinyInt, typeof(Byte));
-                hashSet.Add(SqlDbType.Udt, typeof(Object));
-                hashSet.Add(SqlDbType.UniqueIdentifier, typeof(Guid));
-                hashSet.Add(SqlDbType.VarBinary, typeof(Byte[]));
-                hashSet.Add(SqlDbType.VarChar, typeof(String));
-                hashSet.Add(SqlDbType.Variant, typeof(Object));
-                hashSet.Add(SqlDbType.Xml, typeof(SqlXml));
-                return hashSet;
+                return new TupleHashSet<SqlDbType, Type>
+                {
+                    { SqlDbType.BigInt, typeof(Int64) },
+                    { SqlDbType.Binary, typeof(Byte[]) },
+                    { SqlDbType.Bit, typeof(Boolean) },
+                    { SqlDbType.Char, typeof(String) },
+                    { SqlDbType.Date, typeof(DateTime) },
+                    { SqlDbType.DateTime, typeof(DateTime) },
+                    { SqlDbType.DateTime2, typeof(DateTime) },
+                    { SqlDbType.DateTimeOffset, typeof(DateTimeOffset) },
+                    { SqlDbType.Decimal, typeof(Decimal) },
+                    { SqlDbType.Float, typeof(Double) },
+                    { SqlDbType.Int, typeof(Int32) },
+                    { SqlDbType.Money, typeof(Decimal) },
+                    { SqlDbType.NChar, typeof(String) },
+                    { SqlDbType.NText, typeof(String) },
+                    { SqlDbType.NVarChar, typeof(String) },
+                    { SqlDbType.Real, typeof(Single) },
+                    { SqlDbType.SmallDateTime, typeof(DateTime) },
+                    { SqlDbType.SmallInt, typeof(Int16) },
+                    { SqlDbType.SmallMoney, typeof(Decimal) },
+                    { SqlDbType.Structured, typeof(Object) },
+                    { SqlDbType.Text, typeof(String) },
+                    { SqlDbType.Time, typeof(TimeSpan) },
+                    { SqlDbType.Timestamp, typeof(Byte[]) },
+                    { SqlDbType.TinyInt, typeof(Byte) },
+                    { SqlDbType.Udt, typeof(Object) },
+                    { SqlDbType.UniqueIdentifier, typeof(Guid) },
+                    { SqlDbType.VarBinary, typeof(Byte[]) },
+                    { SqlDbType.VarChar, typeof(String) },
+                    { SqlDbType.Variant, typeof(Object) },
+                    { SqlDbType.Xml, typeof(SqlXml) }
+                };
             });
             dbTypes = new Lazy<TupleHashSet<SqlDbType, DbType>>(() =>
             {
-                var hashSet = new TupleHashSet<SqlDbType, DbType>();
-                hashSet.Add(SqlDbType.BigInt, DbType.Int64);
-                hashSet.Add(SqlDbType.Binary, DbType.Binary);
-                hashSet.Add(SqlDbType.Bit, DbType.Boolean);
-                hashSet.Add(SqlDbType.Char, DbType.StringFixedLength);
-                hashSet.Add(SqlDbType.Date, DbType.Date);
-                hashSet.Add(SqlDbType.DateTime, DbType.DateTime);
-                hashSet.Add(SqlDbType.DateTime2, DbType.DateTime2);
-                hashSet.Add(SqlDbType.DateTimeOffset, DbType.DateTimeOffset);
-                hashSet.Add(SqlDbType.Decimal, DbType.Decimal);
-                hashSet.Add(SqlDbType.Float, DbType.Double);
-                hashSet.Add(SqlDbType.Int, DbType.Int32);
-                hashSet.Add(SqlDbType.Money, DbType.Currency);
-                hashSet.Add(SqlDbType.NChar, DbType.String);
-                hashSet.Add(SqlDbType.NText, DbType.String);
-                hashSet.Add(SqlDbType.NVarChar, DbType.String);
-                hashSet.Add(SqlDbType.Real, DbType.Single);
-                hashSet.Add(SqlDbType.SmallDateTime, DbType.DateTime);
-                hashSet.Add(SqlDbType.SmallInt, DbType.Int16);
-                hashSet.Add(SqlDbType.SmallMoney, DbType.Currency);
-                hashSet.Add(SqlDbType.Structured, DbType.Object);
-                hashSet.Add(SqlDbType.Text, DbType.String);
-                hashSet.Add(SqlDbType.Time, DbType.Time);
-                hashSet.Add(SqlDbType.Timestamp, DbType.Binary);
-                hashSet.Add(SqlDbType.TinyInt, DbType.Byte);
-                hashSet.Add(SqlDbType.Udt, DbType.Object);
-                hashSet.Add(SqlDbType.UniqueIdentifier, DbType.Guid);
-                hashSet.Add(SqlDbType.VarBinary, DbType.Binary);
-                hashSet.Add(SqlDbType.VarChar, DbType.String);
-                hashSet.Add(SqlDbType.Variant, DbType.Object);
-                hashSet.Add(SqlDbType.Xml, DbType.Xml);
-                return hashSet;
+                return new TupleHashSet<SqlDbType, DbType>
+                {
+                    { SqlDbType.BigInt, DbType.Int64 },
+                    { SqlDbType.Binary, DbType.Binary },
+                    { SqlDbType.Bit, DbType.Boolean },
+                    { SqlDbType.Char, DbType.StringFixedLength },
+                    { SqlDbType.Date, DbType.Date },
+                    { SqlDbType.DateTime, DbType.DateTime },
+                    { SqlDbType.DateTime2, DbType.DateTime2 },
+                    { SqlDbType.DateTimeOffset, DbType.DateTimeOffset },
+                    { SqlDbType.Decimal, DbType.Decimal },
+                    { SqlDbType.Float, DbType.Double },
+                    { SqlDbType.Int, DbType.Int32 },
+                    { SqlDbType.Money, DbType.Currency },
+                    { SqlDbType.NChar, DbType.String },
+                    { SqlDbType.NText, DbType.String },
+                    { SqlDbType.NVarChar, DbType.String },
+                    { SqlDbType.Real, DbType.Single },
+                    { SqlDbType.SmallDateTime, DbType.DateTime },
+                    { SqlDbType.SmallInt, DbType.Int16 },
+                    { SqlDbType.SmallMoney, DbType.Currency },
+                    { SqlDbType.Structured, DbType.Object },
+                    { SqlDbType.Text, DbType.String },
+                    { SqlDbType.Time, DbType.Time },
+                    { SqlDbType.Timestamp, DbType.Binary },
+                    { SqlDbType.TinyInt, DbType.Byte },
+                    { SqlDbType.Udt, DbType.Object },
+                    { SqlDbType.UniqueIdentifier, DbType.Guid },
+                    { SqlDbType.VarBinary, DbType.Binary },
+                    { SqlDbType.VarChar, DbType.String },
+                    { SqlDbType.Variant, DbType.Object },
+                    { SqlDbType.Xml, DbType.Xml }
+                };
             });
         }
 

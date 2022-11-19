@@ -12,12 +12,12 @@ namespace Extenso.Reflection
     public static class ObjectExtensions
     {
         /// <summary>
-        /// Returns the value of the private field with the given name for obj.
+        /// Returns the value of the non-public field with the given name for obj.
         /// </summary>
         /// <typeparam name="T">The type of obj.</typeparam>
-        /// <param name="obj">The object to get the private field value from.</param>
-        /// <param name="fieldName">The name of the private field to get the value for.</param>
-        /// <returns>The value of the specified private field for obj.</returns>
+        /// <param name="obj">The object to get the non-public field value from.</param>
+        /// <param name="fieldName">The name of the non-public field to get the value for.</param>
+        /// <returns>The value of the specified non-public field for obj.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static object GetPrivateFieldValue<T>(this T obj, string fieldName)
@@ -47,12 +47,12 @@ namespace Extenso.Reflection
         }
 
         /// <summary>
-        /// Returns the value of the private property with the given name for obj.
+        /// Returns the value of the non-public property with the given name for obj.
         /// </summary>
         /// <typeparam name="T">The type of obj.</typeparam>
-        /// <param name="obj">The object to get the private property value from.</param>
-        /// <param name="propertyName">The name of the private property to get the value for.</param>
-        /// <returns>The value of the specified private property for obj.</returns>
+        /// <param name="obj">The object to get the non-public property value from.</param>
+        /// <param name="propertyName">The name of the non-public property to get the value for.</param>
+        /// <returns>The value of the specified non-public property for obj.</returns>
         public static object GetPrivatePropertyValue<T>(this T obj, string propertyName)
         {
             if (obj == null)
@@ -235,12 +235,44 @@ namespace Extenso.Reflection
         }
 
         /// <summary>
-        /// Sets the value of the specified private field on the given object.
+        /// Invokes the non-public method with the given name, using the specified parameters.
         /// </summary>
         /// <typeparam name="T">The type of obj.</typeparam>
-        /// <param name="obj">The object whose private field value will be set.</param>
-        /// <param name="fieldName">The name of the private field to set the value for.</param>
-        /// <param name="value">The value to assign to the private field.</param>
+        /// <param name="obj">The object upon which to invoke the method.</param>
+        /// <param name="methodName">The name of the method to find in obj.</param>
+        /// <param name="parameters">
+        /// An argument list for the invoked method. This is an array of objects
+        /// with the same number, order, and type as the parameters of the method
+        /// to be invoked. If there are no parameters, parameters should be null. If the
+        /// method represented by this instance takes a ref parameter (ByRef
+        /// in Visual Basic), no special attribute is required for that parameter in order
+        /// to invoke the method using this function. Any object in this array
+        /// that is not explicitly initialized with a value will contain the default value
+        /// for that object type. For reference-type elements, this value is null. For value-type
+        /// elements, this value is 0, 0.0, or false, depending on the specific element type.
+        /// </param>
+        /// <returns>An object containing the return value of the invoked non-public method.</returns>
+        public static object InvokePrivateMethod<T>(this T obj, string methodName, params object[] parameters)
+        {
+            var types = new Type[parameters.Length];
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                types[i] = parameters[i].GetType();
+            }
+
+            var methodInfo = typeof(T).GetTypeInfo().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance, types);
+            object value = methodInfo.Invoke(obj, parameters);
+            return value;
+        }
+
+        /// <summary>
+        /// Sets the value of the specified non-public field on the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of obj.</typeparam>
+        /// <param name="obj">The object whose non-public field value will be set.</param>
+        /// <param name="fieldName">The name of the non-public field to set the value for.</param>
+        /// <param name="value">The value to assign to the non-public field.</param>
         public static void SetPrivateFieldValue<T>(this T obj, string fieldName, object value)
         {
             if (obj == null)
@@ -269,12 +301,12 @@ namespace Extenso.Reflection
         }
 
         /// <summary>
-        /// Sets the value of the specified private property on the given object.
+        /// Sets the value of the specified non-public property on the given object.
         /// </summary>
         /// <typeparam name="T">The type of obj.</typeparam>
-        /// <param name="obj">The object whose private property value will be set.</param>
-        /// <param name="propertyName">The name of the private property to set the value for.</param>
-        /// <param name="value">The value to assign to the private property.</param>
+        /// <param name="obj">The object whose non-public property value will be set.</param>
+        /// <param name="propertyName">The name of the non-public property to set the value for.</param>
+        /// <param name="value">The value to assign to the non-public property.</param>
         public static void SetPrivatePropertyValue<T>(this T obj, string propertyName, object value)
         {
             var type = typeof(T);

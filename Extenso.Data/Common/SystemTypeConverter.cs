@@ -14,51 +14,53 @@ namespace Extenso.Data.Common
         {
             dbTypes = new Lazy<TupleHashSet<Type, DbType>>(() =>
             {
-                var hashSet = new TupleHashSet<Type, DbType>();
-                hashSet.Add(typeof(Boolean), DbType.Boolean);
-                hashSet.Add(typeof(Byte), DbType.Byte);
-                hashSet.Add(typeof(Char), DbType.StringFixedLength);
-                hashSet.Add(typeof(Int16), DbType.Int16);
-                hashSet.Add(typeof(Int32), DbType.Int32);
-                hashSet.Add(typeof(Int64), DbType.Int64);
-                hashSet.Add(typeof(Decimal), DbType.Decimal);
-                hashSet.Add(typeof(Double), DbType.Double);
-                hashSet.Add(typeof(DateTime), DbType.DateTime);
-                hashSet.Add(typeof(DateTimeOffset), DbType.DateTimeOffset);
-                hashSet.Add(typeof(Guid), DbType.Guid);
-                hashSet.Add(typeof(Single), DbType.Single);
-                hashSet.Add(typeof(String), DbType.String);
-                hashSet.Add(typeof(SByte), DbType.SByte);
-                hashSet.Add(typeof(TimeSpan), DbType.Time);
-                hashSet.Add(typeof(UInt16), DbType.UInt16);
-                hashSet.Add(typeof(UInt32), DbType.UInt32);
-                hashSet.Add(typeof(UInt64), DbType.UInt64);
-                hashSet.Add(typeof(Uri), DbType.String);
-                return hashSet;
+                return new TupleHashSet<Type, DbType>
+                {
+                    { typeof(Boolean), DbType.Boolean },
+                    { typeof(Byte), DbType.Byte },
+                    { typeof(Char), DbType.StringFixedLength },
+                    { typeof(Int16), DbType.Int16 },
+                    { typeof(Int32), DbType.Int32 },
+                    { typeof(Int64), DbType.Int64 },
+                    { typeof(Decimal), DbType.Decimal },
+                    { typeof(Double), DbType.Double },
+                    { typeof(DateTime), DbType.DateTime },
+                    { typeof(DateTimeOffset), DbType.DateTimeOffset },
+                    { typeof(Guid), DbType.Guid },
+                    { typeof(Single), DbType.Single },
+                    { typeof(String), DbType.String },
+                    { typeof(SByte), DbType.SByte },
+                    { typeof(TimeSpan), DbType.Time },
+                    { typeof(UInt16), DbType.UInt16 },
+                    { typeof(UInt32), DbType.UInt32 },
+                    { typeof(UInt64), DbType.UInt64 },
+                    { typeof(Uri), DbType.String }
+                };
             });
             sqlDbTypes = new Lazy<TupleHashSet<Type, SqlDbType>>(() =>
             {
-                var hashSet = new TupleHashSet<Type, SqlDbType>();
-                hashSet.Add(typeof(Boolean), SqlDbType.Bit);
-                hashSet.Add(typeof(Byte), SqlDbType.TinyInt);
-                hashSet.Add(typeof(Char), SqlDbType.NChar);
-                hashSet.Add(typeof(Int16), SqlDbType.SmallInt);
-                hashSet.Add(typeof(Int32), SqlDbType.Int);
-                hashSet.Add(typeof(Int64), SqlDbType.BigInt);
-                hashSet.Add(typeof(Decimal), SqlDbType.Decimal);
-                hashSet.Add(typeof(Double), SqlDbType.Float);
-                hashSet.Add(typeof(DateTime), SqlDbType.DateTime);
-                hashSet.Add(typeof(DateTimeOffset), SqlDbType.DateTimeOffset);
-                hashSet.Add(typeof(Guid), SqlDbType.UniqueIdentifier);
-                hashSet.Add(typeof(Single), SqlDbType.Real);
-                hashSet.Add(typeof(String), SqlDbType.NVarChar);
-                hashSet.Add(typeof(SByte), SqlDbType.TinyInt);
-                hashSet.Add(typeof(TimeSpan), SqlDbType.Time);
-                hashSet.Add(typeof(UInt16), SqlDbType.SmallInt);
-                hashSet.Add(typeof(UInt32), SqlDbType.Int);
-                hashSet.Add(typeof(UInt64), SqlDbType.BigInt);
-                hashSet.Add(typeof(Uri), SqlDbType.NVarChar);
-                return hashSet;
+                return new TupleHashSet<Type, SqlDbType>
+                {
+                    { typeof(Boolean), SqlDbType.Bit },
+                    { typeof(Byte), SqlDbType.TinyInt },
+                    { typeof(Char), SqlDbType.NChar },
+                    { typeof(Int16), SqlDbType.SmallInt },
+                    { typeof(Int32), SqlDbType.Int },
+                    { typeof(Int64), SqlDbType.BigInt },
+                    { typeof(Decimal), SqlDbType.Decimal },
+                    { typeof(Double), SqlDbType.Float },
+                    { typeof(DateTime), SqlDbType.DateTime },
+                    { typeof(DateTimeOffset), SqlDbType.DateTimeOffset },
+                    { typeof(Guid), SqlDbType.UniqueIdentifier },
+                    { typeof(Single), SqlDbType.Real },
+                    { typeof(String), SqlDbType.NVarChar },
+                    { typeof(SByte), SqlDbType.TinyInt },
+                    { typeof(TimeSpan), SqlDbType.Time },
+                    { typeof(UInt16), SqlDbType.SmallInt },
+                    { typeof(UInt32), SqlDbType.Int },
+                    { typeof(UInt64), SqlDbType.BigInt },
+                    { typeof(Uri), SqlDbType.NVarChar }
+                };
             });
         }
 

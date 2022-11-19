@@ -42,6 +42,30 @@ namespace Extenso.Collections
         }
 
         /// <summary>
+        /// Determines whether a sequence contains all of the specified elements by using the default equality comparer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The sequence in which to locate all of the given values.</param>
+        /// <param name="values">The values to locate in the sequence.</param>
+        /// <returns>true if the source sequence contains all of the specified values; otherwise, false.</returns>
+        public static bool ContainsAll<T>(this IEnumerable<T> source, params T[] values)
+        {
+            return values.All(source.Contains);
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains all of the specified elements by using the default equality comparer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="source">The sequence in which to locate all of the given values.</param>
+        /// <param name="values">The values to locate in the sequence.</param>
+        /// <returns>true if the source sequence contains all of the specified values; otherwise, false.</returns>
+        public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values)
+        {
+            return values.All(source.Contains);
+        }
+
+        /// <summary>
         /// Returns a collection of elements that contains the descendant elements of the same type in source.
         /// </summary>
         /// <typeparam name="T">The type of the elements of source.</typeparam>

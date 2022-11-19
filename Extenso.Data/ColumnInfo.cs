@@ -2,6 +2,7 @@
 
 namespace Extenso.Data
 {
+    // TODO: Should take into account that sometimes a column can be both a primary and foreign key (composite keys)
     public enum KeyType : byte
     {
         None = 0,
