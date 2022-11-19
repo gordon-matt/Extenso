@@ -2,6 +2,7 @@
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace Extenso.Data
 {
@@ -57,7 +58,15 @@ namespace Extenso.Data
             {
                 foreach (DataColumn column in table.Columns)
                 {
-                    sb.Append(column.ColumnName);
+                    if (alwaysEnquote || column.ColumnName.Contains(delimiter))
+                    {
+                        sb.Append(column.ColumnName.EnquoteDouble());
+                    }
+                    else
+                    {
+                        sb.Append(column.ColumnName);
+                    }
+
                     sb.Append(delimiter);
                 }
                 sb.Remove(sb.Length - 1, 1);

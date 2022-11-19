@@ -25,7 +25,7 @@ namespace Extenso.Data
 
         public static void ToDelimited(this DataSet dataSet, string directoryPath, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
         {
-            string tableName = string.Empty;
+            string tableName;
             int tableCount = 0;
 
             foreach (DataTable table in dataSet.Tables)
