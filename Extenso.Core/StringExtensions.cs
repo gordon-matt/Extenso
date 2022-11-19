@@ -1,7 +1,4 @@
-﻿using Extenso.Collections;
-using Extenso.IO;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,6 +9,9 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
+using Extenso.Collections;
+using Extenso.IO;
+using Newtonsoft.Json;
 
 namespace Extenso
 {

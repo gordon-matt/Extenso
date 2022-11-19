@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -70,19 +71,48 @@ namespace Extenso.Data.Common
                 connection.Open();
             }
 
-            using (var command = connection.CreateCommand())
+            using var command = connection.CreateCommand();
+            command.CommandTimeout = 300;
+            command.CommandType = CommandType.Text;
+            command.CommandText = queryText;
+
+            if (!parameters.IsNullOrEmpty())
             {
-                command.CommandTimeout = 300;
-                command.CommandType = CommandType.Text;
-                command.CommandText = queryText;
-
-                if (!parameters.IsNullOrEmpty())
-                {
-                    command.Parameters.AddRange(parameters);
-                }
-
-                return (T)command.ExecuteScalar();
+                command.Parameters.AddRange(parameters);
+                command.Parameters.EnsureDbNulls();
             }
+
+            return (T)command.ExecuteScalar();
+        }
+
+        /// <summary>
+        /// Executes a command against the given connection object, returning the number of rows affected.
+        /// </summary>
+        /// <param name="connection">A DbConnection to execute [queryText] upon.</param>
+        /// <param name="queryText">The T-SQL statement to execute.</param>
+        /// <param name="parameters"></param>
+        /// <returns>The number of rows affected.</returns>
+        public static int ExecuteNonQuery(this DbConnection connection, string queryText, params DbParameter[] parameters)
+        {
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using var command = connection.CreateCommand();
+            command.CommandTimeout = 300;
+            command.CommandType = CommandType.Text;
+            command.CommandText = queryText;
+
+            if (!parameters.IsNullOrEmpty())
+            {
+                command.Parameters.AddRange(parameters);
+                command.Parameters.EnsureDbNulls();
+            }
+
+            return command.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -97,13 +127,10 @@ namespace Extenso.Data.Common
                 return SqlClientFactory.Instance;
             }
 
-            // Only use reflection as last option
-            // NOTE: Not sure if this still works with .NET Core, as it did with the old .NET Framework
-            return (DbProviderFactory)connection.GetPrivatePropertyValue("DbProviderFactory");
+            return DbProviderFactories.GetFactory(connection);
 
-            // This would be best, but currently it has not been implemented for .NET Core.
-            //  For more info, see: https://github.com/dotnet/corefx/issues/20903
-            //return DbProviderFactories.GetFactory(connection);
+            // Only use reflection as last option
+            //return (DbProviderFactory)connection.GetPrivatePropertyValue("DbProviderFactory");
         }
 
         /// <summary>
@@ -168,29 +195,27 @@ namespace Extenso.Data.Common
         /// <returns></returns>
         public static int ExecuteNonQueryStoredProcedure(this DbConnection connection, string storedProcedure, IEnumerable<DbParameter> parameters)
         {
-            using (var command = connection.CreateCommand())
+            using var command = connection.CreateCommand();
+            command.CommandType = CommandType.StoredProcedure;
+            command.CommandText = storedProcedure;
+            parameters.ForEach(p => command.Parameters.Add(p));
+            command.Parameters.EnsureDbNulls();
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = storedProcedure;
-                parameters.ForEach(p => command.Parameters.Add(p));
-                command.Parameters.EnsureDbNulls();
-
-                bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-                if (!alreadyOpen)
-                {
-                    connection.Open();
-                }
-
-                int rowsAffected = command.ExecuteNonQuery();
-
-                if (!alreadyOpen)
-                {
-                    connection.Close();
-                }
-
-                return rowsAffected;
+                connection.Open();
             }
+
+            int rowsAffected = command.ExecuteNonQuery();
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return rowsAffected;
         }
 
         /// <summary>
@@ -241,7 +266,7 @@ namespace Extenso.Data.Common
                     var parameter = command.CreateParameter();
                     parameter.ParameterName = string.Concat("@", mapping.Value);
                     var property = properties.Single(p => p.Name == mapping.Key);
-                    parameter.DbType = DataTypeConvertor.GetDbType(property.GetType());
+                    parameter.DbType = DataTypeConvertor.GetDbType(property.PropertyType);
                     parameter.Value = GetFormattedValue(property.PropertyType, property.GetValue(entity, null));
                     command.Parameters.Add(parameter);
                 });
@@ -454,39 +479,57 @@ namespace Extenso.Data.Common
             }
         }
 
-        private static string GetFormattedValue(Type type, object value)
+        private static object GetFormattedValue(Type type, object value)
         {
             if (value == null)
             {
-                return "NULL";
+                return null;
             }
 
-            switch (type.Name)
+            return type.Name switch
             {
-                case "Boolean": return (bool)value ? "1" : "0";
-
-                case "String": return ((string)value).Replace("'", "''");
-                case "DateTime": return ((DateTime)value).ToISO8601DateString();
-
-                //case "String": return ((string)value).Replace("'", "''").AddSingleQuotes();
-                //case "DateTime": return ((DateTime)value).ToISO8601DateString().AddSingleQuotes();
-
-                case "Byte":
-                case "Decimal":
-                case "Double":
-                case "Int16":
-                case "Int32":
-                case "Int64":
-                case "SByte":
-                case "Single":
-                case "UInt16":
-                case "UInt32":
-                case "UInt64": return value.ToString();
-
-                case "DBNull": return "NULL";
-
-                default: return value.ToString().EnquoteSingle();
-            }
+                "Boolean" => (bool)value ? 1 : 0,
+                "String" => ((string)value).Replace("'", "''"),
+                //"DateTime" => ((DateTime)value).ToISO8601DateString(),
+                "DBNull" => null,
+                _ => value,
+            };
         }
+
+        //private static object GetFormattedValue(Type type, object value)
+        //{
+        //    if (value == null)
+        //    {
+        //        return "NULL";
+        //    }
+
+        //    switch (type.Name)
+        //    {
+        //        case "Boolean": return (bool)value ? "1" : "0";
+
+        //        case "String": return ((string)value).Replace("'", "''");
+        //        case "DateTime": return ((DateTime)value).ToISO8601DateString();
+        //        case "Guid": return new SqlGuid((Guid)value);
+
+        //        //case "String": return ((string)value).Replace("'", "''").AddSingleQuotes();
+        //        //case "DateTime": return ((DateTime)value).ToISO8601DateString().AddSingleQuotes();
+
+        //        case "Byte":
+        //        case "Decimal":
+        //        case "Double":
+        //        case "Int16":
+        //        case "Int32":
+        //        case "Int64":
+        //        case "SByte":
+        //        case "Single":
+        //        case "UInt16":
+        //        case "UInt32":
+        //        case "UInt64": return value.ToString();
+
+        //        case "DBNull": return "NULL";
+
+        //        default: return value.ToString().EnquoteSingle();
+        //    }
+        //}
     }
 }

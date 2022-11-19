@@ -395,11 +395,11 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
             string query;
             if (includeViews)
             {
-                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN { commandBuilder.QuoteIdentifier(databaseName)};";
+                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN {commandBuilder.QuoteIdentifier(databaseName)};";
             }
             else
             {
-                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN { commandBuilder.QuoteIdentifier(databaseName)} WHERE TABLE_TYPE LIKE 'BASE TABLE';";
+                query = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN {commandBuilder.QuoteIdentifier(databaseName)} WHERE TABLE_TYPE LIKE 'BASE TABLE';";
             }
 
             var tables = new List<string>();

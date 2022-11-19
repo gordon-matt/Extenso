@@ -1,6 +1,4 @@
-﻿using Extenso.IO;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
@@ -11,6 +9,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using Extenso.IO;
+using Newtonsoft.Json;
 
 namespace Extenso
 {
