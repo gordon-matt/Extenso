@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 
 namespace Extenso.Data
 {
@@ -18,14 +17,6 @@ namespace Extenso.Data
             foreach (var column in columns)
             {
                 dataColumns.Add(column);
-            }
-        }
-
-        public static void AddRange<T>(this DataColumnCollection dataColumns, IEnumerable<string> enumerable)
-        {
-            foreach (string item in enumerable)
-            {
-                dataColumns.Add(item);
             }
         }
     }
