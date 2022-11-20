@@ -84,7 +84,7 @@ namespace Extenso.Data.Tests.Common
         }
 
         [Fact]
-        public void ExecuteScalar_ExecuteStoredProcedure()
+        public void ExecuteStoredProcedure()
         {
             var dataSet = sqlConnection.ExecuteStoredProcedure("[dbo].[uspGetEmployeeManagers]", new[]
             {
