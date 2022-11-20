@@ -16,12 +16,12 @@ namespace Extenso.Data.QueryBuilder
         protected string schema;
         protected readonly ICollection<string> groupByColumns = new List<string>();
         protected readonly IDictionary<string, string> selectedColumns = new Dictionary<string, string>();
-        protected WhereStatement havingStatement = new WhereStatement();
+        protected WhereStatement havingStatement = new();
         protected bool isDistinct;
         protected ICollection<JoinClause> joins = new List<JoinClause>();
         protected ICollection<OrderByClause> orderByStatement = new List<OrderByClause>();
         protected ICollection<string> selectedTables = new List<string>();
-        protected WhereStatement whereStatement = new WhereStatement();
+        protected WhereStatement whereStatement = new();
         protected IDictionary<string, string> tableAliases = new Dictionary<string, string>();
 
         protected int skipCount;
@@ -414,45 +414,33 @@ namespace Extenso.Data.QueryBuilder
                     return formattedValue;
                 }
 
-                switch (collectionType.Name)
+                formattedValue = collectionType.Name switch
                 {
-                    case "String":
-                        formattedValue = string.Join("','", collection.OfType<string>()).EnquoteSingle();
-                        break;
-
-                    case "DateTime":
-                        formattedValue = string.Join("','", collection.OfType<DateTime>().Select(x => x.ToString("yyyy-MM-dd HH:mm:ss"))).EnquoteSingle();
-                        break;
-
-                    case "Guid":
-                        formattedValue = string.Join("','", collection.OfType<Guid>().Select(x => x.ToString())).EnquoteSingle();
-                        break;
-
-                    case "SqlLiteral":
-                        formattedValue = string.Join(",", collection.OfType<SqlLiteral>().Select(x => x.Value));
-                        break;
-
-                    case "DBNull": formattedValue = "NULL"; break;
-                    default: formattedValue = string.Join(",", collection.OfType<object>()); break;
-                }
+                    "String" => string.Join("','", collection.OfType<string>()).EnquoteSingle(),
+                    "DateTime" => string.Join("','", collection.OfType<DateTime>().Select(x => x.ToString("yyyy-MM-dd HH:mm:ss"))).EnquoteSingle(),
+                    "Guid" => string.Join("','", collection.OfType<Guid>().Select(x => x.ToString())).EnquoteSingle(),
+                    "SqlLiteral" => string.Join(",", collection.OfType<SqlLiteral>().Select(x => x.Value)),
+                    "DBNull" => "NULL",
+                    _ => string.Join(",", collection.OfType<object>()),
+                };
             }
             else
             {
-                switch (type.Name)
+                formattedValue = type.Name switch
                 {
-                    case "String": formattedValue = string.Format("'{0}'", ((string)someValue).Replace("'", "''")); break;
-                    case "DateTime": formattedValue = string.Format("'{0:yyyy/MM/dd HH:mm:ss}'", (DateTime)someValue); break;
-                    case "Guid": formattedValue = string.Format("'{0}'", (Guid)someValue); break;
-                    case "Boolean": formattedValue = (bool)someValue ? "1" : "0"; break;
-                    case "SqlLiteral": formattedValue = ((SqlLiteral)someValue).Value; break;
-                    case "DBNull": formattedValue = "NULL"; break;
-                    default: formattedValue = someValue.ToString(); break;
-                }
+                    "String" => string.Format("'{0}'", ((string)someValue).Replace("'", "''")),
+                    "DateTime" => string.Format("'{0:yyyy/MM/dd HH:mm:ss}'", (DateTime)someValue),
+                    "Guid" => string.Format("'{0}'", (Guid)someValue),
+                    "Boolean" => (bool)someValue ? "1" : "0",
+                    "SqlLiteral" => ((SqlLiteral)someValue).Value,
+                    "DBNull" => "NULL",
+                    _ => someValue.ToString(),
+                };
             }
             return formattedValue;
         }
 
-        private Type GetCollectionType(IEnumerable collection, Type parentType)
+        private static Type GetCollectionType(IEnumerable collection, Type parentType)
         {
             var typeInfo = parentType.GetTypeInfo();
             if (typeInfo.IsGenericType)
@@ -471,7 +459,7 @@ namespace Extenso.Data.QueryBuilder
             return null;
         }
 
-        private WhereClause GetDateRangesForInOperator(string tableName, string columnName, IEnumerable<DateTime> values)
+        private static WhereClause GetDateRangesForInOperator(string tableName, string columnName, IEnumerable<DateTime> values)
         {
             var outerContainer = WhereClause.CreateContainer(LogicOperator.And);
 

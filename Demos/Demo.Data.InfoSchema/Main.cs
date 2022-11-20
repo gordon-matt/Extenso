@@ -28,10 +28,8 @@ namespace Demo.Data.InfoSchema
 
         private string ConnectionString => txtConnectionString.Text;
 
-        private DataSource SelectedDataSource => (DataSource)cmdDataSource.SelectedItem;
-
         private string SelectedDatabase => cmbDatabase.Text;
-
+        private DataSource SelectedDataSource => (DataSource)cmdDataSource.SelectedItem;
         private string SelectedSchema => cmbSchema.Text;
 
         private DbConnection CreateConnection() => SelectedDataSource switch
@@ -44,7 +42,7 @@ namespace Demo.Data.InfoSchema
 
         #region Event Handlers
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void btnConnect_Click(object sender, EventArgs e)
         {
             using var connection = CreateConnection();
@@ -64,7 +62,7 @@ namespace Demo.Data.InfoSchema
             cmbDatabase.Select();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void cmbDatabase_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbDatabase.SelectedIndex != -1)
@@ -94,7 +92,7 @@ namespace Demo.Data.InfoSchema
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void cmbSchema_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbSchema.SelectedIndex != -1)
@@ -114,7 +112,13 @@ namespace Demo.Data.InfoSchema
             lbTables.Select();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
+        private void cmdDataSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cmbSchema.Enabled = SelectedDataSource != DataSource.MySql;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void lbTables_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lbTables.SelectedIndex != -1)
@@ -164,10 +168,5 @@ namespace Demo.Data.InfoSchema
         }
 
         #endregion Event Handlers
-
-        private void cmdDataSource_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            cmbSchema.Enabled = SelectedDataSource != DataSource.MySql;
-        }
     }
 }

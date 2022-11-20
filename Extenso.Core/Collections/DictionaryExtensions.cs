@@ -40,8 +40,7 @@ namespace Extenso.Collections
         /// <returns>The value associated with the given key.</returns>
         public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, TValue value)
         {
-            TValue result;
-            if (!source.TryGetValue(key, out result))
+            if (!source.TryGetValue(key, out TValue result))
             {
                 result = value;
                 source.Add(key, result);

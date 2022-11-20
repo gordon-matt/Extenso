@@ -130,7 +130,7 @@ AND T.CONSTRAINT_SCHEMA = @SchemaName";
                             { columnInfo.Scale = reader.GetInt32(7); }
 
                             if (!reader.IsDBNull(8))
-                            { columnInfo.IsAutoIncremented = reader.GetInt32(8) == 1 ? true : false; }
+                            { columnInfo.IsAutoIncremented = reader.GetInt32(8) == 1; }
 
                             list.Add(columnInfo);
                         }

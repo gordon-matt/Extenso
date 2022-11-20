@@ -5,6 +5,7 @@ namespace Demo.Data.QueryBuilder
 {
     internal class Program
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Main method.")]
         private static void Main(string[] args)
         {
             var query = new SqlServerSelectQueryBuilder()

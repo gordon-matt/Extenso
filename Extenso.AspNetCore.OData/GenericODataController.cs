@@ -372,14 +372,7 @@ namespace Extenso.AspNetCore.OData
         /// Opens a connection to the data store. Remember to dispose of it when no longer needed.
         /// </summary>
         /// <returns>An Extenso.Data.Entity.IRepositoryConnection`1 that provides access to the data store.</returns>
-        protected IRepositoryConnection<TEntity> GetDisposableConnection()
-        {
-            if (disposableConnection == null)
-            {
-                disposableConnection = Repository.OpenConnection();
-            }
-            return disposableConnection;
-        }
+        protected IRepositoryConnection<TEntity> GetDisposableConnection() => disposableConnection ??= Repository.OpenConnection();
 
         #region IDisposable Support
 

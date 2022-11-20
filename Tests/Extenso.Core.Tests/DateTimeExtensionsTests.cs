@@ -2,7 +2,7 @@
 {
     public class DateTimeExtensionsTests
     {
-        private static DateTime testDate = new DateTime(2022, 5, 23, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime testDate = new(2022, 5, 23, 0, 0, 0, DateTimeKind.Utc);
 
         [Fact]
         public void EndOfWeek()

@@ -143,11 +143,13 @@ namespace Demo.Data.InfoSchema
             InitializeComponent();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void btnRefreshServers_Click(object sender, EventArgs e)
         {
             //SqlDataSourceEnumerator.Instance.GetAvailableSqlServers().ForEach(x => cmbServerName.Items.Add(x));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void btnTestConnection_Click(object sender, EventArgs e)
         {
             using (var connection = new SqlConnection(ConnectionString))
@@ -173,6 +175,7 @@ namespace Demo.Data.InfoSchema
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void cmbDatabase_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbDatabase.SelectedIndex != -1)
@@ -190,6 +193,7 @@ namespace Demo.Data.InfoSchema
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void cmbServerName_DropDown(object sender, EventArgs e)
         {
             if (cmbServerName.Items.Count == 0)
@@ -198,6 +202,7 @@ namespace Demo.Data.InfoSchema
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void rbUseWindowsAuthentication_CheckedChanged(object sender, EventArgs e)
         {
             lblUserName.Enabled = rbUseWindowsAuthentication.Checked;
@@ -206,6 +211,7 @@ namespace Demo.Data.InfoSchema
             txtPassword.Enabled = rbUseWindowsAuthentication.Checked;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Exception to naming rule for WinForms event handlers.")]
         private void cmbDatabase_DropDown(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(Server))

@@ -21,7 +21,7 @@ namespace Extenso
         /// <returns>A System.String that is used for display in the UI.</returns>
         public static string GetDisplayName<T>(T @enum)
         {
-            if (!(@enum is Enum))
+            if (@enum is not Enum)
             {
                 return @enum.ToString();
             }
@@ -58,7 +58,7 @@ namespace Extenso
         public static string GetDisplayName<T>(T @enum, out int order)
         {
             order = 0;
-            if (!(@enum is Enum))
+            if (@enum is not Enum)
             {
                 return @enum.ToString();
             }

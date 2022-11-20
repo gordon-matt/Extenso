@@ -17,7 +17,7 @@ namespace Extenso.Data.Entity
 
         public static async Task<HashSet<TSource>> ToHashSetAsync<TSource>(
             this IQueryable<TSource> source,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             var asyncEnumerator = source.AsAsyncEnumerable().GetAsyncEnumerator(cancellationToken);
 

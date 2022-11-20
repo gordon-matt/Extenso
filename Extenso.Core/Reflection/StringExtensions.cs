@@ -52,7 +52,7 @@ namespace Extenso.Reflection
             if (parseMethod != null)
             {
                 object value = parseMethod.Invoke(null, new string[] { input });
-                return (value is T ? (T)value : defaultValue);
+                return value is T t ? t : defaultValue;
             }
             else { return defaultValue; }
         }
@@ -72,7 +72,7 @@ namespace Extenso.Reflection
         /// <returns>true if input was converted successfully; otherwise, false.</returns>
         public static bool TryParseOrDefault<T>(this string input, out T result)
         {
-            return input.TryParseOrDefault(out result, default(T));
+            return input.TryParseOrDefault(out result, default);
         }
 
         /// <summary>
@@ -103,9 +103,8 @@ namespace Extenso.Reflection
                 object[] parameters = new object[] { input, result };
                 object value = parseMethod.Invoke(null, parameters);
 
-                if (value is bool)
+                if (value is bool successful)
                 {
-                    bool successful = (bool)value;
                     if (successful)
                     {
                         result = (T)parameters[1];

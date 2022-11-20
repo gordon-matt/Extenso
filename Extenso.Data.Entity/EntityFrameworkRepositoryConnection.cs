@@ -68,10 +68,7 @@ namespace Extenso.Data.Entity
 
             if (disposing)
             {
-                if (Context != null)
-                {
-                    Context.Dispose();
-                }
+                Context?.Dispose();
             }
 
             disposed = true;

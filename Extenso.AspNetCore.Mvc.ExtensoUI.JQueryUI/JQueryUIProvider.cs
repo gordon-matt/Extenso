@@ -11,27 +11,23 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI
 
         #region IExtensoUIProvider Members
 
-        public override IAccordionProvider AccordionProvider =>
-            accordionProvider ?? (accordionProvider = new JQueryUIAccordionProvider(this));
+        public override IAccordionProvider AccordionProvider => accordionProvider ??= new JQueryUIAccordionProvider(this);
 
-        public override IModalProvider ModalProvider =>
-            modalProvider ?? (modalProvider = new JQueryUIModalProvider(this));
+        public override IModalProvider ModalProvider => modalProvider ??= new JQueryUIModalProvider(this);
 
-        public override IPanelProvider PanelProvider =>
-            panelProvider ?? (panelProvider = new JQueryUIPanelProvider());
+        public override IPanelProvider PanelProvider => panelProvider ??= new JQueryUIPanelProvider();
 
-        public override ITabsProvider TabsProvider =>
-            tabsProvider ?? (tabsProvider = new JQueryUITabsProvider(this));
+        public override ITabsProvider TabsProvider => tabsProvider ??= new JQueryUITabsProvider(this);
 
         #endregion IExtensoUIProvider Members
 
         protected override string GetButtonCssClass(State state)
         {
-            switch (state)
+            return state switch
             {
-                case State.Primary: return "k-primary k-button";
-                default: return "k-button";
-            }
+                State.Primary => "k-primary k-button",
+                _ => "k-button",
+            };
         }
     }
 }

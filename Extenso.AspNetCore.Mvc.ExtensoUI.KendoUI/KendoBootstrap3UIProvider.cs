@@ -10,24 +10,21 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI
 
         #region IExtensoUIProvider Members
 
-        public override IAccordionProvider AccordionProvider =>
-            accordionProvider ?? (accordionProvider = new KendoUIAccordionProvider(this));
+        public override IAccordionProvider AccordionProvider => accordionProvider ??= new KendoUIAccordionProvider(this);
 
-        public override IModalProvider ModalProvider =>
-            modalProvider ?? (modalProvider = new KendoUIModalProvider(this));
+        public override IModalProvider ModalProvider => modalProvider ??= new KendoUIModalProvider(this);
 
-        public override ITabsProvider TabsProvider =>
-            tabsProvider ?? (tabsProvider = new KendoUITabsProvider(this));
+        public override ITabsProvider TabsProvider => tabsProvider ??= new KendoUITabsProvider(this);
 
         #endregion IExtensoUIProvider Members
 
         protected override string GetButtonCssClass(State state)
         {
-            switch (state)
+            return state switch
             {
-                case State.Primary: return "k-primary k-button";
-                default: return "k-button";
-            }
+                State.Primary => "k-primary k-button",
+                _ => "k-button",
+            };
         }
     }
 }

@@ -30,26 +30,21 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
 
         public void BeginPanelSection(PanelSectionType sectionType, TextWriter writer, string title = null)
         {
-            string headerClass = string.Empty;
-
-            switch (panel.State)
+            string headerClass = panel.State switch
             {
-                case State.Default: headerClass = "bg-light"; break;
-                case State.Danger: headerClass = "bg-danger"; break;
-                case State.Info: headerClass = "bg-info"; break;
-                case State.Inverse: headerClass = "bg-dark"; break;
-                case State.Success: headerClass = "bg-success"; break;
-                case State.Warning: headerClass = "bg-warning"; break;
-                case State.Primary:
-                default: headerClass = "bg-primary"; break;
-            }
+                State.Default => "bg-light",
+                State.Danger => "bg-danger",
+                State.Info => "bg-info",
+                State.Inverse => "bg-dark",
+                State.Success => "bg-success",
+                State.Warning => "bg-warning",
+                _ => "bg-primary",
+            };
 
             switch (sectionType)
             {
                 case PanelSectionType.Heading:
-                    {
-                        writer.Write($@"<div class=""card-header {headerClass} text-white"">{title}");
-                    }
+                    writer.Write($@"<div class=""card-header {headerClass} text-white"">{title}");
                     break;
 
                 case PanelSectionType.Body:

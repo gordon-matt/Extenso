@@ -297,7 +297,7 @@ namespace Extenso
             XmlSerializerNamespaces xmlns = null,
             Encoding encoding = null)
         {
-            object locker = new object();
+            object locker = new();
 
             var xmlSerializer = new XmlSerializer(source.GetType());
 
