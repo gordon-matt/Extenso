@@ -11,17 +11,13 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Foundation
 
         #region IExtensoUIProvider Members
 
-        public override IAccordionProvider AccordionProvider =>
-            accordionProvider ?? (accordionProvider = new FoundationAccordionProvider());
+        public override IAccordionProvider AccordionProvider => accordionProvider ??= new FoundationAccordionProvider();
 
-        public override IModalProvider ModalProvider =>
-            modalProvider ?? (modalProvider = new FoundationModalProvider(this));
+        public override IModalProvider ModalProvider => modalProvider ??= new FoundationModalProvider(this);
 
-        public override IPanelProvider PanelProvider =>
-            panelProvider ?? (panelProvider = new FoundationPanelProvider());
+        public override IPanelProvider PanelProvider => panelProvider ??= new FoundationPanelProvider();
 
-        public override ITabsProvider TabsProvider =>
-            tabsProvider ?? (tabsProvider = new FoundationTabsProvider());
+        public override ITabsProvider TabsProvider => tabsProvider ??= new FoundationTabsProvider();
 
         #endregion IExtensoUIProvider Members
 

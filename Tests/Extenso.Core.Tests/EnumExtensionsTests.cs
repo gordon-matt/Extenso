@@ -74,8 +74,7 @@ namespace Extenso.Core.Tests
         public void TryParse()
         {
             var expected = TestEnum.ValueFour;
-            TestEnum actual;
-            bool succeeded = EnumExtensions.TryParse("ValueFour", out actual);
+            bool succeeded = EnumExtensions.TryParse("ValueFour", out TestEnum actual);
             Assert.True(succeeded && expected == actual);
         }
 

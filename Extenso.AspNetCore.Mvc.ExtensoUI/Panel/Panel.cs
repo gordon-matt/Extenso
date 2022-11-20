@@ -12,10 +12,7 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI
         public Panel(string id = null, State state = State.Primary, object htmlAttributes = null)
             : base(htmlAttributes)
         {
-            if (id == null)
-            {
-                id = $"panel-{Guid.NewGuid()}";
-            }
+            id ??= $"panel-{Guid.NewGuid()}";
             Id = id;
             State = state;
             EnsureHtmlAttribute("id", Id);

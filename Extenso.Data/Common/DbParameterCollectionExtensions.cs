@@ -10,10 +10,7 @@ namespace Extenso.Data.Common
         {
             foreach (DbParameter p in parameters)
             {
-                if (p.Value == null)
-                {
-                    p.Value = DBNull.Value;
-                }
+                p.Value ??= DBNull.Value;
             }
         }
 
@@ -21,10 +18,7 @@ namespace Extenso.Data.Common
         {
             foreach (DbParameter p in parameters)
             {
-                if (p.Value == null)
-                {
-                    p.Value = DBNull.Value;
-                }
+                p.Value ??= DBNull.Value;
             }
         }
     }

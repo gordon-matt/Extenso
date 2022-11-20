@@ -109,15 +109,15 @@ namespace Extenso.Reflection
         {
             var methods = (from m in type.GetExtensionMethods(extensionsAssembly)
                            where m.Name == name
-                           && m.GetParameters().Count() == parameterTypes.Length + 1 // + 1 because extension method parameter (this)
+                           && m.GetParameters().Length == parameterTypes.Length + 1 // + 1 because extension method parameter (this)
                            select m).ToList();
 
             if (!methods.Any())
             {
-                return default(MethodInfo);
+                return default;
             }
 
-            if (methods.Count() == 1)
+            if (methods.Count == 1)
             {
                 return methods.First();
             }
@@ -142,7 +142,7 @@ namespace Extenso.Reflection
                 }
             }
 
-            return default(MethodInfo);
+            return default;
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Extenso.Reflection
                              where @interface == typeof(IEnumerable) ||
                                  (@interface.GetTypeInfo().IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                              select @interface;
-            return interfaces.Count() != 0;
+            return interfaces.Any();
         }
 
         /// <summary>

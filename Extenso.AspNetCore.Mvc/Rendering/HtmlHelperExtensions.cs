@@ -42,6 +42,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             return Image(helper, urlHelper, $"data:image/jpg;base64,{base64}", alt, htmlAttributes);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public static IHtmlContent Image(this IHtmlHelper helper, IUrlHelper urlHelper, string src, string alt, object htmlAttributes = null)
         {
             var builder = new TagBuilder("img")
@@ -119,6 +120,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
         #region Other
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public static IHtmlContent FileUpload(this IHtmlHelper html, string name, object htmlAttributes = null)
         {
             var builder = new TagBuilder("input")
@@ -147,6 +149,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
         /// <param name="name"></param>
         /// <param name="item"></param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public static IHtmlContent JsonObject<TEntity>(this IHtmlHelper html, string name, TEntity item)
         {
             return new HtmlString($"var {name} = {item.JsonSerialize()};");
@@ -481,7 +484,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             bool wrapInDiv,
             object wrapperHtmlAttributes)
         {
-            FluentTagBuilder tagBuilder = null;
+            FluentTagBuilder tagBuilder;
 
             if (wrapInDiv)
             {
@@ -601,6 +604,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             return html.ListBoxFor(expression, multiSelectList, htmlAttributes);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public static IHtmlContent Table<T>(this IHtmlHelper html, IEnumerable<T> items, object htmlAttributes = null)
         {
             var builder = new FluentTagBuilder("table")

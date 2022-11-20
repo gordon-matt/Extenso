@@ -142,8 +142,7 @@ namespace Extenso.Data.Common
         /// <returns></returns>
         public static DataSet ExecuteStoredProcedure(this DbConnection connection, string storedProcedure, IEnumerable<DbParameter> parameters)
         {
-            Dictionary<string, object> outputValues;
-            return connection.ExecuteStoredProcedure(storedProcedure, parameters, out outputValues);
+            return connection.ExecuteStoredProcedure(storedProcedure, parameters, out _);
         }
 
         /// <summary>

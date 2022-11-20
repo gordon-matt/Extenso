@@ -56,7 +56,7 @@ namespace Extenso.Data.QueryBuilder
                 return "Container";
             }
 
-            return $"{LogicOperator} {Table}.{Column} {ComparisonOperator.ToString()} {Value} - Sub Clauses: {SubClauses.Count}";
+            return $"{LogicOperator} {Table}.{Column} {ComparisonOperator} {Value} - Sub Clauses: {SubClauses.Count}";
         }
     }
 }

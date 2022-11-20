@@ -44,14 +44,10 @@ namespace Extenso.AspNetCore.Mvc.Rendering
         {
             get
             {
-                if (reusableActionContext == null)
-                {
-                    reusableActionContext = new ActionContext(
-                        httpContextAccessor == null ? new DefaultHttpContext { RequestServices = serviceProvider } : httpContextAccessor.HttpContext,
-                        new RouteData(),
-                        new ActionDescriptor());
-                }
-                return reusableActionContext;
+                return reusableActionContext ??= new ActionContext(
+                    httpContextAccessor == null ? new DefaultHttpContext { RequestServices = serviceProvider } : httpContextAccessor.HttpContext,
+                    new RouteData(),
+                    new ActionDescriptor());
             }
         }
 

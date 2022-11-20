@@ -29,17 +29,17 @@
 
         protected override string GetButtonCssClass(State state)
         {
-            switch (state)
+            return state switch
             {
-                case State.Danger: return "btn btn-danger";
-                case State.Default: return "btn btn-default";
-                case State.Info: return "btn btn-info";
-                case State.Inverse: return "btn btn-inverse";
-                case State.Primary: return "btn btn-primary";
-                case State.Success: return "btn btn-success";
-                case State.Warning: return "btn btn-warning";
-                default: return "btn btn-default";
-            }
+                State.Danger => "btn btn-danger",
+                State.Default => "btn btn-default",
+                State.Info => "btn btn-info",
+                State.Inverse => "btn btn-inverse",
+                State.Primary => "btn btn-primary",
+                State.Success => "btn btn-success",
+                State.Warning => "btn btn-warning",
+                _ => "btn btn-default",
+            };
         }
     }
 }

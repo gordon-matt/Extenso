@@ -56,7 +56,7 @@ namespace Extenso.Data.Entity
         public virtual IRepositoryConnection<TEntity> UseConnection<TOther>(IRepositoryConnection<TOther> connection)
             where TOther : class
         {
-            if (!(connection is EntityFrameworkRepositoryConnection<TOther>))
+            if (connection is not EntityFrameworkRepositoryConnection<TOther>)
             {
                 throw new NotSupportedException("The other connection must be of type EntityFrameworkRepositoryConnection<T>");
             }
@@ -83,7 +83,7 @@ namespace Extenso.Data.Entity
                     query = query.Include(path);
                 }
 
-                return query.ToHashSet();
+                return query.ToList();
             }
         }
 
@@ -97,14 +97,14 @@ namespace Extenso.Data.Entity
         {
             using (var context = GetContext())
             {
-                var query = context.Set<TEntity>().AsNoTracking().Where(predicate);
+                var query = context.Set<TEntity>().AsNoTracking();
 
                 foreach (var path in includePaths)
                 {
                     query = query.Include(path);
                 }
 
-                return query.ToHashSet();
+                return query.Where(predicate).ToList();
             }
         }
 
@@ -138,14 +138,14 @@ namespace Extenso.Data.Entity
         {
             using (var context = GetContext())
             {
-                var query = context.Set<TEntity>().AsNoTracking().Where(predicate);
+                var query = context.Set<TEntity>().AsNoTracking();
 
                 foreach (var path in includePaths)
                 {
                     query = query.Include(path);
                 }
 
-                return await query.ToListAsync();
+                return await query.Where(predicate).ToListAsync();
             }
         }
 

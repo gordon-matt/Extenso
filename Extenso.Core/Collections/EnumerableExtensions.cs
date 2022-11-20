@@ -521,7 +521,7 @@ namespace Extenso.Collections
                 .GroupBy(rowSelector.Compile())
                 .Select(rowGroup => new
                 {
-                    Key = rowGroup.Key,
+                    rowGroup.Key,
                     Values = columns.GroupJoin(
                         rowGroup,
                         c => c,
@@ -581,8 +581,8 @@ namespace Extenso.Collections
                 .GroupBy(x => new { Row1Value = row1Selector.Compile()(x), Row2Value = row2Selector.Compile()(x) })
                 .Select(rowGroup => new
                 {
-                    Row1Value = rowGroup.Key.Row1Value,
-                    Row2Value = rowGroup.Key.Row2Value,
+                    rowGroup.Key.Row1Value,
+                    rowGroup.Key.Row2Value,
                     Values = columns.GroupJoin(
                         rowGroup,
                         c => c,
@@ -654,9 +654,9 @@ namespace Extenso.Collections
                 })
                 .Select(rowGroup => new
                 {
-                    Row1Value = rowGroup.Key.Row1Value,
-                    Row2Value = rowGroup.Key.Row2Value,
-                    Row3Value = rowGroup.Key.Row3Value,
+                    rowGroup.Key.Row1Value,
+                    rowGroup.Key.Row2Value,
+                    rowGroup.Key.Row3Value,
                     Values = columns.GroupJoin(
                         rowGroup,
                         c => c,
@@ -738,10 +738,8 @@ namespace Extenso.Collections
                 return collection.Count > 0;
             }
 
-            using (var enumerator = source.GetEnumerator())
-            {
-                return enumerator.MoveNext();
-            }
+            using var enumerator = source.GetEnumerator();
+            return enumerator.MoveNext();
         }
     }
 }
