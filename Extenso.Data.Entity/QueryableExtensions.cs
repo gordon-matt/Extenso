@@ -15,18 +15,6 @@ namespace Extenso.Data.Entity
             return condition ? source.Include(path) : source;
         }
 
-        //public static async Task<HashSet<TSource>> ToHashSetAsync<TSource>(
-        //    this IAsyncEnumerable<TSource> source, CancellationToken cancellationToken = default)
-        //{
-        //    var list = new List<TSource>();
-        //    await foreach (var element in source.WithCancellation(cancellationToken))
-        //    {
-        //        list.Add(element);
-        //    }
-
-        //    return list;
-        //}
-
         public static async Task<HashSet<TSource>> ToHashSetAsync<TSource>(
             this IQueryable<TSource> source,
             CancellationToken cancellationToken = default(CancellationToken))

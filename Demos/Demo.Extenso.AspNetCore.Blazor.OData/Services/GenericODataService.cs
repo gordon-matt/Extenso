@@ -105,8 +105,8 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
             {
                 if (disposing)
                 {
-                    httpClient.DisposeIfNotNull();
-                    httpClientHandler.DisposeIfNotNull();
+                    httpClient?.Dispose();
+                    httpClientHandler?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
