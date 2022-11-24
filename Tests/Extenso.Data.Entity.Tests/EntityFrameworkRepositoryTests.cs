@@ -1,13 +1,14 @@
-﻿using System.Diagnostics.Metrics;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq.Expressions;
 using Bogus;
+using Extenso.Collections;
 using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity.Tests
 {
@@ -19,6 +20,9 @@ namespace Extenso.Data.Entity.Tests
         private ICollection<Product> products;
         private bool isDisposed;
 
+        private Faker<ProductModel> productModelFaker;
+        private Faker<Product> productFaker;
+
         public EntityFrameworkRepositoryTests()
         {
             var config = new ConfigurationBuilder()
@@ -29,7 +33,7 @@ namespace Extenso.Data.Entity.Tests
             optionsBuilder.UseInMemoryDatabase("AdventureWorks2019");
             using var context = new AdventureWorks2019Context(optionsBuilder.Options);
 
-            var productModelFaker = new Faker<ProductModel>()
+            productModelFaker = new Faker<ProductModel>()
                 .RuleFor(x => x.Name, x => x.Commerce.Department())
                 .RuleFor(x => x.CatalogDescription, x => x.Commerce.ProductDescription())
                 .RuleFor(x => x.Instructions, x => x.Lorem.Paragraph())
@@ -40,7 +44,7 @@ namespace Extenso.Data.Entity.Tests
             context.ProductModels.AddRange(productModels);
             context.SaveChanges();
 
-            var productFaker = new Faker<Product>()
+            productFaker = new Faker<Product>()
                 .RuleFor(x => x.ProductModelId, x => x.PickRandom(productModels).ProductModelId)
                 .RuleFor(x => x.Name, x => x.Commerce.ProductName())
                 .RuleFor(x => x.ProductNumber, x => x.Commerce.Ean13())
@@ -312,6 +316,230 @@ namespace Extenso.Data.Entity.Tests
 
         #endregion Delete
 
+        #region Insert
+
+        [Fact]
+        public void Insert()
+        {
+            int count = repository.Count();
+            var newProductModel = productModelFaker.Generate();
+
+            int rowsAffected = repository.Insert(newProductModel);
+            Assert.Equal(1, rowsAffected);
+
+            int newCount = repository.Count();
+            Assert.Equal(count + 1, newCount);
+        }
+
+        [Fact]
+        public void InsertMany()
+        {
+            int count = repository.Count();
+            var newProductModels = productModelFaker.Generate(10);
+
+            int rowsAffected = repository.Insert(newProductModels);
+            Assert.Equal(10, rowsAffected);
+
+            int newCount = repository.Count();
+            Assert.Equal(count + 10, newCount);
+        }
+
+        [Fact]
+        public async Task InsertAsync()
+        {
+            int count = await repository.CountAsync();
+            var newProductModel = productModelFaker.Generate();
+
+            int rowsAffected = await repository.InsertAsync(newProductModel);
+            Assert.Equal(1, rowsAffected);
+
+            int newCount = await repository.CountAsync();
+            Assert.Equal(count + 1, newCount);
+        }
+
+        [Fact]
+        public async Task InsertManyAsync()
+        {
+            int count = await repository.CountAsync();
+            var newProductModels = productModelFaker.Generate(10);
+
+            int rowsAffected = await repository.InsertAsync(newProductModels);
+            Assert.Equal(10, rowsAffected);
+
+            int newCount = await repository.CountAsync();
+            Assert.Equal(count + 10, newCount);
+        }
+
+        #endregion Insert
+
+        #region Update
+
+        [Fact]
+        public void Update()
+        {
+            var randomProduct = new Random().NextFrom(products);
+            var entity = repository.FindOne(randomProduct.ProductModelId);
+
+            string newName = "Foo Bar Baz";
+            entity.Name = newName;
+            int rowsAffected = repository.Update(entity);
+            Assert.Equal(1, rowsAffected);
+
+            var entityAgain = repository.FindOne(randomProduct.ProductModelId);
+            Assert.Equal(newName, entityAgain.Name);
+        }
+
+        [Fact]
+        public void UpdateMany()
+        {
+            var random = new Random();
+
+            var randomProductIds = Enumerable.Range(1, 10)
+                .Select(x => random.NextFrom(products))
+                .Select(x => x.ProductModelId)
+                .ToList();
+
+            string namePrefix = "Foo Bar Baz";
+
+            var entities = repository.Find(x => randomProductIds.Contains(x.ProductModelId));
+            int count1 = entities.Count();
+            foreach (var entity in entities)
+            {
+                entity.Name = namePrefix;
+            }
+
+            int rowsAffected = repository.Update(entities);
+            Assert.Equal(count1, rowsAffected);
+
+            var entitiesAgain = repository.Find(x => x.Name == namePrefix);
+            Assert.Equal(count1, entitiesAgain.Count());
+        }
+
+        [Fact]
+        public async Task UpdateAsync()
+        {
+            var randomProduct = new Random().NextFrom(products);
+            var entity = await repository.FindOneAsync(randomProduct.ProductModelId);
+
+            string newName = "Foo Bar Baz";
+            entity.Name = newName;
+            int rowsAffected = await repository.UpdateAsync(entity);
+            Assert.Equal(1, rowsAffected);
+
+            var entityAgain = await repository.FindOneAsync(randomProduct.ProductModelId);
+            Assert.Equal(newName, entityAgain.Name);
+        }
+
+        [Fact]
+        public async Task UpdateManyAsync()
+        {
+            var random = new Random();
+
+            var randomProductIds = Enumerable.Range(1, 10)
+                .Select(x => random.NextFrom(products))
+                .Select(x => x.ProductModelId)
+                .ToList();
+
+            string namePrefix = "Foo Bar Baz";
+
+            var entities = await repository.FindAsync(x => randomProductIds.Contains(x.ProductModelId));
+            int count1 = entities.Count();
+            foreach (var entity in entities)
+            {
+                entity.Name = namePrefix;
+            }
+
+            int rowsAffected = await repository.UpdateAsync(entities);
+            Assert.Equal(count1, rowsAffected);
+
+            var entitiesAgain = await repository.FindAsync(x => x.Name == namePrefix);
+            Assert.Equal(count1, entitiesAgain.Count());
+        }
+
+        // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+        //[Fact]
+        //public void Update_Factory()
+        //{
+        //    var date = new DateTime(2000, 1, 1);
+        //    repository.Update(x => new ProductModel { ModifiedDate = date });
+
+        //    int expected = repository.Count();
+        //    int actual = repository.Count(x => x.ModifiedDate == date);
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+        //[Fact]
+        //public void Update_Predicate_And_Factory()
+        //{
+        //    var date = new DateTime(2000, 1, 1);
+        //    repository.Update(x => x.Name.StartsWith("M"), x => new ProductModel { ModifiedDate = date });
+
+        //    int expected = repository.Count(x => x.Name.StartsWith("M"));
+        //    int actual = repository.Count(x => x.Name.StartsWith("M") && x.ModifiedDate == date);
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+        //[Fact]
+        //public void Update_Query_And_Factory()
+        //{
+        //    var date = new DateTime(2000, 1, 1);
+        //    var query = repository.Find(x => x.Name.StartsWith("M")).AsQueryable();
+        //    repository.Update(query, x => new ProductModel { ModifiedDate = date });
+
+        //    int expected = repository.Count(x => x.Name.StartsWith("M"));
+        //    int actual = repository.Count(x => x.Name.StartsWith("M") && x.ModifiedDate == date);
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+        //[Fact]
+        //public async Task UpdateAsync_Factory()
+        //{
+        //    var date = new DateTime(2000, 1, 1);
+        //    await repository.UpdateAsync(x => new ProductModel { ModifiedDate = date });
+
+        //    int expected = await repository.CountAsync();
+        //    int actual = await repository.CountAsync(x => x.ModifiedDate == date);
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+        //[Fact]
+        //public async Task UpdateAsync_Predicate_And_Factory()
+        //{
+        //    var date = new DateTime(2000, 1, 1);
+        //    await repository.UpdateAsync(x => x.Name.StartsWith("M"), x => new ProductModel { ModifiedDate = date });
+
+        //    int expected = await repository.CountAsync(x => x.Name.StartsWith("M"));
+        //    int actual = await repository.CountAsync(x => x.Name.StartsWith("M") && x.ModifiedDate == date);
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+        //[Fact]
+        //public async Task UpdateAsync_Query_And_Factory()
+        //{
+        //    var date = new DateTime(2000, 1, 1);
+        //    var query = (await repository.FindAsync(x => x.Name.StartsWith("M"))).AsQueryable();
+        //    await repository.UpdateAsync(query, x => new ProductModel { ModifiedDate = date });
+
+        //    int expected = await repository.CountAsync(x => x.Name.StartsWith("M"));
+        //    int actual = await repository.CountAsync(x => x.Name.StartsWith("M") && x.ModifiedDate == date);
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        #endregion Update
+
+        #region Dispose Pattern
+
         protected virtual void Dispose(bool disposing)
         {
             if (!isDisposed)
@@ -341,5 +569,7 @@ namespace Extenso.Data.Entity.Tests
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        #endregion Dispose Pattern
     }
 }
