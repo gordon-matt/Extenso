@@ -83,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.TestLib", "Tests\Ex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.Entity.Tests", "Tests\Extenso.Data.Entity.Tests\Extenso.Data.Entity.Tests.csproj", "{982A0426-82AE-434A-8E86-A83D3DD3E1C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder.Tests", "Extenso.Data.QueryBuilder.Tests\Extenso.Data.QueryBuilder.Tests.csproj", "{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder.Tests", "Tests\Extenso.Data.QueryBuilder.Tests\Extenso.Data.QueryBuilder.Tests.csproj", "{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
