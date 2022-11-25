@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Extenso.Data.QueryBuilder.MySql\Extenso.Data.QueryBuilder.MySql.csproj" />
-    <ProjectReference Include="..\Extenso.Data.QueryBuilder.Npgsql\Extenso.Data.QueryBuilder.Npgsql.csproj" />
-    <ProjectReference Include="..\Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj" />
+    <ProjectReference Include="..\..\Extenso.Data.QueryBuilder.MySql\Extenso.Data.QueryBuilder.MySql.csproj" />
+    <ProjectReference Include="..\..\Extenso.Data.QueryBuilder.Npgsql\Extenso.Data.QueryBuilder.Npgsql.csproj" />
+    <ProjectReference Include="..\..\Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj" />
   </ItemGroup>
 
 </Project>
