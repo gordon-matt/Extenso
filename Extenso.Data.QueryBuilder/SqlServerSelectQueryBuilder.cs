@@ -27,7 +27,7 @@ namespace Extenso.Data.QueryBuilder
             {
                 query.Append("TOP ");
                 query.Append(takeCount);
-                query.Append(" ");
+                query.Append(' ');
             }
 
             // Output column names
@@ -36,9 +36,9 @@ namespace Extenso.Data.QueryBuilder
                 if (selectedTables.Count == 1)
                 {
                     query.Append(selectedTables.First());
-                    query.Append("."); // By default only select * from the table that was selected. If there are any joins, it is the responsibility of the user to select the needed columns.
+                    query.Append('.'); // By default only select * from the table that was selected. If there are any joins, it is the responsibility of the user to select the needed columns.
                 }
-                query.Append("*");
+                query.Append("* ");
             }
             else
             {
@@ -55,15 +55,16 @@ namespace Extenso.Data.QueryBuilder
                         query.Append(EncloseIdentifier(column.Value));
                     }
 
-                    query.Append(',');
+                    query.Append(", ");
                 }
-                query.Remove(query.Length - 1, 1); // Trim the last comma inserted by foreach loop
+                query.Remove(query.Length - 2, 2); // Trim the last comma inserted by foreach loop
                 query.Append(' ');
             }
+
             // Output table names
             if (selectedTables.Count > 0)
             {
-                query.Append(" FROM ");
+                query.Append("FROM ");
                 foreach (string tableName in selectedTables)
                 {
                     query.Append(tableName);
@@ -100,14 +101,13 @@ namespace Extenso.Data.QueryBuilder
             // Output where statement
             if (!whereStatement.IsNullOrEmpty() || !string.IsNullOrEmpty(whereStatement.Literal))
             {
-                query.Append(" ");
                 query.Append(CreateWhereStatement(whereStatement, false));
             }
 
             // Output GroupBy statement
             if (groupByColumns.Count > 0)
             {
-                query.Append(" GROUP BY ");
+                query.Append("GROUP BY ");
                 foreach (string column in groupByColumns)
                 {
                     query.Append(column);
@@ -125,14 +125,20 @@ namespace Extenso.Data.QueryBuilder
                 {
                     throw new Exception("Having statement was set without Group By");
                 }
-                query.Append(" ");
+
                 query.Append(CreateWhereStatement(havingStatement, true));
             }
 
             // Output OrderBy statement
+            bool hasOrderByLiteral = !string.IsNullOrWhiteSpace(orderByLiteral);
+            if (hasOrderByLiteral)
+            {
+                query.Append($"ORDER BY {orderByLiteral}");
+            }
+
             if (orderByStatement.Count > 0)
             {
-                query.Append(" ORDER BY ");
+                query.Append(hasOrderByLiteral ? "AND " : "ORDER BY ");
                 foreach (var clause in orderByStatement)
                 {
                     string orderByClause = string.Empty;
@@ -150,10 +156,10 @@ namespace Extenso.Data.QueryBuilder
 
             if (takeCount > 0 && skipCount > 0)
             {
-                query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", skipCount, takeCount);
+                query.AppendFormat("OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", skipCount, takeCount);
             }
 
-            return query.ToString();
+            return query.ToString().Trim();
         }
 
         protected override string EncloseIdentifier(string identifier)
