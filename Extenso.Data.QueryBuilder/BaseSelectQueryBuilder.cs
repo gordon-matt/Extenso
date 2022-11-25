@@ -20,6 +20,7 @@ namespace Extenso.Data.QueryBuilder
         protected bool isDistinct;
         protected ICollection<JoinClause> joins = new List<JoinClause>();
         protected ICollection<OrderByClause> orderByStatement = new List<OrderByClause>();
+        protected string orderByLiteral;
         protected ICollection<string> selectedTables = new List<string>();
         protected WhereStatement whereStatement = new();
         protected IDictionary<string, string> tableAliases = new Dictionary<string, string>();
@@ -37,7 +38,7 @@ namespace Extenso.Data.QueryBuilder
             return this;
         }
 
-        public virtual ISelectQueryBuilder SelectAs(string tableName, string column, string alias = null)
+        public virtual ISelectQueryBuilder SelectAs(string tableName, string column, string alias)
         {
             //selectedColumns.Clear();
             string columnName = CreateFieldName(tableName, column);
@@ -72,10 +73,10 @@ namespace Extenso.Data.QueryBuilder
             return this;
         }
 
-        public virtual ISelectQueryBuilder SelectCount()
+        public virtual ISelectQueryBuilder SelectCountAll()
         {
             selectedColumns.Clear();
-            selectedColumns.Add("COUNT(1)", null);
+            selectedColumns.Add("COUNT(*)", null);
             return this;
         }
 
@@ -162,6 +163,12 @@ namespace Extenso.Data.QueryBuilder
         public virtual ISelectQueryBuilder OrderBy(string tableName, string column, SortDirection order)
         {
             orderByStatement.Add(new OrderByClause(CreateFieldName(tableName, column), order));
+            return this;
+        }
+
+        public virtual ISelectQueryBuilder OrderBy(string literal)
+        {
+            orderByLiteral = literal;
             return this;
         }
 
@@ -255,10 +262,10 @@ namespace Extenso.Data.QueryBuilder
             {
                 if (isHaving)
                 {
-                    return $"HAVING {statement.Literal}";
+                    return $"HAVING {statement.Literal} ";
                 }
 
-                return $"WHERE {statement.Literal}";
+                return $"WHERE {statement.Literal} ";
             }
             else
             {
@@ -294,7 +301,6 @@ namespace Extenso.Data.QueryBuilder
             if (!clause.IsContainerOnly)
             {
                 sb.Append(CreateComparisonClause(clause.Table, clause.Column, clause.ComparisonOperator, clause.Value));
-                sb.Append(' ');
             }
 
             if (!clause.SubClauses.IsNullOrEmpty())
@@ -313,13 +319,13 @@ namespace Extenso.Data.QueryBuilder
                 }
                 if (doEncapsulateInner)
                 {
-                    sb.Append(") ");
+                    sb.Append(")");
                 }
             }
 
             if (doEncapsulateOuter)
             {
-                sb.Append(") ");
+                sb.Append(")");
             }
 
             sb.Append(' ');

@@ -14,7 +14,7 @@ namespace Extenso.Data.QueryBuilder
 
         ISelectQueryBuilder Select(SqlLiteral literal);
 
-        ISelectQueryBuilder SelectCount();
+        ISelectQueryBuilder SelectCountAll();
 
         ISelectQueryBuilder Distinct(bool isDistinct = true);
 
@@ -36,6 +36,8 @@ namespace Extenso.Data.QueryBuilder
 
         ISelectQueryBuilder OrderBy(string tableName, string column, SortDirection sortDirection);
 
+        ISelectQueryBuilder OrderBy(string literal);
+
         ISelectQueryBuilder GroupBy(string tableName, params string[] columns);
 
         ISelectQueryBuilder GroupBy(IEnumerable<TableColumnPair> columns);
@@ -55,6 +57,12 @@ namespace Extenso.Data.QueryBuilder
 
     public struct TableColumnPair
     {
+        public TableColumnPair(string tableName, string columnName)
+        {
+            TableName = tableName;
+            ColumnName = columnName;
+        }
+
         public string TableName { get; set; }
 
         public string ColumnName { get; set; }

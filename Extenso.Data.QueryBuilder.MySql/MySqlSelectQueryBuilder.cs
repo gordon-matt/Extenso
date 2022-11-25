@@ -13,10 +13,10 @@
         {
         }
 
-        public override ISelectQueryBuilder SelectCount()
+        public override ISelectQueryBuilder SelectCountAll()
         {
             selectedColumns.Clear();
-            selectedColumns.Add("COUNT(1)", null);
+            selectedColumns.Add("COUNT(*)", null);
             orderByStatement.Clear();
             takeCount = 0;
             return this;
@@ -42,7 +42,7 @@
                     query.Append("."); // By default only select * from the table that was selected. If there are any joins, it is the responsibility of the user to select the needed columns.
                 }
 
-                query.Append("*");
+                query.Append("* ");
             }
             else
             {
@@ -59,15 +59,16 @@
                         query.Append(EncloseIdentifier(column.Value));
                     }
 
-                    query.Append(',');
+                    query.Append(", ");
                 }
-                query.Remove(query.Length - 1, 1); // Trim the last comma inserted by foreach loop
+                query.Remove(query.Length - 2, 2); // Trim the last comma inserted by foreach loop
                 query.Append(' ');
             }
+
             // Output table names
             if (selectedTables.Count > 0)
             {
-                query.Append(" FROM ");
+                query.Append("FROM ");
                 foreach (string tableName in selectedTables)
                 {
                     query.Append(tableName);
@@ -104,7 +105,6 @@
             // Output where statement
             if (!whereStatement.IsNullOrEmpty() || !string.IsNullOrEmpty(whereStatement.Literal))
             {
-                query.Append(" ");
                 query.Append(CreateWhereStatement(whereStatement, false));
 
                 //query.Append(" WHERE ");
@@ -114,7 +114,7 @@
             // Output GroupBy statement
             if (groupByColumns.Count > 0)
             {
-                query.Append(" GROUP BY ");
+                query.Append("GROUP BY ");
                 foreach (string column in groupByColumns)
                 {
                     query.Append(column);
@@ -132,16 +132,22 @@
                 {
                     throw new Exception("Having statement was set without Group By");
                 }
-                query.Append(" ");
+
                 query.Append(CreateWhereStatement(havingStatement, true));
                 //query.Append(" HAVING ");
                 //query.Append(havingStatement.BuildWhereStatement());
             }
 
             // Output OrderBy statement
+            bool hasOrderByLiteral = !string.IsNullOrWhiteSpace(orderByLiteral);
+            if (hasOrderByLiteral)
+            {
+                query.Append($"ORDER BY {orderByLiteral}");
+            }
+
             if (orderByStatement.Count > 0)
             {
-                query.Append(" ORDER BY ");
+                query.Append(hasOrderByLiteral ? "AND " : "ORDER BY ");
                 foreach (var clause in orderByStatement)
                 {
                     string orderByClause = string.Empty;
@@ -161,12 +167,17 @@
             if (takeCount > 0)
             {
                 query.Append("LIMIT ");
-                query.Append(skipCount);
-                query.Append(",");
+
+                if (skipCount > 0)
+                {
+                    query.Append(skipCount);
+                    query.Append(',');
+                }
+
                 query.Append(takeCount);
             }
 
-            return query.ToString();
+            return query.ToString().Trim();
         }
 
         protected override string EncloseIdentifier(string identifier)

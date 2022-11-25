@@ -79,9 +79,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Core.Tests", "Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.Tests", "Tests\Extenso.Data.Tests\Extenso.Data.Tests.csproj", "{7FD30D69-58E0-418C-8636-E42D96B2728D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.TestLib", "Tests\Extenso.TestLib\Extenso.TestLib.csproj", "{F85154F4-B99F-433A-9376-BF1BC3EECC54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.TestLib", "Tests\Extenso.TestLib\Extenso.TestLib.csproj", "{F85154F4-B99F-433A-9376-BF1BC3EECC54}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.Entity.Tests", "Tests\Extenso.Data.Entity.Tests\Extenso.Data.Entity.Tests.csproj", "{982A0426-82AE-434A-8E86-A83D3DD3E1C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.QueryBuilder.Tests", "Extenso.Data.QueryBuilder.Tests\Extenso.Data.QueryBuilder.Tests.csproj", "{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -213,6 +215,10 @@ Global
 		{982A0426-82AE-434A-8E86-A83D3DD3E1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{982A0426-82AE-434A-8E86-A83D3DD3E1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{982A0426-82AE-434A-8E86-A83D3DD3E1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -240,6 +246,7 @@ Global
 		{7FD30D69-58E0-418C-8636-E42D96B2728D} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{F85154F4-B99F-433A-9376-BF1BC3EECC54} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{982A0426-82AE-434A-8E86-A83D3DD3E1C6} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
+		{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}
