@@ -1,11 +1,8 @@
 ﻿using System.Drawing;
-using System.Linq.Expressions;
 using Bogus;
-using Extenso.Collections;
 using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Z.EntityFramework.Plus;
@@ -25,10 +22,6 @@ namespace Extenso.Data.Entity.Tests
 
         public EntityFrameworkRepositoryTests()
         {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
             var optionsBuilder = new DbContextOptionsBuilder<AdventureWorks2019Context>();
             optionsBuilder.UseInMemoryDatabase("AdventureWorks2019");
             using var context = new AdventureWorks2019Context(optionsBuilder.Options);

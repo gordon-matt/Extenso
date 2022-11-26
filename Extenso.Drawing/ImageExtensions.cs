@@ -56,8 +56,8 @@ namespace Extenso.Drawing
         {
             var newSize = CalculateDimensions(image.Size, targetSize);
 
-            var stream = new MemoryStream();
-            var newBitmap = new Bitmap(newSize.Width, newSize.Height);
+            using var stream = new MemoryStream();
+            using var newBitmap = new Bitmap(newSize.Width, newSize.Height);
             using (var g = Graphics.FromImage(newBitmap))
             {
                 g.SmoothingMode = SmoothingMode.HighQuality;
@@ -79,8 +79,8 @@ namespace Extenso.Drawing
         {
             var newSize = CalculateDimensions(image.Size, targetSize);
 
-            var stream = new MemoryStream();
-            var newBitmap = new Bitmap(newSize.Width, newSize.Height);
+            using var stream = new MemoryStream();
+            using var newBitmap = new Bitmap(newSize.Width, newSize.Height);
             using (var g = Graphics.FromImage(newBitmap))
             {
                 g.SmoothingMode = SmoothingMode.HighQuality;
