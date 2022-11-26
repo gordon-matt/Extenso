@@ -18,7 +18,6 @@ namespace Extenso.AspNetCore.OData
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TKey"></typeparam>
-    [Obsolete("Use BaseODataController instead")]
     public abstract class GenericODataController<TEntity, TKey> : ODataController, IDisposable
         where TEntity : class
     {
