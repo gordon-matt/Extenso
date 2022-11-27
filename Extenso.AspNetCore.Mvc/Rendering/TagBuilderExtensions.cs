@@ -8,11 +8,9 @@ namespace Extenso.AspNetCore.Mvc.Rendering
     {
         public static string Build(this TagBuilder tagBuilder)
         {
-            using (var stringWriter = new StringWriter())
-            {
-                tagBuilder.WriteTo(stringWriter, HtmlEncoder.Default);
-                return stringWriter.ToString();
-            }
+            using var stringWriter = new StringWriter();
+            tagBuilder.WriteTo(stringWriter, HtmlEncoder.Default);
+            return stringWriter.ToString();
         }
     }
 }
