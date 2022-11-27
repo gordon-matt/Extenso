@@ -6,7 +6,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <Version>6.1.0</Version>
+    <Version>7.0.0</Version>
     <Description>Drawing-related extension methods and other helper classes.</Description>
   </PropertyGroup>
 
