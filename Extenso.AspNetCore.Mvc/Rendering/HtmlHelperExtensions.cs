@@ -152,7 +152,7 @@ namespace Extenso.AspNetCore.Mvc.Rendering
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public static IHtmlContent JsonObject<TEntity>(this IHtmlHelper html, string name, TEntity item)
         {
-            return new HtmlString($"var {name} = {item.JsonSerialize()};");
+            return new HtmlString($"const {name} = {item.JsonSerialize()};");
         }
 
         #endregion Other
