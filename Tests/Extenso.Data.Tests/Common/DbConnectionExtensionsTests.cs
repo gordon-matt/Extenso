@@ -1,6 +1,6 @@
-﻿using System.Data.SqlClient;
-using Extenso.Data.Common;
+﻿using Extenso.Data.Common;
 using Extenso.Data.Tests.Data.Entities;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using Npgsql;

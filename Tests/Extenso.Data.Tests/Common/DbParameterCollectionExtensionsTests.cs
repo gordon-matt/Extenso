@@ -1,5 +1,5 @@
-﻿using System.Data.SqlClient;
-using Extenso.Data.Common;
+﻿using Extenso.Data.Common;
+using Microsoft.Data.SqlClient;
 
 namespace Extenso.Data.Tests.Common
 {
