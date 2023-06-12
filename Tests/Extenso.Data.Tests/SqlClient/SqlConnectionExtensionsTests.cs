@@ -1,7 +1,7 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
 using Extenso.Collections;
 using Extenso.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
 namespace Extenso.Data.Tests.SqlClient

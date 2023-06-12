@@ -1,15 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Extenso.Collections;
 using Extenso.Data.Common;
+using Microsoft.Data.SqlClient;
 
 namespace Extenso.Data.SqlClient
 {
     // TODO: Use parameterized queries to prevent the risk of SQL injection attacks. Do the same everywhere else as well..
     public static class SqlConnectionExtensions
     {
+        /// <summary>
+        /// Asynchronously copies all rows in the supplied collection to a table on the server specified by destinationTableName.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of batch.</typeparam>
+        /// <param name="connection">An open SqlConnection to use.</param>
+        /// <param name="batch">The data you wish to bulk insert.</param>
+        /// <param name="destinationTableName">Name of the destination table on the server.</param>
+        /// <param name="mappings">
+        /// A collection of tuples used to map object properties to column names. (Key = Property Name, Value = Column Name).
+        /// If not supplied, then it is assumed that all column names are the same as the object property names.
+        /// </param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public static async Task BulkInsertAsync<T>(
+            this SqlConnection connection,
+            IEnumerable<T> batch,
+            string destinationTableName,
+            IEnumerable<(string SourceProperty, string DestinationColumn)> mappings = null)
+        {
+            using var bulkCopy = new SqlBulkCopy(connection);
+            bulkCopy.DestinationTableName = destinationTableName;
+
+            if (!mappings.IsNullOrEmpty())
+            {
+                foreach (var (SourceProperty, DestinationColumn) in mappings)
+                {
+                    bulkCopy.ColumnMappings.Add(SourceProperty, DestinationColumn);
+                }
+            }
+            else
+            {
+                var propertyNames = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(x => x.Name);
+                foreach (string propertyName in propertyNames)
+                {
+                    bulkCopy.ColumnMappings.Add(propertyName, propertyName);
+                }
+            }
+
+            await bulkCopy.WriteToServerAsync(batch.ToDataTable(convertNullableTypes: true));
+        }
+
         public static ColumnInfoCollection GetColumnData(this SqlConnection connection, string tableName, string schema = "dbo")
         {
             const string CMD_COLUMN_INFO_FORMAT =
@@ -358,7 +401,7 @@ ORDER BY 1,2,3,4";
 
         public static int GetRowCount(this SqlConnection connection, string schema, string tableName)
         {
-            var commandBuilder = new SqlCommandBuilder();
+            using var commandBuilder = new SqlCommandBuilder();
             return connection.ExecuteScalar($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
         }
 
@@ -368,12 +411,12 @@ ORDER BY 1,2,3,4";
             {
                 return connection.GetTableNames(connection.Database, includeViews, schema);
             }
-            else { return new List<string>(); }
+            else { return Enumerable.Empty<string>(); }
         }
 
         public static IEnumerable<string> GetTableNames(this SqlConnection connection, string databaseName, bool includeViews = false, string schema = "dbo")
         {
-            var commandBuilder = new SqlCommandBuilder();
+            using var commandBuilder = new SqlCommandBuilder();
 
             string query;
             if (includeViews)
@@ -447,12 +490,12 @@ ORDER BY [name]";
             {
                 return connection.GetViewNames(connection.Database, schema);
             }
-            else { return new List<string>(); }
+            else { return Enumerable.Empty<string>(); }
         }
 
         public static IEnumerable<string> GetViewNames(this SqlConnection connection, string databaseName, string schema = "dbo")
         {
-            var commandBuilder = new SqlCommandBuilder();
+            using var commandBuilder = new SqlCommandBuilder();
 
             string query =
 $@"USE {commandBuilder.QuoteIdentifier(databaseName)};
