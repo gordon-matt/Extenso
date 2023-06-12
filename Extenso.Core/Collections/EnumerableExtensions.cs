@@ -415,9 +415,9 @@ namespace Extenso.Collections
         /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="source">The sequence to create a System.Data.DataTable from.</param>
         /// <returns>A new System.Data.DataTable containing columns and rows based on the elements in source.</returns>
-        public static DataTable ToDataTable<T>(this IEnumerable<T> source)
+        public static DataTable ToDataTable<T>(this IEnumerable<T> source, bool convertNullableTypes = false)
         {
-            return source.ToDataTable(string.Concat(typeof(T).Name, "_Table"));
+            return source.ToDataTable(string.Concat(typeof(T).Name, "_Table"), convertNullableTypes);
         }
 
         /// <summary>
@@ -426,8 +426,9 @@ namespace Extenso.Collections
         /// <typeparam name="T">The type of the elements of source.</typeparam>
         /// <param name="source">The sequence to create a System.Data.DataTable from.</param>
         /// <param name="tableName">The value to set for the System.Data.DataTable's Name property.</param>
+        /// <param name="convertNullableTypes">If true, will convert nullable types to their underlying types. Useful for cases like SQL bulk insert.</param>
         /// <returns>A new System.Data.DataTable containing columns and rows based on the elements in source.</returns>
-        public static DataTable ToDataTable<T>(this IEnumerable<T> source, string tableName)
+        public static DataTable ToDataTable<T>(this IEnumerable<T> source, string tableName, bool convertNullableTypes = false)
         {
             var table = new DataTable(tableName) { Locale = CultureInfo.InvariantCulture };
 
@@ -442,9 +443,7 @@ namespace Extenso.Collections
                 foreach (var item in source)
                 {
                     var row = table.NewRow();
-
                     row["Value"] = item.ToString();
-
                     table.Rows.Add(row);
                 }
 
@@ -457,7 +456,16 @@ namespace Extenso.Collections
 
             foreach (var property in properties)
             {
-                table.Columns.Add(new DataColumn(property.Name, property.PropertyType));
+                if (convertNullableTypes)
+                {
+                    table.Columns.Add(new DataColumn(
+                        property.Name,
+                        Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType));
+                }
+                else
+                {
+                    table.Columns.Add(new DataColumn(property.Name, property.PropertyType));
+                }
             }
 
             foreach (var item in source)
@@ -466,7 +474,14 @@ namespace Extenso.Collections
 
                 foreach (var property in properties)
                 {
-                    row[property.Name] = property.GetValue(item, null);
+                    if (convertNullableTypes)
+                    {
+                        row[property.Name] = property.GetValue(item, null) ?? DBNull.Value;
+                    }
+                    else
+                    {
+                        row[property.Name] = property.GetValue(item, null);
+                    }
                 }
 
                 table.Rows.Add(row);

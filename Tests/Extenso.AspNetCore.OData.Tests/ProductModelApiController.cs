@@ -28,7 +28,7 @@ namespace Extenso.AspNetCore.OData.Tests
                 return NotFound();
             }
 
-            if (!await CanViewEntity(entity))
+            if (!await CanViewEntityAsync(entity))
             {
                 return Unauthorized();
             }

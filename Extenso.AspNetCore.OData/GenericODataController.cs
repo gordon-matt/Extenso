@@ -114,7 +114,7 @@ namespace Extenso.AspNetCore.OData
                 return NotFound();
             }
 
-            if (!await CanViewEntity(entity))
+            if (!await CanViewEntityAsync(entity))
             {
                 return Unauthorized();
             }
@@ -136,7 +136,7 @@ namespace Extenso.AspNetCore.OData
                 return BadRequest();
             }
 
-            if (!await CanModifyEntity(entity))
+            if (!await CanModifyEntityAsync(entity))
             {
                 return Unauthorized();
             }
@@ -181,7 +181,7 @@ namespace Extenso.AspNetCore.OData
                 return BadRequest();
             }
 
-            if (!await CanModifyEntity(entity))
+            if (!await CanModifyEntityAsync(entity))
             {
                 return Unauthorized();
             }
@@ -221,7 +221,7 @@ namespace Extenso.AspNetCore.OData
                 return NotFound();
             }
 
-            if (!await CanModifyEntity(entity))
+            if (!await CanModifyEntityAsync(entity))
             {
                 return Unauthorized();
             }
@@ -260,7 +260,7 @@ namespace Extenso.AspNetCore.OData
                 return NotFound();
             }
 
-            if (!await CanModifyEntity(entity))
+            if (!await CanModifyEntityAsync(entity))
             {
                 return Unauthorized();
             }
@@ -315,7 +315,7 @@ namespace Extenso.AspNetCore.OData
         /// </summary>
         /// <param name="entity">The record to test.</param>
         /// <returns>true if the record can be viewed; otherwise false.</returns>
-        protected virtual async Task<bool> CanViewEntity(TEntity entity)
+        protected virtual async Task<bool> CanViewEntityAsync(TEntity entity)
         {
             return await AuthorizeAsync(ReadPermission);
         }
@@ -325,7 +325,7 @@ namespace Extenso.AspNetCore.OData
         /// </summary>
         /// <param name="entity">The record to test.</param>
         /// <returns>true if the record can be modified; otherwise false.</returns>
-        protected virtual async Task<bool> CanModifyEntity(TEntity entity)
+        protected virtual async Task<bool> CanModifyEntityAsync(TEntity entity)
         {
             return await AuthorizeAsync(WritePermission);
         }
@@ -356,9 +356,14 @@ namespace Extenso.AspNetCore.OData
         /// </returns>
         protected virtual async Task<bool> AuthorizeAsync(string policyName)
         {
-            if (AuthorizationService == null || string.IsNullOrEmpty(policyName))
+            if (string.IsNullOrEmpty(policyName))
             {
                 return true;
+            }
+
+            if (AuthorizationService == null)
+            {
+                return false;
             }
 
             var result = await AuthorizationService.AuthorizeAsync(User, policyName);
@@ -444,7 +449,7 @@ namespace Extenso.AspNetCore.OData
                 return NotFound();
             }
 
-            if (!await CanViewEntity(entity))
+            if (!await CanViewEntityAsync(entity))
             {
                 return Unauthorized();
             }
