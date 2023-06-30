@@ -216,23 +216,7 @@ namespace Extenso.Data.Common
         }
 
         /// <summary>
-        /// Inserts [entity] into the specified table. The object's property names are matched to column names.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
-        /// <param name="connection">The DbConnection to use.</param>
-        /// <param name="entity">The entity to persist to the database.</param>
-        /// <param name="tableName">The name of the table to insert the entity into.</param>
-        /// <returns>The number of rows affected.</returns>
-        public static int Insert<T>(this DbConnection connection, T entity, string tableName)
-        {
-            var mappings = typeof(T).GetTypeInfo().GetProperties()
-                .ToDictionary(k => k.Name, v => v.Name);
-
-            return connection.Insert(entity, tableName, mappings);
-        }
-
-        /// <summary>
-        /// Inserts [entity] into the specified table. The object's property names are matched to column names
+        /// Inserts [entity] into the specified database table. The object's property names are matched to column names
         /// by using the specified mappings dictionary.
         /// </summary>
         /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
@@ -244,66 +228,55 @@ namespace Extenso.Data.Common
         /// Key = Property Name, Value = Column Name.
         /// </param>
         /// <returns>The number of rows affected.</returns>
-        public static int Insert<T>(this DbConnection connection, T entity, string tableName, IDictionary<string, string> mappings)
+        public static int Insert<T>(this DbConnection connection, T entity, string tableName, string schema = null, IDictionary<string, string> mappings = null)
         {
-            const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
-            string fieldNames = mappings.Values.Join(",");
-            string parameterNames = fieldNames.Replace(",", ",@").Prepend("@");
-
-            var properties = typeof(T).GetTypeInfo().GetProperties();
-
-            using (var command = connection.CreateCommand())
+            if (mappings.IsNullOrEmpty())
             {
-                string commandText = string.Format(INSERT_INTO_FORMAT, tableName, fieldNames, parameterNames);
-                command.CommandType = CommandType.Text;
-                command.CommandText = commandText;
-
-                mappings.ForEach(mapping =>
-                {
-                    var parameter = command.CreateParameter();
-                    parameter.ParameterName = string.Concat("@", mapping.Value);
-                    var property = properties.Single(p => p.Name == mapping.Key);
-                    parameter.DbType = DataTypeConvertor.GetDbType(property.PropertyType);
-                    parameter.Value = GetFormattedValue(property.PropertyType, property.GetValue(entity, null));
-                    command.Parameters.Add(parameter);
-                });
-
-                bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-                if (!alreadyOpen)
-                {
-                    connection.Open();
-                }
-
-                int rowsAffected = command.ExecuteNonQuery();
-
-                if (!alreadyOpen)
-                {
-                    connection.Close();
-                }
-
-                return rowsAffected;
+                mappings = typeof(T).GetTypeInfo().GetProperties()
+                    .ToDictionary(k => k.Name, v => v.Name);
             }
+
+            const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
+            var parameterNames = CreateParameterNames(mappings.Values);
+
+            using var commandBuilder = connection.GetDbProviderFactory().CreateCommandBuilder();
+            string fieldNames = parameterNames.Keys.Select(commandBuilder.QuoteIdentifier).Join(",");
+            var properties = typeof(T).GetTypeInfo().GetProperties();
+
+            using var command = connection.CreateCommand();
+            string commandText = string.Format(INSERT_INTO_FORMAT, GetFullTableName(connection, tableName, schema), fieldNames, parameterNames.Values.Join(","));
+            command.CommandType = CommandType.Text;
+            command.CommandText = commandText;
+
+            mappings.ForEach(mapping =>
+            {
+                var parameter = command.CreateParameter();
+                parameter.ParameterName = parameterNames[mapping.Value];
+                var property = properties.Single(p => p.Name == mapping.Key);
+                parameter.DbType = DataTypeConvertor.GetDbType(property.PropertyType);
+                parameter.Value = GetFormattedValue(property.PropertyType, property.GetValue(entity, null));
+                command.Parameters.Add(parameter);
+            });
+
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            int rowsAffected = command.ExecuteNonQuery();
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return rowsAffected;
         }
 
         /// <summary>
-        /// Inserts [entities] into the specified table. The objects' property names are matched to column names.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
-        /// <param name="connection">The DbConnection to use.</param>
-        /// <param name="entities">The entities to persist to the database.</param>
-        /// <param name="tableName">The name of the table to insert the entity into.</param>
-        /// <returns>The number of rows affected.</returns>
-        public static int InsertCollection<T>(this DbConnection connection, IEnumerable<T> entities, string tableName)
-        {
-            var mappings = typeof(T).GetTypeInfo().GetProperties()
-                .ToDictionary(k => k.Name, v => v.Name);
-
-            return connection.InsertCollection(entities, tableName, mappings);
-        }
-
-        /// <summary>
-        /// Inserts [entities] into the specified table. The objects' property names are matched to column names
+        /// Inserts [entities] into the specified database table. The objects' property names are matched to column names
         /// by using the specified mappings dictionary.
         /// </summary>
         /// <typeparam name="T">The type of entity to persist to the database.</typeparam>
@@ -315,113 +288,158 @@ namespace Extenso.Data.Common
         /// Key = Property Name, Value = Column Name.
         /// </param>
         /// <returns>The number of rows affected.</returns>
-        public static int InsertCollection<T>(this DbConnection connection, IEnumerable<T> entities, string tableName, IDictionary<string, string> mappings)
+        public static int InsertCollection<T>(this DbConnection connection, IEnumerable<T> entities, string tableName, string schema = null, IDictionary<string, string> mappings = null)
         {
-            const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
-            string fieldNames = mappings.Values.Join(",");
-            string parameterNames = fieldNames.Replace(",", ",@").Prepend("@");
+            if (mappings.IsNullOrEmpty())
+            {
+                mappings = typeof(T).GetTypeInfo().GetProperties()
+                    .ToDictionary(k => k.Name, v => v.Name);
+            }
 
+            const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
+            var parameterNames = CreateParameterNames(mappings.Values);
+
+            using var commandBuilder = connection.GetDbProviderFactory().CreateCommandBuilder();
+            string fieldNames = parameterNames.Keys.Select(commandBuilder.QuoteIdentifier).Join(",");
             var properties = typeof(T).GetTypeInfo().GetProperties();
 
-            using (var command = connection.CreateCommand())
+            using var command = connection.CreateCommand();
+            string commandText = string.Format(INSERT_INTO_FORMAT, GetFullTableName(connection, tableName, schema), fieldNames, parameterNames.Values.Join(","));
+            command.CommandType = CommandType.Text;
+            command.CommandText = commandText;
+
+            mappings.ForEach(mapping =>
             {
-                string commandText = string.Format(INSERT_INTO_FORMAT, tableName, fieldNames, parameterNames);
-                command.CommandType = CommandType.Text;
-                command.CommandText = commandText;
+                var parameter = command.CreateParameter();
+                parameter.ParameterName = parameterNames[mapping.Value];
+                var property = properties.Single(p => p.Name == mapping.Key);
+                parameter.DbType = DataTypeConvertor.GetDbType(property.PropertyType);
+                command.Parameters.Add(parameter);
+            });
 
-                mappings.ForEach(mapping =>
-                {
-                    var parameter = command.CreateParameter();
-                    parameter.ParameterName = string.Concat("@", mapping.Value);
-                    var property = properties.Single(p => p.Name == mapping.Key);
-                    parameter.DbType = DataTypeConvertor.GetDbType(property.PropertyType);
-                    command.Parameters.Add(parameter);
-                });
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
 
-                bool alreadyOpen = (connection.State != ConnectionState.Closed);
+            int rowsAffected = 0;
+            using var transaction = connection.BeginTransaction();
+            command.Transaction = transaction;
 
-                if (!alreadyOpen)
-                {
-                    connection.Open();
-                }
-
-                int rowsAffected = 0;
+            try
+            {
                 foreach (var entity in entities)
                 {
                     properties.ForEach(property =>
                     {
-                        command.Parameters["@" + property.Name].Value =
-                            GetFormattedValue(property.PropertyType, property.GetValue(entity, null));
+                        if (mappings.ContainsKey(property.Name))
+                        {
+                            command.Parameters[parameterNames[mappings[property.Name]]].Value =
+                                GetFormattedValue(property.PropertyType, property.GetValue(entity, null));
+                        }
                     });
                     rowsAffected += command.ExecuteNonQuery();
                 }
-
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
                 if (!alreadyOpen)
                 {
                     connection.Close();
                 }
-
-                return rowsAffected;
             }
+
+            return rowsAffected;
         }
 
-        public static void InsertDataTable(
-            this DbConnection connection,
-            DataTable table,
-            string tableName,
-            IDictionary<string, string> mappings,
-            Func<string, string> encloseIdentifier)
+        /// <summary>
+        /// Inserts rows from [table] into the specified database table. The table's column names are matched to database column names
+        /// by using the specified mappings dictionary.
+        /// </summary>
+        /// <param name="connection">The DbConnection to use.</param>
+        /// <param name="table">The data to persist to the database.</param>
+        /// <param name="tableName">The name of the table to insert the entity into.</param>
+        /// <param name="mappings">
+        /// A System.Collection.Generic.IDictionary`2 used to map object properties to column names.
+        /// Key = Property Name, Value = Column Name.
+        /// </param>
+        /// <returns>The number of rows affected.</returns>
+        public static int InsertDataTable(this DbConnection connection, DataTable table, string tableName, string schema = null, IDictionary<string, string> mappings = null)
         {
-            string fieldNames = mappings.Values.Select(x => encloseIdentifier(x)).Join(",");
-            string parameterNames = mappings.Values.Join(",").Replace(",", ",@").Prepend("@");
+            if (mappings.IsNullOrEmpty())
+            {
+                mappings = table.Columns.OfType<DataColumn>()
+                    .ToDictionary(k => k.ColumnName, v => v.ColumnName);
+            }
+
+            const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
+            var parameterNames = CreateParameterNames(mappings.Values);
+
+            using var commandBuilder = connection.GetDbProviderFactory().CreateCommandBuilder();
+            string fieldNames = parameterNames.Keys.Select(commandBuilder.QuoteIdentifier).Join(",");
 
             var columns = table.Columns.OfType<DataColumn>().Select(x => new { x.ColumnName, x.DataType });
 
-            const string INSERT_INTO_FORMAT = "INSERT INTO {0}({1}) VALUES({2})";
-            using (var command = connection.CreateCommand())
+            using var command = connection.CreateCommand();
+            string commandText = string.Format(INSERT_INTO_FORMAT, GetFullTableName(connection, tableName, schema), fieldNames, parameterNames.Values.Join(","));
+            command.CommandType = CommandType.Text;
+            command.CommandText = commandText;
+
+            mappings.ForEach(mapping =>
             {
-                string commandText = string.Format(
-                    INSERT_INTO_FORMAT,
-                    tableName,
-                    fieldNames,
-                    parameterNames);
+                var parameter = command.CreateParameter();
+                parameter.ParameterName = parameterNames[mapping.Value];
+                var column = columns.Single(x => x.ColumnName == mapping.Key);
+                parameter.DbType = DataTypeConvertor.GetDbType(column.DataType);
+                command.Parameters.Add(parameter);
+            });
 
-                command.CommandType = CommandType.Text;
-                command.CommandText = commandText;
+            bool alreadyOpen = (connection.State != ConnectionState.Closed);
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
 
-                mappings.ForEach(mapping =>
-                {
-                    var parameter = command.CreateParameter();
-                    parameter.ParameterName = string.Concat("@", mapping.Value);
-                    var column = columns.Single(x => x.ColumnName == mapping.Key);
-                    parameter.DbType = DataTypeConvertor.GetDbType(column.DataType);
-                    command.Parameters.Add(parameter);
-                });
+            int rowsAffected = 0;
+            using var transaction = connection.BeginTransaction();
+            command.Transaction = transaction;
 
-                bool alreadyOpen = (connection.State != ConnectionState.Closed);
-
-                if (!alreadyOpen)
-                {
-                    connection.Open();
-                }
-
+            try
+            {
                 foreach (DataRow row in table.Rows)
                 {
                     foreach (DataColumn column in table.Columns)
                     {
-                        command.Parameters["@" + column.ColumnName].Value = row[column];
-
-                        //command.Parameters["@" + column.ColumnName].Value =
-                        //    GetFormattedValue(column.DataType, row[column]);
+                        if (mappings.ContainsKey(column.ColumnName))
+                        {
+                            command.Parameters[parameterNames[mappings[column.ColumnName]]].Value = row[column];
+                        }
                     }
-                    command.ExecuteNonQuery();
+                    rowsAffected += command.ExecuteNonQuery();
                 }
-
-                //if (!alreadyOpen)
-                //{
-                //    connection.Close();
-                //}
+                transaction.Commit();
             }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                if (!alreadyOpen)
+                {
+                    connection.Close();
+                }
+            }
+
+            return rowsAffected;
         }
 
         /// <summary>
@@ -487,46 +505,30 @@ namespace Extenso.Data.Common
             {
                 "Boolean" => (bool)value ? 1 : 0,
                 "String" => ((string)value).Replace("'", "''"),
-                //"DateTime" => ((DateTime)value).ToISO8601DateString(),
                 "DBNull" => null,
                 _ => value,
             };
         }
 
-        //private static object GetFormattedValue(Type type, object value)
-        //{
-        //    if (value == null)
-        //    {
-        //        return "NULL";
-        //    }
+        private static IDictionary<string, string> CreateParameterNames(IEnumerable<string> fieldNames)
+        {
+            var parameterNames = new Dictionary<string, string>();
+            fieldNames.ForEach(f =>
+            {
+                string parameterName = f;
+                "¬`!\"£$%^&*()-=+{}[]:;@'~#|<>,.?/ ".ToCharArray().ForEach(c => { parameterName = parameterName.Replace(c, '_'); });
+                parameterNames.Add(f, parameterName.ToPascalCase().Prepend("@"));
+            });
+            return parameterNames;
+        }
 
-        //    switch (type.Name)
-        //    {
-        //        case "Boolean": return (bool)value ? "1" : "0";
+        private static string GetFullTableName(DbConnection connection, string tableName, string schema)
+        {
+            using var commandBuilder = connection.GetDbProviderFactory().CreateCommandBuilder();
 
-        //        case "String": return ((string)value).Replace("'", "''");
-        //        case "DateTime": return ((DateTime)value).ToISO8601DateString();
-        //        case "Guid": return new SqlGuid((Guid)value);
-
-        //        //case "String": return ((string)value).Replace("'", "''").AddSingleQuotes();
-        //        //case "DateTime": return ((DateTime)value).ToISO8601DateString().AddSingleQuotes();
-
-        //        case "Byte":
-        //        case "Decimal":
-        //        case "Double":
-        //        case "Int16":
-        //        case "Int32":
-        //        case "Int64":
-        //        case "SByte":
-        //        case "Single":
-        //        case "UInt16":
-        //        case "UInt32":
-        //        case "UInt64": return value.ToString();
-
-        //        case "DBNull": return "NULL";
-
-        //        default: return value.ToString().EnquoteSingle();
-        //    }
-        //}
+            return !string.IsNullOrEmpty(schema)
+                ? $"{commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}"
+                : commandBuilder.QuoteIdentifier(tableName);
+        }
     }
 }

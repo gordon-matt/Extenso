@@ -1,4 +1,5 @@
-﻿using Extenso.Data.Common;
+﻿using Extenso.Collections;
+using Extenso.Data.Common;
 using Extenso.Data.Tests.Data.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -68,7 +69,7 @@ namespace Extenso.Data.Tests.Common
                 ModifiedDate = DateTime.Today
             };
 
-            int rowsAffected = sqlConnection.Insert(entity, "[Person].[BusinessEntity]", new Dictionary<string, string>
+            int rowsAffected = sqlConnection.Insert(entity, "BusinessEntity", "Person", new Dictionary<string, string>
             {
                 { "rowguid", "rowguid" },
                 { "ModifiedDate", "ModifiedDate" }
@@ -81,6 +82,70 @@ namespace Extenso.Data.Tests.Common
                 sqlConnection.CreateParameter("rowguid", rowGuid));
 
             Assert.True(rowsAffected == 1, "Unable to delete the new entity.");
+        }
+
+        [Fact]
+        public void InsertCollection()
+        {
+            var entities = new List<BusinessEntity>();
+            for (int i = 0; i < 10; i++)
+            {
+                entities.Add(new BusinessEntity
+                {
+                    rowguid = Guid.NewGuid(),
+                    ModifiedDate = DateTime.Today
+                });
+            }
+
+            int rowsAffected = sqlConnection.InsertCollection(entities, "BusinessEntity", "Person", new Dictionary<string, string>
+            {
+                { "rowguid", "rowguid" },
+                { "ModifiedDate", "ModifiedDate" }
+            });
+
+            Assert.True(rowsAffected == entities.Count);
+
+            rowsAffected = 0;
+            foreach (var entity in entities)
+            {
+                rowsAffected += sqlConnection.ExecuteNonQuery(
+                    "DELETE FROM [Person].[BusinessEntity] WHERE [rowguid] = @rowguid",
+                    sqlConnection.CreateParameter("rowguid", entity.rowguid));
+            }
+
+            Assert.True(rowsAffected == entities.Count);
+        }
+
+        [Fact]
+        public void InsertDataTable()
+        {
+            var entities = new List<BusinessEntity>();
+            for (int i = 0; i < 10; i++)
+            {
+                entities.Add(new BusinessEntity
+                {
+                    rowguid = Guid.NewGuid(),
+                    ModifiedDate = DateTime.Today
+                });
+            }
+
+            int rowsAffected = sqlConnection.InsertDataTable(entities.ToDataTable(), "BusinessEntity", "Person", new Dictionary<string, string>
+            {
+                { "rowguid", "rowguid" },
+                { "ModifiedDate", "ModifiedDate" }
+            });
+
+            Assert.True(rowsAffected == entities.Count);
+
+            rowsAffected = 0;
+            foreach (var entity in entities)
+            {
+                rowsAffected += sqlConnection.ExecuteNonQuery(
+                    "DELETE FROM [Person].[BusinessEntity] WHERE [rowguid] = @rowguid",
+                    sqlConnection.CreateParameter("rowguid", entity.rowguid));
+            }
+
+            Assert.True(rowsAffected == entities.Count);
         }
 
         [Fact]
