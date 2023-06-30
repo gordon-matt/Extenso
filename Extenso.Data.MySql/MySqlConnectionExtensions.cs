@@ -15,7 +15,7 @@ namespace Extenso.Data.MySql
 @"SELECT
 	`COLUMN_NAME`,
     `COLUMN_DEFAULT`,
-    `DATA_TYPE`,
+    `COLUMN_TYPE`,
     `CHARACTER_MAXIMUM_LENGTH`,
     `IS_NULLABLE`,
     `ORDINAL_POSITION`,
@@ -73,32 +73,33 @@ AND `COLUMN_KEY` = 'PRI';";
                         {
                             columnInfo = new ColumnInfo();
 
-                            if (!reader.IsDBNull(0))
-                            { columnInfo.ColumnName = reader.GetString(0); }
+                            if (!reader.IsDBNull(0)) { columnInfo.ColumnName = reader.GetString(0); }
 
-                            if (!reader.IsDBNull(1))
-                            { columnInfo.DefaultValue = reader.GetString(1); }
-                            else
-                            { columnInfo.DefaultValue = string.Empty; }
+                            if (!reader.IsDBNull(1)) { columnInfo.DefaultValue = reader.GetString(1); }
+                            else { columnInfo.DefaultValue = string.Empty; }
 
                             if (foreignKeyColumns.Contains(columnInfo.ColumnName))
                             {
                                 columnInfo.KeyType = KeyType.ForeignKey;
                             }
 
-                            if (!reader.IsDBNull(3))
-                            { columnInfo.MaximumLength = reader.GetInt64(3); }
+                            if (!reader.IsDBNull(3)) { columnInfo.MaximumLength = reader.GetInt64(3); }
 
                             try
                             {
                                 // Based on: https://www.devart.com/dotconnect/mysql/docs/datatypemapping.html
-                                string type = reader.GetString(2).ToLowerInvariant();
-                                columnInfo.DataTypeNative = type;
-
-                                switch (type)
+                                string nativeType = reader.GetString(2).ToLowerInvariant();
+                                if (nativeType.Contains('('))
                                 {
-                                    case "bool": columnInfo.DataType = DbType.Boolean; break;
-                                    case "boolean": columnInfo.DataType = DbType.Boolean; break;
+                                    nativeType = nativeType.LeftOf('(');
+                                }
+
+                                columnInfo.DataTypeNative = nativeType;
+
+                                switch (nativeType)
+                                {
+                                    case "bigint unsigned": columnInfo.DataType = DbType.UInt64; break;
+                                    case "bigint": columnInfo.DataType = DbType.Int64; break;
 
                                     case "bit":
                                         {
@@ -115,33 +116,8 @@ AND `COLUMN_KEY` = 'PRI';";
                                         }
                                         break;
 
-                                    case "tinyint": columnInfo.DataType = DbType.SByte; break;
-                                    case "tinyint unsigned": columnInfo.DataType = DbType.Byte; break;
-                                    case "smallint": columnInfo.DataType = DbType.Int16; break;
-                                    case "year": columnInfo.DataType = DbType.Int16; break;
-                                    case "int": columnInfo.DataType = DbType.Int32; break;
-                                    case "integer": columnInfo.DataType = DbType.Int32; break;
-                                    case "smallint unsigned": columnInfo.DataType = DbType.UInt16; break;
-                                    case "mediumint": columnInfo.DataType = DbType.Int32; break;
-                                    case "bigint": columnInfo.DataType = DbType.Int64; break;
-                                    case "int unsigned": columnInfo.DataType = DbType.UInt32; break;
-                                    case "integer unsigned": columnInfo.DataType = DbType.UInt32; break;
-                                    case "float": columnInfo.DataType = DbType.Single; break;
-                                    case "double": columnInfo.DataType = DbType.Double; break;
-                                    case "real": columnInfo.DataType = DbType.Double; break;
-                                    case "decimal": columnInfo.DataType = DbType.Decimal; break;
-                                    case "numeric": columnInfo.DataType = DbType.Decimal; break;
-                                    case "dec": columnInfo.DataType = DbType.Decimal; break;
-                                    case "fixed": columnInfo.DataType = DbType.Decimal; break;
-                                    case "bigint unsigned": columnInfo.DataType = DbType.UInt64; break;
-                                    case "float unsigned": columnInfo.DataType = DbType.Decimal; break;
-                                    case "double unsigned": columnInfo.DataType = DbType.Decimal; break;
-                                    case "serial": columnInfo.DataType = DbType.Decimal; break;
-                                    case "date": columnInfo.DataType = DbType.DateTime; break;
-                                    case "timestamp": columnInfo.DataType = DbType.DateTime; break;
-                                    case "datetime": columnInfo.DataType = DbType.DateTime; break;
-                                    case "datetimeoffset": columnInfo.DataType = DbType.DateTimeOffset; break;
-                                    case "time": columnInfo.DataType = DbType.Time; break;
+                                    case "bool": columnInfo.DataType = DbType.Boolean; break;
+                                    case "boolean": columnInfo.DataType = DbType.Boolean; break;
 
                                     case "char":
                                         {
@@ -157,26 +133,56 @@ AND `COLUMN_KEY` = 'PRI';";
                                         }
                                         break;
 
-                                    case "varchar": columnInfo.DataType = DbType.String; break;
-                                    case "tinytext": columnInfo.DataType = DbType.String; break;
-                                    case "text": columnInfo.DataType = DbType.String; break;
-                                    case "mediumtext": columnInfo.DataType = DbType.String; break;
-                                    case "longtext": columnInfo.DataType = DbType.String; break;
-                                    case "set": columnInfo.DataType = DbType.String; break;
-                                    case "enum": columnInfo.DataType = DbType.String; break;
-                                    case "nchar": columnInfo.DataType = DbType.String; break;
-                                    case "national char": columnInfo.DataType = DbType.String; break;
-                                    case "nvarchar": columnInfo.DataType = DbType.String; break;
-                                    case "national varchar": columnInfo.DataType = DbType.String; break;
-                                    case "character varying": columnInfo.DataType = DbType.String; break;
                                     case "binary": columnInfo.DataType = DbType.Binary; break;
-                                    case "varbinary": columnInfo.DataType = DbType.Binary; break;
-                                    case "tinyblob": columnInfo.DataType = DbType.Binary; break;
                                     case "blob": columnInfo.DataType = DbType.Binary; break;
-                                    case "mediumblob": columnInfo.DataType = DbType.Binary; break;
-                                    case "longblob": columnInfo.DataType = DbType.Binary; break;
                                     case "char byte": columnInfo.DataType = DbType.Binary; break;
+                                    case "character varying": columnInfo.DataType = DbType.String; break;
+                                    case "date": columnInfo.DataType = DbType.Date; break;
+                                    case "datetime": columnInfo.DataType = DbType.DateTime; break;
+                                    case "datetimeoffset": columnInfo.DataType = DbType.DateTimeOffset; break;
+                                    case "dec": columnInfo.DataType = DbType.Decimal; break;
+                                    case "decimal": columnInfo.DataType = DbType.Decimal; break;
+                                    case "double unsigned": columnInfo.DataType = DbType.Decimal; break; // Deprecated
+                                    case "double": columnInfo.DataType = DbType.Double; break;
+                                    case "enum": columnInfo.DataType = DbType.String; break;
+                                    case "fixed": columnInfo.DataType = DbType.Decimal; break;
+                                    case "float unsigned": columnInfo.DataType = DbType.Decimal; break; // Deprecated
+                                    case "float": columnInfo.DataType = DbType.Single; break;
                                     case "geometry": columnInfo.DataType = DbType.Object; break;
+                                    case "int unsigned": columnInfo.DataType = DbType.UInt32; break;
+                                    case "int": columnInfo.DataType = DbType.Int32; break;
+                                    case "integer unsigned": columnInfo.DataType = DbType.UInt32; break;
+                                    case "integer": columnInfo.DataType = DbType.Int32; break;
+                                    case "json": columnInfo.DataType = DbType.String; break;
+                                    case "longblob": columnInfo.DataType = DbType.Binary; break;
+                                    case "longtext": columnInfo.DataType = DbType.String; break;
+                                    case "mediumblob": columnInfo.DataType = DbType.Binary; break;
+                                    case "mediumint": columnInfo.DataType = DbType.Int32; break;
+                                    case "mediumint unsigned": columnInfo.DataType = DbType.Int32; break;
+                                    case "mediumtext": columnInfo.DataType = DbType.String; break;
+                                    case "national char": columnInfo.DataType = DbType.String; break;
+                                    case "national varchar": columnInfo.DataType = DbType.String; break;
+                                    case "nchar": columnInfo.DataType = DbType.String; break;
+                                    case "newdate": columnInfo.DataType = DbType.DateTime; break;
+                                    case "newdecimal": columnInfo.DataType = DbType.Decimal; break;
+                                    case "numeric": columnInfo.DataType = DbType.Decimal; break;
+                                    case "nvarchar": columnInfo.DataType = DbType.String; break;
+                                    case "real": columnInfo.DataType = DbType.Double; break;
+                                    case "serial": columnInfo.DataType = DbType.Decimal; break;
+                                    case "set": columnInfo.DataType = DbType.String; break;
+                                    case "smallint unsigned": columnInfo.DataType = DbType.UInt16; break;
+                                    case "smallint": columnInfo.DataType = DbType.Int16; break;
+                                    case "text": columnInfo.DataType = DbType.String; break;
+                                    case "time": columnInfo.DataType = DbType.Time; break;
+                                    case "timestamp": columnInfo.DataType = DbType.DateTime; break;
+                                    case "tinyblob": columnInfo.DataType = DbType.Binary; break;
+                                    case "tinyint unsigned": columnInfo.DataType = DbType.Byte; break;
+                                    case "tinyint": columnInfo.DataType = DbType.SByte; break;
+                                    case "tinytext": columnInfo.DataType = DbType.String; break;
+                                    case "varbinary": columnInfo.DataType = DbType.Binary; break;
+                                    case "varchar": columnInfo.DataType = DbType.String; break;
+                                    case "varstring": columnInfo.DataType = DbType.String; break;
+                                    case "year": columnInfo.DataType = DbType.Int16; break;
                                     default: columnInfo.DataType = DbType.Object; break;
                                 }
 

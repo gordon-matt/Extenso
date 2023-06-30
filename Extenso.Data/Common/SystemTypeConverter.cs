@@ -1,77 +1,73 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Extenso.Collections.Generic;
 
 namespace Extenso.Data.Common
 {
     internal static class SystemTypeConverter
     {
-        private static readonly Lazy<TupleHashSet<Type, DbType>> dbTypes;
-        private static readonly Lazy<TupleHashSet<Type, SqlDbType>> sqlDbTypes;
+        private static readonly Lazy<HashSet<(Type, DbType)>> dbTypes;
+        private static readonly Lazy<HashSet<(Type, SqlDbType)>> sqlDbTypes;
 
         static SystemTypeConverter()
         {
-            dbTypes = new Lazy<TupleHashSet<Type, DbType>>(() =>
+            dbTypes = new Lazy<HashSet<(Type, DbType)>>(() =>
             {
-                return new TupleHashSet<Type, DbType>
+                return new HashSet<(Type, DbType)>
                 {
-                    { typeof(Boolean), DbType.Boolean },
-                    { typeof(Byte), DbType.Byte },
-                    { typeof(Char), DbType.StringFixedLength },
-                    { typeof(Int16), DbType.Int16 },
-                    { typeof(Int32), DbType.Int32 },
-                    { typeof(Int64), DbType.Int64 },
-                    { typeof(Decimal), DbType.Decimal },
-                    { typeof(Double), DbType.Double },
-                    { typeof(DateTime), DbType.DateTime },
-                    { typeof(DateTimeOffset), DbType.DateTimeOffset },
-                    { typeof(Guid), DbType.Guid },
-                    { typeof(Single), DbType.Single },
-                    { typeof(String), DbType.String },
-                    { typeof(SByte), DbType.SByte },
-                    { typeof(TimeSpan), DbType.Time },
-                    { typeof(UInt16), DbType.UInt16 },
-                    { typeof(UInt32), DbType.UInt32 },
-                    { typeof(UInt64), DbType.UInt64 },
-                    { typeof(Uri), DbType.String }
+                    (typeof(bool), DbType.Boolean),
+                    (typeof(byte), DbType.Byte),
+                    (typeof(char), DbType.StringFixedLength),
+                    (typeof(short), DbType.Int16),
+                    (typeof(int), DbType.Int32),
+                    (typeof(long), DbType.Int64),
+                    (typeof(decimal), DbType.Decimal),
+                    (typeof(double), DbType.Double),
+                    (typeof(DateOnly), DbType.Date),
+                    (typeof(DateTime), DbType.DateTime),
+                    (typeof(DateTimeOffset), DbType.DateTimeOffset),
+                    (typeof(Guid), DbType.Guid),
+                    (typeof(float), DbType.Single),
+                    (typeof(string), DbType.String),
+                    (typeof(sbyte), DbType.SByte),
+                    (typeof(TimeSpan), DbType.Time),
+                    (typeof(ushort), DbType.UInt16),
+                    (typeof(uint), DbType.UInt32),
+                    (typeof(ulong), DbType.UInt64),
+                    (typeof(Uri), DbType.String)
                 };
             });
-            sqlDbTypes = new Lazy<TupleHashSet<Type, SqlDbType>>(() =>
+            sqlDbTypes = new Lazy<HashSet<(Type, SqlDbType)>>(() =>
             {
-                return new TupleHashSet<Type, SqlDbType>
+                return new HashSet<(Type, SqlDbType)>
                 {
-                    { typeof(Boolean), SqlDbType.Bit },
-                    { typeof(Byte), SqlDbType.TinyInt },
-                    { typeof(Char), SqlDbType.NChar },
-                    { typeof(Int16), SqlDbType.SmallInt },
-                    { typeof(Int32), SqlDbType.Int },
-                    { typeof(Int64), SqlDbType.BigInt },
-                    { typeof(Decimal), SqlDbType.Decimal },
-                    { typeof(Double), SqlDbType.Float },
-                    { typeof(DateTime), SqlDbType.DateTime },
-                    { typeof(DateTimeOffset), SqlDbType.DateTimeOffset },
-                    { typeof(Guid), SqlDbType.UniqueIdentifier },
-                    { typeof(Single), SqlDbType.Real },
-                    { typeof(String), SqlDbType.NVarChar },
-                    { typeof(SByte), SqlDbType.TinyInt },
-                    { typeof(TimeSpan), SqlDbType.Time },
-                    { typeof(UInt16), SqlDbType.SmallInt },
-                    { typeof(UInt32), SqlDbType.Int },
-                    { typeof(UInt64), SqlDbType.BigInt },
-                    { typeof(Uri), SqlDbType.NVarChar }
+                    (typeof(bool), SqlDbType.Bit),
+                    (typeof(byte), SqlDbType.TinyInt),
+                    (typeof(char), SqlDbType.NChar),
+                    (typeof(short), SqlDbType.SmallInt),
+                    (typeof(int), SqlDbType.Int),
+                    (typeof(long), SqlDbType.BigInt),
+                    (typeof(decimal), SqlDbType.Decimal),
+                    (typeof(double), SqlDbType.Float),
+                    (typeof(DateOnly), SqlDbType.Date),
+                    (typeof(DateTime), SqlDbType.DateTime),
+                    (typeof(DateTimeOffset), SqlDbType.DateTimeOffset),
+                    (typeof(Guid), SqlDbType.UniqueIdentifier),
+                    (typeof(float), SqlDbType.Real),
+                    (typeof(string), SqlDbType.NVarChar),
+                    (typeof(sbyte), SqlDbType.TinyInt),
+                    (typeof(TimeSpan), SqlDbType.Time),
+                    (typeof(ushort), SqlDbType.SmallInt),
+                    (typeof(uint), SqlDbType.Int),
+                    (typeof(ulong), SqlDbType.BigInt),
+                    (typeof(Uri), SqlDbType.NVarChar)
                 };
             });
         }
 
-        public static DbType ToDbType(Type systemType)
-        {
-            return dbTypes.Value.First(x => x.Item1 == systemType).Item2;
-        }
+        public static DbType ToDbType(Type systemType) => dbTypes.Value.First(x => x.Item1 == systemType).Item2;
 
-        public static SqlDbType ToSqlDbType(Type systemType)
-        {
-            return sqlDbTypes.Value.First(x => x.Item1 == systemType).Item2;
-        }
+        public static SqlDbType ToSqlDbType(Type systemType) => sqlDbTypes.Value.First(x => x.Item1 == systemType).Item2;
     }
 }

@@ -66,76 +66,93 @@ AND kcu.""table_schema"" = @SchemaName";
                         {
                             columnInfo = new ColumnInfo();
 
-                            if (!reader.IsDBNull(0))
-                            { columnInfo.ColumnName = reader.GetString(0); }
+                            if (!reader.IsDBNull(0)) { columnInfo.ColumnName = reader.GetString(0); }
 
-                            if (!reader.IsDBNull(1))
-                            { columnInfo.DefaultValue = reader.GetString(1); }
-                            else
-                            { columnInfo.DefaultValue = string.Empty; }
+                            if (!reader.IsDBNull(1)) { columnInfo.DefaultValue = reader.GetString(1); }
+                            else { columnInfo.DefaultValue = string.Empty; }
+
+                            if (!reader.IsDBNull(3)) { columnInfo.MaximumLength = reader.GetInt64(3); }
 
                             if (foreignKeyColumns.Contains(columnInfo.ColumnName))
                             {
                                 columnInfo.KeyType = KeyType.ForeignKey;
                             }
 
-                            //else
-                            //{
                             try
                             {
-                                // TODO: SqlDbType won't work for PG!! Need to update this ASAP... get System.Type from PG type
-                                string type = reader.GetString(2).ToLowerInvariant();
-                                columnInfo.DataTypeNative = type;
+                                string nativeType = reader.GetString(2).ToLowerInvariant();
+                                columnInfo.DataTypeNative = nativeType;
 
-                                columnInfo.DataType = type switch
+                                // https://www.npgsql.org/doc/types/basic.html
+                                if (nativeType == "bit")
                                 {
-                                    "bigint" => DbType.Int64,
-                                    "bigserial" => DbType.Int64,
-                                    "bit" => DbType.Boolean,
-                                    "bit varying" => DbType.Binary,
-                                    "boolean" => DbType.Boolean,
-                                    "box" => DbType.Object,
-                                    "bytea" => DbType.Binary,
-                                    "character" => DbType.String,
-                                    "character varying" => DbType.String,
-                                    "cidr" => DbType.Object,
-                                    "circle" => DbType.Object,
-                                    "date" => DbType.Date,
-                                    "double precision" => DbType.Double,
-                                    "inet" => DbType.Object,
-                                    "integer" => DbType.Int32,
-                                    "interval" => DbType.Time,
-                                    "json" => DbType.String,
-                                    "line" => DbType.Object,
-                                    "lseg" => DbType.Object,
-                                    "macaddr" => DbType.Object,
-                                    "money" => DbType.Decimal,
-                                    "numeric" => DbType.Decimal,
-                                    "path" => DbType.Object,
-                                    "point" => DbType.Object,
-                                    "polygon" => DbType.Object,
-                                    "real" => DbType.Single,
-                                    "smallint" => DbType.Int16,
-                                    "smallserial" => DbType.Int16,
-                                    "serial" => DbType.Int32,
-                                    "text" => DbType.String,
-                                    "time without time zone" => DbType.Time,
-                                    "time with time zone" => DbType.DateTimeOffset,
-                                    "timestamp without time zone" => DbType.DateTime,
-                                    "timestamp with time zone" => DbType.DateTimeOffset,
-                                    "tsquery" => DbType.Object,
-                                    "tsvector" => DbType.Object,
-                                    "txid_snapshot" => DbType.Object,
-                                    "uuid" => DbType.Guid,
-                                    "xml" => DbType.Xml,
-                                    _ => DbType.Object,
-                                };
+                                    if (columnInfo.MaximumLength == 1)
+                                    {
+                                        columnInfo.DataType = DbType.Boolean;
+                                    }
+                                    else
+                                    {
+                                        columnInfo.DataType = DbType.Binary;
+                                    }
+                                }
+                                else
+                                {
+                                    columnInfo.DataType = nativeType switch
+                                    {
+                                        "bigint" => DbType.Int64,
+                                        "bigserial" => DbType.Int64,
+                                        "bit varying" => DbType.Binary,
+                                        "boolean" => DbType.Boolean,
+                                        "box" => DbType.Object,
+                                        "bytea" => DbType.Binary,
+                                        "char" => DbType.String,
+                                        "character" => DbType.String,
+                                        "character varying" => DbType.String,
+                                        "cid" => DbType.UInt32,
+                                        "cidr" => DbType.Object,
+                                        "circle" => DbType.Object,
+                                        "citext" => DbType.String,
+                                        "date" => DbType.Date,
+                                        "double precision" => DbType.Double,
+                                        "geometry" => DbType.Object,
+                                        "hstore" => DbType.Object,
+                                        "inet" => DbType.Object,
+                                        "integer" => DbType.Int32,
+                                        "interval" => DbType.Time,
+                                        "json" => DbType.String,
+                                        "jsonb" => DbType.String,
+                                        "line" => DbType.Object,
+                                        "lseg" => DbType.Object,
+                                        "macaddr" => DbType.Object,
+                                        "money" => DbType.Decimal,
+                                        "name" => DbType.String,
+                                        "numeric" => DbType.Decimal,
+                                        "oid" => DbType.UInt32,
+                                        "oidvector" => DbType.Binary,
+                                        "path" => DbType.Object,
+                                        "point" => DbType.Object,
+                                        "polygon" => DbType.Object,
+                                        "real" => DbType.Single,
+                                        "record" => DbType.Binary,
+                                        "smallint" => DbType.Int16,
+                                        "smallserial" => DbType.Int16,
+                                        "serial" => DbType.Int32,
+                                        "text" => DbType.String,
+                                        "time without time zone" => DbType.Time,
+                                        "time with time zone" => DbType.DateTimeOffset,
+                                        "timestamp without time zone" => DbType.DateTime,
+                                        "timestamp with time zone" => DbType.DateTimeOffset,
+                                        "tsquery" => DbType.Object,
+                                        "tsvector" => DbType.Object,
+                                        "txid_snapshot" => DbType.Object,
+                                        "uuid" => DbType.Guid,
+                                        "xid" => DbType.UInt32,
+                                        "xml" => DbType.Xml,
+                                        _ => DbType.Object,
+                                    };
+                                }
                             }
-                            catch (ArgumentNullException)
-                            {
-                                columnInfo.DataType = DbType.Object;
-                            }
-                            catch (ArgumentException)
+                            catch
                             {
                                 columnInfo.DataType = DbType.Object;
                             }
@@ -147,27 +164,15 @@ AND kcu.""table_schema"" = @SchemaName";
                                 columnInfo.DefaultValue = string.Empty;
                             }
 
-                            //}
-
-                            if (!reader.IsDBNull(3))
-                            { columnInfo.MaximumLength = reader.GetInt64(3); }
-
                             if (!reader.IsDBNull(4))
                             {
-                                if (reader.GetString(4).ToUpperInvariant().Equals("NO"))
-                                { columnInfo.IsNullable = false; }
-                                else
-                                { columnInfo.IsNullable = true; }
+                                if (reader.GetString(4).ToUpperInvariant().Equals("NO")) { columnInfo.IsNullable = false; }
+                                else { columnInfo.IsNullable = true; }
                             }
 
-                            if (!reader.IsDBNull(5))
-                            { columnInfo.OrdinalPosition = reader.GetInt32(5); }
-
-                            if (!reader.IsDBNull(6))
-                            { columnInfo.Precision = reader.GetInt32(6); }
-
-                            if (!reader.IsDBNull(7))
-                            { columnInfo.Scale = reader.GetInt32(7); }
+                            if (!reader.IsDBNull(5)) { columnInfo.OrdinalPosition = reader.GetInt32(5); }
+                            if (!reader.IsDBNull(6)) { columnInfo.Precision = reader.GetInt32(6); }
+                            if (!reader.IsDBNull(7)) { columnInfo.Scale = reader.GetInt32(7); }
 
                             list.Add(columnInfo);
                         }
