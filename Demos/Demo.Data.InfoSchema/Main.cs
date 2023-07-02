@@ -9,6 +9,8 @@ using Extenso.Data.Npgsql;
 using Extenso.Data.SqlClient;
 using MySql.Data.MySqlClient;
 using Npgsql;
+using System.Data.OleDb;
+using Extenso.Data.OleDb;
 
 namespace Demo.Data.InfoSchema
 {
@@ -23,7 +25,8 @@ namespace Demo.Data.InfoSchema
         {
             SqlServer,
             MySql,
-            PostgreSql
+            PostgreSql,
+            OleDb
         }
 
         private string ConnectionString => txtConnectionString.Text;
@@ -37,6 +40,7 @@ namespace Demo.Data.InfoSchema
             DataSource.SqlServer => new SqlConnection(ConnectionString),
             DataSource.MySql => new MySqlConnection(ConnectionString),
             DataSource.PostgreSql => new NpgsqlConnection(ConnectionString),
+            DataSource.OleDb => new OleDbConnection(ConnectionString),
             _ => null,
         };
 
@@ -56,6 +60,13 @@ namespace Demo.Data.InfoSchema
                 case DataSource.SqlServer: cmbDatabase.DataSource = (connection as SqlConnection).GetDatabaseNames(); break;
                 case DataSource.MySql: cmbDatabase.DataSource = (connection as MySqlConnection).GetDatabaseNames(); break;
                 case DataSource.PostgreSql: cmbDatabase.DataSource = (connection as NpgsqlConnection).GetDatabaseNames(); break;
+                case DataSource.OleDb:
+                    {
+
+                        lbTables.DataSource = (connection as OleDbConnection).GetTableNames(includeViews: true);
+                        lbTables.Select();
+                    }
+                    break;
                 default: break;
             }
 
@@ -125,7 +136,10 @@ namespace Demo.Data.InfoSchema
             {
                 using var connection = CreateConnection();
                 connection.Open();
-                connection.ChangeDatabase(SelectedDatabase);
+                if (!string.IsNullOrWhiteSpace(SelectedDatabase))
+                {
+                    connection.ChangeDatabase(SelectedDatabase);
+                }
                 string tableName = lbTables.SelectedItem.ToString();
 
                 switch (SelectedDataSource)
@@ -154,6 +168,15 @@ namespace Demo.Data.InfoSchema
                             lblCount.Text = $"Row Count: {npgsqlConnection.GetRowCount(SelectedSchema, tableName)}";
                             dgvForeignKeyInfo.DataSource = npgsqlConnection.GetForeignKeyData(tableName, SelectedSchema);
                             dgvColumnInfo.DataSource = npgsqlConnection.GetColumnData(tableName, SelectedSchema);
+                        }
+                        break;
+
+                    case DataSource.OleDb:
+                        {
+                            var oleDbConnection = connection as OleDbConnection;
+                            lblCount.Text = $"Row Count: {oleDbConnection.GetRowCount(tableName)}";
+                            dgvForeignKeyInfo.DataSource = oleDbConnection.GetForeignKeyData(tableName);
+                            dgvColumnInfo.DataSource = oleDbConnection.GetColumnData(tableName);
                         }
                         break;
 

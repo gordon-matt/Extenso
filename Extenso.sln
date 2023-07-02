@@ -89,7 +89,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.OData.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.AspNetCore.Mvc.Tests", "Tests\Extenso.AspNetCore.Mvc.Tests\Extenso.AspNetCore.Mvc.Tests.csproj", "{9D32BCE9-6BCF-47AD-A303-35DF3AF3AD35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Windows.Forms", "Extenso.Windows.Forms\Extenso.Windows.Forms.csproj", "{C05D6AB0-00F1-4468-BE78-CEDCA251E730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Windows.Forms", "Extenso.Windows.Forms\Extenso.Windows.Forms.csproj", "{C05D6AB0-00F1-4468-BE78-CEDCA251E730}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.OleDb", "Extenso.Data.OleDb\Extenso.Data.OleDb.csproj", "{59658045-4CA8-498F-BE12-0B412B11FC0E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.OleDb.Tests", "Tests\Extenso.Data.OleDb.Tests\Extenso.Data.OleDb.Tests.csproj", "{242180EC-1A61-4E3B-AD80-E0F944F816FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -237,6 +241,14 @@ Global
 		{C05D6AB0-00F1-4468-BE78-CEDCA251E730}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C05D6AB0-00F1-4468-BE78-CEDCA251E730}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C05D6AB0-00F1-4468-BE78-CEDCA251E730}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59658045-4CA8-498F-BE12-0B412B11FC0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59658045-4CA8-498F-BE12-0B412B11FC0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59658045-4CA8-498F-BE12-0B412B11FC0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59658045-4CA8-498F-BE12-0B412B11FC0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242180EC-1A61-4E3B-AD80-E0F944F816FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242180EC-1A61-4E3B-AD80-E0F944F816FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242180EC-1A61-4E3B-AD80-E0F944F816FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242180EC-1A61-4E3B-AD80-E0F944F816FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -267,6 +279,7 @@ Global
 		{9AD80EA1-2482-41B9-BEEA-81499CDCBEAB} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{CA991584-46AA-4924-9572-7C5494476234} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{9D32BCE9-6BCF-47AD-A303-35DF3AF3AD35} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
+		{242180EC-1A61-4E3B-AD80-E0F944F816FC} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}

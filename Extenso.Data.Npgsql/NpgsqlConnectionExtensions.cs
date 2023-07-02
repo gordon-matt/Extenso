@@ -396,7 +396,7 @@ ORDER BY 1,2,3,4";
 
         public static int GetRowCount(this NpgsqlConnection connection, string schema, string tableName)
         {
-            var commandBuilder = new NpgsqlCommandBuilder();
+            using var commandBuilder = new NpgsqlCommandBuilder();
             return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
         }
 
