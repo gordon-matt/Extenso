@@ -382,7 +382,7 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
 
         public static int GetRowCount(this MySqlConnection connection, string tableName)
         {
-            var commandBuilder = new MySqlCommandBuilder();
+            using var commandBuilder = new MySqlCommandBuilder();
             return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(tableName)}");
         }
 
@@ -397,7 +397,7 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
 
         public static IEnumerable<string> GetTableNames(this MySqlConnection connection, string databaseName, bool includeViews = false)
         {
-            var commandBuilder = new MySqlCommandBuilder();
+            using var commandBuilder = new MySqlCommandBuilder();
             string query;
             if (includeViews)
             {
@@ -462,7 +462,7 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
             using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
-                var commandBuilder = new MySqlCommandBuilder();
+                using var commandBuilder = new MySqlCommandBuilder();
                 command.CommandText = $@"USE {commandBuilder.QuoteIdentifier(databaseName)}; SHOW FULL TABLES IN {commandBuilder.QuoteIdentifier(databaseName)} WHERE TABLE_TYPE LIKE 'VIEW';";
 
                 using (var reader = command.ExecuteReader())
