@@ -13,6 +13,10 @@ var ViewModel = function () {
     self.dateOfBirth = ko.observable(null);
 
     self.init = function () {
+        ODataHelper.options.refreshODataGrid = function() {
+            console.log('blah');
+        };
+
         currentSection = $("#grid-section");
         
         self.validator = $("#form-section-form").validate({
@@ -108,7 +112,7 @@ var ViewModel = function () {
     };
 
     self.edit = async function (id) {
-        const data = await getOData(`${self.apiUrl}(${id})`);
+        const data = await ODataHelper.getOData(`${self.apiUrl}(${id})`);
         self.id(data.Id);
         self.familyName(data.FamilyName);
         self.givenNames(data.GivenNames);
@@ -119,7 +123,7 @@ var ViewModel = function () {
     };
 
     self.remove = async function (id) {
-        await deleteOData(`${self.apiUrl}(${id})`);
+        await ODataHelper.deleteOData(`${self.apiUrl}(${id})`);
     };
 
     self.save = async function () {
@@ -137,10 +141,10 @@ var ViewModel = function () {
         };
 
         if (isNew) {
-            await postOData(self.apiUrl, record);
+            await ODataHelper.postOData(self.apiUrl, record);
         }
         else {
-            await putOData(`${self.apiUrl}(${self.id()})`, record);
+            await ODataHelper.putOData(`${self.apiUrl}(${self.id()})`, record);
         }
     };
 
