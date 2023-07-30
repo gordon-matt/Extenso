@@ -21,8 +21,6 @@ namespace Extenso.AspNetCore.Mvc.Rendering
 
     public class RazorViewRenderService : IRazorViewRenderService
     {
-        private static ActionContext reusableActionContext;
-
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IServiceProvider serviceProvider;
         private readonly IRazorViewEngine razorViewEngine;
@@ -40,31 +38,12 @@ namespace Extenso.AspNetCore.Mvc.Rendering
             this.tempDataProvider = tempDataProvider;
         }
 
-        public ActionContext ActionContext
-        {
-            get
-            {
-                return reusableActionContext ??= new ActionContext(
-                    httpContextAccessor == null ? new DefaultHttpContext { RequestServices = serviceProvider } : httpContextAccessor.HttpContext,
-                    new RouteData(),
-                    new ActionDescriptor());
-            }
-        }
-
         public async Task<string> RenderToStringAsync(string viewName, object model = null, RouteData routeData = null, bool useActionContext = false)
         {
-            ActionContext actionContext;
-            if (routeData == null)
-            {
-                actionContext = ActionContext;
-            }
-            else
-            {
-                actionContext = new ActionContext(
-                    httpContextAccessor == null ? new DefaultHttpContext { RequestServices = serviceProvider } : httpContextAccessor.HttpContext,
-                    routeData,
-                    new ActionDescriptor());
-            }
+            var actionContext = new ActionContext(
+                httpContextAccessor == null ? new DefaultHttpContext { RequestServices = serviceProvider } : httpContextAccessor.HttpContext,
+                routeData ?? new RouteData(),
+                new ActionDescriptor());
 
             using (var stringWriter = new StringWriter())
             {
