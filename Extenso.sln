@@ -95,6 +95,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.OleDb", "Exten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extenso.Data.OleDb.Tests", "Tests\Extenso.Data.OleDb.Tests\Extenso.Data.OleDb.Tests.csproj", "{242180EC-1A61-4E3B-AD80-E0F944F816FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap5", "Demos\Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap5\Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap5.csproj", "{10086F25-BC19-4E77-8802-AF0154CFA138}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -249,6 +251,10 @@ Global
 		{242180EC-1A61-4E3B-AD80-E0F944F816FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{242180EC-1A61-4E3B-AD80-E0F944F816FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{242180EC-1A61-4E3B-AD80-E0F944F816FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10086F25-BC19-4E77-8802-AF0154CFA138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10086F25-BC19-4E77-8802-AF0154CFA138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10086F25-BC19-4E77-8802-AF0154CFA138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10086F25-BC19-4E77-8802-AF0154CFA138}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -280,6 +286,7 @@ Global
 		{CA991584-46AA-4924-9572-7C5494476234} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{9D32BCE9-6BCF-47AD-A303-35DF3AF3AD35} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{242180EC-1A61-4E3B-AD80-E0F944F816FC} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
+		{10086F25-BC19-4E77-8802-AF0154CFA138} = {F63724D8-A57F-4B23-A73C-41A1EC144331}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}
