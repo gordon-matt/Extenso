@@ -283,6 +283,7 @@ build/
 
 Demos/Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3/wwwroot/lib
 Demos/Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap4/wwwroot/lib
+Demos/Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap5/wwwroot/lib
 Demos/Demo.AspNetCore.Mvc.ExtensoUI.Foundation6/wwwroot/lib
 Demos/Demo.AspNetCore.Mvc.ExtensoUI.JQueryUI/wwwroot/lib
 Demos/Demo.AspNetCore.Mvc.ExtensoUI.KendoBootstrap3/wwwroot/lib
