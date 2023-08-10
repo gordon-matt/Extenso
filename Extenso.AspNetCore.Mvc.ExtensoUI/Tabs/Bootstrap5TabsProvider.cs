@@ -69,7 +69,7 @@ public class Bootstrap5TabsProvider : ITabsProvider
 
     public void WriteTab(TextWriter writer, string label, string tabId, bool isActive)
     {
-        writer.Write($@"<li role=""presentation"" class=""nav-item""><button class=""nav-link{(isActive ? " active" : string.Empty)}"" data-bs-target=""#{tabId}"" aria-controls=""{tabId}"" role=""tab"" data-bs-toggle=""tab"">{label}</button></li>");
+        writer.Write($@"<li class=""nav-item"" role=""presentation""><button type=""button"" class=""nav-link{(isActive ? " active" : string.Empty)}"" data-bs-toggle=""tab"" data-bs-target=""#{tabId}"" role=""tab"" aria-controls=""{tabId}"" aria-selected=""{(isActive ? "true" : "false")}"">{label}</button></li>");
     }
 
     #endregion ITabsProvider Members
