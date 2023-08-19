@@ -75,16 +75,6 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData
             // For wwwroot directory
             app.UseStaticFiles();
 
-            // Add support for node_modules but only during development
-            if (env.IsDevelopment())
-            {
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"node_modules")),
-                    RequestPath = new PathString("/vendor")
-                });
-            }
-
             // Use odata route debug, /$odata
             app.UseODataRouteDebug();
 

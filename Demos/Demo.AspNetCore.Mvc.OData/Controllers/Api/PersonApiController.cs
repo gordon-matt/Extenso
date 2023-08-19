@@ -1,13 +1,14 @@
 ﻿using Demo.Extenso.AspNetCore.Mvc.OData.Data.Entities;
 using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers.Api
 {
     public class PersonApiController : BaseODataController<Person, int>
     {
-        public PersonApiController(IRepository<Person> repository)
-            : base(repository)
+        public PersonApiController(IAuthorizationService authorizationService, IRepository<Person> repository)
+            : base(authorizationService, repository)
         {
         }
 

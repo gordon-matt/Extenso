@@ -3,6 +3,7 @@ using Extenso.Data.Entity;
 using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
@@ -10,7 +11,6 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Tests.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.OData.ModelBuilder;
 using Moq;
@@ -24,6 +24,7 @@ namespace Extenso.AspNetCore.OData.Tests
         private ProductModelApiController odataController;
         private ICollection<ProductModel> productModels;
         private Faker<ProductModel> productModelFaker;
+        private IAuthorizationService authorizationService;
 
         private bool isDisposed;
 
@@ -44,9 +45,11 @@ namespace Extenso.AspNetCore.OData.Tests
             context.ProductModels.AddRange(productModels);
             context.SaveChanges();
 
+            authorizationService = new FakeAuthorizationService(AuthorizationState.Authorized);
+
             contextFactory = new InMemoryAdventureWorks2019ContextFactory();
             repository = new EntityFrameworkRepository<ProductModel>(contextFactory, Mock.Of<ILoggerFactory>());
-            odataController = new ProductModelApiController(repository);
+            odataController = new ProductModelApiController(authorizationService, repository);
         }
 
         [Fact]
