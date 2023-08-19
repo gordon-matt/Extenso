@@ -50,7 +50,7 @@ namespace Extenso.AspNetCore.OData
         /// <summary>
         /// Checks policy based permissions for a user
         /// </summary>
-        public IAuthorizationService AuthorizationService { get; set; }
+        protected IAuthorizationService AuthorizationService { get; set; }
 
         #region Constructors
 
@@ -58,8 +58,9 @@ namespace Extenso.AspNetCore.OData
         /// Initializes a new instance of GenericODataController using the specified Extenso.Data.Entity.IRepository`1.
         /// </summary>
         /// <param name="repository">The Extenso.Data.Entity.IRepository`1 which will provide access to the data store.</param>
-        public GenericODataController(IRepository<TEntity> repository)
+        public GenericODataController(IAuthorizationService authorizationService, IRepository<TEntity> repository)
         {
+            AuthorizationService = authorizationService;
             Repository = repository;
         }
 
@@ -430,8 +431,8 @@ namespace Extenso.AspNetCore.OData
     public abstract class BaseODataController<TEntity, TKey> : GenericODataController<TEntity, TKey>
         where TEntity : BaseEntity<TKey>
     {
-        protected BaseODataController(IRepository<TEntity> repository)
-            : base(repository)
+        protected BaseODataController(IAuthorizationService authorizationService, IRepository<TEntity> repository)
+            : base(authorizationService, repository)
         {
         }
 

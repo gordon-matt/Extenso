@@ -1,5 +1,6 @@
 ﻿using Extenso.Data.Entity;
 using Extenso.TestLib.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
@@ -9,8 +10,8 @@ namespace Extenso.AspNetCore.OData.Tests
 {
     public class ProductModelApiController : GenericODataController<ProductModel, int>
     {
-        public ProductModelApiController(IRepository<ProductModel> repository)
-            : base(repository)
+        public ProductModelApiController(IAuthorizationService authorizationService, IRepository<ProductModel> repository)
+            : base(authorizationService, repository)
         {
         }
 
