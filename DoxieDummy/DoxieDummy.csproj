@@ -1,14 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation.csproj" />
     <ProjectReference Include="..\Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI\Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI.csproj" />
@@ -26,5 +23,4 @@
     <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
     <ProjectReference Include="..\Extenso.Drawing\Extenso.Drawing.csproj" />
   </ItemGroup>
-
 </Project>

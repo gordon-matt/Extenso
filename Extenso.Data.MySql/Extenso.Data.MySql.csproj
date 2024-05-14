@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Authors>Matt Gordon</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
@@ -9,17 +8,13 @@
     <Description>Data-related extension methods and other helper classes for MySql</Description>
     <Version>7.1.1</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.1\Extenso.Data.MySql.xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.31" />
+    <PackageReference Include="MySql.Data" Version="8.4.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
   </ItemGroup>
-
 </Project>

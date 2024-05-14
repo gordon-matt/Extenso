@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Authors>Matt Gordon</Authors>
     <Company>Matt Gordon</Company>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
@@ -10,17 +9,13 @@
     <Description>HTML Helpers for creating common UI components (Accordions, Tabs, Panels, Modal Dialogs, etc). This package includes default providers for Bootstrap 3, 4 and 5.</Description>
     <Version>7.1.1</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\net7.0\Extenso.AspNetCore.Mvc.ExtensoUI.xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Extenso.AspNetCore.Mvc\Extenso.AspNetCore.Mvc.csproj" />
   </ItemGroup>
-
 </Project>
