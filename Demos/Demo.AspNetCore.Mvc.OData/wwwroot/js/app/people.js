@@ -13,9 +13,6 @@ var ViewModel = function () {
     self.dateOfBirth = ko.observable(null);
 
     self.init = function () {
-        ODataHelper.options.refreshODataGrid = function() {
-            console.log('blah');
-        };
 
         currentSection = $("#grid-section");
         

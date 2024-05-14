@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Authors>Matt Gordon</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
@@ -9,17 +8,13 @@
     <Description>Data-related extension methods and other helper classes for Npgsql</Description>
     <Version>7.1.1</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\net7.0\Extenso.Data.Npgsql.xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
   </ItemGroup>
-
 </Project>

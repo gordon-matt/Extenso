@@ -1,18 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x86</PlatformTarget>
     <Version>7.0.0</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Data.OleDb" Version="7.0.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="System.Data.OleDb" Version="8.0.0" />
+  </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Authors>Matt Gordon</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>Data-related extension methods and other helper classes.</Description>
@@ -9,17 +8,13 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <Version>7.1.2</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\net7.0\Extenso.Data.xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
   </ItemGroup>
-
 </Project>
