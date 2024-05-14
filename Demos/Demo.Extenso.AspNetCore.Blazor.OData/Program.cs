@@ -7,7 +7,8 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
 {
     public class Program
     {
-        public const string ODataBaseUri = "https://localhost:44326/odata/";
+        // TODO: There's gotta be a better way than this..
+        internal static string ODataBaseUri = "https://localhost:58824/odata/";
 
         public static void Main(string[] args)
         {

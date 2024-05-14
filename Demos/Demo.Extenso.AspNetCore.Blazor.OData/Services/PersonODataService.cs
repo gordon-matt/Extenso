@@ -1,11 +1,10 @@
 ﻿using Demo.Extenso.AspNetCore.Blazor.OData.Data.Entities;
 
-namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
+namespace Demo.Extenso.AspNetCore.Blazor.OData.Services;
+
+public class PersonODataService : GenericODataService<Person>
 {
-    public class PersonODataService : GenericODataService<Person>
+    public PersonODataService() : base("PersonApi")
     {
-        public PersonODataService() : base("PersonApi")
-        {
-        }
     }
 }

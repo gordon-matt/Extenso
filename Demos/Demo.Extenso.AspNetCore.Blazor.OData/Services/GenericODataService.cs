@@ -2,7 +2,9 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Demo.Extenso.AspNetCore.Blazor.OData.Models;
 using Extenso;
+using Microsoft.AspNetCore.Components;
 using Radzen;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
@@ -37,7 +39,7 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
             this.entitySetName = entitySetName;
         }
 
-        public virtual async Task<ODataServiceResult<TEntity>> FindAsync(
+        public virtual async Task<ApiResponse<ODataServiceResult<TEntity>>> FindAsync(
             string filter = default,
             int? top = default,
             int? skip = default,
@@ -48,46 +50,86 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
         {
             var uri = new Uri(baseUri, entitySetName);
             uri = uri.GetODataUri(filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-            var response = await httpClient.SendAsync(httpRequestMessage);
-            return await response.ReadAsync<ODataServiceResult<TEntity>>();
+            using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+            using var response = await httpClient.SendAsync(httpRequestMessage);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string reason = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return ApiResponse<ODataServiceResult<TEntity>>.Failure(reason);
+            }
+
+            var data = await response.ReadAsync<ODataServiceResult<TEntity>>();
+            return ApiResponse<ODataServiceResult<TEntity>>.Success(data);
         }
 
-        public virtual async Task<TEntity> FindOneAsync(TKey key)
+        public virtual async Task<ApiResponse<TEntity>> FindOneAsync(TKey key)
         {
             var uri = new Uri(baseUri, $"{entitySetName}({key})");
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-            var response = await httpClient.SendAsync(httpRequestMessage);
-            return await response.ReadAsync<TEntity>();
+            using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+            using var response = await httpClient.SendAsync(httpRequestMessage);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string reason = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return ApiResponse<TEntity>.Failure(reason);
+            }
+
+            var data = await response.ReadAsync<TEntity>();
+            return ApiResponse<TEntity>.Success(data);
         }
 
-        public virtual async Task<TEntity> InsertAsync(TEntity entity)
+        public virtual async Task<ApiResponse<TEntity>> InsertAsync(TEntity entity)
         {
             var uri = new Uri(baseUri, entitySetName);
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, uri)
+            using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json")
             };
-            var response = await httpClient.SendAsync(httpRequestMessage);
-            return await response.ReadAsync<TEntity>();
+            using var response = await httpClient.SendAsync(httpRequestMessage);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string reason = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return ApiResponse<TEntity>.Failure(reason);
+            }
+
+            var data = await response.ReadAsync<TEntity>();
+            return ApiResponse<TEntity>.Success(data);
         }
 
-        public virtual async Task<TEntity> UpdateAsync(TKey key, TEntity entity)
+        public virtual async Task<ApiResponse<TEntity>> UpdateAsync(TKey key, TEntity entity)
         {
             var uri = new Uri(baseUri, $"{entitySetName}({key})");
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uri)
+            using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uri)
             {
                 Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json")
             };
-            var response = await httpClient.SendAsync(httpRequestMessage);
-            return await response.ReadAsync<TEntity>();
+            using var response = await httpClient.SendAsync(httpRequestMessage);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string reason = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return ApiResponse<TEntity>.Failure(reason);
+            }
+
+            var data = await response.ReadAsync<TEntity>();
+            return ApiResponse<TEntity>.Success(data);
         }
 
-        public virtual async Task<HttpResponseMessage> DeleteAsync(TKey key)
+        public virtual async Task<ApiResponse> DeleteAsync(TKey key)
         {
             var uri = new Uri(baseUri, $"{entitySetName}({key})");
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
-            return await httpClient.SendAsync(httpRequestMessage);
+            using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
+            using var response = await httpClient.SendAsync(httpRequestMessage);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string reason = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return ApiResponse.Failure(reason);
+            }
+
+            return ApiResponse.Success();
         }
 
         #region IDisposable Members

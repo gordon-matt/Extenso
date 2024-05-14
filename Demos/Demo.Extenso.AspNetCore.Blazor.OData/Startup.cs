@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using Autofac;
 using Blazorise;
 using Blazorise.Bootstrap;
@@ -27,10 +28,13 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment currentEnvironment, IConfiguration configuration)
         {
+            CurrentEnvironment = currentEnvironment;
             Configuration = configuration;
         }
+
+        private IWebHostEnvironment CurrentEnvironment { get; set; }
 
         public IConfiguration Configuration { get; }
 
