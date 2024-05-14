@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
+using Demo.Extenso.AspNetCore.Blazor.OData.Models;
 using Radzen;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
@@ -8,7 +8,7 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
     public interface IGenericODataService<TEntity, TKey> : IDisposable
         where TEntity : class
     {
-        Task<ODataServiceResult<TEntity>> FindAsync(
+        Task<ApiResponse<ODataServiceResult<TEntity>>> FindAsync(
             string filter = default,
             int? top = default,
             int? skip = default,
@@ -17,12 +17,12 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services
             string select = default,
             bool? count = default);
 
-        Task<TEntity> FindOneAsync(TKey key);
+        Task<ApiResponse<TEntity>> FindOneAsync(TKey key);
 
-        Task<TEntity> InsertAsync(TEntity entity);
+        Task<ApiResponse<TEntity>> InsertAsync(TEntity entity);
 
-        Task<TEntity> UpdateAsync(TKey key, TEntity entity);
+        Task<ApiResponse<TEntity>> UpdateAsync(TKey key, TEntity entity);
 
-        Task<HttpResponseMessage> DeleteAsync(TKey key);
+        Task<ApiResponse> DeleteAsync(TKey key);
     }
 }
