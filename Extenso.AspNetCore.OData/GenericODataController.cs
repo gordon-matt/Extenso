@@ -97,7 +97,7 @@ namespace Extenso.AspNetCore.OData
             return Ok(results);
         }
 
-        // TODO: Can't do $expand, because entity is not from an IQueryable.. and also we don't have a ODataQueryOptions here..
+        // TODO: Can't do $expand, because entity is not from an IQueryable.. and also we don't have an ODataQueryOptions here..
 
         /// <summary>
         /// Gets the record associated with the given key.

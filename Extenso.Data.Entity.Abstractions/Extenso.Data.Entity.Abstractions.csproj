@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Extenso.Data.Entity</RootNamespace>
+    <Version>8.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
