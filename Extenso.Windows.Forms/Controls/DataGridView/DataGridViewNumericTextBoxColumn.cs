@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Extenso.Windows.Forms.Controls;
 
 public class DataGridViewNumericTextBoxColumn : DataGridViewColumn
@@ -7,6 +9,7 @@ public class DataGridViewNumericTextBoxColumn : DataGridViewColumn
     {
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
         get

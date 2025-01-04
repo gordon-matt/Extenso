@@ -51,6 +51,7 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     #region IDataGridViewEditingControl Members
 
     //  Returns or sets the parent DataGridView.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DataGridView EditingControlDataGridView
     {
         get
@@ -64,6 +65,7 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     }
 
     //  Sets/Gets the formatted value contents of this cell.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public object EditingControlFormattedValue
     {
         set
@@ -80,6 +82,7 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     //  Indicates the row index of this cell.  This is often -1 for the
     //  template cell, but for other cells, might actually have a value
     //  greater than or equal to zero.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int EditingControlRowIndex
     {
         get
@@ -93,6 +96,7 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     }
 
     //  Gets or sets our flag indicating whether the value has changed.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool EditingControlValueChanged
     {
         get

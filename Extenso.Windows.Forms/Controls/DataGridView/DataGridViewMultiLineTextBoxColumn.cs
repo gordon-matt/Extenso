@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Extenso.Windows.Forms.Controls;
 
 public class DataGridViewMultiLineTextBoxColumn : DataGridViewColumn
@@ -7,6 +9,7 @@ public class DataGridViewMultiLineTextBoxColumn : DataGridViewColumn
     {
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
         get
@@ -31,6 +34,7 @@ public class DataGridViewMultiLineTextBoxColumn : DataGridViewColumn
 
     private bool wordWrap;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool MultiLine
     {
         get
@@ -43,6 +47,7 @@ public class DataGridViewMultiLineTextBoxColumn : DataGridViewColumn
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool WordWrap
     {
         get
