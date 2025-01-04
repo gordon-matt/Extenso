@@ -164,6 +164,37 @@ namespace Extenso
         }
 
         /// <summary>
+        /// Returns the first value in the given list that has a valid value.
+        /// </summary>
+        /// <param name="values">The strings to seek.</param>
+        /// <para>The first value in the given list that is not null, empty or consisting only of whitespace.</para>
+        /// <para>If none of the values are valid, then null is returned.</para>
+        public static string Coalesce(params string[] values) => Coalesce(allowWhitespace: false, values);
+
+        /// <summary>
+        /// Returns the first value in the given list that has a valid value.
+        /// </summary>
+        /// <param name="allowWhitespace">Whether values consisting only of whitespace are considered valid or not.</param>
+        /// <param name="values">The strings to seek.</param>
+        /// <returns>
+        /// <para>If allowWhitespace is true, then the first value in the given list that is not null or empty.</para>
+        /// <para>Else, the first value in the given list that is not null, empty or consisting only of whitespace.</para>
+        /// <para>If none of the values are valid, then null is returned.</para>
+        /// </returns>
+        public static string Coalesce(bool allowWhitespace, params string[] values)
+        {
+            Func<string, bool> operation = allowWhitespace
+                ? string.IsNullOrEmpty : string.IsNullOrWhiteSpace;
+
+            foreach (var value in values)
+            {
+                if (!operation(value)) return value;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Returns a value indicating whether a specified substring occurs within the given string.
         /// A parameter specifies the type of search to use for the specified substring.
         /// </summary>
