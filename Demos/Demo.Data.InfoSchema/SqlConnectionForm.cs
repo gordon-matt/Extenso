@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Extenso.Collections;
 using Extenso.Data.Common;
 using Extenso.Data.SqlClient;
+using System.ComponentModel;
 
 namespace Demo.Data.InfoSchema
 {
@@ -12,6 +13,7 @@ namespace Demo.Data.InfoSchema
         private const string SQL_CONNECTION_STRING_FORMAT = "Data Source={0};Initial Catalog={1};User={2}Password={3}";
         private const string SQL_CONNECTION_STRING_FORMAT_WA = "Data Source={0};Initial Catalog={1};Integrated Security=true";
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool AllowTableSelection
         {
             get => cmbTable.Visible;
@@ -22,6 +24,7 @@ namespace Demo.Data.InfoSchema
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Server
         {
             get
@@ -46,6 +49,7 @@ namespace Demo.Data.InfoSchema
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Database
         {
             get
@@ -70,18 +74,21 @@ namespace Demo.Data.InfoSchema
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string UserName
         {
             get => txtUserName.Text.Trim();
             set => txtUserName.Text = value;
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public string Password
         {
             get => txtPassword.Text.Trim();
             set => txtPassword.Text = value;
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public bool IntegratedSecurity
         {
             get => rbUseWindowsAuthentication.Checked;

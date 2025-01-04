@@ -1,4 +1,6 @@
-﻿namespace Extenso.Windows.Forms.Wizard;
+﻿using System.ComponentModel;
+
+namespace Extenso.Windows.Forms.Wizard;
 
 public partial class WizardHost : Form
 {
@@ -8,6 +10,7 @@ public partial class WizardHost : Form
 
     private bool navigationEnabled = true;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool NavigationEnabled
     {
         get { return navigationEnabled; }
@@ -21,18 +24,21 @@ public partial class WizardHost : Form
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowFirstButton
     {
         get { return btnFirst.Visible; }
         set { btnFirst.Visible = value; }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowLastButton
     {
         get { return btnLast.Visible; }
         set { btnLast.Visible = value; }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public WizardPageCollection WizardPages { get; set; }
 
     #endregion Properties

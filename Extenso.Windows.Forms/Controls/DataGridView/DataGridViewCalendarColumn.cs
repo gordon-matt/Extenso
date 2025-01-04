@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Extenso.Windows.Forms.Controls;
 
 public class DataGridViewCalendarColumn : DataGridViewColumn
@@ -10,6 +12,7 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
     {
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
         get
@@ -23,6 +26,7 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string CustomFormat
     {
         get { return customFormat; }
@@ -33,6 +37,7 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DateTimePickerFormat DateTimePickerFormat
     {
         get { return dateTimePickerFormat; }
@@ -43,8 +48,10 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowCheckBox { get; set; }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowUpDown { get; set; }
 
     public override object Clone()

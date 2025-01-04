@@ -13,6 +13,8 @@
 //PARTICULAR PURPOSE.
 //---------------------------------------------------------------------
 
+using System.ComponentModel;
+
 namespace Extenso.Windows.Forms.Controls;
 
 //  The base object for the custom column type.  Programmers manipulate
@@ -42,6 +44,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //
     //  A DataGridViewMaskedTextBoxCell cell which will serve as the template cell
     //  for this column.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
         get
@@ -61,6 +64,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color ForeColor
     {
         get
@@ -79,6 +83,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  data in a cell of this type.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool IncludeLiterals
     {
         get
@@ -124,6 +129,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //   of the DataGridViewMaskedTextBox for a particular cell programmatically.
     //
     //   See the DataGridViewMaskedTextBox control documentation for more details.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool IncludePrompt
     {
         get
@@ -170,6 +176,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  for entering new data into cells of this type.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual string Mask
     {
         get
@@ -216,6 +223,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  choose a different one.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual char PromptChar
     {
         get
@@ -263,6 +271,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  type.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual Type ValidatingType
     {
         get

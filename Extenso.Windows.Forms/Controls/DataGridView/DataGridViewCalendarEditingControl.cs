@@ -9,14 +9,17 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
     // Implements the IDataGridViewEditingControl
     // .EditingControlDataGridView property.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DataGridView EditingControlDataGridView { get; set; }
 
     // Implements the IDataGridViewEditingControl.EditingControlRowIndex
     // property.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int EditingControlRowIndex { get; set; }
 
     // Implements the IDataGridViewEditingControl
     // .EditingControlValueChanged property.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool EditingControlValueChanged { get; set; } = false;
 
     #endregion Properties
@@ -29,6 +32,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
     // Implements the IDataGridViewEditingControl.EditingControlFormattedValue
     // property.
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public object EditingControlFormattedValue
     {
         get

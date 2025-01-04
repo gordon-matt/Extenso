@@ -8,6 +8,7 @@ ToolboxItem(true),
 Description("Custom TextBox, Accepts Numerical Input Only")]
 public partial class NumericTextBox : TextBox
 {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool AllowSpace { set; get; } = false;
 
     public decimal DecimalValue => decimal.Parse(Text);

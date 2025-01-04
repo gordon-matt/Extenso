@@ -30,6 +30,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     /// <summary>
     /// Property which caches the grid that uses this editing control
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual DataGridView EditingControlDataGridView
     {
         get
@@ -46,6 +47,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     /// <summary>
     /// Property which represents the current formatted value of the editing control
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual object EditingControlFormattedValue
     {
         get
@@ -61,6 +63,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     /// <summary>
     /// Property which represents the row in which the editing control resides
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual int EditingControlRowIndex
     {
         get
@@ -76,6 +79,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     /// <summary>
     /// Property which indicates whether the value of the editing control has changed or not
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool EditingControlValueChanged
     {
         get

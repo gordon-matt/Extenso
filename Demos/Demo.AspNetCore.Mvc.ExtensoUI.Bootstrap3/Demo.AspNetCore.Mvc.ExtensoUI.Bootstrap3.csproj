@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3</AssemblyName>
     <RootNamespace>Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3</RootNamespace>
     <PackageId>Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3</PackageId>
