@@ -32,7 +32,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
     public object EditingControlFormattedValue
     {
         get
-        { return this.Value.ToShortDateString(); }
+        { return this.Value.ToString("O"); }
         set
         {
             if (value is string)
