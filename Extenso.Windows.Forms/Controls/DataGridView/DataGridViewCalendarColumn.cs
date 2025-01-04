@@ -45,10 +45,13 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
 
     public bool ShowCheckBox { get; set; }
 
+    public bool ShowUpDown { get; set; }
+
     public override object Clone()
     {
         var dataGridViewCalendarColumn = (DataGridViewCalendarColumn)base.Clone();
         dataGridViewCalendarColumn.ShowCheckBox = this.ShowCheckBox;
+        dataGridViewCalendarColumn.ShowUpDown = this.ShowUpDown;
         dataGridViewCalendarColumn.dateTimePickerFormat = this.dateTimePickerFormat;
         dataGridViewCalendarColumn.customFormat = this.customFormat;
         return dataGridViewCalendarColumn;

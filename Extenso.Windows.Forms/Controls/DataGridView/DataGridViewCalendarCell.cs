@@ -56,6 +56,7 @@ public class DataGridViewCalendarCell : DataGridViewTextBoxCell
         var dataGridViewCalendarEditingControl = DataGridView.EditingControl as DataGridViewCalendarEditingControl;
 
         dataGridViewCalendarEditingControl.ShowCheckBox = (DataGridView.Columns[ColumnIndex] as DataGridViewCalendarColumn).ShowCheckBox;
+        dataGridViewCalendarEditingControl.ShowUpDown = (DataGridView.Columns[ColumnIndex] as DataGridViewCalendarColumn).ShowUpDown;
 
         try
         {
