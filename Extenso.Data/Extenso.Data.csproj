@@ -6,7 +6,7 @@
     <Description>Data-related extension methods and other helper classes.</Description>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
-    <Version>9.0.0</Version>
+    <Version>9.1.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\net7.0\Extenso.Data.xml</DocumentationFile>
