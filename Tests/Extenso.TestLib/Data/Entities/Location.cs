@@ -30,7 +30,7 @@ public partial class Location
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<ProductInventory> ProductInventories { get; } = new List<ProductInventory>();
+    public virtual ICollection<ProductInventory> ProductInventories { get; } = [];
 
-    public virtual ICollection<WorkOrderRouting> WorkOrderRoutings { get; } = new List<WorkOrderRouting>();
+    public virtual ICollection<WorkOrderRouting> WorkOrderRoutings { get; } = [];
 }

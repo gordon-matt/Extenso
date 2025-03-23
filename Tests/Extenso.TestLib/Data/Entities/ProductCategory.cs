@@ -25,5 +25,5 @@ public partial class ProductCategory
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<ProductSubcategory> ProductSubcategories { get; } = new List<ProductSubcategory>();
+    public virtual ICollection<ProductSubcategory> ProductSubcategories { get; } = [];
 }

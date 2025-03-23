@@ -52,13 +52,13 @@ public partial class SalesPerson
 
     public virtual Employee BusinessEntity { get; set; }
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = [];
 
-    public virtual ICollection<SalesPersonQuotaHistory> SalesPersonQuotaHistories { get; } = new List<SalesPersonQuotaHistory>();
+    public virtual ICollection<SalesPersonQuotaHistory> SalesPersonQuotaHistories { get; } = [];
 
-    public virtual ICollection<SalesTerritoryHistory> SalesTerritoryHistories { get; } = new List<SalesTerritoryHistory>();
+    public virtual ICollection<SalesTerritoryHistory> SalesTerritoryHistories { get; } = [];
 
-    public virtual ICollection<Store> Stores { get; } = new List<Store>();
+    public virtual ICollection<Store> Stores { get; } = [];
 
     public virtual SalesTerritory Territory { get; set; }
 }

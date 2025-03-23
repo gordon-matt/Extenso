@@ -20,5 +20,5 @@ public partial class Illustration
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<ProductModelIllustration> ProductModelIllustrations { get; } = new List<ProductModelIllustration>();
+    public virtual ICollection<ProductModelIllustration> ProductModelIllustrations { get; } = [];
 }

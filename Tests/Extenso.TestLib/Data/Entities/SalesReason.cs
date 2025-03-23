@@ -25,5 +25,5 @@ public partial class SalesReason
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<SalesOrderHeaderSalesReason> SalesOrderHeaderSalesReasons { get; } = new List<SalesOrderHeaderSalesReason>();
+    public virtual ICollection<SalesOrderHeaderSalesReason> SalesOrderHeaderSalesReasons { get; } = [];
 }

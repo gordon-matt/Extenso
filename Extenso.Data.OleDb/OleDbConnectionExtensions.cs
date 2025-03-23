@@ -10,10 +10,10 @@ public static class OleDbConnectionExtensions
     {
         var columnData = new ColumnInfoCollection();
 
-        var restrictions = new object[] { null, null, tableName };
-        var foreignKeyRestrictions = new object[] { null, null, null, null, null, tableName };
+        object[] restrictions = new object[] { null, null, tableName };
+        object[] foreignKeyRestrictions = new object[] { null, null, null, null, null, tableName };
 
-        bool alreadyOpen = (connection.State != ConnectionState.Closed);
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
 
         if (!alreadyOpen)
         {
@@ -111,9 +111,9 @@ public static class OleDbConnectionExtensions
 
     public static ForeignKeyInfoCollection GetForeignKeyData(this OleDbConnection connection, string tableName)
     {
-        var foreignKeyRestrictions = new object[] { null, null, null, null, null, tableName };
+        object[] foreignKeyRestrictions = new object[] { null, null, null, null, null, tableName };
 
-        bool alreadyOpen = (connection.State != ConnectionState.Closed);
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
 
         if (!alreadyOpen)
         {
@@ -154,7 +154,7 @@ public static class OleDbConnectionExtensions
     {
         var results = new List<string>();
 
-        bool alreadyOpen = (connection.State != ConnectionState.Closed);
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
 
         if (!alreadyOpen)
         {
@@ -188,7 +188,7 @@ public static class OleDbConnectionExtensions
     {
         var results = new List<string>();
 
-        bool alreadyOpen = (connection.State != ConnectionState.Closed);
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
 
         if (!alreadyOpen)
         {

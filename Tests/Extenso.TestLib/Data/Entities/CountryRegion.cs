@@ -20,9 +20,9 @@ public partial class CountryRegion
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<CountryRegionCurrency> CountryRegionCurrencies { get; } = new List<CountryRegionCurrency>();
+    public virtual ICollection<CountryRegionCurrency> CountryRegionCurrencies { get; } = [];
 
-    public virtual ICollection<SalesTerritory> SalesTerritories { get; } = new List<SalesTerritory>();
+    public virtual ICollection<SalesTerritory> SalesTerritories { get; } = [];
 
-    public virtual ICollection<StateProvince> StateProvinces { get; } = new List<StateProvince>();
+    public virtual ICollection<StateProvince> StateProvinces { get; } = [];
 }

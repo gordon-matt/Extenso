@@ -16,8 +16,8 @@ internal static class MySqlDbTypeConverter
     {
         netTypes = new Lazy<HashSet<(MySqlDbType, Type)>>(() =>
         {
-            return new HashSet<(MySqlDbType, Type)>
-            {
+            return
+            [
                 (MySqlDbType.Binary, typeof(byte[])),
                 (MySqlDbType.Bit, typeof(long)), // If length is 1, then should be "bool"
                 (MySqlDbType.Blob, typeof(object)),
@@ -58,12 +58,12 @@ internal static class MySqlDbTypeConverter
                 (MySqlDbType.VarChar, typeof(string)),
                 (MySqlDbType.VarString, typeof(string)),
                 (MySqlDbType.Year, typeof(short))
-            };
+            ];
         });
         dbTypes = new Lazy<HashSet<(MySqlDbType, DbType)>>(() =>
         {
-            return new HashSet<(MySqlDbType, DbType)>
-            {
+            return
+            [
                 (MySqlDbType.Binary, DbType.Binary),
                 (MySqlDbType.Bit, DbType.Int64), // If length is 1, then should be "bool"
                 (MySqlDbType.Blob, DbType.Object),
@@ -103,7 +103,7 @@ internal static class MySqlDbTypeConverter
                 (MySqlDbType.VarChar, DbType.String),
                 (MySqlDbType.VarString, DbType.String),
                 (MySqlDbType.Year, DbType.Int16)
-            };
+            ];
         });
         sqlDbTypes = new Lazy<HashSet<(MySqlDbType, SqlDbType)>>(() =>
         {

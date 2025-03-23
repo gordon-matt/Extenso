@@ -1,7 +1,6 @@
-﻿namespace Demo.Extenso.AspNetCore.Mvc.OData.Models.ManageViewModels
+﻿namespace Demo.Extenso.AspNetCore.Mvc.OData.Models.ManageViewModels;
+
+public class ShowRecoveryCodesViewModel
 {
-    public class ShowRecoveryCodesViewModel
-    {
-        public string[] RecoveryCodes { get; set; }
-    }
+    public string[] RecoveryCodes { get; set; }
 }

@@ -25,5 +25,5 @@ public partial class Department
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<EmployeeDepartmentHistory> EmployeeDepartmentHistories { get; } = new List<EmployeeDepartmentHistory>();
+    public virtual ICollection<EmployeeDepartmentHistory> EmployeeDepartmentHistories { get; } = [];
 }

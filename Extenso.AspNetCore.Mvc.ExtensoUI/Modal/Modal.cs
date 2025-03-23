@@ -1,31 +1,24 @@
 ﻿using System;
 using System.IO;
 
-namespace Extenso.AspNetCore.Mvc.ExtensoUI
+namespace Extenso.AspNetCore.Mvc.ExtensoUI;
+
+public class Modal : HtmlElement
 {
-    public class Modal : HtmlElement
+    public string Id { get; private set; }
+
+    public Modal(string id = null, object htmlAttributes = null)
+        : base(htmlAttributes)
     {
-        public string Id { get; private set; }
-
-        public Modal(string id = null, object htmlAttributes = null)
-            : base(htmlAttributes)
+        if (string.IsNullOrEmpty(id))
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                id = $"modal-{Guid.NewGuid()}";
-            }
-            Id = id;
-            EnsureHtmlAttribute("id", Id);
+            id = $"modal-{Guid.NewGuid()}";
         }
-
-        protected internal override void StartTag(TextWriter textWriter)
-        {
-            Provider.ModalProvider.BeginModal(this, textWriter);
-        }
-
-        protected internal override void EndTag(TextWriter textWriter)
-        {
-            Provider.ModalProvider.EndModal(this, textWriter);
-        }
+        Id = id;
+        EnsureHtmlAttribute("id", Id);
     }
+
+    protected internal override void StartTag(TextWriter textWriter) => Provider.ModalProvider.BeginModal(this, textWriter);
+
+    protected internal override void EndTag(TextWriter textWriter) => Provider.ModalProvider.EndModal(this, textWriter);
 }

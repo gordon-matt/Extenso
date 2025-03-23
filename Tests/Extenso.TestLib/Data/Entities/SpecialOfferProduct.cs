@@ -27,7 +27,7 @@ public partial class SpecialOfferProduct
 
     public virtual Product Product { get; set; }
 
-    public virtual ICollection<SalesOrderDetail> SalesOrderDetails { get; } = new List<SalesOrderDetail>();
+    public virtual ICollection<SalesOrderDetail> SalesOrderDetails { get; } = [];
 
     public virtual SpecialOffer SpecialOffer { get; set; }
 }

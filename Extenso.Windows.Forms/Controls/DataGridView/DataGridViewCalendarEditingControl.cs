@@ -35,8 +35,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public object EditingControlFormattedValue
     {
-        get
-        { return this.Value.ToString("O"); }
+        get => this.Value.ToString("O");
         set
         {
             if (value is string)
@@ -46,17 +45,11 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
     // Implements the IDataGridViewEditingControl
     // .EditingPanelCursor property.
-    public Cursor EditingPanelCursor
-    {
-        get { return base.Cursor; }
-    }
+    public Cursor EditingPanelCursor => base.Cursor;
 
     // Implements the IDataGridViewEditingControl
     // .RepositionEditingControlOnValueChange property.
-    public bool RepositionEditingControlOnValueChange
-    {
-        get { return false; }
-    }
+    public bool RepositionEditingControlOnValueChange => false;
 
     // Implements the
     // IDataGridViewEditingControl.ApplyCellStyleToEditingControl method.
@@ -85,8 +78,8 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
             case Keys.Delete:
             case Keys.Back:
-                DataGridViewCell CurCell = this.EditingControlDataGridView.CurrentCell;
-                if ((CurCell != null))
+                var CurCell = this.EditingControlDataGridView.CurrentCell;
+                if (CurCell != null)
                 { CurCell.Value = DBNull.Value; }
                 if (DataGridViewCalendarColumnDateFormat.DateTimePickerFormat != DateTimePickerFormat.Custom)
                 { this.Format = DateTimePickerFormat.Custom; }
@@ -99,8 +92,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
     // Implements the
     // IDataGridViewEditingControl.GetEditingControlFormattedValue method.
-    public object GetEditingControlFormattedValue(DataGridViewDataErrorContexts dataGridViewDataErrorContexts)
-    { return EditingControlFormattedValue; }
+    public object GetEditingControlFormattedValue(DataGridViewDataErrorContexts dataGridViewDataErrorContexts) => EditingControlFormattedValue;
 
     // Implements the IDataGridViewEditingControl.PrepareEditingControlForEdit
     // method.
@@ -109,10 +101,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
         // No preparation needs to be done.
     }
 
-    protected override void OnPaint(PaintEventArgs e)
-    {
-        base.OnPaint(e);
-    }
+    protected override void OnPaint(PaintEventArgs e) => base.OnPaint(e);
 
     protected override void OnValueChanged(EventArgs eventargs)
     {

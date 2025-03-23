@@ -20,9 +20,9 @@ public partial class BusinessEntity
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<BusinessEntityAddress> BusinessEntityAddresses { get; } = new List<BusinessEntityAddress>();
+    public virtual ICollection<BusinessEntityAddress> BusinessEntityAddresses { get; } = [];
 
-    public virtual ICollection<BusinessEntityContact> BusinessEntityContacts { get; } = new List<BusinessEntityContact>();
+    public virtual ICollection<BusinessEntityContact> BusinessEntityContacts { get; } = [];
 
     public virtual Person Person { get; set; }
 

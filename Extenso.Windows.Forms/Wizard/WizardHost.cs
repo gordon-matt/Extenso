@@ -13,7 +13,7 @@ public partial class WizardHost : Form
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool NavigationEnabled
     {
-        get { return navigationEnabled; }
+        get => navigationEnabled;
         set
         {
             btnFirst.Enabled = value;
@@ -27,15 +27,15 @@ public partial class WizardHost : Form
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowFirstButton
     {
-        get { return btnFirst.Visible; }
-        set { btnFirst.Visible = value; }
+        get => btnFirst.Visible;
+        set => btnFirst.Visible = value;
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowLastButton
     {
-        get { return btnLast.Visible; }
-        set { btnLast.Visible = value; }
+        get => btnLast.Visible;
+        set => btnLast.Visible = value;
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
@@ -56,14 +56,11 @@ public partial class WizardHost : Form
     public WizardHost()
     {
         InitializeComponent();
-        WizardPages = new WizardPageCollection();
+        WizardPages = [];
         WizardPages.WizardPageLocationChanged += new WizardPageCollection.WizardPageLocationChangedEventHanlder(WizardPages_WizardPageLocationChanged);
     }
 
-    private void WizardPages_WizardPageLocationChanged(WizardPageLocationChangedEventArgs e)
-    {
-        LoadNextPage(e.PageIndex, e.PreviousPageIndex, true);
-    }
+    private void WizardPages_WizardPageLocationChanged(WizardPageLocationChangedEventArgs e) => LoadNextPage(e.PageIndex, e.PreviousPageIndex, true);
 
     #endregion Constructor & Window Event Handlers
 
@@ -77,14 +74,7 @@ public partial class WizardHost : Form
         btnNext.Visible = true;
 
         btnLast.Text = "Last >>";
-        if (ShowLastButton)
-        {
-            btnLast.Enabled = true;
-        }
-        else
-        {
-            btnLast.Enabled = false;
-        }
+        btnLast.Enabled = ShowLastButton;
 
         #endregion Reset
 
@@ -168,22 +158,17 @@ public partial class WizardHost : Form
         }
     }
 
-    public void LoadWizard()
-    {
-        WizardPages.MovePageFirst();
-    }
+    public void LoadWizard() => WizardPages.MovePageFirst();
 
     #endregion Public Methods
 
     #region Event Handlers
 
-    private void btnFirst_Click(object sender, EventArgs e)
-    {
+    private void btnFirst_Click(object sender, EventArgs e) =>
         //if (!CheckPageIsValid()) //Maybe doesn't matter if move back; only matters if move forward
         //{ return; }
 
         WizardPages.MovePageFirst();
-    }
 
     private void btnLast_Click(object sender, EventArgs e)
     {
@@ -217,13 +202,11 @@ public partial class WizardHost : Form
         }
     }
 
-    private void btnPrevious_Click(object sender, EventArgs e)
-    {
+    private void btnPrevious_Click(object sender, EventArgs e) =>
         //if (!CheckPageIsValid()) //Maybe doesn't matter if move back; only matters if move forward
         //{ return; }
 
         WizardPages.MovePagePrevious();
-    }
 
     #endregion Event Handlers
 }

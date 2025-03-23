@@ -35,5 +35,5 @@ public partial class ProductPhoto
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<ProductProductPhoto> ProductProductPhotos { get; } = new List<ProductProductPhoto>();
+    public virtual ICollection<ProductProductPhoto> ProductProductPhotos { get; } = [];
 }

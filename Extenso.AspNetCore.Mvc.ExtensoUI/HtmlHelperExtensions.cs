@@ -2,48 +2,41 @@
 using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Extenso.AspNetCore.Mvc.ExtensoUI
+namespace Extenso.AspNetCore.Mvc.ExtensoUI;
+
+public static class HtmlHelperExtensions
 {
-    public static class HtmlHelperExtensions
+    public static ExtensoUI<TModel> ExtensoUI<TModel>(this IHtmlHelper<TModel> htmlHelper, IExtensoUIProvider provider = null)
     {
-        public static ExtensoUI<TModel> ExtensoUI<TModel>(this IHtmlHelper<TModel> htmlHelper, IExtensoUIProvider provider = null)
+        if (provider != null)
         {
-            if (provider != null)
-            {
-                return new ExtensoUI<TModel>(htmlHelper, provider);
-            }
-
-            string areaName = (string)htmlHelper.ViewContext.RouteData.DataTokens["area"];
-            if (!string.IsNullOrEmpty(areaName) && ExtensoUISettings.AreaUIProviders.ContainsKey(areaName))
-            {
-                return new ExtensoUI<TModel>(htmlHelper, ExtensoUISettings.AreaUIProviders[areaName]);
-            }
-
-            return new ExtensoUI<TModel>(htmlHelper);
+            return new ExtensoUI<TModel>(htmlHelper, provider);
         }
 
-        internal static void EnsureCssClass(this IDictionary<string, object> htmlAttributes, string className)
-        {
-            htmlAttributes.EnsureHtmlAttribute("class", className, false);
-        }
+        string areaName = (string)htmlHelper.ViewContext.RouteData.DataTokens["area"];
+        return !string.IsNullOrEmpty(areaName) && ExtensoUISettings.AreaUIProviders.ContainsKey(areaName)
+            ? new ExtensoUI<TModel>(htmlHelper, ExtensoUISettings.AreaUIProviders[areaName])
+            : new ExtensoUI<TModel>(htmlHelper);
+    }
 
-        internal static void EnsureHtmlAttribute(this IDictionary<string, object> htmlAttributes, string key, string value, bool replaceExisting = true)
+    internal static void EnsureCssClass(this IDictionary<string, object> htmlAttributes, string className) => htmlAttributes.EnsureHtmlAttribute("class", className, false);
+
+    internal static void EnsureHtmlAttribute(this IDictionary<string, object> htmlAttributes, string key, string value, bool replaceExisting = true)
+    {
+        if (htmlAttributes.ContainsKey(key))
         {
-            if (htmlAttributes.ContainsKey(key))
+            if (replaceExisting)
             {
-                if (replaceExisting)
-                {
-                    htmlAttributes[key] = value;
-                }
-                else
-                {
-                    htmlAttributes[key] += $" {value}";
-                }
+                htmlAttributes[key] = value;
             }
             else
             {
-                htmlAttributes.Add(key, value);
+                htmlAttributes[key] += $" {value}";
             }
+        }
+        else
+        {
+            htmlAttributes.Add(key, value);
         }
     }
 }

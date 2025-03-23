@@ -7,23 +7,22 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Extenso.AspNetCore.Mvc.ExtensoUI
+namespace Extenso.AspNetCore.Mvc.ExtensoUI;
+
+public static class ApplicationBuilderExtensions
 {
-    public static class ApplicationBuilderExtensions
+    public static void UseExtensoUI<TProvider>(this IApplicationBuilder app)
+        where TProvider : BaseUIProvider, new()
     {
-        public static void UseExtensoUI<TProvider>(this IApplicationBuilder app)
-            where TProvider : BaseUIProvider, new()
-        {
-            var actionContext = new ActionContext(
-                new DefaultHttpContext { RequestServices = app.ApplicationServices },
-                new RouteData(),
-                new ActionDescriptor());
+        var actionContext = new ActionContext(
+            new DefaultHttpContext { RequestServices = app.ApplicationServices },
+            new RouteData(),
+            new ActionDescriptor());
 
-            var urlHelperFactory = app.ApplicationServices.GetRequiredService<IUrlHelperFactory>();
-            Internal.UrlHelper = urlHelperFactory.GetUrlHelper(actionContext);
+        var urlHelperFactory = app.ApplicationServices.GetRequiredService<IUrlHelperFactory>();
+        Internal.UrlHelper = urlHelperFactory.GetUrlHelper(actionContext);
 
-            var provider = new TProvider();
-            ExtensoUISettings.Init(provider, provider);
-        }
+        var provider = new TProvider();
+        ExtensoUISettings.Init(provider, provider);
     }
 }

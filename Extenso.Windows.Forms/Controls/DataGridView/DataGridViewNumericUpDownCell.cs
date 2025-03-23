@@ -40,10 +40,10 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         DataGridViewContentAlignment.BottomRight;
 
     // Type of this cell's editing control
-    private static Type defaultEditType = typeof(DataGridViewNumericUpDownEditingControl);
+    private static readonly Type defaultEditType = typeof(DataGridViewNumericUpDownEditingControl);
 
     // Type of this cell's value. The formatted value type is string, the same as the base class DataGridViewTextBoxCell
-    private static Type defaultValueType = typeof(System.Decimal);
+    private static readonly Type defaultValueType = typeof(System.Decimal);
 
     // The NumericUpDown control used to paint the non-edited cells via a call to NumericUpDown.DrawToBitmap
     [ThreadStatic]
@@ -73,20 +73,16 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     public DataGridViewNumericUpDownCell()
     {
         // Create a thread specific bitmap used for the painting of the non-edited cells
-        if (renderingBitmap == null)
-        {
-            renderingBitmap = new Bitmap(DATAGRIDVIEWNUMERICUPDOWNCELL_defaultRenderingBitmapWidth, DATAGRIDVIEWNUMERICUPDOWNCELL_defaultRenderingBitmapHeight);
-        }
+        renderingBitmap ??= new Bitmap(DATAGRIDVIEWNUMERICUPDOWNCELL_defaultRenderingBitmapWidth, DATAGRIDVIEWNUMERICUPDOWNCELL_defaultRenderingBitmapHeight);
 
         // Create a thread specific NumericUpDown control used for the painting of the non-edited cells
-        if (paintingNumericUpDown == null)
+        paintingNumericUpDown ??= new NumericUpDown
         {
-            paintingNumericUpDown = new NumericUpDown();
             // Some properties only need to be set once for the lifetime of the control:
-            paintingNumericUpDown.BorderStyle = BorderStyle.None;
-            paintingNumericUpDown.Maximum = Decimal.MaxValue / 10;
-            paintingNumericUpDown.Minimum = Decimal.MinValue / 10;
-        }
+            BorderStyle = BorderStyle.None,
+            Maximum = Decimal.MaxValue / 10,
+            Minimum = Decimal.MinValue / 10
+        };
 
         // Set the default values of the properties:
         this.decimalPlaces = DATAGRIDVIEWNUMERICUPDOWNCELL_defaultDecimalPlaces;
@@ -105,14 +101,11 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     ]
     public int DecimalPlaces
     {
-        get
-        {
-            return this.decimalPlaces;
-        }
+        get => this.decimalPlaces;
 
         set
         {
-            if (value < 0 || value > 99)
+            if (value is < 0 or > 99)
             {
                 throw new ArgumentOutOfRangeException("The DecimalPlaces property cannot be smaller than 0 or larger than 99.");
             }
@@ -127,23 +120,14 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// <summary>
     /// Define the type of the cell's editing control
     /// </summary>
-    public override Type EditType
-    {
-        get
-        {
-            return defaultEditType; // the type is DataGridViewNumericUpDownEditingControl
-        }
-    }
+    public override Type EditType => defaultEditType; // the type is DataGridViewNumericUpDownEditingControl
 
     /// <summary>
     /// The Increment property replicates the one from the NumericUpDown control
     /// </summary>
     public Decimal Increment
     {
-        get
-        {
-            return this.increment;
-        }
+        get => this.increment;
 
         set
         {
@@ -161,10 +145,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// </summary>
     public Decimal Maximum
     {
-        get
-        {
-            return this.maximum;
-        }
+        get => this.maximum;
 
         set
         {
@@ -181,10 +162,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// </summary>
     public Decimal Minimum
     {
-        get
-        {
-            return this.minimum;
-        }
+        get => this.minimum;
 
         set
         {
@@ -204,10 +182,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     ]
     public bool ThousandsSeparator
     {
-        get
-        {
-            return this.thousandsSeparator;
-        }
+        get => this.thousandsSeparator;
 
         set
         {
@@ -226,32 +201,22 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     {
         get
         {
-            Type valueType = base.ValueType;
-            if (valueType != null)
-            {
-                return valueType;
-            }
-            return defaultValueType;
+            var valueType = base.ValueType;
+            return valueType ?? defaultValueType;
         }
     }
 
     /// <summary>
     /// Returns the current DataGridView EditingControl as a DataGridViewNumericUpDownEditingControl control
     /// </summary>
-    private DataGridViewNumericUpDownEditingControl EditingNumericUpDown
-    {
-        get
-        {
-            return this.DataGridView.EditingControl as DataGridViewNumericUpDownEditingControl;
-        }
-    }
+    private DataGridViewNumericUpDownEditingControl EditingNumericUpDown => this.DataGridView.EditingControl as DataGridViewNumericUpDownEditingControl;
 
     /// <summary>
     /// Clones a DataGridViewNumericUpDownCell cell, copies all the custom properties.
     /// </summary>
     public override object Clone()
     {
-        DataGridViewNumericUpDownCell dataGridViewCell = base.Clone() as DataGridViewNumericUpDownCell;
+        var dataGridViewCell = base.Clone() as DataGridViewNumericUpDownCell;
         if (dataGridViewCell != null)
         {
             dataGridViewCell.DecimalPlaces = this.DecimalPlaces;
@@ -271,25 +236,21 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     ]
     public override void DetachEditingControl()
     {
-        DataGridView dataGridView = this.DataGridView;
+        var dataGridView = this.DataGridView;
         if (dataGridView == null || dataGridView.EditingControl == null)
         {
             throw new InvalidOperationException("Cell is detached or its grid has no editing control.");
         }
 
-        NumericUpDown numericUpDown = dataGridView.EditingControl as NumericUpDown;
-        if (numericUpDown != null)
+        if (dataGridView.EditingControl is NumericUpDown numericUpDown)
         {
             // Editing controls get recycled. Indeed, when a DataGridViewNumericUpDownCell cell gets edited
             // after another DataGridViewNumericUpDownCell cell, the same editing control gets reused for
             // performance reasons (to avoid an unnecessary control destruction and creation).
             // Here the undo buffer of the TextBox inside the NumericUpDown control gets cleared to avoid
             // interferences between the editing sessions.
-            TextBox textBox = numericUpDown.Controls[1] as TextBox;
-            if (textBox != null)
-            {
-                textBox.ClearUndo();
-            }
+            var textBox = numericUpDown.Controls[1] as TextBox;
+            textBox?.ClearUndo();
         }
 
         base.DetachEditingControl();
@@ -303,8 +264,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
     {
         base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
-        NumericUpDown numericUpDown = this.DataGridView.EditingControl as NumericUpDown;
-        if (numericUpDown != null)
+        if (this.DataGridView.EditingControl is NumericUpDown numericUpDown)
         {
             numericUpDown.BorderStyle = BorderStyle.None;
             numericUpDown.DecimalPlaces = this.DecimalPlaces;
@@ -312,15 +272,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
             numericUpDown.Maximum = this.Maximum;
             numericUpDown.Minimum = this.Minimum;
             numericUpDown.ThousandsSeparator = this.ThousandsSeparator;
-            string initialFormattedValueStr = initialFormattedValue as string;
-            if (initialFormattedValueStr == null)
-            {
-                numericUpDown.Text = string.Empty;
-            }
-            else
-            {
-                numericUpDown.Text = initialFormattedValueStr;
-            }
+            numericUpDown.Text = initialFormattedValue is not string initialFormattedValueStr ? string.Empty : initialFormattedValueStr;
         }
     }
 
@@ -331,23 +283,19 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// </summary>
     public override bool KeyEntersEditMode(KeyEventArgs e)
     {
-        NumberFormatInfo numberFormatInfo = System.Globalization.CultureInfo.CurrentCulture.NumberFormat;
-        Keys negativeSignKey = Keys.None;
+        var numberFormatInfo = System.Globalization.CultureInfo.CurrentCulture.NumberFormat;
+        var negativeSignKey = Keys.None;
         string negativeSignStr = numberFormatInfo.NegativeSign;
         if (!string.IsNullOrEmpty(negativeSignStr) && negativeSignStr.Length == 1)
         {
-            negativeSignKey = (Keys)(VkKeyScan(negativeSignStr[0]));
+            negativeSignKey = (Keys)VkKeyScan(negativeSignStr[0]);
         }
 
-        if ((char.IsDigit((char)e.KeyCode) ||
+        return (char.IsDigit((char)e.KeyCode) ||
              (e.KeyCode >= Keys.NumPad0 && e.KeyCode <= Keys.NumPad9) ||
              negativeSignKey == e.KeyCode ||
              Keys.Subtract == e.KeyCode) &&
-            !e.Shift && !e.Alt && !e.Control)
-        {
-            return true;
-        }
-        return false;
+            !e.Shift && !e.Alt && !e.Control;
     }
 
     /// <summary>
@@ -359,7 +307,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         bool singleVerticalBorderAdded, bool singleHorizontalBorderAdded,
         bool isFirstDisplayedColumn, bool isFirstDisplayedRow)
     {
-        Rectangle editingControlBounds = PositionEditingPanel(cellBounds,
+        var editingControlBounds = PositionEditingPanel(cellBounds,
                                                     cellClip,
                                                     cellStyle,
                                                     singleVerticalBorderAdded,
@@ -374,30 +322,15 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// <summary>
     /// Returns a standard textual representation of the cell.
     /// </summary>
-    public override string ToString()
-    {
-        return "DataGridViewNumericUpDownCell { ColumnIndex=" + ColumnIndex.ToString(CultureInfo.CurrentCulture) + ", RowIndex=" + RowIndex.ToString(CultureInfo.CurrentCulture) + " }";
-    }
+    public override string ToString() => "DataGridViewNumericUpDownCell { ColumnIndex=" + ColumnIndex.ToString(CultureInfo.CurrentCulture) + ", RowIndex=" + RowIndex.ToString(CultureInfo.CurrentCulture) + " }";
 
     /// <summary>
     /// Little utility function used by both the cell and column types to translate a DataGridViewContentAlignment value into
     /// a HorizontalAlignment value.
     /// </summary>
-    internal static HorizontalAlignment TranslateAlignment(DataGridViewContentAlignment align)
-    {
-        if ((align & anyRight) != 0)
-        {
-            return HorizontalAlignment.Right;
-        }
-        else if ((align & anyCenter) != 0)
-        {
-            return HorizontalAlignment.Center;
-        }
-        else
-        {
-            return HorizontalAlignment.Left;
-        }
-    }
+    internal static HorizontalAlignment TranslateAlignment(DataGridViewContentAlignment align) => (align & anyRight) != 0
+            ? HorizontalAlignment.Right
+            : (align & anyCenter) != 0 ? HorizontalAlignment.Center : HorizontalAlignment.Left;
 
     /// <summary>
     /// Utility function that sets a new value for the DecimalPlaces property of the cell. This function is used by
@@ -408,7 +341,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// </summary>
     internal void SetDecimalPlaces(int rowIndex, int value)
     {
-        Debug.Assert(value >= 0 && value <= 99);
+        Debug.Assert(value is >= 0 and <= 99);
         this.decimalPlaces = value;
         if (OwnsEditingNumericUpDown(rowIndex))
         {
@@ -509,15 +442,8 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     {
         const int ButtonsWidth = 16;
 
-        Rectangle errorIconBounds = base.GetErrorIconBounds(graphics, cellStyle, rowIndex);
-        if (this.DataGridView.RightToLeft == RightToLeft.Yes)
-        {
-            errorIconBounds.X = errorIconBounds.Left + ButtonsWidth;
-        }
-        else
-        {
-            errorIconBounds.X = errorIconBounds.Left - ButtonsWidth;
-        }
+        var errorIconBounds = base.GetErrorIconBounds(graphics, cellStyle, rowIndex);
+        errorIconBounds.X = this.DataGridView.RightToLeft == RightToLeft.Yes ? errorIconBounds.Left + ButtonsWidth : errorIconBounds.Left - ButtonsWidth;
         return errorIconBounds;
     }
 
@@ -558,7 +484,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
             return new Size(-1, -1);
         }
 
-        Size preferredSize = base.GetPreferredSize(graphics, cellStyle, rowIndex, constraintSize);
+        var preferredSize = base.GetPreferredSize(graphics, cellStyle, rowIndex, constraintSize);
         if (constraintSize.Width == 0)
         {
             const int ButtonsWidth = 16; // Account for the width of the up/down buttons.
@@ -589,7 +515,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle,
                    paintParts & ~(DataGridViewPaintParts.ErrorIcon | DataGridViewPaintParts.ContentForeground));
 
-        Point ptCurrentCell = this.DataGridView.CurrentCellAddress;
+        var ptCurrentCell = this.DataGridView.CurrentCellAddress;
         bool cellCurrent = ptCurrentCell.X == this.ColumnIndex && ptCurrentCell.Y == rowIndex;
         bool cellEdited = cellCurrent && this.DataGridView.EditingControl != null;
 
@@ -600,8 +526,8 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
             {
                 // Paint a NumericUpDown control
                 // Take the borders into account
-                Rectangle borderWidths = BorderWidths(advancedBorderStyle);
-                Rectangle valBounds = cellBounds;
+                var borderWidths = BorderWidths(advancedBorderStyle);
+                var valBounds = cellBounds;
                 valBounds.Offset(borderWidths.X, borderWidths.Y);
                 valBounds.Width -= borderWidths.Right;
                 valBounds.Height -= borderWidths.Bottom;
@@ -647,15 +573,9 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
                 paintingNumericUpDown.Location = new Point(0, -paintingNumericUpDown.Height - 100);
                 paintingNumericUpDown.Text = formattedValue as string;
 
-                Color backColor;
-                if (PartPainted(paintParts, DataGridViewPaintParts.SelectionBackground) && cellSelected)
-                {
-                    backColor = cellStyle.SelectionBackColor;
-                }
-                else
-                {
-                    backColor = cellStyle.BackColor;
-                }
+                var backColor = PartPainted(paintParts, DataGridViewPaintParts.SelectionBackground) && cellSelected
+                    ? cellStyle.SelectionBackColor
+                    : cellStyle.BackColor;
                 if (PartPainted(paintParts, DataGridViewPaintParts.Background))
                 {
                     if (backColor.A < 255)
@@ -666,7 +586,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
                     paintingNumericUpDown.BackColor = backColor;
                 }
                 // Finally paint the NumericUpDown control
-                Rectangle srcRect = new Rectangle(0, 0, valBounds.Width, valBounds.Height);
+                var srcRect = new Rectangle(0, 0, valBounds.Width, valBounds.Height);
                 if (srcRect.Width > 0 && srcRect.Height > 0)
                 {
                     paintingNumericUpDown.DrawToBitmap(renderingBitmap, srcRect);
@@ -686,10 +606,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// <summary>
     /// Little utility function called by the Paint function to see if a particular part needs to be painted.
     /// </summary>
-    private static bool PartPainted(DataGridViewPaintParts paintParts, DataGridViewPaintParts paintPart)
-    {
-        return (paintParts & paintPart) != 0;
-    }
+    private static bool PartPainted(DataGridViewPaintParts paintParts, DataGridViewPaintParts paintPart) => (paintParts & paintPart) != 0;
 
     // Used in KeyEntersEditMode function
     [System.Runtime.InteropServices.DllImport("USER32.DLL", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
@@ -777,13 +694,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// Determines whether this cell, at the given row index, shows the grid's editing control or not.
     /// The row index needs to be provided as a parameter because this cell may be shared among multiple rows.
     /// </summary>
-    private bool OwnsEditingNumericUpDown(int rowIndex)
-    {
-        if (rowIndex == -1 || this.DataGridView == null)
-        {
-            return false;
-        }
-        DataGridViewNumericUpDownEditingControl numericUpDownEditingControl = this.DataGridView.EditingControl as DataGridViewNumericUpDownEditingControl;
-        return numericUpDownEditingControl != null && rowIndex == ((IDataGridViewEditingControl)numericUpDownEditingControl).EditingControlRowIndex;
-    }
+    private bool OwnsEditingNumericUpDown(int rowIndex) => rowIndex == -1 || this.DataGridView == null
+            ? false
+            : this.DataGridView.EditingControl is DataGridViewNumericUpDownEditingControl numericUpDownEditingControl && rowIndex == ((IDataGridViewEditingControl)numericUpDownEditingControl).EditingControlRowIndex;
 }

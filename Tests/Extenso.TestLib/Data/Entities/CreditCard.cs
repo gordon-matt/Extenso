@@ -35,7 +35,7 @@ public partial class CreditCard
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<PersonCreditCard> PersonCreditCards { get; } = new List<PersonCreditCard>();
+    public virtual ICollection<PersonCreditCard> PersonCreditCards { get; } = [];
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = [];
 }

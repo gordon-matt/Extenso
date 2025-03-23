@@ -5,10 +5,6 @@ namespace Extenso.Windows.Forms.Controls;
 [ToolboxItem(false)]
 internal class DataGridViewMultiLineTextBoxEditingControl : TextBox, IDataGridViewEditingControl
 {
-    private DataGridView dataGridView;
-    private int rowIndex;
-    private bool valueChanged = false;
-
     public DataGridViewMultiLineTextBoxEditingControl()
     {
         this.Multiline = DataGridViewMultiLineTextBoxOptions.multiline;
@@ -19,27 +15,14 @@ internal class DataGridViewMultiLineTextBoxEditingControl : TextBox, IDataGridVi
     // Implements the IDataGridViewEditingControl
     // .EditingControlDataGridView property.
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-    public DataGridView EditingControlDataGridView
-    {
-        get
-        {
-            return dataGridView;
-        }
-        set
-        {
-            dataGridView = value;
-        }
-    }
+    public DataGridView EditingControlDataGridView { get; set; }
 
     // Implements the IDataGridViewEditingControl.EditingControlFormattedValue
     // property.
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public object EditingControlFormattedValue
     {
-        get
-        {
-            return this.Text;
-        }
+        get => this.Text;
         set
         {
             if (value is String)
@@ -52,92 +35,39 @@ internal class DataGridViewMultiLineTextBoxEditingControl : TextBox, IDataGridVi
     // Implements the IDataGridViewEditingControl.EditingControlRowIndex
     // property.
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-    public int EditingControlRowIndex
-    {
-        get
-        {
-            return rowIndex;
-        }
-        set
-        {
-            rowIndex = value;
-        }
-    }
+    public int EditingControlRowIndex { get; set; }
 
     // Implements the IDataGridViewEditingControl
     // .EditingControlValueChanged property.
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-    public bool EditingControlValueChanged
-    {
-        get
-        {
-            return valueChanged;
-        }
-        set
-        {
-            valueChanged = value;
-        }
-    }
+    public bool EditingControlValueChanged { get; set; } = false;
 
     // Implements the IDataGridViewEditingControl
     // .EditingPanelCursor property.
-    public Cursor EditingPanelCursor
-    {
-        get
-        {
-            return base.Cursor;
-        }
-    }
+    public Cursor EditingPanelCursor => base.Cursor;
 
     // Implements the IDataGridViewEditingControl
     // .RepositionEditingControlOnValueChange property.
-    public bool RepositionEditingControlOnValueChange
-    {
-        get
-        {
-            return false;
-        }
-    }
+    public bool RepositionEditingControlOnValueChange => false;
 
     // Implements the
     // IDataGridViewEditingControl.ApplyCellStyleToEditingControl method.
     public void ApplyCellStyleToEditingControl(
-        DataGridViewCellStyle dataGridViewCellStyle)
-    {
-        this.Font = dataGridViewCellStyle.Font;
-    }
+        DataGridViewCellStyle dataGridViewCellStyle) => this.Font = dataGridViewCellStyle.Font;
 
     // Implements the IDataGridViewEditingControl.EditingControlWantsInputKey
     // method.
     public bool EditingControlWantsInputKey(
-        Keys key, bool dataGridViewWantsInputKey)
-    {
-        switch (key & Keys.KeyCode)
+        Keys key, bool dataGridViewWantsInputKey) => (key & Keys.KeyCode) switch
         {
-            case Keys.Left:
-            case Keys.Up:
-            case Keys.Down:
-            case Keys.Right:
-            case Keys.Home:
-            case Keys.End:
-            case Keys.PageDown:
-            case Keys.PageUp:
-            case Keys.Delete:
-            case Keys.Back:
-                return true;
-
-            default:
-                return false;
-        }
-    }
+            Keys.Left or Keys.Up or Keys.Down or Keys.Right or Keys.Home or Keys.End or Keys.PageDown or Keys.PageUp or Keys.Delete or Keys.Back => true,
+            _ => false,
+        };
 
     // Implements the
     // IDataGridViewEditingControl.GetEditingControlFormattedValue method.
     public object GetEditingControlFormattedValue(
-        DataGridViewDataErrorContexts context)
-    {
-        return EditingControlFormattedValue;
-    }
+        DataGridViewDataErrorContexts context) => EditingControlFormattedValue;
 
     // Implements the IDataGridViewEditingControl.PrepareEditingControlForEdit
     // method.
@@ -150,7 +80,7 @@ internal class DataGridViewMultiLineTextBoxEditingControl : TextBox, IDataGridVi
     {
         // Notify the DataGridView that the contents of the cell
         // have changed.
-        valueChanged = true;
+        EditingControlValueChanged = true;
         this.EditingControlDataGridView.NotifyCurrentCellDirty(true);
         base.OnTextChanged(e);
     }

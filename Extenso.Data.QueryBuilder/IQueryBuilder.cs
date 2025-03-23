@@ -3,10 +3,9 @@
 // Email: 4ewout@gmail.com
 // The version used in here has been heavily modified from the original
 
-namespace Extenso.Data.QueryBuilder
+namespace Extenso.Data.QueryBuilder;
+
+public interface IQueryBuilder
 {
-    public interface IQueryBuilder
-    {
-        string BuildQuery();
-    }
+    string BuildQuery();
 }

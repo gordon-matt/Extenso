@@ -4,36 +4,35 @@ using Demo.Extenso.AspNetCore.Mvc.OData.Data.Entities;
 using Extenso.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers
+namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers;
+
+[Route("people")]
+public class PersonController : Controller
 {
-    [Route("people")]
-    public class PersonController : Controller
+    private readonly IRepository<Person> personRepository;
+
+    public PersonController(IRepository<Person> personRepository)
     {
-        private readonly IRepository<Person> personRepository;
+        this.personRepository = personRepository;
+    }
 
-        public PersonController(IRepository<Person> personRepository)
+    [Route("")]
+    public IActionResult Index()
+    {
+        if (personRepository.Count() == 0)
         {
-            this.personRepository = personRepository;
-        }
+            // Populate for testing purposes
 
-        [Route("")]
-        public IActionResult Index()
-        {
-            if (personRepository.Count() == 0)
+            var people = new List<Person>
             {
-                // Populate for testing purposes
+                new() { FamilyName = "Jordan", GivenNames = "Michael", DateOfBirth = new DateTime(1963, 2, 17) },
+                new() { FamilyName = "Johnson", GivenNames = "Dwayne", DateOfBirth = new DateTime(1972, 5, 2) },
+                new() { FamilyName = "Froning", GivenNames = "Rich", DateOfBirth = new DateTime(1987, 7, 21) }
+            };
 
-                var people = new List<Person>
-                {
-                    new Person { FamilyName = "Jordan", GivenNames = "Michael", DateOfBirth = new DateTime(1963, 2, 17) },
-                    new Person { FamilyName = "Johnson", GivenNames = "Dwayne", DateOfBirth = new DateTime(1972, 5, 2) },
-                    new Person { FamilyName = "Froning", GivenNames = "Rich", DateOfBirth = new DateTime(1987, 7, 21) }
-                };
-
-                personRepository.Insert(people);
-            }
-
-            return View();
+            personRepository.Insert(people);
         }
+
+        return View();
     }
 }

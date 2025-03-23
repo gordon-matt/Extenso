@@ -2,76 +2,57 @@
 using Extenso.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Extenso.AspNetCore.Mvc.ExtensoUI
+namespace Extenso.AspNetCore.Mvc.ExtensoUI;
+
+public class Bootstrap4TabsProvider : ITabsProvider
 {
-    public class Bootstrap4TabsProvider : ITabsProvider
+    #region ITabsProvider Members
+
+    public void BeginTabs(Tabs tabs, TextWriter writer)
     {
-        #region ITabsProvider Members
+        tabs.EnsureHtmlAttribute("role", "tabpanel");
 
-        public void BeginTabs(Tabs tabs, TextWriter writer)
+        var builder = new TagBuilder("div")
         {
-            tabs.EnsureHtmlAttribute("role", "tabpanel");
+            TagRenderMode = TagRenderMode.StartTag
+        };
 
-            var builder = new TagBuilder("div")
-            {
-                TagRenderMode = TagRenderMode.StartTag
-            };
+        builder.MergeAttributes(tabs.HtmlAttributes);
+        string tag = builder.Build();
 
-            builder.MergeAttributes(tabs.HtmlAttributes);
-            string tag = builder.Build();
-
-            writer.Write(tag);
-        }
-
-        public void BeginTabsHeader(TextWriter writer)
-        {
-            writer.Write(@"<ul class=""nav nav-tabs"" role=""tablist"">");
-        }
-
-        public void BeginTabContent(TextWriter writer)
-        {
-            writer.Write(@"<div class=""tab-content"">");
-        }
-
-        public void BeginTabPanel(TabPanel panel, TextWriter writer)
-        {
-            var builder = new TagBuilder("div")
-            {
-                TagRenderMode = TagRenderMode.StartTag
-            };
-
-            builder.MergeAttribute("id", panel.Id);
-            builder.MergeAttribute("role", "tabpanel");
-            builder.AddCssClass("tab-pane");
-
-            if (panel.IsActive)
-            {
-                builder.AddCssClass("active");
-            }
-
-            writer.Write(builder.Build());
-        }
-
-        public void EndTabPanel(TextWriter writer)
-        {
-            writer.Write("</div>");
-        }
-
-        public void EndTabsHeader(TextWriter writer)
-        {
-            writer.Write("</ul>");
-        }
-
-        public void EndTabs(Tabs tabs, TextWriter writer)
-        {
-            writer.Write("</div></div>");
-        }
-
-        public void WriteTab(TextWriter writer, string label, string tabId, bool isActive)
-        {
-            writer.Write($@"<li role=""presentation"" class=""nav-item""><a class=""nav-link{(isActive ? " active" : string.Empty)}"" href=""#{tabId}"" aria-controls=""{tabId}"" role=""tab"" data-toggle=""tab"">{label}</a></li>");
-        }
-
-        #endregion ITabsProvider Members
+        writer.Write(tag);
     }
+
+    public void BeginTabsHeader(TextWriter writer) => writer.Write(@"<ul class=""nav nav-tabs"" role=""tablist"">");
+
+    public void BeginTabContent(TextWriter writer) => writer.Write(@"<div class=""tab-content"">");
+
+    public void BeginTabPanel(TabPanel panel, TextWriter writer)
+    {
+        var builder = new TagBuilder("div")
+        {
+            TagRenderMode = TagRenderMode.StartTag
+        };
+
+        builder.MergeAttribute("id", panel.Id);
+        builder.MergeAttribute("role", "tabpanel");
+        builder.AddCssClass("tab-pane");
+
+        if (panel.IsActive)
+        {
+            builder.AddCssClass("active");
+        }
+
+        writer.Write(builder.Build());
+    }
+
+    public void EndTabPanel(TextWriter writer) => writer.Write("</div>");
+
+    public void EndTabsHeader(TextWriter writer) => writer.Write("</ul>");
+
+    public void EndTabs(Tabs tabs, TextWriter writer) => writer.Write("</div></div>");
+
+    public void WriteTab(TextWriter writer, string label, string tabId, bool isActive) => writer.Write($@"<li role=""presentation"" class=""nav-item""><a class=""nav-link{(isActive ? " active" : string.Empty)}"" href=""#{tabId}"" aria-controls=""{tabId}"" role=""tab"" data-toggle=""tab"">{label}</a></li>");
+
+    #endregion ITabsProvider Members
 }

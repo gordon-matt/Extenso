@@ -46,81 +46,45 @@ internal class DataGridViewMaskedTextBoxCell : DataGridViewTextBoxCell
     //  Returns the type of the control that will be used for editing
     //  cells of this type.  This control must be a valid Windows Forms
     //  control and must implement IDataGridViewEditingControl.
-    public override Type EditType
-    {
-        get
-        {
-            return typeof(DataGridViewMaskedTextBoxEditingControl);
-        }
-    }
+    public override Type EditType => typeof(DataGridViewMaskedTextBoxEditingControl);
 
     //  A boolean value indicating whether to include literal characters
     //  in the Text property's output value.
     public virtual DataGridViewTriState IncludeLiterals
     {
-        get
-        {
-            return this.includeLiterals;
-        }
-        set
-        {
-            this.includeLiterals = value;
-        }
+        get => this.includeLiterals;
+        set => this.includeLiterals = value;
     }
 
     //  A boolean indicating whether to include prompt characters in
     //  the Text property's value.
     public virtual DataGridViewTriState IncludePrompt
     {
-        get
-        {
-            return this.includePrompt;
-        }
-        set
-        {
-            this.includePrompt = value;
-        }
+        get => this.includePrompt;
+        set => this.includePrompt = value;
     }
 
     //   A string value containing the Mask against input for cells of
     //   this type will be verified.
     public virtual string Mask
     {
-        get
-        {
-            return this.mask;
-        }
-        set
-        {
-            this.mask = value;
-        }
+        get => this.mask;
+        set => this.mask = value;
     }
 
     //  The character to use for prompting for new input.
     //
     public virtual char PromptChar
     {
-        get
-        {
-            return this.promptChar;
-        }
-        set
-        {
-            this.promptChar = value;
-        }
+        get => this.promptChar;
+        set => this.promptChar = value;
     }
 
     //  A Type object for the validating type.
     public virtual Type ValidatingType
     {
-        get
-        {
-            return this.validatingType;
-        }
-        set
-        {
-            this.validatingType = value;
-        }
+        get => this.validatingType;
+        set => this.validatingType = value;
     }
 
     ///   Whenever the user is to begin editing a cell of this type, the editing
@@ -150,14 +114,7 @@ internal class DataGridViewMaskedTextBoxCell : DataGridViewTextBoxCell
             //
             // get the mask from this instance or the parent column.
             //
-            if (string.IsNullOrEmpty(this.mask))
-            {
-                mtbec.Mask = mtbcol.Mask;
-            }
-            else
-            {
-                mtbec.Mask = this.mask;
-            }
+            mtbec.Mask = string.IsNullOrEmpty(this.mask) ? mtbcol.Mask : this.mask;
             //
             // prompt char.
             //
@@ -187,14 +144,7 @@ internal class DataGridViewMaskedTextBoxCell : DataGridViewTextBoxCell
             //
             // Finally, the validating type ...
             //
-            if (this.ValidatingType == null)
-            {
-                mtbec.ValidatingType = mtbcol.ValidatingType;
-            }
-            else
-            {
-                mtbec.ValidatingType = this.ValidatingType;
-            }
+            mtbec.ValidatingType = this.ValidatingType ?? mtbcol.ValidatingType;
 
             mtbec.Text = (string)this.Value;
         }
@@ -202,8 +152,5 @@ internal class DataGridViewMaskedTextBoxCell : DataGridViewTextBoxCell
 
     //   Quick routine to convert from DataGridViewTriState to boolean.
     //   True goes to true while False and NotSet go to false.
-    protected static bool BoolFromTri(DataGridViewTriState tri)
-    {
-        return (tri == DataGridViewTriState.True) ? true : false;
-    }
+    protected static bool BoolFromTri(DataGridViewTriState tri) => (tri == DataGridViewTriState.True) ? true : false;
 }

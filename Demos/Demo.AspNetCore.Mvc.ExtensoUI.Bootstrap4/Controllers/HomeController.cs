@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap4.Controllers
+namespace Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap4.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
-    {
-        [Route("")]
-        public IActionResult Index()
-        {
-            return View();
-        }
-    }
+    [Route("")]
+    public IActionResult Index() => View();
 }

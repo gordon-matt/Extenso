@@ -15,8 +15,7 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
-        get
-        { return base.CellTemplate; }
+        get => base.CellTemplate;
         set
         {
             // Ensure that the cell used for the template is a CalendarCell.
@@ -29,7 +28,7 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string CustomFormat
     {
-        get { return customFormat; }
+        get => customFormat;
         set
         {
             customFormat = value;
@@ -40,7 +39,7 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DateTimePickerFormat DateTimePickerFormat
     {
-        get { return dateTimePickerFormat; }
+        get => dateTimePickerFormat;
         set
         {
             dateTimePickerFormat = value;

@@ -3,13 +3,12 @@
 // Email: 4ewout@gmail.com
 // The version used in here has been heavily modified from the original
 
-namespace Extenso.Data.QueryBuilder
+namespace Extenso.Data.QueryBuilder;
+
+public enum JoinType : byte
 {
-    public enum JoinType : byte
-    {
-        InnerJoin,
-        OuterJoin,
-        LeftJoin,
-        RightJoin
-    }
+    InnerJoin,
+    OuterJoin,
+    LeftJoin,
+    RightJoin
 }

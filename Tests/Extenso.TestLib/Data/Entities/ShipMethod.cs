@@ -35,7 +35,7 @@ public partial class ShipMethod
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<PurchaseOrderHeader> PurchaseOrderHeaders { get; } = new List<PurchaseOrderHeader>();
+    public virtual ICollection<PurchaseOrderHeader> PurchaseOrderHeaders { get; } = [];
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = [];
 }

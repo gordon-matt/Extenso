@@ -59,5 +59,5 @@ public partial class WorkOrder
 
     public virtual ScrapReason ScrapReason { get; set; }
 
-    public virtual ICollection<WorkOrderRouting> WorkOrderRoutings { get; } = new List<WorkOrderRouting>();
+    public virtual ICollection<WorkOrderRouting> WorkOrderRoutings { get; } = [];
 }

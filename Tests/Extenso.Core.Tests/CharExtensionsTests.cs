@@ -1,13 +1,12 @@
-﻿namespace Extenso.Core.Tests
+﻿namespace Extenso.Core.Tests;
+
+public class CharExtensionsTests
 {
-    public class CharExtensionsTests
+    [Fact]
+    public void Repeat()
     {
-        [Fact]
-        public void Repeat()
-        {
-            string expected = "_____";
-            string actual = '_'.Repeat(5);
-            Assert.Equal(expected, actual);
-        }
+        string expected = "_____";
+        string actual = '_'.Repeat(5);
+        Assert.Equal(expected, actual);
     }
 }

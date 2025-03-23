@@ -37,7 +37,7 @@ public partial class Store
 
     public virtual BusinessEntity BusinessEntity { get; set; }
 
-    public virtual ICollection<Customer> Customers { get; } = new List<Customer>();
+    public virtual ICollection<Customer> Customers { get; } = [];
 
     public virtual SalesPerson SalesPerson { get; set; }
 }

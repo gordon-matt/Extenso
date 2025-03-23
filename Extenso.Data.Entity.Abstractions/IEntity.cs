@@ -1,9 +1,8 @@
-﻿namespace Extenso.Data.Entity
+﻿namespace Extenso.Data.Entity;
+
+public interface IEntity
 {
-    public interface IEntity
-    {
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        object[] KeyValues { get; }
-    }
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    object[] KeyValues { get; }
 }

@@ -72,19 +72,19 @@ public partial class Person : IEntity
 
     public virtual BusinessEntity BusinessEntity { get; set; }
 
-    public virtual ICollection<BusinessEntityContact> BusinessEntityContacts { get; } = new List<BusinessEntityContact>();
+    public virtual ICollection<BusinessEntityContact> BusinessEntityContacts { get; } = [];
 
-    public virtual ICollection<Customer> Customers { get; } = new List<Customer>();
+    public virtual ICollection<Customer> Customers { get; } = [];
 
-    public virtual ICollection<EmailAddress> EmailAddresses { get; } = new List<EmailAddress>();
+    public virtual ICollection<EmailAddress> EmailAddresses { get; } = [];
 
     public virtual Employee Employee { get; set; }
 
     public virtual Password Password { get; set; }
 
-    public virtual ICollection<PersonCreditCard> PersonCreditCards { get; } = new List<PersonCreditCard>();
+    public virtual ICollection<PersonCreditCard> PersonCreditCards { get; } = [];
 
-    public virtual ICollection<PersonPhone> PersonPhones { get; } = new List<PersonPhone>();
+    public virtual ICollection<PersonPhone> PersonPhones { get; } = [];
 
     public object[] KeyValues => new object[] { BusinessEntityId };
 }

@@ -47,10 +47,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
-        get
-        {
-            return base.CellTemplate;
-        }
+        get => base.CellTemplate;
         set
         {
             //  Only cell types that derive from DataGridViewMaskedTextBoxCell are supported as the cell template.
@@ -67,10 +64,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color ForeColor
     {
-        get
-        {
-            return foreColor;
-        }
+        get => foreColor;
         set
         {
             foreColor = value;
@@ -86,10 +80,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool IncludeLiterals
     {
-        get
-        {
-            return this.includeLiterals;
-        }
+        get => this.includeLiterals;
         set
         {
             DataGridViewMaskedTextBoxCell mtbc;
@@ -132,10 +123,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool IncludePrompt
     {
-        get
-        {
-            return this.includePrompt;
-        }
+        get => this.includePrompt;
         set
         {
             DataGridViewMaskedTextBoxCell mtbc;
@@ -179,10 +167,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual string Mask
     {
-        get
-        {
-            return this.mask;
-        }
+        get => this.mask;
         set
         {
             DataGridViewMaskedTextBoxCell mtbc;
@@ -226,10 +211,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual char PromptChar
     {
-        get
-        {
-            return this.promptChar;
-        }
+        get => this.promptChar;
         set
         {
             DataGridViewMaskedTextBoxCell mtbc;
@@ -274,10 +256,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual Type ValidatingType
     {
-        get
-        {
-            return this.validatingType;
-        }
+        get => this.validatingType;
         set
         {
             DataGridViewMaskedTextBoxCell mtbc;
@@ -315,14 +294,11 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //CUSTOM CODE
     public override object Clone()
     {
-        DataGridViewMaskedTextBoxColumn col = (DataGridViewMaskedTextBoxColumn)base.Clone();
+        var col = (DataGridViewMaskedTextBoxColumn)base.Clone();
         col.foreColor = this.foreColor;
         return col;
     }
 
     //  Routine to convert from boolean to DataGridViewTriState.
-    private static DataGridViewTriState TriBool(bool value)
-    {
-        return value ? DataGridViewTriState.True : DataGridViewTriState.False;
-    }
+    private static DataGridViewTriState TriBool(bool value) => value ? DataGridViewTriState.True : DataGridViewTriState.False;
 }

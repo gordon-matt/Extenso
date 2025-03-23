@@ -33,14 +33,8 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual DataGridView EditingControlDataGridView
     {
-        get
-        {
-            return this.dataGridView;
-        }
-        set
-        {
-            this.dataGridView = value;
-        }
+        get => this.dataGridView;
+        set => this.dataGridView = value;
     }
 
     // Beginning of the IDataGridViewEditingControl interface implementation
@@ -50,14 +44,8 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual object EditingControlFormattedValue
     {
-        get
-        {
-            return GetEditingControlFormattedValue(DataGridViewDataErrorContexts.Formatting);
-        }
-        set
-        {
-            this.Text = (string)value;
-        }
+        get => GetEditingControlFormattedValue(DataGridViewDataErrorContexts.Formatting);
+        set => this.Text = (string)value;
     }
 
     /// <summary>
@@ -66,14 +54,8 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual int EditingControlRowIndex
     {
-        get
-        {
-            return this.rowIndex;
-        }
-        set
-        {
-            this.rowIndex = value;
-        }
+        get => this.rowIndex;
+        set => this.rowIndex = value;
     }
 
     /// <summary>
@@ -82,39 +64,21 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool EditingControlValueChanged
     {
-        get
-        {
-            return this.valueChanged;
-        }
-        set
-        {
-            this.valueChanged = value;
-        }
+        get => this.valueChanged;
+        set => this.valueChanged = value;
     }
 
     /// <summary>
     /// Property which determines which cursor must be used for the editing panel,
     /// i.e. the parent of the editing control.
     /// </summary>
-    public virtual Cursor EditingPanelCursor
-    {
-        get
-        {
-            return Cursors.Default;
-        }
-    }
+    public virtual Cursor EditingPanelCursor => Cursors.Default;
 
     /// <summary>
     /// Property which indicates whether the editing control needs to be repositioned
     /// when its value changes.
     /// </summary>
-    public virtual bool RepositionEditingControlOnValueChange
-    {
-        get
-        {
-            return false;
-        }
-    }
+    public virtual bool RepositionEditingControlOnValueChange => false;
 
     /// <summary>
     /// Method called by the grid before the editing control is shown so it can adapt to the
@@ -126,7 +90,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
         if (dataGridViewCellStyle.BackColor.A < 255)
         {
             // The NumericUpDown control does not support transparent back colors
-            Color opaqueBackColor = Color.FromArgb(255, dataGridViewCellStyle.BackColor);
+            var opaqueBackColor = Color.FromArgb(255, dataGridViewCellStyle.BackColor);
             this.BackColor = opaqueBackColor;
             this.dataGridView.EditingPanel.BackColor = opaqueBackColor;
         }
@@ -148,8 +112,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
         {
             case Keys.Right:
                 {
-                    TextBox textBox = this.Controls[1] as TextBox;
-                    if (textBox != null)
+                    if (this.Controls[1] is TextBox textBox)
                     {
                         // If the end of the selection is at the end of the string,
                         // let the DataGridView treat the key message
@@ -164,8 +127,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
 
             case Keys.Left:
                 {
-                    TextBox textBox = this.Controls[1] as TextBox;
-                    if (textBox != null)
+                    if (this.Controls[1] is TextBox textBox)
                     {
                         // If the end of the selection is at the begining of the string
                         // or if the entire text is selected and we did not start editing,
@@ -201,8 +163,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
             case Keys.End:
                 {
                     // Let the grid handle the key if the entire text is selected.
-                    TextBox textBox = this.Controls[1] as TextBox;
-                    if (textBox != null)
+                    if (this.Controls[1] is TextBox textBox)
                     {
                         if (textBox.SelectionLength != textBox.Text.Length)
                         {
@@ -215,8 +176,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
             case Keys.Delete:
                 {
                     // Let the grid handle the key if the carret is at the end of the text.
-                    TextBox textBox = this.Controls[1] as TextBox;
-                    if (textBox != null)
+                    if (this.Controls[1] is TextBox textBox)
                     {
                         if (textBox.SelectionLength > 0 ||
                             textBox.SelectionStart < textBox.Text.Length)
@@ -254,8 +214,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     /// </summary>
     public virtual void PrepareEditingControlForEdit(bool selectAll)
     {
-        TextBox textBox = this.Controls[1] as TextBox;
-        if (textBox != null)
+        if (this.Controls[1] is TextBox textBox)
         {
             if (selectAll)
             {
@@ -287,7 +246,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
         }
         else
         {
-            System.Globalization.NumberFormatInfo numberFormatInfo = System.Globalization.CultureInfo.CurrentCulture.NumberFormat;
+            var numberFormatInfo = System.Globalization.CultureInfo.CurrentCulture.NumberFormat;
             string decimalSeparatorStr = numberFormatInfo.NumberDecimalSeparator;
             string groupSeparatorStr = numberFormatInfo.NumberGroupSeparator;
             string negativeSignStr = numberFormatInfo.NegativeSign;
@@ -331,8 +290,7 @@ internal class DataGridViewNumericUpDownEditingControl : NumericUpDown, IDataGri
     /// </summary>
     protected override bool ProcessKeyEventArgs(ref Message m)
     {
-        TextBox textBox = this.Controls[1] as TextBox;
-        if (textBox != null)
+        if (this.Controls[1] is TextBox textBox)
         {
             SendMessage(textBox.Handle, m.Msg, m.WParam, m.LParam);
             return true;

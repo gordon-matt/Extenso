@@ -27,13 +27,10 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     ]
     public override DataGridViewCell CellTemplate
     {
-        get
-        {
-            return base.CellTemplate;
-        }
+        get => base.CellTemplate;
         set
         {
-            DataGridViewRadioButtonCell dataGridViewRadioButtonCell = value as DataGridViewRadioButtonCell;
+            var dataGridViewRadioButtonCell = value as DataGridViewRadioButtonCell;
             if (value != null && dataGridViewRadioButtonCell == null)
             {
                 throw new InvalidCastException("Value provided for CellTemplate must be of type DataGridViewRadioButtonElements.DataGridViewRadioButtonCell or derive from it.");
@@ -54,14 +51,9 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     ]
     public object DataSource
     {
-        get
-        {
-            if (this.RadioButtonCellTemplate == null)
-            {
-                throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.");
-            }
-            return this.RadioButtonCellTemplate.DataSource;
-        }
+        get => this.RadioButtonCellTemplate == null
+                ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
+                : RadioButtonCellTemplate.DataSource;
         set
         {
             if (this.RadioButtonCellTemplate == null)
@@ -71,13 +63,12 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
             this.RadioButtonCellTemplate.DataSource = value;
             if (this.DataGridView != null)
             {
-                DataGridViewRowCollection dataGridViewRows = this.DataGridView.Rows;
+                var dataGridViewRows = this.DataGridView.Rows;
                 int rowCount = dataGridViewRows.Count;
                 for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
                 {
-                    DataGridViewRow dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
-                    DataGridViewRadioButtonCell dataGridViewCell = dataGridViewRow.Cells[this.Index] as DataGridViewRadioButtonCell;
-                    if (dataGridViewCell != null)
+                    var dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
+                    if (dataGridViewRow.Cells[this.Index] is DataGridViewRadioButtonCell dataGridViewCell)
                     {
                         dataGridViewCell.DataSource = value;
                     }
@@ -102,14 +93,9 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     ]
     public string DisplayMember
     {
-        get
-        {
-            if (this.RadioButtonCellTemplate == null)
-            {
-                throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.");
-            }
-            return this.RadioButtonCellTemplate.DisplayMember;
-        }
+        get => this.RadioButtonCellTemplate == null
+                ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
+                : RadioButtonCellTemplate.DisplayMember;
         set
         {
             if (this.RadioButtonCellTemplate == null)
@@ -119,13 +105,12 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
             this.RadioButtonCellTemplate.DisplayMember = value;
             if (this.DataGridView != null)
             {
-                DataGridViewRowCollection dataGridViewRows = this.DataGridView.Rows;
+                var dataGridViewRows = this.DataGridView.Rows;
                 int rowCount = dataGridViewRows.Count;
                 for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
                 {
-                    DataGridViewRow dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
-                    DataGridViewRadioButtonCell dataGridViewCell = dataGridViewRow.Cells[this.Index] as DataGridViewRadioButtonCell;
-                    if (dataGridViewCell != null)
+                    var dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
+                    if (dataGridViewRow.Cells[this.Index] is DataGridViewRadioButtonCell dataGridViewCell)
                     {
                         dataGridViewCell.DisplayMember = value;
                     }
@@ -146,17 +131,9 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
         DesignerSerializationVisibility(DesignerSerializationVisibility.Content),
         Editor("System.Windows.Forms.Design.StringCollectionEditor, System.Design", typeof(System.Drawing.Design.UITypeEditor))
     ]
-    public DataGridViewRadioButtonCell.ObjectCollection Items
-    {
-        get
-        {
-            if (this.RadioButtonCellTemplate == null)
-            {
-                throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.");
-            }
-            return this.RadioButtonCellTemplate.Items;
-        }
-    }
+    public DataGridViewRadioButtonCell.ObjectCollection Items => this.RadioButtonCellTemplate == null
+                ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
+                : RadioButtonCellTemplate.Items;
 
     /// <summary>
     /// Replicates the MaxDisplayedItems property of the DataGridViewRadioButtonCell cell type.
@@ -168,14 +145,9 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     ]
     public int MaxDisplayedItems
     {
-        get
-        {
-            if (this.RadioButtonCellTemplate == null)
-            {
-                throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.");
-            }
-            return this.RadioButtonCellTemplate.MaxDisplayedItems;
-        }
+        get => this.RadioButtonCellTemplate == null
+                ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
+                : RadioButtonCellTemplate.MaxDisplayedItems;
         set
         {
             if (this.MaxDisplayedItems != value)
@@ -183,13 +155,12 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
                 this.RadioButtonCellTemplate.MaxDisplayedItems = value;
                 if (this.DataGridView != null)
                 {
-                    DataGridViewRowCollection dataGridViewRows = this.DataGridView.Rows;
+                    var dataGridViewRows = this.DataGridView.Rows;
                     int rowCount = dataGridViewRows.Count;
                     for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
                     {
-                        DataGridViewRow dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
-                        DataGridViewRadioButtonCell dataGridViewCell = dataGridViewRow.Cells[this.Index] as DataGridViewRadioButtonCell;
-                        if (dataGridViewCell != null)
+                        var dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
+                        if (dataGridViewRow.Cells[this.Index] is DataGridViewRadioButtonCell dataGridViewCell)
                         {
                             dataGridViewCell.MaxDisplayedItemsInternal = value;
                         }
@@ -205,13 +176,7 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     /// <summary>
     /// Small utility function that returns the template cell as a DataGridViewRadioButtonCell.
     /// </summary>
-    private DataGridViewRadioButtonCell RadioButtonCellTemplate
-    {
-        get
-        {
-            return (DataGridViewRadioButtonCell)this.CellTemplate;
-        }
-    }
+    private DataGridViewRadioButtonCell RadioButtonCellTemplate => (DataGridViewRadioButtonCell)this.CellTemplate;
 
     /// <summary>
     /// Replicates the ValueMember property of the DataGridViewRadioButtonCell cell type.
@@ -225,14 +190,9 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     ]
     public string ValueMember
     {
-        get
-        {
-            if (this.RadioButtonCellTemplate == null)
-            {
-                throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.");
-            }
-            return this.RadioButtonCellTemplate.ValueMember;
-        }
+        get => this.RadioButtonCellTemplate == null
+                ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
+                : RadioButtonCellTemplate.ValueMember;
         set
         {
             if (this.RadioButtonCellTemplate == null)
@@ -242,13 +202,12 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
             this.RadioButtonCellTemplate.ValueMember = value;
             if (this.DataGridView != null)
             {
-                DataGridViewRowCollection dataGridViewRows = this.DataGridView.Rows;
+                var dataGridViewRows = this.DataGridView.Rows;
                 int rowCount = dataGridViewRows.Count;
                 for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
                 {
-                    DataGridViewRow dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
-                    DataGridViewRadioButtonCell dataGridViewCell = dataGridViewRow.Cells[this.Index] as DataGridViewRadioButtonCell;
-                    if (dataGridViewCell != null)
+                    var dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
+                    if (dataGridViewRow.Cells[this.Index] is DataGridViewRadioButtonCell dataGridViewCell)
                     {
                         dataGridViewCell.ValueMember = value;
                     }
@@ -268,16 +227,15 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     {
         if (this.DataGridView != null)
         {
-            DataGridViewRowCollection dataGridViewRows = this.DataGridView.Rows;
+            var dataGridViewRows = this.DataGridView.Rows;
             int rowCount = dataGridViewRows.Count;
-            DataGridViewRadioButtonCell cellTemplate = this.CellTemplate as DataGridViewRadioButtonCell;
+            var cellTemplate = this.CellTemplate as DataGridViewRadioButtonCell;
             object[] items = new object[cellTemplate.Items.Count];
             cellTemplate.Items.CopyTo(items, 0);
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
             {
-                DataGridViewRow dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
-                DataGridViewRadioButtonCell dataGridViewCell = dataGridViewRow.Cells[this.Index] as DataGridViewRadioButtonCell;
-                if (dataGridViewCell != null)
+                var dataGridViewRow = dataGridViewRows.SharedRow(rowIndex);
+                if (dataGridViewRow.Cells[this.Index] is DataGridViewRadioButtonCell dataGridViewCell)
                 {
                     dataGridViewCell.Items.Clear();
                     dataGridViewCell.Items.AddRange(items);
@@ -293,7 +251,7 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     /// </summary>
     public override string ToString()
     {
-        StringBuilder sb = new StringBuilder(64);
+        var sb = new StringBuilder(64);
         sb.Append("DataGridViewRadioButtonColumn { Name=");
         sb.Append(this.Name);
         sb.Append(", Index=");

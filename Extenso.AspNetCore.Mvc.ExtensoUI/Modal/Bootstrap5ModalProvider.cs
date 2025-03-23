@@ -46,16 +46,11 @@ $@"<h5 class=""modal-title"">{title}</h5>
         }
     }
 
-    public void EndModalSectionPanel(ModalSection section, TextWriter writer)
-    {
-        writer.Write("</div>");
-    }
+    public void EndModalSectionPanel(ModalSection section, TextWriter writer) => writer.Write("</div>");
 
-    public void EndModal(Modal modal, TextWriter writer)
-    {
+    public void EndModal(Modal modal, TextWriter writer) =>
         //writer.Write("</div>");
         writer.Write("</div></div></div>");
-    }
 
     public IHtmlContent ModalLaunchButton(string modalId, string text, object htmlAttributes = null)
     {

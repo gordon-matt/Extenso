@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Extenso.AspNetCore.Mvc.Rendering
-{
-    internal class ExtendedSelectListItem : SelectListItem
-    {
-        public object HtmlAttributes { get; set; }
+namespace Extenso.AspNetCore.Mvc.Rendering;
 
-        public string Category { get; set; }
-    }
+internal class ExtendedSelectListItem : SelectListItem
+{
+    public object HtmlAttributes { get; set; }
+
+    public string Category { get; set; }
 }

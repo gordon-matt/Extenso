@@ -37,9 +37,9 @@ public partial class ProductModel : IEntity
 
     public object[] KeyValues => new object[] { ProductModelId };
 
-    public virtual ICollection<ProductModelIllustration> ProductModelIllustrations { get; } = new List<ProductModelIllustration>();
+    public virtual ICollection<ProductModelIllustration> ProductModelIllustrations { get; } = [];
 
-    public virtual ICollection<ProductModelProductDescriptionCulture> ProductModelProductDescriptionCultures { get; } = new List<ProductModelProductDescriptionCulture>();
+    public virtual ICollection<ProductModelProductDescriptionCulture> ProductModelProductDescriptionCultures { get; } = [];
 
-    public virtual ICollection<Product> Products { get; } = new List<Product>();
+    public virtual ICollection<Product> Products { get; } = [];
 }

@@ -1,15 +1,14 @@
 ﻿using System.IO;
 
-namespace Extenso.AspNetCore.Mvc.ExtensoUI
+namespace Extenso.AspNetCore.Mvc.ExtensoUI;
+
+public interface IAccordionProvider
 {
-    public interface IAccordionProvider
-    {
-        void BeginAccordion(Accordion accordion, TextWriter writer);
+    void BeginAccordion(Accordion accordion, TextWriter writer);
 
-        void BeginAccordionPanel(TextWriter writer, string title, string panelId, string parentAccordionId, bool expanded);
+    void BeginAccordionPanel(TextWriter writer, string title, string panelId, string parentAccordionId, bool expanded);
 
-        void EndAccordion(Accordion accordion, TextWriter writer);
+    void EndAccordion(Accordion accordion, TextWriter writer);
 
-        void EndAccordionPanel(TextWriter writer);
-    }
+    void EndAccordionPanel(TextWriter writer);
 }

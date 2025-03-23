@@ -1,9 +1,8 @@
-﻿namespace Extenso.Data.QueryBuilder
-{
-    public enum SortDirection : byte
-    {
-        Ascending = 0,
+﻿namespace Extenso.Data.QueryBuilder;
 
-        Descending = 1
-    }
+public enum SortDirection : byte
+{
+    Ascending = 0,
+
+    Descending = 1
 }

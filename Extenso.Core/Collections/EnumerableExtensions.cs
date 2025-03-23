@@ -24,15 +24,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">The type of the elements of source</typeparam>
     /// <param name="source">The <see cref="IEnumerable{T}"/> to return as a <see cref="HashSet{T}"/>.</param>
     /// <returns>A <see cref="HashSet{T}"/> that contains elements from the input sequence.</returns>
-    public static HashSet<T> AsHashSet<T>(this IEnumerable<T> source)
-    {
-        if (source is HashSet<T>)
-        {
-            return source as HashSet<T>;
-        }
-
-        return source.ToHashSet();
-    }
+    public static HashSet<T> AsHashSet<T>(this IEnumerable<T> source) => source is HashSet<T> ? source as HashSet<T> : source.ToHashSet();
 
     /// <summary>
     /// If source is already a <see cref="List{T}"/>, then returns as-is. Else, a ToList() is performed.
@@ -41,15 +33,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">The type of the elements of source</typeparam>
     /// <param name="source">The <see cref="IEnumerable{T}"/> to return as a <see cref="List{T}"/>.</param>
     /// <returns>A <see cref="List{T}"/> that contains elements from the input sequence.</returns>
-    public static List<T> AsList<T>(this IEnumerable<T> source)
-    {
-        if (source is List<T>)
-        {
-            return source as List<T>;
-        }
-
-        return source.ToList();
-    }
+    public static List<T> AsList<T>(this IEnumerable<T> source) => source is List<T> ? source as List<T> : source.ToList();
 
     /// <summary>
     /// Determines whether a sequence contains any of the specified elements by using the default equality comparer.
@@ -135,16 +119,10 @@ public static class EnumerableExtensions
         Func<TSource, TKey> keySelector,
         IEqualityComparer<TKey> comparer = null)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-        if (keySelector == null)
-        {
-            throw new ArgumentNullException(nameof(keySelector));
-        }
-
-        return _(); IEnumerable<TSource> _()
+        return source == null
+            ? throw new ArgumentNullException(nameof(source))
+            : keySelector == null ? throw new ArgumentNullException(nameof(keySelector)) : _();
+        IEnumerable<TSource> _()
         {
             var knownKeys = new HashSet<TKey>(comparer);
             foreach (var element in source)
@@ -228,7 +206,8 @@ public static class EnumerableExtensions
             if (!enumerator.MoveNext())
             {
                 return false;
-            };
+            }
+            ;
         }
         return true;
     }
@@ -267,15 +246,7 @@ public static class EnumerableExtensions
     public static TProp MostOccurring<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func) =>
         items.GroupBy(func).OrderByDescending(x => x.Count()).First().Key;
 
-    public static TProp MostOccurringOrDefault<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func)
-    {
-        if (items.IsNullOrEmpty())
-        {
-            return default;
-        }
-
-        return items.MostOccurring(func);
-    }
+    public static TProp MostOccurringOrDefault<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func) => items.IsNullOrEmpty() ? default : items.MostOccurring(func);
 
     /// <summary>
     /// Produces the set union of two sequences by using the default equality comparer. If either of the sequences is null or empty, the other sequence is returned.
@@ -315,7 +286,7 @@ public static class EnumerableExtensions
             if (count++ == size)
             {
                 chunks.Add(chunk);
-                chunk = new HashSet<T>();
+                chunk = [];
                 count = 1;
             }
             chunk.Add(element);
@@ -493,14 +464,7 @@ public static class EnumerableExtensions
 
             foreach (var property in properties)
             {
-                if (convertNullableTypes)
-                {
-                    row[property.Name] = property.GetValue(item, null) ?? DBNull.Value;
-                }
-                else
-                {
-                    row[property.Name] = property.GetValue(item, null);
-                }
+                row[property.Name] = convertNullableTypes ? property.GetValue(item, null) ?? DBNull.Value : property.GetValue(item, null);
             }
 
             table.Rows.Add(row);
@@ -733,7 +697,7 @@ public static class EnumerableExtensions
     /// <param name="source">The System.Collections.Generic.IEnumerable`1 to create a System.Collections.ObjectModel.ReadOnlyCollection`1 from.</param>
     /// <returns>A System.Collections.ObjectModel.ReadOnlyCollection`1 that contains elements from the input sequence.</returns>
     public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> source) =>
-        new ReadOnlyCollection<T>(source.ToList());
+        new(source.ToList());
 
     /// <summary>
     /// Creates a System.Collections.Generic.Stack`1 from an System.Collections.Generic.IEnumerable`1.

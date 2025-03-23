@@ -82,13 +82,13 @@ public partial class Employee
 
     public virtual Person BusinessEntity { get; set; }
 
-    public virtual ICollection<EmployeeDepartmentHistory> EmployeeDepartmentHistories { get; } = new List<EmployeeDepartmentHistory>();
+    public virtual ICollection<EmployeeDepartmentHistory> EmployeeDepartmentHistories { get; } = [];
 
-    public virtual ICollection<EmployeePayHistory> EmployeePayHistories { get; } = new List<EmployeePayHistory>();
+    public virtual ICollection<EmployeePayHistory> EmployeePayHistories { get; } = [];
 
-    public virtual ICollection<JobCandidate> JobCandidates { get; } = new List<JobCandidate>();
+    public virtual ICollection<JobCandidate> JobCandidates { get; } = [];
 
-    public virtual ICollection<PurchaseOrderHeader> PurchaseOrderHeaders { get; } = new List<PurchaseOrderHeader>();
+    public virtual ICollection<PurchaseOrderHeader> PurchaseOrderHeaders { get; } = [];
 
     public virtual SalesPerson SalesPerson { get; set; }
 }
