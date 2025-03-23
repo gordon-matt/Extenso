@@ -23,15 +23,9 @@ public class Bootstrap5TabsProvider : ITabsProvider
         writer.Write(tag);
     }
 
-    public void BeginTabsHeader(TextWriter writer)
-    {
-        writer.Write(@"<ul class=""nav nav-tabs"" role=""tablist"">");
-    }
+    public void BeginTabsHeader(TextWriter writer) => writer.Write(@"<ul class=""nav nav-tabs"" role=""tablist"">");
 
-    public void BeginTabContent(TextWriter writer)
-    {
-        writer.Write(@"<div class=""tab-content"">");
-    }
+    public void BeginTabContent(TextWriter writer) => writer.Write(@"<div class=""tab-content"">");
 
     public void BeginTabPanel(TabPanel panel, TextWriter writer)
     {
@@ -52,25 +46,13 @@ public class Bootstrap5TabsProvider : ITabsProvider
         writer.Write(builder.Build());
     }
 
-    public void EndTabPanel(TextWriter writer)
-    {
-        writer.Write("</div>");
-    }
+    public void EndTabPanel(TextWriter writer) => writer.Write("</div>");
 
-    public void EndTabsHeader(TextWriter writer)
-    {
-        writer.Write("</ul>");
-    }
+    public void EndTabsHeader(TextWriter writer) => writer.Write("</ul>");
 
-    public void EndTabs(Tabs tabs, TextWriter writer)
-    {
-        writer.Write("</div></div>");
-    }
+    public void EndTabs(Tabs tabs, TextWriter writer) => writer.Write("</div></div>");
 
-    public void WriteTab(TextWriter writer, string label, string tabId, bool isActive)
-    {
-        writer.Write($@"<li class=""nav-item"" role=""presentation""><button type=""button"" class=""nav-link{(isActive ? " active" : string.Empty)}"" data-bs-toggle=""tab"" data-bs-target=""#{tabId}"" role=""tab"" aria-controls=""{tabId}"" aria-selected=""{(isActive ? "true" : "false")}"">{label}</button></li>");
-    }
+    public void WriteTab(TextWriter writer, string label, string tabId, bool isActive) => writer.Write($@"<li class=""nav-item"" role=""presentation""><button type=""button"" class=""nav-link{(isActive ? " active" : string.Empty)}"" data-bs-toggle=""tab"" data-bs-target=""#{tabId}"" role=""tab"" aria-controls=""{tabId}"" aria-selected=""{(isActive ? "true" : "false")}"">{label}</button></li>");
 
     #endregion ITabsProvider Members
 }

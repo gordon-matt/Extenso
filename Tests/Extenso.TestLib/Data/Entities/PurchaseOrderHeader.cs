@@ -72,7 +72,7 @@ public partial class PurchaseOrderHeader
 
     public virtual Employee Employee { get; set; }
 
-    public virtual ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; } = new List<PurchaseOrderDetail>();
+    public virtual ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; } = [];
 
     public virtual ShipMethod ShipMethod { get; set; }
 

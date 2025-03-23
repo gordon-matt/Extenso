@@ -1,11 +1,10 @@
-﻿namespace Extenso.Data.Tests.Data.Entities
+﻿namespace Extenso.Data.Tests.Data.Entities;
+
+public class BusinessEntity
 {
-    public class BusinessEntity
-    {
-        public int BusinessEntityID { get; set; }
+    public int BusinessEntityID { get; set; }
 
-        public Guid rowguid { get; set; }
+    public Guid rowguid { get; set; }
 
-        public DateTime ModifiedDate { get; set; }
-    }
+    public DateTime ModifiedDate { get; set; }
 }

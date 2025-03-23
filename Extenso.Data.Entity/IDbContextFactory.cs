@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Extenso.Data.Entity
-{
-    public interface IDbContextFactory
-    {
-        DbContext GetContext();
+namespace Extenso.Data.Entity;
 
-        DbContext GetContext(string connectionString);
-    }
+public interface IDbContextFactory
+{
+    DbContext GetContext();
+
+    DbContext GetContext(string connectionString);
 }

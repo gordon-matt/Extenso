@@ -10,10 +10,7 @@ public static class FormExtensions
         }
     }
 
-    public static void CenterToParent(this Form form, Point parentLocation, Size parentSize)
-    {
-        CenterToParent(form, parentLocation, new Point(parentSize));
-    }
+    public static void CenterToParent(this Form form, Point parentLocation, Size parentSize) => CenterToParent(form, parentLocation, new Point(parentSize));
 
     public static void CenterToParent(this Form form, Point parentLocation, Point parentSize)
     {

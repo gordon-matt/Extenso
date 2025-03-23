@@ -9,40 +9,14 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
     /// <para>Will return false if Page Location is currently the last page.</para>
     /// <para>Otherwise, true.</para>
     /// </summary>
-    public bool CanMoveNext
-    {
-        get
-        {
-            if (Count == 1)
-            { return false; }
-
-            if (Count > 0 && PageLocation != WizardPageLocation.End)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
+    public bool CanMoveNext => Count == 1 ? false : Count > 0 && PageLocation != WizardPageLocation.End;
 
     /// <summary>
     /// <para>Determines whether the wizard is able to move to the previous page.</para>
     /// <para>Will return false if Page Location is currently the first page.</para>
     /// <para>Otherwise, true.</para>
     /// </summary>
-    public bool CanMovePrevious
-    {
-        get
-        {
-            if (Count == 1)
-            { return false; }
-
-            if (Count > 0 && PageLocation != WizardPageLocation.Start)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
+    public bool CanMovePrevious => Count == 1 ? false : Count > 0 && PageLocation != WizardPageLocation.Start;
 
     /// <summary>
     /// The current IWizardPage
@@ -160,11 +134,7 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
             int lastPageIndex = this.Max(x => x.Key);
 
             // If the next page is the last page
-            if (nextPageIndex == lastPageIndex)
-            {
-                PageLocation = WizardPageLocation.End;
-            }
-            else { PageLocation = WizardPageLocation.Middle; }
+            PageLocation = nextPageIndex == lastPageIndex ? WizardPageLocation.End : WizardPageLocation.Middle;
 
             // Set the current page to be the next page
             CurrentPage = this[nextPageIndex];
@@ -192,11 +162,7 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
             int firstPageIndex = this.Min(x => x.Key);
 
             // If the previous page is the first page
-            if (previousPageIndex == firstPageIndex)
-            {
-                PageLocation = WizardPageLocation.Start;
-            }
-            else { PageLocation = WizardPageLocation.Middle; }
+            PageLocation = previousPageIndex == firstPageIndex ? WizardPageLocation.Start : WizardPageLocation.Middle;
 
             CurrentPage = this[previousPageIndex];
 
@@ -221,10 +187,12 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
     {
         if (WizardPageLocationChanged != null)
         {
-            var e = new WizardPageLocationChangedEventArgs();
-            e.PageLocation = PageLocation;
-            e.PageIndex = IndexOf(CurrentPage);
-            e.PreviousPageIndex = previousPageIndex;
+            var e = new WizardPageLocationChangedEventArgs
+            {
+                PageLocation = PageLocation,
+                PageIndex = IndexOf(CurrentPage),
+                PreviousPageIndex = previousPageIndex
+            };
             WizardPageLocationChanged(e);
         }
     }

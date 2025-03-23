@@ -45,11 +45,11 @@ public partial class StateProvince
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<Address> Addresses { get; } = new List<Address>();
+    public virtual ICollection<Address> Addresses { get; } = [];
 
     public virtual CountryRegion CountryRegionCodeNavigation { get; set; }
 
-    public virtual ICollection<SalesTaxRate> SalesTaxRates { get; } = new List<SalesTaxRate>();
+    public virtual ICollection<SalesTaxRate> SalesTaxRates { get; } = [];
 
     public virtual SalesTerritory Territory { get; set; }
 }

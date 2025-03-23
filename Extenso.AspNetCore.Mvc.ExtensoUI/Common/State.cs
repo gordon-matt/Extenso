@@ -1,13 +1,12 @@
-﻿namespace Extenso.AspNetCore.Mvc.ExtensoUI
+﻿namespace Extenso.AspNetCore.Mvc.ExtensoUI;
+
+public enum State : byte
 {
-    public enum State : byte
-    {
-        Default,
-        Primary,
-        Info,
-        Success,
-        Warning,
-        Danger,
-        Inverse
-    }
+    Default,
+    Primary,
+    Info,
+    Success,
+    Warning,
+    Danger,
+    Inverse
 }

@@ -1,12 +1,11 @@
-﻿namespace Extenso.Core.Tests
+﻿namespace Extenso.Core.Tests;
+
+[Serializable]
+public struct TestObject
 {
-    [Serializable]
-    public struct TestObject
-    {
-        public int Value1;
+    public int Value1;
 
-        public string Value2;
+    public string Value2;
 
-        public decimal Value3;
-    }
+    public decimal Value3;
 }

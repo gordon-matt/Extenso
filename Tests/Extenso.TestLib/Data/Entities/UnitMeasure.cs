@@ -20,11 +20,11 @@ public partial class UnitMeasure
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<BillOfMaterial> BillOfMaterials { get; } = new List<BillOfMaterial>();
+    public virtual ICollection<BillOfMaterial> BillOfMaterials { get; } = [];
 
-    public virtual ICollection<Product> ProductSizeUnitMeasureCodeNavigations { get; } = new List<Product>();
+    public virtual ICollection<Product> ProductSizeUnitMeasureCodeNavigations { get; } = [];
 
-    public virtual ICollection<ProductVendor> ProductVendors { get; } = new List<ProductVendor>();
+    public virtual ICollection<ProductVendor> ProductVendors { get; } = [];
 
-    public virtual ICollection<Product> ProductWeightUnitMeasureCodeNavigations { get; } = new List<Product>();
+    public virtual ICollection<Product> ProductWeightUnitMeasureCodeNavigations { get; } = [];
 }

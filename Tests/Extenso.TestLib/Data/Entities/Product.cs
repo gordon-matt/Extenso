@@ -130,37 +130,37 @@ public partial class Product
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<BillOfMaterial> BillOfMaterialComponents { get; } = new List<BillOfMaterial>();
+    public virtual ICollection<BillOfMaterial> BillOfMaterialComponents { get; } = [];
 
-    public virtual ICollection<BillOfMaterial> BillOfMaterialProductAssemblies { get; } = new List<BillOfMaterial>();
+    public virtual ICollection<BillOfMaterial> BillOfMaterialProductAssemblies { get; } = [];
 
-    public virtual ICollection<ProductCostHistory> ProductCostHistories { get; } = new List<ProductCostHistory>();
+    public virtual ICollection<ProductCostHistory> ProductCostHistories { get; } = [];
 
-    public virtual ICollection<ProductInventory> ProductInventories { get; } = new List<ProductInventory>();
+    public virtual ICollection<ProductInventory> ProductInventories { get; } = [];
 
-    public virtual ICollection<ProductListPriceHistory> ProductListPriceHistories { get; } = new List<ProductListPriceHistory>();
+    public virtual ICollection<ProductListPriceHistory> ProductListPriceHistories { get; } = [];
 
     public virtual ProductModel ProductModel { get; set; }
 
-    public virtual ICollection<ProductProductPhoto> ProductProductPhotos { get; } = new List<ProductProductPhoto>();
+    public virtual ICollection<ProductProductPhoto> ProductProductPhotos { get; } = [];
 
-    public virtual ICollection<ProductReview> ProductReviews { get; } = new List<ProductReview>();
+    public virtual ICollection<ProductReview> ProductReviews { get; } = [];
 
     public virtual ProductSubcategory ProductSubcategory { get; set; }
 
-    public virtual ICollection<ProductVendor> ProductVendors { get; } = new List<ProductVendor>();
+    public virtual ICollection<ProductVendor> ProductVendors { get; } = [];
 
-    public virtual ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; } = new List<PurchaseOrderDetail>();
+    public virtual ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; } = [];
 
-    public virtual ICollection<ShoppingCartItem> ShoppingCartItems { get; } = new List<ShoppingCartItem>();
+    public virtual ICollection<ShoppingCartItem> ShoppingCartItems { get; } = [];
 
     public virtual UnitMeasure SizeUnitMeasureCodeNavigation { get; set; }
 
-    public virtual ICollection<SpecialOfferProduct> SpecialOfferProducts { get; } = new List<SpecialOfferProduct>();
+    public virtual ICollection<SpecialOfferProduct> SpecialOfferProducts { get; } = [];
 
-    public virtual ICollection<TransactionHistory> TransactionHistories { get; } = new List<TransactionHistory>();
+    public virtual ICollection<TransactionHistory> TransactionHistories { get; } = [];
 
     public virtual UnitMeasure WeightUnitMeasureCodeNavigation { get; set; }
 
-    public virtual ICollection<WorkOrder> WorkOrders { get; } = new List<WorkOrder>();
+    public virtual ICollection<WorkOrder> WorkOrders { get; } = [];
 }

@@ -46,7 +46,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
 
     private bool handledKeyDown;
 
-    private DataGridViewRadioButtonCellLayout layout;
+    private readonly DataGridViewRadioButtonCellLayout layout;
 
     // Currency manager for the cell's DataSource
     private int maxDisplayedItems;
@@ -109,10 +109,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// </summary>
     public override object DataSource
     {
-        get
-        {
-            return base.DataSource;
-        }
+        get => base.DataSource;
         set
         {
             if (this.DataSource != value)
@@ -120,8 +117,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                 // Invalidate the currency manager
                 this.DataManager = null;
 
-                ISupportInitializeNotification dsInit = this.DataSource as ISupportInitializeNotification;
-                if (dsInit != null && this.dataSourceInitializedHookedUp)
+                if (this.DataSource is ISupportInitializeNotification dsInit && this.dataSourceInitializedHookedUp)
                 {
                     // If we previously hooked the datasource's ISupportInitializeNotification
                     // Initialized event, then unhook it now (we don't always hook this event,
@@ -168,10 +164,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// </summary>
     public override string DisplayMember
     {
-        get
-        {
-            return base.DisplayMember;
-        }
+        get => base.DisplayMember;
         set
         {
             base.DisplayMember = value;
@@ -184,10 +177,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// </summary>
     public virtual object EditingCellFormattedValue
     {
-        get
-        {
-            return GetEditingCellFormattedValue(DataGridViewDataErrorContexts.Formatting);
-        }
+        get => GetEditingCellFormattedValue(DataGridViewDataErrorContexts.Formatting);
         set
         {
             if (this.FormattedValueType == null)
@@ -232,28 +222,17 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// </summary>
     public virtual bool EditingCellValueChanged
     {
-        get
-        {
-            return this.valueChanged;
-        }
-        set
-        {
-            this.valueChanged = value;
-        }
+        get => this.valueChanged;
+        set => this.valueChanged = value;
     }
 
     /// <summary>
     /// Overrides the base implementation to replace the 'complex editing experience'
     /// with a 'simple editing experience'.
     /// </summary>
-    public override Type EditType
-    {
-        get
-        {
+    public override Type EditType =>
             // Return null since no editing control is used for the editing experience.
-            return null;
-        }
-    }
+            null;
 
     /// <summary>
     /// Custom property that represents the maximum number of radio buttons shown by the cell.
@@ -263,13 +242,10 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     ]
     public int MaxDisplayedItems
     {
-        get
-        {
-            return this.maxDisplayedItems;
-        }
+        get => this.maxDisplayedItems;
         set
         {
-            if (value < 1 || value > 100)
+            if (value is < 1 or > 100)
             {
                 throw new ArgumentOutOfRangeException("MaxDisplayedItems");
             }
@@ -304,10 +280,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// </summary>
     public override string ValueMember
     {
-        get
-        {
-            return base.ValueMember;
-        }
+        get => base.ValueMember;
         set
         {
             base.ValueMember = value;
@@ -323,7 +296,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     {
         set
         {
-            Debug.Assert(value >= 1 && value <= 100);
+            Debug.Assert(value is >= 1 and <= 100);
             this.maxDisplayedItems = value;
         }
     }
@@ -335,12 +308,11 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     {
         get
         {
-            CurrencyManager cm = this.dataManager;
+            var cm = this.dataManager;
             if (cm == null && this.DataSource != null && this.DataGridView != null &&
                 this.DataGridView.BindingContext != null && !(this.DataSource == Convert.DBNull))
             {
-                ISupportInitializeNotification dsInit = this.DataSource as ISupportInitializeNotification;
-                if (dsInit != null && !dsInit.IsInitialized)
+                if (this.DataSource is ISupportInitializeNotification dsInit && !dsInit.IsInitialized)
                 {
                     // The datasource is not ready yet. Attaching to its Initialized event to be notified
                     // when it's finally ready
@@ -358,10 +330,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             }
             return cm;
         }
-        set
-        {
-            this.dataManager = value;
-        }
+        set => this.dataManager = value;
     }
 
     // Implementation of the IDataGridViewEditingCell interface stops here.
@@ -374,7 +343,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         {
             if (this.DataGridView != null)
             {
-                DataGridViewAdvancedBorderStyle dataGridViewAdvancedBorderStylePlaceholder = new DataGridViewAdvancedBorderStyle(), dgvabsEffective;
+                DataGridViewAdvancedBorderStyle dataGridViewAdvancedBorderStylePlaceholder = new(), dgvabsEffective;
                 dgvabsEffective = AdjustCellBorderStyle(this.DataGridView.AdvancedCellBorderStyle,
                     dataGridViewAdvancedBorderStylePlaceholder,
                     false /*singleVerticalBorderAdded*/,
@@ -395,7 +364,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// </summary>
     public override object Clone()
     {
-        DataGridViewRadioButtonCell dataGridViewCell = base.Clone() as DataGridViewRadioButtonCell;
+        var dataGridViewCell = base.Clone() as DataGridViewRadioButtonCell;
         if (dataGridViewCell != null)
         {
             dataGridViewCell.MaxDisplayedItems = this.MaxDisplayedItems;
@@ -419,14 +388,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         object item = this.Items[this.selectedItemIndex];
         object displayValue = GetItemDisplayValue(item);
         // Making sure the returned value has an acceptable type
-        if (this.FormattedValueType.IsAssignableFrom(displayValue.GetType()))
-        {
-            return displayValue;
-        }
-        else
-        {
-            return null;
-        }
+        return this.FormattedValueType.IsAssignableFrom(displayValue.GetType()) ? displayValue : null;
     }
 
     /// <summary>
@@ -440,17 +402,14 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// <summary>
     /// Custom implementation that follows the standard representation of cell types.
     /// </summary>
-    public override string ToString()
-    {
-        return "DataGridViewRadioButtonCell { ColumnIndex=" + this.ColumnIndex.ToString(CultureInfo.CurrentCulture) + ", RowIndex=" + this.RowIndex.ToString(CultureInfo.CurrentCulture) + " }";
-    }
+    public override string ToString() => "DataGridViewRadioButtonCell { ColumnIndex=" + this.ColumnIndex.ToString(CultureInfo.CurrentCulture) + ", RowIndex=" + this.RowIndex.ToString(CultureInfo.CurrentCulture) + " }";
 
     /// <summary>
     /// Returns whether calling the OnContentClick method would force the owning row to be unshared.
     /// </summary>
     protected override bool ContentClickUnsharesRow(DataGridViewCellEventArgs e)
     {
-        Point ptCurrentCell = this.DataGridView.CurrentCellAddress;
+        var ptCurrentCell = this.DataGridView.CurrentCellAddress;
         return ptCurrentCell.X == this.ColumnIndex &&
                ptCurrentCell.Y == e.RowIndex &&
                this.DataGridView.IsCurrentCellInEditMode;
@@ -459,10 +418,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// <summary>
     /// Returns whether calling the OnEnter method would force the owning row to be unshared.
     /// </summary>
-    protected override bool EnterUnsharesRow(int rowIndex, bool throughMouseClick)
-    {
-        return this.focusedItemIndex == -1;
-    }
+    protected override bool EnterUnsharesRow(int rowIndex, bool throughMouseClick) => this.focusedItemIndex == -1;
 
     /// <summary>
     /// Custom implementation of the GetContentBounds method which delegates most of the work to the ComputeLayout function.
@@ -477,11 +433,11 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         // First determine the effective border style of this cell.
         bool singleVerticalBorderAdded = !this.DataGridView.RowHeadersVisible && this.DataGridView.AdvancedCellBorderStyle.All == DataGridViewAdvancedCellBorderStyle.Single;
         bool singleHorizontalBorderAdded = !this.DataGridView.ColumnHeadersVisible && this.DataGridView.AdvancedCellBorderStyle.All == DataGridViewAdvancedCellBorderStyle.Single;
-        DataGridViewAdvancedBorderStyle dataGridViewAdvancedBorderStylePlaceholder = new DataGridViewAdvancedBorderStyle();
+        var dataGridViewAdvancedBorderStylePlaceholder = new DataGridViewAdvancedBorderStyle();
 
         Debug.Assert(rowIndex > -1 && this.OwningColumn != null);
 
-        DataGridViewAdvancedBorderStyle dgvabsEffective = AdjustCellBorderStyle(this.DataGridView.AdvancedCellBorderStyle,
+        var dgvabsEffective = AdjustCellBorderStyle(this.DataGridView.AdvancedCellBorderStyle,
             dataGridViewAdvancedBorderStylePlaceholder,
             singleVerticalBorderAdded,
             singleHorizontalBorderAdded,
@@ -489,12 +445,12 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             this.ColumnIndex == this.DataGridView.Columns.GetFirstColumn(DataGridViewElementStates.Displayed).Index /*isFirstDisplayedColumn*/);
 
         // Next determine the state of this cell.
-        DataGridViewElementStates rowState = this.DataGridView.Rows.GetRowState(rowIndex);
-        DataGridViewElementStates cellState = CellStateFromColumnRowStates(rowState);
+        var rowState = this.DataGridView.Rows.GetRowState(rowIndex);
+        var cellState = CellStateFromColumnRowStates(rowState);
         cellState |= this.State;
 
         // Then the bounds of this cell.
-        Rectangle cellBounds = new Rectangle(new Point(0, 0), GetSize(rowIndex));
+        var cellBounds = new Rectangle(new Point(0, 0), GetSize(rowIndex));
 
         // Finally compute the layout of the cell and return the resulting content bounds.
         ComputeLayout(graphics,
@@ -521,23 +477,23 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         {
             return new Size(-1, -1);
         }
-        DataGridViewRadioButtonFreeDimension freeDimension = DataGridViewRadioButtonCell.GetFreeDimensionFromConstraint(constraintSize);
-        Rectangle borderWidthsRect = this.StandardBorderWidths;
+        var freeDimension = DataGridViewRadioButtonCell.GetFreeDimensionFromConstraint(constraintSize);
+        var borderWidthsRect = this.StandardBorderWidths;
         int borderAndPaddingWidths = borderWidthsRect.Left + borderWidthsRect.Width + cellStyle.Padding.Horizontal;
         int borderAndPaddingHeights = borderWidthsRect.Top + borderWidthsRect.Height + cellStyle.Padding.Vertical;
         int preferredHeight = 0, preferredWidth = 0;
         // Assuming here that all radio button states use the same size.
-        Size radioButtonGlyphSize = RadioButtonRenderer.GetGlyphSize(graphics, RadioButtonState.CheckedNormal);
+        var radioButtonGlyphSize = RadioButtonRenderer.GetGlyphSize(graphics, RadioButtonState.CheckedNormal);
 
         if (freeDimension != DataGridViewRadioButtonFreeDimension.Width)
         {
-            preferredHeight = System.Math.Min(this.Items.Count, this.MaxDisplayedItems) * (System.Math.Max(cellStyle.Font.Height, radioButtonGlyphSize.Height) + DATAGRIDVIEWRADIOBUTTONCELL_margin) + DATAGRIDVIEWRADIOBUTTONCELL_margin;
-            preferredHeight += 2 * DATAGRIDVIEWRADIOBUTTONCELL_margin + borderAndPaddingHeights;
+            preferredHeight = (System.Math.Min(this.Items.Count, this.MaxDisplayedItems) * (System.Math.Max(cellStyle.Font.Height, radioButtonGlyphSize.Height) + DATAGRIDVIEWRADIOBUTTONCELL_margin)) + DATAGRIDVIEWRADIOBUTTONCELL_margin;
+            preferredHeight += (2 * DATAGRIDVIEWRADIOBUTTONCELL_margin) + borderAndPaddingHeights;
         }
 
         if (freeDimension != DataGridViewRadioButtonFreeDimension.Height)
         {
-            TextFormatFlags flags = TextFormatFlags.Top | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPrefix;
+            var flags = TextFormatFlags.Top | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPrefix;
 
             if (this.Items.Count > 0)
             {
@@ -545,15 +501,9 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                 int maxPreferredItemWidth = -1, preferredItemWidth;
                 foreach (object item in this.Items)
                 {
-                    string formattedValue = GetFormattedValue(GetItemValue(item), rowIndex, ref cellStyle, null, null, DataGridViewDataErrorContexts.Formatting | DataGridViewDataErrorContexts.PreferredSize) as string;
-                    if (formattedValue != null)
-                    {
-                        preferredItemWidth = DataGridViewCell.MeasureTextSize(graphics, formattedValue, cellStyle.Font, flags).Width;
-                    }
-                    else
-                    {
-                        preferredItemWidth = DataGridViewCell.MeasureTextSize(graphics, " ", cellStyle.Font, flags).Width;
-                    }
+                    preferredItemWidth = GetFormattedValue(GetItemValue(item), rowIndex, ref cellStyle, null, null, DataGridViewDataErrorContexts.Formatting | DataGridViewDataErrorContexts.PreferredSize) is string formattedValue
+                        ? MeasureTextSize(graphics, formattedValue, cellStyle.Font, flags).Width
+                        : MeasureTextSize(graphics, " ", cellStyle.Font, flags).Width;
                     if (preferredItemWidth > maxPreferredItemWidth)
                     {
                         maxPreferredItemWidth = preferredItemWidth;
@@ -564,7 +514,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
 
             if (freeDimension == DataGridViewRadioButtonFreeDimension.Width)
             {
-                Size contentSize = new Size(Int32.MaxValue, constraintSize.Height - borderAndPaddingHeights);
+                var contentSize = new Size(Int32.MaxValue, constraintSize.Height - borderAndPaddingHeights);
                 if (GetScrollingNeeded(graphics, rowIndex, cellStyle, contentSize))
                 {
                     // Accommodate the scrolling buttons
@@ -572,7 +522,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                 }
             }
 
-            preferredWidth += radioButtonGlyphSize.Width + 5 * DATAGRIDVIEWRADIOBUTTONCELL_margin + borderAndPaddingWidths;
+            preferredWidth += radioButtonGlyphSize.Width + (5 * DATAGRIDVIEWRADIOBUTTONCELL_margin) + borderAndPaddingWidths;
         }
 
         if (this.DataGridView.ShowCellErrors)
@@ -581,12 +531,12 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             if (freeDimension != DataGridViewRadioButtonFreeDimension.Height)
             {
                 preferredWidth = System.Math.Max(preferredWidth,
-                                          borderAndPaddingWidths + DATAGRIDVIEWRADIOBUTTONCELL_iconMarginWidth * 2 + DATAGRIDVIEWRADIOBUTTONCELL_iconsWidth);
+                                          borderAndPaddingWidths + (DATAGRIDVIEWRADIOBUTTONCELL_iconMarginWidth * 2) + DATAGRIDVIEWRADIOBUTTONCELL_iconsWidth);
             }
             if (freeDimension != DataGridViewRadioButtonFreeDimension.Width)
             {
                 preferredHeight = System.Math.Max(preferredHeight,
-                                           borderAndPaddingHeights + DATAGRIDVIEWRADIOBUTTONCELL_iconMarginHeight * 2 + DATAGRIDVIEWRADIOBUTTONCELL_iconsHeight);
+                                           borderAndPaddingHeights + (DATAGRIDVIEWRADIOBUTTONCELL_iconMarginHeight * 2) + DATAGRIDVIEWRADIOBUTTONCELL_iconsHeight);
             }
         }
 
@@ -632,11 +582,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                 return true;
             }
         }
-        if (this.handledKeyDown)
-        {
-            return true;
-        }
-        return false;
+        return this.handledKeyDown;
     }
 
     /// <summary>
@@ -688,18 +634,12 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// <summary>
     /// Returns whether calling the OnMouseLeave method would force the owning row to be unshared.
     /// </summary>
-    protected override bool MouseLeaveUnsharesRow(int rowIndex)
-    {
-        return this.pressedItemIndex != -1 && !this.mouseUpHooked;
-    }
+    protected override bool MouseLeaveUnsharesRow(int rowIndex) => this.pressedItemIndex != -1 && !this.mouseUpHooked;
 
     /// <summary>
     /// Returns whether calling the OnMouseUp method would force the owning row to be unshared.
     /// </summary>
-    protected override bool MouseUpUnsharesRow(DataGridViewCellMouseEventArgs e)
-    {
-        return e.Button == MouseButtons.Left && this.pressedItemIndex != -1;
-    }
+    protected override bool MouseUpUnsharesRow(DataGridViewCellMouseEventArgs e) => e.Button == MouseButtons.Left && this.pressedItemIndex != -1;
 
     /// <summary>
     /// Potentially updates the selected item and notifies the grid of the change.
@@ -710,7 +650,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         {
             return;
         }
-        Point ptCurrentCell = this.DataGridView.CurrentCellAddress;
+        var ptCurrentCell = this.DataGridView.CurrentCellAddress;
         if (ptCurrentCell.X == this.ColumnIndex &&
             ptCurrentCell.Y == e.RowIndex &&
             this.DataGridView.IsCurrentCellInEditMode)
@@ -958,7 +898,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             return;
         }
 
-        DataGridViewCellStyle cellStyle = GetInheritedStyle(null, e.RowIndex, false /* includeColors */);
+        var cellStyle = GetInheritedStyle(null, e.RowIndex, false /* includeColors */);
         int oldMouseLocationCode = mouseLocationCode;
         mouseLocationCode = GetMouseLocationCode(this.DataGridView.CreateGraphics(),
                                                  e.RowIndex,
@@ -1022,9 +962,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         string errorText,
         DataGridViewCellStyle cellStyle,
         DataGridViewAdvancedBorderStyle advancedBorderStyle,
-        DataGridViewPaintParts paintParts)
-    {
-        ComputeLayout(graphics,
+        DataGridViewPaintParts paintParts) => ComputeLayout(graphics,
                       clipBounds,
                       cellBounds,
                       rowIndex,
@@ -1035,49 +973,23 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                       advancedBorderStyle,
                       paintParts,
                       true  /*paint*/);
-    }
 
     /// <summary>
     /// Utility function that converts a constraintSize provided to GetPreferredSize into a
     /// DataGridViewRadioButtonFreeDimension enum value.
     /// </summary>
-    private static DataGridViewRadioButtonFreeDimension GetFreeDimensionFromConstraint(Size constraintSize)
-    {
-        if (constraintSize.Width < 0 || constraintSize.Height < 0)
-        {
-            throw new ArgumentException("InvalidArgument=Value of '" + constraintSize.ToString() + "' is not valid for 'constraintSize'.");
-        }
-        if (constraintSize.Width == 0)
-        {
-            if (constraintSize.Height == 0)
-            {
-                return DataGridViewRadioButtonFreeDimension.Both;
-            }
-            else
-            {
-                return DataGridViewRadioButtonFreeDimension.Width;
-            }
-        }
-        else
-        {
-            if (constraintSize.Height == 0)
-            {
-                return DataGridViewRadioButtonFreeDimension.Height;
-            }
-            else
-            {
-                throw new ArgumentException("InvalidArgument=Value of '" + constraintSize.ToString() + "' is not valid for 'constraintSize'.");
-            }
-        }
-    }
+    private static DataGridViewRadioButtonFreeDimension GetFreeDimensionFromConstraint(Size constraintSize) => constraintSize.Width < 0 || constraintSize.Height < 0
+            ? throw new ArgumentException("InvalidArgument=Value of '" + constraintSize.ToString() + "' is not valid for 'constraintSize'.")
+            : constraintSize.Width == 0
+            ? constraintSize.Height == 0 ? DataGridViewRadioButtonFreeDimension.Both : DataGridViewRadioButtonFreeDimension.Width
+            : constraintSize.Height == 0
+                ? DataGridViewRadioButtonFreeDimension.Height
+                : throw new ArgumentException("InvalidArgument=Value of '" + constraintSize.ToString() + "' is not valid for 'constraintSize'.");
 
     /// <summary>
     /// Helper function that indicates if a paintPart needs to be painted.
     /// </summary>
-    private static bool PartPainted(DataGridViewPaintParts paintParts, DataGridViewPaintParts paintPart)
-    {
-        return (paintParts & paintPart) != 0;
-    }
+    private static bool PartPainted(DataGridViewPaintParts paintParts, DataGridViewPaintParts paintPart) => (paintParts & paintPart) != 0;
 
     /// <summary>
     /// Utility function that returns the cell state inherited from the owning row and column.
@@ -1086,11 +998,11 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     {
         Debug.Assert(this.DataGridView != null);
         Debug.Assert(this.ColumnIndex >= 0);
-        DataGridViewElementStates orFlags = DataGridViewElementStates.ReadOnly | DataGridViewElementStates.Resizable | DataGridViewElementStates.Selected;
-        DataGridViewElementStates andFlags = DataGridViewElementStates.Displayed | DataGridViewElementStates.Frozen | DataGridViewElementStates.Visible;
-        DataGridViewElementStates cellState = (this.OwningColumn.State & orFlags);
-        cellState |= (rowState & orFlags);
-        cellState |= ((this.OwningColumn.State & andFlags) & (rowState & andFlags));
+        var orFlags = DataGridViewElementStates.ReadOnly | DataGridViewElementStates.Resizable | DataGridViewElementStates.Selected;
+        var andFlags = DataGridViewElementStates.Displayed | DataGridViewElementStates.Frozen | DataGridViewElementStates.Visible;
+        var cellState = this.OwningColumn.State & orFlags;
+        cellState |= rowState & orFlags;
+        cellState |= this.OwningColumn.State & andFlags & rowState & andFlags;
         return cellState;
     }
 
@@ -1116,8 +1028,8 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
 
         // Discard the space taken up by the borders.
-        Rectangle borderWidths = BorderWidths(advancedBorderStyle);
-        Rectangle valBounds = cellBounds;
+        var borderWidths = BorderWidths(advancedBorderStyle);
+        var valBounds = cellBounds;
         valBounds.Offset(borderWidths.X, borderWidths.Y);
         valBounds.Width -= borderWidths.Right;
         valBounds.Height -= borderWidths.Bottom;
@@ -1125,23 +1037,18 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         SolidBrush backgroundBrush = null;
         try
         {
-            Point ptCurrentCell = this.DataGridView.CurrentCellAddress;
+            var ptCurrentCell = this.DataGridView.CurrentCellAddress;
             bool cellCurrent = ptCurrentCell.X == this.ColumnIndex && ptCurrentCell.Y == rowIndex;
             bool cellSelected = (cellState & DataGridViewElementStates.Selected) != 0;
             bool mouseOverCell = cellBounds.Contains(this.DataGridView.PointToClient(Control.MousePosition));
 
-            if (DataGridViewRadioButtonCell.PartPainted(paintParts, DataGridViewPaintParts.SelectionBackground) && cellSelected)
-            {
-                backgroundBrush = new SolidBrush(cellStyle.SelectionBackColor);
-            }
-            else
-            {
-                backgroundBrush = new SolidBrush(cellStyle.BackColor);
-            }
+            backgroundBrush = DataGridViewRadioButtonCell.PartPainted(paintParts, DataGridViewPaintParts.SelectionBackground) && cellSelected
+                ? new SolidBrush(cellStyle.SelectionBackColor)
+                : new SolidBrush(cellStyle.BackColor);
 
             if (paint && DataGridViewRadioButtonCell.PartPainted(paintParts, DataGridViewPaintParts.Background) && backgroundBrush.Color.A == 255)
             {
-                Rectangle backgroundRect = valBounds;
+                var backgroundRect = valBounds;
                 backgroundRect.Intersect(clipBounds);
                 graphics.FillRectangle(backgroundBrush, backgroundRect);
             }
@@ -1154,8 +1061,8 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                 valBounds.Height -= cellStyle.Padding.Vertical;
             }
 
-            Rectangle errorBounds = valBounds;
-            Rectangle scrollBounds = valBounds;
+            var errorBounds = valBounds;
+            var scrollBounds = valBounds;
 
             this.layout.ScrollingNeeded = GetScrollingNeeded(graphics, rowIndex, cellStyle, valBounds.Size);
 
@@ -1177,14 +1084,14 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                 this.layout.FirstDisplayedItemLocation = new Point(valBounds.Left + DATAGRIDVIEWRADIOBUTTONCELL_margin, valBounds.Top + DATAGRIDVIEWRADIOBUTTONCELL_margin);
                 int textHeight = cellStyle.Font.Height;
                 int itemIndex = this.layout.FirstDisplayedItemIndex;
-                Rectangle radiosBounds = valBounds;
+                var radiosBounds = valBounds;
                 while (itemIndex < this.Items.Count &&
                        itemIndex < this.layout.FirstDisplayedItemIndex + this.maxDisplayedItems &&
                        radiosBounds.Height > 0)
                 {
                     if (paint && DataGridViewRadioButtonCell.PartPainted(paintParts, DataGridViewPaintParts.ContentBackground))
                     {
-                        Rectangle itemRect = radiosBounds;
+                        var itemRect = radiosBounds;
                         itemRect.Intersect(clipBounds);
                         if (!itemRect.IsEmpty)
                         {
@@ -1211,7 +1118,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                     }
                     itemIndex++;
                     radiosBounds.Y += textHeight + DATAGRIDVIEWRADIOBUTTONCELL_margin;
-                    radiosBounds.Height -= (textHeight + DATAGRIDVIEWRADIOBUTTONCELL_margin);
+                    radiosBounds.Height -= textHeight + DATAGRIDVIEWRADIOBUTTONCELL_margin;
                     if (radiosBounds.Height >= 0)
                     {
                         this.layout.TotallyDisplayedItemsCount++;
@@ -1229,7 +1136,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             if (this.layout.ScrollingNeeded)
             {
                 // Layout / paint the 2 scroll buttons
-                Rectangle rectArrow = new Rectangle(scrollBounds.Right - this.layout.ScrollButtonsSize.Width,
+                var rectArrow = new Rectangle(scrollBounds.Right - this.layout.ScrollButtonsSize.Width,
                                                     scrollBounds.Top,
                                                     this.layout.ScrollButtonsSize.Width,
                                                     this.layout.ScrollButtonsSize.Height);
@@ -1257,10 +1164,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
         finally
         {
-            if (backgroundBrush != null)
-            {
-                backgroundBrush.Dispose();
-            }
+            backgroundBrush?.Dispose();
         }
     }
 
@@ -1285,9 +1189,8 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         Debug.Assert(this.DataSource is ISupportInitializeNotification);
         Debug.Assert(this.dataSourceInitializedHookedUp);
 
-        ISupportInitializeNotification dsInit = this.DataSource as ISupportInitializeNotification;
         // Unhook the Initialized event.
-        if (dsInit != null)
+        if (this.DataSource is ISupportInitializeNotification dsInit)
         {
             dsInit.Initialized -= new EventHandler(DataSource_Initialized);
         }
@@ -1321,7 +1224,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
         else if (!string.IsNullOrEmpty(this.DisplayMember))
         {
-            PropertyDescriptor propDesc = TypeDescriptor.GetProperties(item).Find(this.DisplayMember, true /*caseInsensitive*/);
+            var propDesc = TypeDescriptor.GetProperties(item).Find(this.DisplayMember, true /*caseInsensitive*/);
             if (propDesc != null)
             {
                 displayValue = propDesc.GetValue(item);
@@ -1330,7 +1233,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
         else if (!string.IsNullOrEmpty(this.ValueMember))
         {
-            PropertyDescriptor propDesc = TypeDescriptor.GetProperties(item).Find(this.ValueMember, true /*caseInsensitive*/);
+            var propDesc = TypeDescriptor.GetProperties(item).Find(this.ValueMember, true /*caseInsensitive*/);
             if (propDesc != null)
             {
                 displayValue = propDesc.GetValue(item);
@@ -1364,7 +1267,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
         else if (!string.IsNullOrEmpty(this.ValueMember))
         {
-            PropertyDescriptor propDesc = TypeDescriptor.GetProperties(item).Find(this.ValueMember, true /*caseInsensitive*/);
+            var propDesc = TypeDescriptor.GetProperties(item).Find(this.ValueMember, true /*caseInsensitive*/);
             if (propDesc != null)
             {
                 value = propDesc.GetValue(item);
@@ -1373,7 +1276,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
         if (!valueSet && !string.IsNullOrEmpty(this.DisplayMember))
         {
-            PropertyDescriptor propDesc = TypeDescriptor.GetProperties(item).Find(this.DisplayMember, true /*caseInsensitive*/);
+            var propDesc = TypeDescriptor.GetProperties(item).Find(this.DisplayMember, true /*caseInsensitive*/);
             if (propDesc != null)
             {
                 value = propDesc.GetValue(item);
@@ -1397,7 +1300,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         bool singleHorizontalBorderAdded = !this.DataGridView.ColumnHeadersVisible && this.DataGridView.AdvancedCellBorderStyle.All == DataGridViewAdvancedCellBorderStyle.Single;
         bool isFirstDisplayedColumn = this.ColumnIndex == this.DataGridView.Columns.GetFirstColumn(DataGridViewElementStates.Displayed).Index;
         bool isFirstDisplayedRow = rowIndex == this.DataGridView.Rows.GetFirstRow(DataGridViewElementStates.Displayed);
-        DataGridViewAdvancedBorderStyle dataGridViewAdvancedBorderStylePlaceholder = new DataGridViewAdvancedBorderStyle(), dataGridViewAdvancedBorderStyleEffective;
+        DataGridViewAdvancedBorderStyle dataGridViewAdvancedBorderStylePlaceholder = new(), dataGridViewAdvancedBorderStyleEffective;
         dataGridViewAdvancedBorderStyleEffective = AdjustCellBorderStyle(this.DataGridView.AdvancedCellBorderStyle,
                                                                          dataGridViewAdvancedBorderStylePlaceholder,
                                                                          singleVerticalBorderAdded,
@@ -1405,7 +1308,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                                                                          isFirstDisplayedColumn,
                                                                          isFirstDisplayedRow);
         // Then its size.
-        Rectangle cellBounds = this.DataGridView.GetCellDisplayRectangle(this.ColumnIndex, rowIndex, false /*cutOverflow*/);
+        var cellBounds = this.DataGridView.GetCellDisplayRectangle(this.ColumnIndex, rowIndex, false /*cutOverflow*/);
         Debug.Assert(GetSize(rowIndex) == cellBounds.Size);
 
         // Recompute the layout of the cell.
@@ -1422,7 +1325,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                       false /*paint*/);
 
         // Deduce the cell part beneath the mouse pointer.
-        Point mousePosition = this.DataGridView.PointToClient(Control.MousePosition);
+        var mousePosition = this.DataGridView.PointToClient(Control.MousePosition);
         Rectangle rect;
         if (this.layout.ScrollingNeeded)
         {
@@ -1441,10 +1344,10 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
         if (this.layout.DisplayedItemsCount > 0)
         {
-            Point radioButtonLocation = this.layout.FirstDisplayedItemLocation;
+            var radioButtonLocation = this.layout.FirstDisplayedItemLocation;
             int textHeight = cellStyle.Font.Height;
             int itemIndex = this.layout.FirstDisplayedItemIndex;
-            Rectangle radioButtonBounds = new Rectangle(radioButtonLocation, this.layout.RadioButtonsSize);
+            var radioButtonBounds = new Rectangle(radioButtonLocation, this.layout.RadioButtonsSize);
             while (itemIndex < this.Items.Count &&
                    itemIndex < this.layout.FirstDisplayedItemIndex + this.maxDisplayedItems &&
                    itemIndex - this.layout.FirstDisplayedItemIndex < this.layout.DisplayedItemsCount)
@@ -1468,74 +1371,25 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     {
         if (!enabled)
         {
-            if (upButton)
-            {
-                return ScrollBarArrowButtonState.UpDisabled;
-            }
-            else
-            {
-                return ScrollBarArrowButtonState.DownDisabled;
-            }
+            return upButton ? ScrollBarArrowButtonState.UpDisabled : ScrollBarArrowButtonState.DownDisabled;
         }
         if (mouseLocationCode == DATAGRIDVIEWRADIOBUTTONCELL_mouseLocationTopScrollButton)
         {
             // Mouse is over upper button
-            if (Control.MouseButtons == MouseButtons.Left)
-            {
-                if (upButton)
-                {
-                    return ScrollBarArrowButtonState.UpPressed;
-                }
-                else
-                {
-                    return ScrollBarArrowButtonState.DownNormal;
-                }
-            }
-            else
-            {
-                if (upButton)
-                {
-                    return ScrollBarArrowButtonState.UpHot;
-                }
-                else
-                {
-                    return ScrollBarArrowButtonState.DownNormal;
-                }
-            }
+            return Control.MouseButtons == MouseButtons.Left
+                ? upButton ? ScrollBarArrowButtonState.UpPressed : ScrollBarArrowButtonState.DownNormal
+                : upButton ? ScrollBarArrowButtonState.UpHot : ScrollBarArrowButtonState.DownNormal;
         }
         else if (mouseLocationCode == DATAGRIDVIEWRADIOBUTTONCELL_mouseLocationBottomScrollButton)
         {
             // Mouse is over bottom button
-            if (Control.MouseButtons == MouseButtons.Left)
-            {
-                if (upButton)
-                {
-                    return ScrollBarArrowButtonState.UpNormal;
-                }
-                else
-                {
-                    return ScrollBarArrowButtonState.DownPressed;
-                }
-            }
-            else
-            {
-                if (upButton)
-                {
-                    return ScrollBarArrowButtonState.UpNormal;
-                }
-                else
-                {
-                    return ScrollBarArrowButtonState.DownHot;
-                }
-            }
-        }
-        else if (upButton)
-        {
-            return ScrollBarArrowButtonState.UpNormal;
+            return Control.MouseButtons == MouseButtons.Left
+                ? upButton ? ScrollBarArrowButtonState.UpNormal : ScrollBarArrowButtonState.DownPressed
+                : upButton ? ScrollBarArrowButtonState.UpNormal : ScrollBarArrowButtonState.DownHot;
         }
         else
         {
-            return ScrollBarArrowButtonState.DownNormal;
+            return upButton ? ScrollBarArrowButtonState.UpNormal : ScrollBarArrowButtonState.DownNormal;
         }
     }
 
@@ -1550,15 +1404,15 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         }
 
         if (this.MaxDisplayedItems >= this.Items.Count &&
-            this.Items.Count * (cellStyle.Font.Height + DATAGRIDVIEWRADIOBUTTONCELL_margin) + DATAGRIDVIEWRADIOBUTTONCELL_margin <= contentSize.Height /*- borderAndPaddingHeights*/)
+            (this.Items.Count * (cellStyle.Font.Height + DATAGRIDVIEWRADIOBUTTONCELL_margin)) + DATAGRIDVIEWRADIOBUTTONCELL_margin <= contentSize.Height /*- borderAndPaddingHeights*/)
         {
             // There is enough vertical room to display all the radio buttons
             return false;
         }
 
         // Is there enough room to display the scroll buttons?
-        Size sizeBoxSize = ScrollBarRenderer.GetSizeBoxSize(graphics, ScrollBarState.Normal);
-        if (2 * DATAGRIDVIEWRADIOBUTTONCELL_margin + sizeBoxSize.Width > contentSize.Width ||
+        var sizeBoxSize = ScrollBarRenderer.GetSizeBoxSize(graphics, ScrollBarState.Normal);
+        if ((2 * DATAGRIDVIEWRADIOBUTTONCELL_margin) + sizeBoxSize.Width > contentSize.Width ||
             2 * sizeBoxSize.Height > contentSize.Height)
         {
             // There isn't enough room to show the scroll buttons.
@@ -1582,20 +1436,13 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             }
             else
             {
-                BindingMemberInfo displayBindingMember = new BindingMemberInfo(displayMember);
+                var displayBindingMember = new BindingMemberInfo(displayMember);
                 // make the DataManager point to the sublist inside this.DataSource
                 this.DataManager = this.DataGridView.BindingContext[this.DataSource, displayBindingMember.BindingPath] as CurrencyManager;
 
-                PropertyDescriptorCollection props = this.DataManager.GetItemProperties();
-                PropertyDescriptor displayMemberProperty = props.Find(displayBindingMember.BindingField, true);
-                if (displayMemberProperty == null)
-                {
-                    throw new ArgumentException("Field called '" + displayMember + "' does not exist.");
-                }
-                else
-                {
-                    this.displayMemberProperty = displayMemberProperty;
-                }
+                var props = this.DataManager.GetItemProperties();
+                var displayMemberProperty = props.Find(displayBindingMember.BindingField, true);
+                this.displayMemberProperty = displayMemberProperty ?? throw new ArgumentException("Field called '" + displayMember + "' does not exist.");
             }
         }
     }
@@ -1613,20 +1460,13 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             }
             else
             {
-                BindingMemberInfo valueBindingMember = new BindingMemberInfo(valueMember);
+                var valueBindingMember = new BindingMemberInfo(valueMember);
                 // make the DataManager point to the sublist inside this.DataSource
                 this.DataManager = this.DataGridView.BindingContext[this.DataSource, valueBindingMember.BindingPath] as CurrencyManager;
 
-                PropertyDescriptorCollection props = this.DataManager.GetItemProperties();
-                PropertyDescriptor valueMemberProperty = props.Find(valueBindingMember.BindingField, true);
-                if (valueMemberProperty == null)
-                {
-                    throw new ArgumentException("Field called '" + valueMember + "' does not exist.");
-                }
-                else
-                {
-                    this.valueMemberProperty = valueMemberProperty;
-                }
+                var props = this.DataManager.GetItemProperties();
+                var valueMemberProperty = props.Find(valueBindingMember.BindingField, true);
+                this.valueMemberProperty = valueMemberProperty ?? throw new ArgumentException("Field called '" + valueMember + "' does not exist.");
             }
         }
     }
@@ -1639,11 +1479,11 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         if (itemIndex >= this.layout.FirstDisplayedItemIndex &&
             itemIndex < this.layout.FirstDisplayedItemIndex + this.layout.DisplayedItemsCount)
         {
-            DataGridViewCellStyle cellStyle = GetInheritedStyle(null, rowIndex, false /* includeColors */);
-            Point radioButtonLocation = this.layout.FirstDisplayedItemLocation;
+            var cellStyle = GetInheritedStyle(null, rowIndex, false /* includeColors */);
+            var radioButtonLocation = this.layout.FirstDisplayedItemLocation;
             int textHeight = cellStyle.Font.Height;
             radioButtonLocation.Y += (textHeight + DATAGRIDVIEWRADIOBUTTONCELL_margin) * (itemIndex - this.layout.FirstDisplayedItemIndex);
-            Size cellSize = GetSize(rowIndex);
+            var cellSize = GetSize(rowIndex);
             this.DataGridView.Invalidate(new Rectangle(radioButtonLocation.X, radioButtonLocation.Y, cellSize.Width, System.Math.Max(textHeight + DATAGRIDVIEWRADIOBUTTONCELL_margin, this.layout.RadioButtonsSize.Height)));
         }
     }
@@ -1656,7 +1496,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         if (itemIndex >= this.layout.FirstDisplayedItemIndex &&
             itemIndex < this.layout.FirstDisplayedItemIndex + this.layout.DisplayedItemsCount)
         {
-            Point radioButtonLocation = this.layout.FirstDisplayedItemLocation;
+            var radioButtonLocation = this.layout.FirstDisplayedItemLocation;
             int textHeight = cellStyle.Font.Height;
             radioButtonLocation.Y += (textHeight + DATAGRIDVIEWRADIOBUTTONCELL_margin) * (itemIndex - this.layout.FirstDisplayedItemIndex);
             this.DataGridView.Invalidate(new Rectangle(radioButtonLocation, this.layout.RadioButtonsSize));
@@ -1700,90 +1540,48 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         else
         {
             //Paint the glyph & caption
-            Point glyphLocation = new Point(radiosBounds.Left + DATAGRIDVIEWRADIOBUTTONCELL_margin, radiosBounds.Top + DATAGRIDVIEWRADIOBUTTONCELL_margin);
-            TextFormatFlags flags = TextFormatFlags.Top | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPrefix;
-            Rectangle textBounds = new Rectangle(radiosBounds.Left + 2 * DATAGRIDVIEWRADIOBUTTONCELL_margin + this.layout.RadioButtonsSize.Width, radiosBounds.Top + DATAGRIDVIEWRADIOBUTTONCELL_margin, radiosBounds.Width - (2 * DATAGRIDVIEWRADIOBUTTONCELL_margin + this.layout.RadioButtonsSize.Width), cellStyle.Font.Height + 1 /*radiosBounds.Height - 2 * DATAGRIDVIEWRADIOBUTTONCELL_margin*/);
+            var glyphLocation = new Point(radiosBounds.Left + DATAGRIDVIEWRADIOBUTTONCELL_margin, radiosBounds.Top + DATAGRIDVIEWRADIOBUTTONCELL_margin);
+            var flags = TextFormatFlags.Top | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPrefix;
+            var textBounds = new Rectangle(radiosBounds.Left + (2 * DATAGRIDVIEWRADIOBUTTONCELL_margin) + this.layout.RadioButtonsSize.Width, radiosBounds.Top + DATAGRIDVIEWRADIOBUTTONCELL_margin, radiosBounds.Width - ((2 * DATAGRIDVIEWRADIOBUTTONCELL_margin) + this.layout.RadioButtonsSize.Width), cellStyle.Font.Height + 1 /*radiosBounds.Height - 2 * DATAGRIDVIEWRADIOBUTTONCELL_margin*/);
             int localMouseLocationCode = mouseOverCell ? mouseLocationCode : DATAGRIDVIEWRADIOBUTTONCELL_mouseLocationGeneric;
-            using (Region clipRegion = graphics.Clip)
+            using var clipRegion = graphics.Clip;
+            graphics.SetClip(radiosBounds);
+            RadioButtonState radioButtonState;
+            if (itemSelected)
             {
-                graphics.SetClip(radiosBounds);
-                RadioButtonState radioButtonState;
-                if (itemSelected)
-                {
-                    if (itemReadOnly)
-                    {
-                        radioButtonState = RadioButtonState.CheckedDisabled;
-                    }
-                    else
-                    {
-                        if (mouseOverCell && this.pressedItemIndex == itemIndex)
-                        {
-                            if (localMouseLocationCode + this.layout.FirstDisplayedItemIndex == this.pressedItemIndex)
-                            {
-                                radioButtonState = RadioButtonState.CheckedPressed;
-                            }
-                            else
-                            {
-                                radioButtonState = RadioButtonState.CheckedHot;
-                            }
-                        }
-                        else
-                        {
-                            if (localMouseLocationCode + this.layout.FirstDisplayedItemIndex == itemIndex && this.pressedItemIndex == -1)
-                            {
-                                radioButtonState = RadioButtonState.CheckedHot;
-                            }
-                            else
-                            {
-                                radioButtonState = RadioButtonState.CheckedNormal;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (itemReadOnly)
-                    {
-                        radioButtonState = RadioButtonState.UncheckedDisabled;
-                    }
-                    else
-                    {
-                        if (mouseOverCell && this.pressedItemIndex == itemIndex)
-                        {
-                            if (localMouseLocationCode + this.layout.FirstDisplayedItemIndex == this.pressedItemIndex)
-                            {
-                                radioButtonState = RadioButtonState.UncheckedPressed;
-                            }
-                            else
-                            {
-                                radioButtonState = RadioButtonState.UncheckedHot;
-                            }
-                        }
-                        else
-                        {
-                            if (localMouseLocationCode + this.layout.FirstDisplayedItemIndex == itemIndex && this.pressedItemIndex == -1)
-                            {
-                                radioButtonState = RadioButtonState.UncheckedHot;
-                            }
-                            else
-                            {
-                                radioButtonState = RadioButtonState.UncheckedNormal;
-                            }
-                        }
-                    }
-                }
-                // Note: The cell should only show the focus rectangle when this.DataGridView.ShowFocusCues is true. However that property is
-                // protected and can't be accessed directly. A custom grid derived from DataGridView could expose this notion publicly.
-                RadioButtonRenderer.DrawRadioButton(graphics,
-                                                    glyphLocation,
-                                                    textBounds,
-                                                    itemFormattedText,
-                                                    cellStyle.Font,
-                                                    flags,
-                                                    paintFocus && /* this.DataGridView.ShowFocusCues && */ this.DataGridView.Focused,
-                                                    radioButtonState);
-                graphics.Clip = clipRegion;
+                radioButtonState = itemReadOnly
+                    ? RadioButtonState.CheckedDisabled
+                    : mouseOverCell && this.pressedItemIndex == itemIndex
+                        ? localMouseLocationCode + this.layout.FirstDisplayedItemIndex == this.pressedItemIndex
+                            ? RadioButtonState.CheckedPressed
+                            : RadioButtonState.CheckedHot
+                        : localMouseLocationCode + this.layout.FirstDisplayedItemIndex == itemIndex && this.pressedItemIndex == -1
+                            ? RadioButtonState.CheckedHot
+                            : RadioButtonState.CheckedNormal;
             }
+            else
+            {
+                radioButtonState = itemReadOnly
+                    ? RadioButtonState.UncheckedDisabled
+                    : mouseOverCell && this.pressedItemIndex == itemIndex
+                        ? localMouseLocationCode + this.layout.FirstDisplayedItemIndex == this.pressedItemIndex
+                            ? RadioButtonState.UncheckedPressed
+                            : RadioButtonState.UncheckedHot
+                        : localMouseLocationCode + this.layout.FirstDisplayedItemIndex == itemIndex && this.pressedItemIndex == -1
+                            ? RadioButtonState.UncheckedHot
+                            : RadioButtonState.UncheckedNormal;
+            }
+            // Note: The cell should only show the focus rectangle when this.DataGridView.ShowFocusCues is true. However that property is
+            // protected and can't be accessed directly. A custom grid derived from DataGridView could expose this notion publicly.
+            RadioButtonRenderer.DrawRadioButton(graphics,
+                                                glyphLocation,
+                                                textBounds,
+                                                itemFormattedText,
+                                                cellStyle.Font,
+                                                flags,
+                                                paintFocus && /* this.DataGridView.ShowFocusCues && */ this.DataGridView.Focused,
+                                                radioButtonState);
+            graphics.Clip = clipRegion;
         }
     }
 
@@ -1796,7 +1594,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
         {
             return false;
         }
-        IDataGridViewEditingCell editingCell = (IDataGridViewEditingCell)this;
+        var editingCell = (IDataGridViewEditingCell)this;
         Debug.Assert(newSelectedItemIndex >= 0);
         Debug.Assert(newSelectedItemIndex < this.Items.Count);
         object item = this.Items[newSelectedItemIndex];

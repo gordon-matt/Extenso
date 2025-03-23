@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using Autofac;
 using Blazorise;
 using Blazorise.Bootstrap;
@@ -21,121 +20,119 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OData;
 using Radzen;
 
-namespace Demo.Extenso.AspNetCore.Blazor.OData
+namespace Demo.Extenso.AspNetCore.Blazor.OData;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IWebHostEnvironment currentEnvironment, IConfiguration configuration)
     {
-        public Startup(IWebHostEnvironment currentEnvironment, IConfiguration configuration)
-        {
-            CurrentEnvironment = currentEnvironment;
-            Configuration = configuration;
-        }
+        CurrentEnvironment = currentEnvironment;
+        Configuration = configuration;
+    }
 
-        private IWebHostEnvironment CurrentEnvironment { get; set; }
+    private IWebHostEnvironment CurrentEnvironment { get; set; }
 
-        public IConfiguration Configuration { get; }
+    public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(
+                Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+        services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddRazorPages()
-                .AddNewtonsoftJson()
-                .AddOData((options, serviceProvider) =>
+        services.AddRazorPages()
+            .AddNewtonsoftJson()
+            .AddOData((options, serviceProvider) =>
+            {
+                options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
+
+                var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
+                foreach (var registrar in registrars)
                 {
-                    options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
-
-                    var registrars = serviceProvider.GetRequiredService<IEnumerable<IODataRegistrar>>();
-                    foreach (var registrar in registrars)
-                    {
-                        registrar.Register(options);
-                    }
-                });
-
-            services.AddServerSideBlazor();
-            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddBlazorise(options =>
-            {
-                //options.ChangeTextOnKeyPress = true; // optional
-            })
-            .AddBootstrapProviders()
-            .AddFontAwesomeIcons();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            // Use odata route debug, /$odata
-            app.UseODataRouteDebug();
-
-            // If you want to use /$openapi, enable the middleware.
-            //app.UseODataOpenApi();
-
-            // Add OData /$query middleware
-            app.UseODataQueryRequest();
-
-            // Add the OData Batch middleware to support OData $Batch
-            //app.UseODataBatching();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+                    registrar.Register(options);
+                }
             });
-        }
 
-        public void ConfigureContainer(ContainerBuilder builder)
+        services.AddServerSideBlazor();
+        services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+        services.AddDatabaseDeveloperPageExceptionFilter();
+
+        services.AddBlazorise(options =>
         {
-            builder.RegisterType<ApplicationDbContextFactory>().As<IDbContextFactory>().SingleInstance();
+            //options.ChangeTextOnKeyPress = true; // optional
+        })
+        .AddBootstrapProviders()
+        .AddFontAwesomeIcons();
+    }
 
-            builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
-                .As(typeof(IRepository<>))
-                .InstancePerLifetimeScope();
-
-            builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
-
-            // Radzen
-            builder.RegisterType<DialogService>().AsSelf().InstancePerLifetimeScope();
-            builder.RegisterType<NotificationService>().AsSelf().InstancePerLifetimeScope();
-
-            // Services
-            builder.RegisterType<PersonODataService>().As<IGenericODataService<Person, int>>().SingleInstance();
-            //builder.RegisterGeneric(typeof(GenericODataService<,>))
-            //    .As(typeof(IGenericODataService<,>))
-            //    .InstancePerLifetimeScope();
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseMigrationsEndPoint();
         }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+
+        // Use odata route debug, /$odata
+        app.UseODataRouteDebug();
+
+        // If you want to use /$openapi, enable the middleware.
+        //app.UseODataOpenApi();
+
+        // Add OData /$query middleware
+        app.UseODataQueryRequest();
+
+        // Add the OData Batch middleware to support OData $Batch
+        //app.UseODataBatching();
+
+        app.UseRouting();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapBlazorHub();
+            endpoints.MapFallbackToPage("/_Host");
+        });
+    }
+
+    public void ConfigureContainer(ContainerBuilder builder)
+    {
+        builder.RegisterType<ApplicationDbContextFactory>().As<IDbContextFactory>().SingleInstance();
+
+        builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
+            .As(typeof(IRepository<>))
+            .InstancePerLifetimeScope();
+
+        builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
+
+        // Radzen
+        builder.RegisterType<DialogService>().AsSelf().InstancePerLifetimeScope();
+        builder.RegisterType<NotificationService>().AsSelf().InstancePerLifetimeScope();
+
+        // Services
+        builder.RegisterType<PersonODataService>().As<IGenericODataService<Person, int>>().SingleInstance();
+        //builder.RegisterGeneric(typeof(GenericODataService<,>))
+        //    .As(typeof(IGenericODataService<,>))
+        //    .InstancePerLifetimeScope();
     }
 }

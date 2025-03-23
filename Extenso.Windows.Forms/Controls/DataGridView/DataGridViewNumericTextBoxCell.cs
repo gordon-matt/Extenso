@@ -7,39 +7,24 @@ public class DataGridViewNumericTextBoxCell : DataGridViewTextBoxCell
     {
     }
 
-    public override object DefaultNewRowValue
-    {
-        get
-        {
+    public override object DefaultNewRowValue =>
             // Use the current date and time as the default value.
-            return null;
-        }
-    }
+            null;
 
-    public override Type EditType
-    {
-        get
-        {
+    public override Type EditType =>
             // Return the type of the editing contol that  DataGridViewNumericTextBoxCell uses.
-            return typeof(DataGridViewNumericTextBoxEditingControl);
-        }
-    }
+            typeof(DataGridViewNumericTextBoxEditingControl);
 
-    public override Type ValueType
-    {
-        get
-        {
+    public override Type ValueType =>
             // Return the type of the value that  DataGridViewNumericTextBoxCell contains.
-            return typeof(System.String);
-        }
-    }
+            typeof(System.String);
 
     public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
     {
         // Set the value of the editing control to the current cell value.
         base.InitializeEditingControl(rowIndex, initialFormattedValue,
             dataGridViewCellStyle);
-        DataGridViewNumericTextBoxEditingControl ctl =
+        var ctl =
            DataGridView.EditingControl as DataGridViewNumericTextBoxEditingControl;
 
         try

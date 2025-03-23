@@ -60,5 +60,5 @@ public partial class SpecialOffer
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<SpecialOfferProduct> SpecialOfferProducts { get; } = new List<SpecialOfferProduct>();
+    public virtual ICollection<SpecialOfferProduct> SpecialOfferProducts { get; } = [];
 }

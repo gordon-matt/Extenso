@@ -143,9 +143,9 @@ public partial class SalesOrderHeader
 
     public virtual Customer Customer { get; set; }
 
-    public virtual ICollection<SalesOrderDetail> SalesOrderDetails { get; } = new List<SalesOrderDetail>();
+    public virtual ICollection<SalesOrderDetail> SalesOrderDetails { get; } = [];
 
-    public virtual ICollection<SalesOrderHeaderSalesReason> SalesOrderHeaderSalesReasons { get; } = new List<SalesOrderHeaderSalesReason>();
+    public virtual ICollection<SalesOrderHeaderSalesReason> SalesOrderHeaderSalesReasons { get; } = [];
 
     public virtual SalesPerson SalesPerson { get; set; }
 

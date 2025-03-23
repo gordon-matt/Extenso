@@ -51,10 +51,7 @@ public static class WebBrowserExtensions
         var dockStyle = webBrowser.Dock;
         bool scrollbarsEnabled = webBrowser.ScrollBarsEnabled;
 
-        if (parent != null)
-        {
-            parent.Controls.Remove(webBrowser);
-        }
+        parent?.Controls.Remove(webBrowser);
 
         var screen = Screen.PrimaryScreen.Bounds;
         Size? imageSize = null;
@@ -80,11 +77,9 @@ public static class WebBrowserExtensions
         //if the imgsize is null, the size of the image will
         //be the same as the size of webbrowser object
         //otherwise  set the image size to imgsize
-        Rectangle imgRectangle;
-        if (imageSize == null)
-        { imgRectangle = docRectangle; }
-        else
-            imgRectangle = new Rectangle()
+        var imgRectangle = imageSize == null
+            ? docRectangle
+            : new Rectangle()
             {
                 Location = new Point(0, 0),
                 Size = imageSize.Value
@@ -97,7 +92,7 @@ public static class WebBrowserExtensions
         using (var g = Graphics.FromImage(bitmap))
         {
             //get the handle to the device context and draw
-            var hdc = g.GetHdc();
+            nint hdc = g.GetHdc();
             viewObject.Draw(1, -1, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, hdc, ref imgRectangle, ref docRectangle, IntPtr.Zero, 0);
             g.ReleaseHdc(hdc);
         }

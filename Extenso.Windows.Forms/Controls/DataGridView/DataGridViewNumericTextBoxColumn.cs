@@ -12,10 +12,7 @@ public class DataGridViewNumericTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
-        get
-        {
-            return base.CellTemplate;
-        }
+        get => base.CellTemplate;
         set
         {
             // Ensure that the cell used for the template is a NumericTextBoxCell.
@@ -30,7 +27,7 @@ public class DataGridViewNumericTextBoxColumn : DataGridViewColumn
 
     public override object Clone()
     {
-        DataGridViewNumericTextBoxColumn col = (DataGridViewNumericTextBoxColumn)base.Clone();
+        var col = (DataGridViewNumericTextBoxColumn)base.Clone();
         return col;
     }
 }

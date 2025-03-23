@@ -13,8 +13,8 @@ public static class OleDbTypeConverter
     {
         netTypes = new Lazy<HashSet<(OleDbType, Type)>>(() =>
         {
-            return new HashSet<(OleDbType, Type)>
-            {
+            return
+            [
                 (OleDbType.BigInt, typeof(long)),
                 (OleDbType.Binary, typeof(byte[])),
                 (OleDbType.Boolean, typeof(bool)),
@@ -52,12 +52,12 @@ public static class OleDbTypeConverter
                 (OleDbType.VarNumeric, typeof(decimal)),
                 (OleDbType.VarWChar, typeof(string)),
                 (OleDbType.WChar, typeof(string))
-            };
+            ];
         });
         sqlDbTypes = new Lazy<HashSet<(OleDbType, SqlDbType)>>(() =>
         {
-            return new HashSet<(OleDbType, SqlDbType)>
-            {
+            return
+            [
                 (OleDbType.BigInt, SqlDbType.BigInt),
                 (OleDbType.Binary, SqlDbType.Binary),
                 (OleDbType.Boolean, SqlDbType.Bit),
@@ -95,12 +95,12 @@ public static class OleDbTypeConverter
                 (OleDbType.VarNumeric, SqlDbType.Decimal),
                 (OleDbType.VarWChar, SqlDbType.NVarChar),
                 (OleDbType.WChar, SqlDbType.NVarChar)
-            };
+            ];
         });
         dbTypes = new Lazy<HashSet<(OleDbType, DbType)>>(() =>
         {
-            return new HashSet<(OleDbType, DbType)>
-            {
+            return
+            [
                 (OleDbType.BigInt, DbType.Int64),
                 (OleDbType.Binary, DbType.Binary),
                 (OleDbType.Boolean, DbType.Boolean),
@@ -138,7 +138,7 @@ public static class OleDbTypeConverter
                 (OleDbType.VarNumeric, DbType.VarNumeric),
                 (OleDbType.VarWChar, DbType.String),
                 (OleDbType.WChar, DbType.String)
-            };
+            ];
         });
     }
 

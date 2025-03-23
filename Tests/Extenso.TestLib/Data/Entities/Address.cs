@@ -45,11 +45,11 @@ public partial class Address
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<BusinessEntityAddress> BusinessEntityAddresses { get; } = new List<BusinessEntityAddress>();
+    public virtual ICollection<BusinessEntityAddress> BusinessEntityAddresses { get; } = [];
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaderBillToAddresses { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaderBillToAddresses { get; } = [];
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaderShipToAddresses { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaderShipToAddresses { get; } = [];
 
     public virtual StateProvince StateProvince { get; set; }
 }

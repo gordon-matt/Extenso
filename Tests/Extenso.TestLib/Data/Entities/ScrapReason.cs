@@ -20,5 +20,5 @@ public partial class ScrapReason
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<WorkOrder> WorkOrders { get; } = new List<WorkOrder>();
+    public virtual ICollection<WorkOrder> WorkOrders { get; } = [];
 }

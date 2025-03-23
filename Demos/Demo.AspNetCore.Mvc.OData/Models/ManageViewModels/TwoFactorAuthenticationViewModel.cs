@@ -1,11 +1,10 @@
-﻿namespace Demo.Extenso.AspNetCore.Mvc.OData.Models.ManageViewModels
+﻿namespace Demo.Extenso.AspNetCore.Mvc.OData.Models.ManageViewModels;
+
+public class TwoFactorAuthenticationViewModel
 {
-    public class TwoFactorAuthenticationViewModel
-    {
-        public bool HasAuthenticator { get; set; }
+    public bool HasAuthenticator { get; set; }
 
-        public int RecoveryCodesLeft { get; set; }
+    public int RecoveryCodesLeft { get; set; }
 
-        public bool Is2faEnabled { get; set; }
-    }
+    public bool Is2faEnabled { get; set; }
 }

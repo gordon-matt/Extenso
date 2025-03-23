@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Extenso.Windows.Forms;
 
@@ -9,24 +8,16 @@ public static class ControlExtensions
 
     private delegate void SetControlPropertyThreadSafeDelegate(Control control, string propertyName, object propertyValue);
 
-    public static object GetPropertyThreadSafe(this Control control, string propertyName, object[] args)
-    {
-        if (control.InvokeRequired)
-        {
-            return control.Invoke(new GetControlPropertyThreadSafeDelegate(
+    public static object GetPropertyThreadSafe(this Control control, string propertyName, object[] args) => control.InvokeRequired
+            ? control.Invoke(new GetControlPropertyThreadSafeDelegate(
                 GetPropertyThreadSafe),
-                new object[] { control, propertyName, args });
-        }
-        else
-        {
-            return control.GetType().InvokeMember(
+                new object[] { control, propertyName, args })
+            : control.GetType().InvokeMember(
                 propertyName,
                 BindingFlags.GetProperty,
                 null,
                 control,
                 args);
-        }
-    }
 
     //FROM: http://dnpextensions.codeplex.com
     /// <summary>
@@ -48,10 +39,10 @@ public static class ControlExtensions
     {
         bool ret = false;
 
-        Control ctl = target;
+        var ctl = target;
         while (ctl is not null)
         {
-            ISite site = ctl.Site;
+            var site = ctl.Site;
             if (site is not null)
             {
                 if (site.DesignMode)

@@ -35,10 +35,7 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     protected virtual void NotifyDataGridViewOfValueChange()
     {
         this.valueChanged = true;
-        if (this.dataGridView != null)
-        {
-            this.dataGridView.NotifyCurrentCellDirty(true);
-        }
+        this.dataGridView?.NotifyCurrentCellDirty(true);
     }
 
     protected override void OnTextChanged(EventArgs e)
@@ -54,14 +51,8 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DataGridView EditingControlDataGridView
     {
-        get
-        {
-            return this.dataGridView;
-        }
-        set
-        {
-            this.dataGridView = value;
-        }
+        get => this.dataGridView;
+        set => this.dataGridView = value;
     }
 
     //  Sets/Gets the formatted value contents of this cell.
@@ -73,10 +64,7 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
             this.Text = value.ToString();
             NotifyDataGridViewOfValueChange();
         }
-        get
-        {
-            return this.Text;
-        }
+        get => this.Text;
     }
 
     //  Indicates the row index of this cell.  This is often -1 for the
@@ -85,50 +73,26 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int EditingControlRowIndex
     {
-        get
-        {
-            return this.rowIndex;
-        }
-        set
-        {
-            this.rowIndex = value;
-        }
+        get => this.rowIndex;
+        set => this.rowIndex = value;
     }
 
     //  Gets or sets our flag indicating whether the value has changed.
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool EditingControlValueChanged
     {
-        get
-        {
-            return valueChanged;
-        }
-        set
-        {
-            this.valueChanged = value;
-        }
+        get => valueChanged;
+        set => this.valueChanged = value;
     }
 
     //  Indicates the cursor that should be shown when the user hovers their
     //  mouse over this cell when the editing control is shown.
-    public Cursor EditingPanelCursor
-    {
-        get
-        {
-            return Cursors.IBeam;
-        }
-    }
+    public Cursor EditingPanelCursor => Cursors.IBeam;
 
     //  Indicates whether or not the parent DataGridView control should
     //  reposition the editing control every time value change is indicated.
     //  There is no need to do this for the DataGridViewMaskedTextBox.
-    public bool RepositionEditingControlOnValueChange
-    {
-        get
-        {
-            return false;
-        }
-    }
+    public bool RepositionEditingControlOnValueChange => false;
 
     //  Make the DataGridViewMaskedTextBox control match the style and colors of
     //  the host DataGridView control and other editing controls
@@ -205,10 +169,7 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     }
 
     //   Get the value of the editing control for formatting.
-    public object GetEditingControlFormattedValue(DataGridViewDataErrorContexts context)
-    {
-        return this.Text;
-    }
+    public object GetEditingControlFormattedValue(DataGridViewDataErrorContexts context) => this.Text;
 
     //  Prepare the editing control for edit.
     public void PrepareEditingControlForEdit(bool selectAll)
@@ -231,25 +192,11 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
 
     ///   Routine to translate between DataGridView
     ///   content alignments and text box horizontal alignments.
-    private static HorizontalAlignment translateAlignment(DataGridViewContentAlignment align)
+    private static HorizontalAlignment translateAlignment(DataGridViewContentAlignment align) => align switch
     {
-        switch (align)
-        {
-            case DataGridViewContentAlignment.TopLeft:
-            case DataGridViewContentAlignment.MiddleLeft:
-            case DataGridViewContentAlignment.BottomLeft:
-                return HorizontalAlignment.Left;
-
-            case DataGridViewContentAlignment.TopCenter:
-            case DataGridViewContentAlignment.MiddleCenter:
-            case DataGridViewContentAlignment.BottomCenter:
-                return HorizontalAlignment.Center;
-
-            case DataGridViewContentAlignment.TopRight:
-            case DataGridViewContentAlignment.MiddleRight:
-            case DataGridViewContentAlignment.BottomRight:
-                return HorizontalAlignment.Right;
-        }
-        throw new ArgumentException("Error: Invalid Content Alignment!");
-    }
+        DataGridViewContentAlignment.TopLeft or DataGridViewContentAlignment.MiddleLeft or DataGridViewContentAlignment.BottomLeft => HorizontalAlignment.Left,
+        DataGridViewContentAlignment.TopCenter or DataGridViewContentAlignment.MiddleCenter or DataGridViewContentAlignment.BottomCenter => HorizontalAlignment.Center,
+        DataGridViewContentAlignment.TopRight or DataGridViewContentAlignment.MiddleRight or DataGridViewContentAlignment.BottomRight => HorizontalAlignment.Right,
+        _ => throw new ArgumentException("Error: Invalid Content Alignment!"),
+    };
 }

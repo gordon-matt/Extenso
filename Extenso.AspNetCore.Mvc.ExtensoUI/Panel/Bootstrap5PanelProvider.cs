@@ -1,6 +1,6 @@
-﻿using Extenso.AspNetCore.Mvc.Rendering;
+﻿using System.IO;
+using Extenso.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.IO;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
@@ -57,15 +57,9 @@ public class Bootstrap5PanelProvider : IPanelProvider
         }
     }
 
-    public void EndPanel(Panel panel, TextWriter writer)
-    {
-        writer.Write("</div>");
-    }
+    public void EndPanel(Panel panel, TextWriter writer) => writer.Write("</div>");
 
-    public void EndPanelSection(PanelSectionType sectionType, TextWriter writer)
-    {
-        writer.Write("</div>");
-    }
+    public void EndPanelSection(PanelSectionType sectionType, TextWriter writer) => writer.Write("</div>");
 
     #endregion IPanelProvider Members
 }

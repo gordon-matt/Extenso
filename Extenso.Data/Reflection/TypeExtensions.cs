@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Data;
 
-namespace Extenso.Data.Reflection
-{
-    public static class TypeExtensions
-    {
-        public static DbType ToDbType(this Type type)
-        {
-            return DataTypeConvertor.GetDbType(type);
-        }
+namespace Extenso.Data.Reflection;
 
-        public static SqlDbType ToSqlDbType(this Type type)
-        {
-            return DataTypeConvertor.GetSqlDbType(type);
-        }
-    }
+public static class TypeExtensions
+{
+    public static DbType ToDbType(this Type type) => DataTypeConvertor.GetDbType(type);
+
+    public static SqlDbType ToSqlDbType(this Type type) => DataTypeConvertor.GetSqlDbType(type);
 }

@@ -7,32 +7,17 @@ public class DataGridViewMultiLineTextBoxCell : DataGridViewTextBoxCell
     {
     }
 
-    public override object DefaultNewRowValue
-    {
-        get
-        {
+    public override object DefaultNewRowValue =>
             // Use the current date and time as the default value.
-            return null;
-        }
-    }
+            null;
 
-    public override Type EditType
-    {
-        get
-        {
+    public override Type EditType =>
             // Return the type of the editing contol that DataGridViewMultiLineTextBoxCell uses.
-            return typeof(DataGridViewMultiLineTextBoxEditingControl);
-        }
-    }
+            typeof(DataGridViewMultiLineTextBoxEditingControl);
 
-    public override Type ValueType
-    {
-        get
-        {
+    public override Type ValueType =>
             // Return the type of the value that DataGridViewMultiLineTextBoxCell contains.
-            return typeof(string);
-        }
-    }
+            typeof(string);
 
     public override void InitializeEditingControl(int rowIndex, object
                     initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
@@ -40,7 +25,7 @@ public class DataGridViewMultiLineTextBoxCell : DataGridViewTextBoxCell
         // Set the value of the editing control to the current cell value.
         base.InitializeEditingControl(rowIndex, initialFormattedValue,
             dataGridViewCellStyle);
-        DataGridViewMultiLineTextBoxEditingControl ctl =
+        var ctl =
             DataGridView.EditingControl as DataGridViewMultiLineTextBoxEditingControl;
 
         DataGridViewMultiLineTextBoxOptions.multiline =

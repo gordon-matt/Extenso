@@ -20,5 +20,5 @@ public partial class PhoneNumberType
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<PersonPhone> PersonPhones { get; } = new List<PersonPhone>();
+    public virtual ICollection<PersonPhone> PersonPhones { get; } = [];
 }

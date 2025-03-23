@@ -12,10 +12,7 @@ public class DataGridViewMultiLineTextBoxColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
-        get
-        {
-            return base.CellTemplate;
-        }
+        get => base.CellTemplate;
         set
         {
             // Ensure that the cell used for the template is a MultiLineTextBoxCell.
@@ -30,42 +27,18 @@ public class DataGridViewMultiLineTextBoxColumn : DataGridViewColumn
 
     #region MultiLine Options
 
-    private bool multiLine;
-
-    private bool wordWrap;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+    public bool MultiLine { get; set; }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-    public bool MultiLine
-    {
-        get
-        {
-            return multiLine;
-        }
-        set
-        {
-            multiLine = value;
-        }
-    }
-
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-    public bool WordWrap
-    {
-        get
-        {
-            return wordWrap;
-        }
-        set
-        {
-            wordWrap = value;
-        }
-    }
+    public bool WordWrap { get; set; }
 
     public override object Clone()
     {
-        DataGridViewMultiLineTextBoxColumn col =
+        var col =
             (DataGridViewMultiLineTextBoxColumn)base.Clone();
-        col.multiLine = this.multiLine;
-        col.wordWrap = this.wordWrap;
+        col.MultiLine = this.MultiLine;
+        col.WordWrap = this.WordWrap;
         return col;
     }
 

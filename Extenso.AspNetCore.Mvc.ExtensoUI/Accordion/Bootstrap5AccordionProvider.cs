@@ -1,6 +1,6 @@
-﻿using Extenso.AspNetCore.Mvc.Rendering;
+﻿using System.IO;
+using Extenso.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.IO;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
@@ -49,15 +49,9 @@ internal class Bootstrap5AccordionProvider : IAccordionProvider
         writer.Write(@"<div class=""accordion-body"">");
     }
 
-    public void EndAccordion(Accordion accordion, TextWriter writer)
-    {
-        writer.Write("</div>");
-    }
+    public void EndAccordion(Accordion accordion, TextWriter writer) => writer.Write("</div>");
 
-    public void EndAccordionPanel(TextWriter writer)
-    {
-        writer.Write("</div></div></div>");
-    }
+    public void EndAccordionPanel(TextWriter writer) => writer.Write("</div></div></div>");
 
     #endregion IAccordionProvider Members
 }

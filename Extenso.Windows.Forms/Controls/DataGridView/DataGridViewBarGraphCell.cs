@@ -24,10 +24,7 @@ public class DataGridViewBarGraphCell : DataGridViewTextBoxCell
 
         try
         {
-            if (Convert.IsDBNull(value))
-            { cellValue = 0; }
-            else
-            { cellValue = Convert.ToDecimal(value); }
+            cellValue = Convert.IsDBNull(value) ? 0 : Convert.ToDecimal(value);
         }
         catch { cellValue = 0; }
 
@@ -52,7 +49,7 @@ public class DataGridViewBarGraphCell : DataGridViewTextBoxCell
         var fnt = parent.InheritedStyle.Font;
         var maxValueSize = graphics.MeasureString(maxValue.ToString(), fnt);
         float availableWidth = cellBounds.Width - maxValueSize.Width - SPACER - (HORIZONTALOFFSET * 2);
-        cellValue = Convert.ToDecimal((Convert.ToDouble(cellValue) / maxValue) * availableWidth);
+        cellValue = Convert.ToDecimal(Convert.ToDouble(cellValue) / maxValue * availableWidth);
 
         const int VERTOFFSET = 4;
         var newRect = new RectangleF(cellBounds.X + HORIZONTALOFFSET, cellBounds.Y + VERTOFFSET, Convert.ToSingle(cellValue), cellBounds.Height - (VERTOFFSET * 2));

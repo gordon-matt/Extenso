@@ -57,13 +57,13 @@ public partial class SalesTerritory
 
     public virtual CountryRegion CountryRegionCodeNavigation { get; set; }
 
-    public virtual ICollection<Customer> Customers { get; } = new List<Customer>();
+    public virtual ICollection<Customer> Customers { get; } = [];
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = [];
 
-    public virtual ICollection<SalesPerson> SalesPeople { get; } = new List<SalesPerson>();
+    public virtual ICollection<SalesPerson> SalesPeople { get; } = [];
 
-    public virtual ICollection<SalesTerritoryHistory> SalesTerritoryHistories { get; } = new List<SalesTerritoryHistory>();
+    public virtual ICollection<SalesTerritoryHistory> SalesTerritoryHistories { get; } = [];
 
-    public virtual ICollection<StateProvince> StateProvinces { get; } = new List<StateProvince>();
+    public virtual ICollection<StateProvince> StateProvinces { get; } = [];
 }

@@ -47,7 +47,7 @@ public partial class Vendor
 
     public virtual BusinessEntity BusinessEntity { get; set; }
 
-    public virtual ICollection<ProductVendor> ProductVendors { get; } = new List<ProductVendor>();
+    public virtual ICollection<ProductVendor> ProductVendors { get; } = [];
 
-    public virtual ICollection<PurchaseOrderHeader> PurchaseOrderHeaders { get; } = new List<PurchaseOrderHeader>();
+    public virtual ICollection<PurchaseOrderHeader> PurchaseOrderHeaders { get; } = [];
 }

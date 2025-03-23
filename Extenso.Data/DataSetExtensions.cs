@@ -2,50 +2,42 @@
 using System.Data;
 using System.IO;
 
-namespace Extenso.Data
+namespace Extenso.Data;
+
+public static class DataSetExtensions
 {
-    public static class DataSetExtensions
+    public static IDictionary<int, string> ToDelimited(this DataSet dataSet, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
     {
-        public static IDictionary<int, string> ToDelimited(this DataSet dataSet, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
+        var results = new Dictionary<int, string>();
+
+        for (int i = 0; i < dataSet.Tables.Count; i++)
         {
-            var results = new Dictionary<int, string>();
-
-            for (int i = 0; i < dataSet.Tables.Count; i++)
-            {
-                var table = dataSet.Tables[i];
-                string csv = table.ToDelimited(
-                    delimiter,
-                    outputColumnNames: outputColumnNames,
-                    alwaysEnquote: alwaysEnquote);
-                results.Add(i, csv);
-            }
-
-            return results;
+            var table = dataSet.Tables[i];
+            string csv = table.ToDelimited(
+                delimiter,
+                outputColumnNames: outputColumnNames,
+                alwaysEnquote: alwaysEnquote);
+            results.Add(i, csv);
         }
 
-        public static void ToDelimited(this DataSet dataSet, string directoryPath, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
+        return results;
+    }
+
+    public static void ToDelimited(this DataSet dataSet, string directoryPath, string delimiter = ",", bool outputColumnNames = true, bool alwaysEnquote = true)
+    {
+        string tableName;
+        int tableCount = 0;
+
+        foreach (DataTable table in dataSet.Tables)
         {
-            string tableName;
-            int tableCount = 0;
+            tableName = !string.IsNullOrEmpty(table.TableName) ? table.TableName : $"Table_{tableCount++}";
 
-            foreach (DataTable table in dataSet.Tables)
-            {
-                if (!string.IsNullOrEmpty(table.TableName))
-                {
-                    tableName = table.TableName;
-                }
-                else
-                {
-                    tableName = $"Table_{tableCount++}";
-                }
-
-                string filePath = Path.Combine(directoryPath, $"{tableName}.csv");
-                table.ToDelimited(
-                    filePath,
-                    delimiter,
-                    outputColumnNames: outputColumnNames,
-                    alwaysEnquote: alwaysEnquote);
-            }
+            string filePath = Path.Combine(directoryPath, $"{tableName}.csv");
+            table.ToDelimited(
+                filePath,
+                delimiter,
+                outputColumnNames: outputColumnNames,
+                alwaysEnquote: alwaysEnquote);
         }
     }
 }

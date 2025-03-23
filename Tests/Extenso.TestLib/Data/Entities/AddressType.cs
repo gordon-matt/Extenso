@@ -25,5 +25,5 @@ public partial class AddressType
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<BusinessEntityAddress> BusinessEntityAddresses { get; } = new List<BusinessEntityAddress>();
+    public virtual ICollection<BusinessEntityAddress> BusinessEntityAddresses { get; } = [];
 }

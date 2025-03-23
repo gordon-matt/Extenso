@@ -42,7 +42,7 @@ public partial class Customer
 
     public virtual Person Person { get; set; }
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = [];
 
     public virtual Store Store { get; set; }
 

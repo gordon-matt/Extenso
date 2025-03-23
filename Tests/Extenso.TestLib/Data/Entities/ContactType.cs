@@ -20,5 +20,5 @@ public partial class ContactType
     /// </summary>
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<BusinessEntityContact> BusinessEntityContacts { get; } = new List<BusinessEntityContact>();
+    public virtual ICollection<BusinessEntityContact> BusinessEntityContacts { get; } = [];
 }

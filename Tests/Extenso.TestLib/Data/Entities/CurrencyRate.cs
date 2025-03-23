@@ -42,7 +42,7 @@ public partial class CurrencyRate
 
     public virtual Currency FromCurrencyCodeNavigation { get; set; }
 
-    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = new List<SalesOrderHeader>();
+    public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; } = [];
 
     public virtual Currency ToCurrencyCodeNavigation { get; set; }
 }

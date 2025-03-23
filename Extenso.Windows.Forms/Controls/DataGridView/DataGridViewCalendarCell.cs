@@ -31,22 +31,16 @@ public class DataGridViewCalendarCell : DataGridViewTextBoxCell
     }
 
     public override object DefaultNewRowValue
-    {
         // Use the current date and time as the default value.
-        get { return null; } //return DateTime.Now; }
-    }
+        => null;
 
     public override Type EditType
-    {
         // Return the type of the editing contol that CalendarCell uses.
-        get { return typeof(DataGridViewCalendarEditingControl); }
-    }
+        => typeof(DataGridViewCalendarEditingControl);
 
     public override Type ValueType
-    {
         // Return the type of the value that CalendarCell contains.
-        get { return typeof(DateTime); }
-    }
+        => typeof(DateTime);
 
     public override void InitializeEditingControl(Int32 rowIndex, Object initialFormattedValue,
                                 DataGridViewCellStyle dataGridViewCellStyle)
