@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
+[DebuggerDisplay("Id = {Id}")]
 public class Tabs : HtmlElement
 {
     public string Id { get; private set; }

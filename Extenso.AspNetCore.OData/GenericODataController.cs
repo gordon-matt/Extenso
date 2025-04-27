@@ -368,12 +368,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
         {
             if (disposing)
             {
-                // TODO: dispose managed state (managed objects).
-                if (disposableConnection != null)
-                {
-                    disposableConnection.Dispose();
-                    disposableConnection = null;
-                }
+                disposableConnection?.Dispose();
             }
 
             // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

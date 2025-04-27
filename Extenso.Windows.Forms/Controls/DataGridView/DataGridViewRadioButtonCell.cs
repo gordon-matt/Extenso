@@ -1,11 +1,11 @@
 ﻿//Source: http://msdn2.microsoft.com/en-us/library/aa730882(VS.80).aspx
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Windows.Forms.VisualStyles;
 
 namespace Extenso.Windows.Forms.Controls;
 
+[DebuggerDisplay("ColumnIndex = {ColumnIndex}, RowIndex = {RowIndex}")]
 public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridViewEditingCell
 {
     // default value of MaxDisplayedItems property
@@ -398,11 +398,6 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     {
         // This cell type has nothing to do here.
     }
-
-    /// <summary>
-    /// Custom implementation that follows the standard representation of cell types.
-    /// </summary>
-    public override string ToString() => "DataGridViewRadioButtonCell { ColumnIndex=" + this.ColumnIndex.ToString(CultureInfo.CurrentCulture) + ", RowIndex=" + this.RowIndex.ToString(CultureInfo.CurrentCulture) + " }";
 
     /// <summary>
     /// Returns whether calling the OnContentClick method would force the owning row to be unshared.
@@ -1009,17 +1004,18 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// <summary>
     /// Computes the layout of the cell and optionally paints it.
     /// </summary>
-    private void ComputeLayout(Graphics graphics,
-                               Rectangle clipBounds,
-                               Rectangle cellBounds,
-                               int rowIndex,
-                               DataGridViewElementStates cellState,
-                               object formattedValue,
-                               string errorText,
-                               DataGridViewCellStyle cellStyle,
-                               DataGridViewAdvancedBorderStyle advancedBorderStyle,
-                               DataGridViewPaintParts paintParts,
-                               bool paint)
+    private void ComputeLayout(
+        Graphics graphics,
+        Rectangle clipBounds,
+        Rectangle cellBounds,
+        int rowIndex,
+        DataGridViewElementStates cellState,
+        object formattedValue,
+        string errorText,
+        DataGridViewCellStyle cellStyle,
+        DataGridViewAdvancedBorderStyle advancedBorderStyle,
+        DataGridViewPaintParts paintParts,
+        bool paint)
     {
         if (paint && DataGridViewRadioButtonCell.PartPainted(paintParts, DataGridViewPaintParts.Border))
         {
@@ -1516,15 +1512,16 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     /// <summary>
     /// Paints a single item.
     /// </summary>
-    private void PaintItem(Graphics graphics,
-                           Rectangle radiosBounds,
-                           int rowIndex,
-                           int itemIndex,
-                           DataGridViewCellStyle cellStyle,
-                           bool itemReadOnly,
-                           bool itemSelected,
-                           bool mouseOverCell,
-                           bool paintFocus)
+    private void PaintItem(
+        Graphics graphics,
+        Rectangle radiosBounds,
+        int rowIndex,
+        int itemIndex,
+        DataGridViewCellStyle cellStyle,
+        bool itemReadOnly,
+        bool itemSelected,
+        bool mouseOverCell,
+        bool paintFocus)
     {
         object itemFormattedValue = GetFormattedValue(GetItemValue(this.Items[itemIndex]),
                                                 rowIndex,

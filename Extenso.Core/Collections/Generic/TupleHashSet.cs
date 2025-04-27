@@ -94,6 +94,7 @@ public class TupleHashSet<T1, T2, T3, T4, T5, T6, T7> : HashSet<Tuple<T1, T2, T3
 /// <typeparam name="T5">The type of the tuple's fifth component.</typeparam>
 /// <typeparam name="T6">The type of the tuple's sixth component.</typeparam>
 /// <typeparam name="T7">The type of the tuple's seventh component.</typeparam>
+/// <typeparam name="T8">The type of the tuple's eighth component.</typeparam>
 /// <typeparam name="TRest">Any generic Tuple object that defines the types of the tuple's remaining components.</typeparam>
 [Obsolete("Use a HashSet<T> of tuple types instead (see: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples)")]
 public class TupleHashSet<T1, T2, T3, T4, T5, T6, T7, T8> : HashSet<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>>

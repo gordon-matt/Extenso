@@ -3,11 +3,14 @@
 // Email: 4ewout@gmail.com
 // The version used in here has been heavily modified from the original
 
+using System.Diagnostics;
+
 namespace Extenso.Data.QueryBuilder;
 
 /// <summary>
 /// Represents a ORDER BY clause to be used with SELECT statements
 /// </summary>
+[DebuggerDisplay("{FieldName} {SortDirection}")]
 public struct OrderByClause
 {
     public string FieldName;
@@ -24,6 +27,4 @@ public struct OrderByClause
         FieldName = field;
         SortDirection = order;
     }
-
-    public override string ToString() => $"{FieldName} {SortDirection}";
 }

@@ -8,19 +8,20 @@ namespace Extenso.Windows.Forms.Controls;
 /// <summary>
 /// Defines a NumericUpDown cell type for the System.Windows.Forms.DataGridView control
 /// </summary>
+[DebuggerDisplay("ColumnIndex = {ColumnIndex}, RowIndex = {RowIndex}")]
 public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
 {
     // Default value of the DecimalPlaces property
     internal const int DATAGRIDVIEWNUMERICUPDOWNCELL_defaultDecimalPlaces = 0;
 
     // Default value of the Increment property
-    internal const Decimal DATAGRIDVIEWNUMERICUPDOWNCELL_defaultIncrement = Decimal.One;
+    internal const decimal DATAGRIDVIEWNUMERICUPDOWNCELL_defaultIncrement = decimal.One;
 
     // Default value of the Maximum property
-    internal const Decimal DATAGRIDVIEWNUMERICUPDOWNCELL_defaultMaximum = (Decimal)100.0;
+    internal const decimal DATAGRIDVIEWNUMERICUPDOWNCELL_defaultMaximum = (decimal)100.0;
 
     // Default value of the Minimum property
-    internal const Decimal DATAGRIDVIEWNUMERICUPDOWNCELL_defaultMinimum = Decimal.Zero;
+    internal const decimal DATAGRIDVIEWNUMERICUPDOWNCELL_defaultMinimum = decimal.Zero;
 
     // Default value of the ThousandsSeparator property
     internal const bool DATAGRIDVIEWNUMERICUPDOWNCELL_defaultThousandsSeparator = false;
@@ -31,8 +32,8 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     private const int DATAGRIDVIEWNUMERICUPDOWNCELL_defaultRenderingBitmapWidth = 100;
 
     private static readonly DataGridViewContentAlignment anyCenter =
-            DataGridViewContentAlignment.TopCenter | DataGridViewContentAlignment.MiddleCenter |
-            DataGridViewContentAlignment.BottomCenter;
+        DataGridViewContentAlignment.TopCenter | DataGridViewContentAlignment.MiddleCenter |
+        DataGridViewContentAlignment.BottomCenter;
 
     // Used in TranslateAlignment function
     private static readonly DataGridViewContentAlignment anyRight =
@@ -43,7 +44,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     private static readonly Type defaultEditType = typeof(DataGridViewNumericUpDownEditingControl);
 
     // Type of this cell's value. The formatted value type is string, the same as the base class DataGridViewTextBoxCell
-    private static readonly Type defaultValueType = typeof(System.Decimal);
+    private static readonly Type defaultValueType = typeof(decimal);
 
     // The NumericUpDown control used to paint the non-edited cells via a call to NumericUpDown.DrawToBitmap
     [ThreadStatic]
@@ -56,12 +57,12 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     private int decimalPlaces;
 
     // Caches the value of the DecimalPlaces property
-    private Decimal increment;
+    private decimal increment;
 
-    private Decimal maximum;
+    private decimal maximum;
 
     // Caches the value of the Increment property
-    private Decimal minimum;
+    private decimal minimum;
 
     // Caches the value of the Minimum property
     // Caches the value of the Maximum property
@@ -80,8 +81,8 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         {
             // Some properties only need to be set once for the lifetime of the control:
             BorderStyle = BorderStyle.None,
-            Maximum = Decimal.MaxValue / 10,
-            Minimum = Decimal.MinValue / 10
+            Maximum = decimal.MaxValue / 10,
+            Minimum = decimal.MinValue / 10
         };
 
         // Set the default values of the properties:
@@ -125,13 +126,13 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// <summary>
     /// The Increment property replicates the one from the NumericUpDown control
     /// </summary>
-    public Decimal Increment
+    public decimal Increment
     {
         get => this.increment;
 
         set
         {
-            if (value < (Decimal)0.0)
+            if (value < (decimal)0.0)
             {
                 throw new ArgumentOutOfRangeException("The Increment property cannot be smaller than 0.");
             }
@@ -143,7 +144,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// <summary>
     /// The Maximum property replicates the one from the NumericUpDown control
     /// </summary>
-    public Decimal Maximum
+    public decimal Maximum
     {
         get => this.maximum;
 
@@ -160,7 +161,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// <summary>
     /// The Minimum property replicates the one from the NumericUpDown control
     /// </summary>
-    public Decimal Minimum
+    public decimal Minimum
     {
         get => this.minimum;
 
@@ -283,7 +284,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// </summary>
     public override bool KeyEntersEditMode(KeyEventArgs e)
     {
-        var numberFormatInfo = System.Globalization.CultureInfo.CurrentCulture.NumberFormat;
+        var numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
         var negativeSignKey = Keys.None;
         string negativeSignStr = numberFormatInfo.NegativeSign;
         if (!string.IsNullOrEmpty(negativeSignStr) && negativeSignStr.Length == 1)
@@ -307,22 +308,19 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         bool singleVerticalBorderAdded, bool singleHorizontalBorderAdded,
         bool isFirstDisplayedColumn, bool isFirstDisplayedRow)
     {
-        var editingControlBounds = PositionEditingPanel(cellBounds,
-                                                    cellClip,
-                                                    cellStyle,
-                                                    singleVerticalBorderAdded,
-                                                    singleHorizontalBorderAdded,
-                                                    isFirstDisplayedColumn,
-                                                    isFirstDisplayedRow);
+        var editingControlBounds = PositionEditingPanel(
+            cellBounds,
+            cellClip,
+            cellStyle,
+            singleVerticalBorderAdded,
+            singleHorizontalBorderAdded,
+            isFirstDisplayedColumn,
+            isFirstDisplayedRow);
+
         editingControlBounds = GetAdjustedEditingControlBounds(editingControlBounds, cellStyle);
         this.DataGridView.EditingControl.Location = new Point(editingControlBounds.X, editingControlBounds.Y);
         this.DataGridView.EditingControl.Size = new Size(editingControlBounds.Width, editingControlBounds.Height);
     }
-
-    /// <summary>
-    /// Returns a standard textual representation of the cell.
-    /// </summary>
-    public override string ToString() => "DataGridViewNumericUpDownCell { ColumnIndex=" + ColumnIndex.ToString(CultureInfo.CurrentCulture) + ", RowIndex=" + RowIndex.ToString(CultureInfo.CurrentCulture) + " }";
 
     /// <summary>
     /// Little utility function used by both the cell and column types to translate a DataGridViewContentAlignment value into
@@ -352,9 +350,9 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// Utility function that sets a new value for the Increment property of the cell. This function is used by
     /// the cell and column Increment property. A row index needs to be provided as a parameter because
     /// this cell may be shared among multiple rows.
-    internal void SetIncrement(int rowIndex, Decimal value)
+    internal void SetIncrement(int rowIndex, decimal value)
     {
-        Debug.Assert(value >= (Decimal)0.0);
+        Debug.Assert(value >= (decimal)0.0);
         this.increment = value;
         if (OwnsEditingNumericUpDown(rowIndex))
         {
@@ -367,7 +365,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// property for performance reasons. This way the column can invalidate the entire column at once instead of
     /// invalidating each cell of the column individually. A row index needs to be provided as a parameter because
     /// this cell may be shared among multiple rows.
-    internal void SetMaximum(int rowIndex, Decimal value)
+    internal void SetMaximum(int rowIndex, decimal value)
     {
         this.maximum = value;
         if (this.minimum > this.maximum)
@@ -377,8 +375,8 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         object cellValue = GetValue(rowIndex);
         if (cellValue != null)
         {
-            Decimal currentValue = System.Convert.ToDecimal(cellValue);
-            Decimal constrainedValue = Constrain(currentValue);
+            decimal currentValue = Convert.ToDecimal(cellValue);
+            decimal constrainedValue = Constrain(currentValue);
             if (constrainedValue != currentValue)
             {
                 SetValue(rowIndex, constrainedValue);
@@ -396,7 +394,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// property for performance reasons. This way the column can invalidate the entire column at once instead of
     /// invalidating each cell of the column individually. A row index needs to be provided as a parameter because
     /// this cell may be shared among multiple rows.
-    internal void SetMinimum(int rowIndex, Decimal value)
+    internal void SetMinimum(int rowIndex, decimal value)
     {
         this.minimum = value;
         if (this.minimum > this.maximum)
@@ -406,8 +404,8 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         object cellValue = GetValue(rowIndex);
         if (cellValue != null)
         {
-            Decimal currentValue = System.Convert.ToDecimal(cellValue);
-            Decimal constrainedValue = Constrain(currentValue);
+            decimal currentValue = Convert.ToDecimal(cellValue);
+            decimal constrainedValue = Constrain(currentValue);
             if (constrainedValue != currentValue)
             {
                 SetValue(rowIndex, constrainedValue);
@@ -455,13 +453,13 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
         ref DataGridViewCellStyle cellStyle, TypeConverter valueTypeConverter,
         TypeConverter formattedValueTypeConverter, DataGridViewDataErrorContexts context)
     {
-        // By default, the base implementation converts the Decimal 1234.5 into the string "1234.5"
+        // By default, the base implementation converts the decimal 1234.5 into the string "1234.5"
         object formattedValue = base.GetFormattedValue(value, rowIndex, ref cellStyle, valueTypeConverter, formattedValueTypeConverter, context);
         string formattedNumber = formattedValue as string;
         if (!string.IsNullOrEmpty(formattedNumber) && value != null)
         {
-            Decimal unformattedDecimal = System.Convert.ToDecimal(value);
-            Decimal formattedDecimal = System.Convert.ToDecimal(formattedNumber);
+            decimal unformattedDecimal = Convert.ToDecimal(value);
+            decimal formattedDecimal = Convert.ToDecimal(formattedNumber);
             if (unformattedDecimal == formattedDecimal)
             {
                 // The base implementation of GetFormattedValue (which triggers the CellFormatting event) did nothing else than
@@ -615,7 +613,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// <summary>
     /// Returns the provided value constrained to be within the min and max.
     /// </summary>
-    private Decimal Constrain(Decimal value)
+    private decimal Constrain(decimal value)
     {
         Debug.Assert(this.minimum <= this.maximum);
         if (value < this.minimum)
@@ -636,7 +634,7 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     {
         // Add a 1 pixel padding on the left and right of the editing control
         editingControlBounds.X += 1;
-        editingControlBounds.Width = System.Math.Max(0, editingControlBounds.Width - 2);
+        editingControlBounds.Width = Math.Max(0, editingControlBounds.Width - 2);
 
         // Adjust the vertical location of the editing control:
         int preferredHeight = cellStyle.Font.Height + 3;
@@ -694,7 +692,9 @@ public class DataGridViewNumericUpDownCell : DataGridViewTextBoxCell
     /// Determines whether this cell, at the given row index, shows the grid's editing control or not.
     /// The row index needs to be provided as a parameter because this cell may be shared among multiple rows.
     /// </summary>
-    private bool OwnsEditingNumericUpDown(int rowIndex) => rowIndex == -1 || this.DataGridView == null
-            ? false
-            : this.DataGridView.EditingControl is DataGridViewNumericUpDownEditingControl numericUpDownEditingControl && rowIndex == ((IDataGridViewEditingControl)numericUpDownEditingControl).EditingControlRowIndex;
+    private bool OwnsEditingNumericUpDown(int rowIndex) =>
+        rowIndex != -1 &&
+        this.DataGridView != null &&
+        this.DataGridView.EditingControl is DataGridViewNumericUpDownEditingControl numericUpDownEditingControl &&
+        rowIndex == ((IDataGridViewEditingControl)numericUpDownEditingControl).EditingControlRowIndex;
 }

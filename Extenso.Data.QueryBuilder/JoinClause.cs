@@ -3,11 +3,14 @@
 // Email: 4ewout@gmail.com
 // The version used in here has been heavily modified from the original
 
+using System.Diagnostics;
+
 namespace Extenso.Data.QueryBuilder;
 
 /// <summary>
 /// Represents a JOIN clause to be used with SELECT statements
 /// </summary>
+[DebuggerDisplay("{JoinType} {FromTable}.{FromColumn} {ComparisonOperator} {ToTable}.{ToColumn}")]
 public struct JoinClause
 {
     public JoinType JoinType;
@@ -32,6 +35,4 @@ public struct JoinClause
         ToTable = toTableName;
         ToColumn = toColumnName;
     }
-
-    public override string ToString() => $"{JoinType} {FromTable}.{FromColumn} {ComparisonOperator} {ToTable}.{ToColumn}";
 }

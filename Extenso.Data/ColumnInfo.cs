@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 
 namespace Extenso.Data;
 
@@ -10,6 +11,7 @@ public enum KeyType : byte
     ForeignKey = 2
 }
 
+[DebuggerDisplay("{ColumnName} ({DataTypeNative})")]
 public class ColumnInfo
 {
     public string ColumnName { get; set; }
@@ -36,6 +38,4 @@ public class ColumnInfo
     /// MSSQL: IDENTITY, PG: Sequence, etc..
     /// </summary>
     public bool IsAutoIncremented { get; set; }
-
-    public override string ToString() => ColumnName;
 }

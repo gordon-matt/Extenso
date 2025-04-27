@@ -1,13 +1,13 @@
 //Source: http://msdn2.microsoft.com/en-us/library/aa730882(VS.80).aspx
 using System.ComponentModel;
-using System.Globalization;
-using System.Text;
+using System.Diagnostics;
 
 namespace Extenso.Windows.Forms.Controls;
 
 /// <summary>
 /// Custom column type dedicated to the DataGridViewRadioButtonCell cell type.
 /// </summary>
+[DebuggerDisplay("Name = {Name}, Index = {Index}")]
 public class DataGridViewRadioButtonColumn : DataGridViewColumn
 {
     /// <summary>
@@ -89,7 +89,7 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
         DefaultValue(""),
         Description("A string that specifies the property or column from which to retrieve strings for display in the radio buttons."),
         Editor("System.Windows.Forms.Design.DataMemberFieldEditor, System.Design", typeof(System.Drawing.Design.UITypeEditor)),
-        TypeConverterAttribute("System.Windows.Forms.Design.DataMemberFieldConverter, System.Design")
+        TypeConverter("System.Windows.Forms.Design.DataMemberFieldConverter, System.Design")
     ]
     public string DisplayMember
     {
@@ -186,7 +186,7 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
         DefaultValue(""),
         Description("A string that specifies the property or column from which to get values that correspond to the radio buttons."),
         Editor("System.Windows.Forms.Design.DataMemberFieldEditor, System.Design", typeof(System.Drawing.Design.UITypeEditor)),
-        TypeConverterAttribute("System.Windows.Forms.Design.DataMemberFieldConverter, System.Design")
+        TypeConverter("System.Windows.Forms.Design.DataMemberFieldConverter, System.Design")
     ]
     public string ValueMember
     {
@@ -244,19 +244,5 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
             this.DataGridView.InvalidateColumn(this.Index);
             // This column and/or rows may need to be autosized.
         }
-    }
-
-    /// <summary>
-    /// Returns a standard compact string representation of the column.
-    /// </summary>
-    public override string ToString()
-    {
-        var sb = new StringBuilder(64);
-        sb.Append("DataGridViewRadioButtonColumn { Name=");
-        sb.Append(this.Name);
-        sb.Append(", Index=");
-        sb.Append(this.Index.ToString(CultureInfo.CurrentCulture));
-        sb.Append(" }");
-        return sb.ToString();
     }
 }

@@ -1,5 +1,8 @@
-﻿namespace Extenso.Data;
+﻿using System.Diagnostics;
 
+namespace Extenso.Data;
+
+[DebuggerDisplay("{ForeignKeyName}")]
 public sealed class ForeignKeyInfo
 {
     public string ForeignKeyTable { get; set; }
@@ -27,6 +30,4 @@ public sealed class ForeignKeyInfo
         PrimaryKeyName = primaryKeyName;
         ForeignKeyName = foreignKeyName;
     }
-
-    public override string ToString() => ForeignKeyName;
 }

@@ -166,11 +166,14 @@ public static class FileInfoExtensions
     /// <returns> A byte array containing the contents of the file. If maxBufferSize is less than the file size, not all data will be returned.</returns>
     public static byte[] ReadBytes(this FileInfo fileInfo, long maxBufferSize = 0x1000)
     {
-        byte[] buffer = new byte[(fileInfo.Length > maxBufferSize ? maxBufferSize : fileInfo.Length)];
-        using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length))
+        int bufferSize = (int)Math.Min(fileInfo.Length, maxBufferSize);
+        byte[] buffer = new byte[bufferSize];
+
+        using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize))
         {
-            fileStream.Read(buffer, 0, buffer.Length);
+            fileStream.ReadExactly(buffer);
         }
+
         return buffer;
     }
 

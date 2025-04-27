@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Extenso.Data.QueryBuilder;
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class WhereClause
 {
     public bool IsContainerOnly { get; private set; }
@@ -46,7 +48,7 @@ public class WhereClause
         return this;
     }
 
-    public override string ToString() => IsContainerOnly
-            ? "Container"
-            : $"{LogicOperator} {Table}.{Column} {ComparisonOperator} {Value} - Sub Clauses: {SubClauses.Count}";
+    private string DebuggerDisplay => IsContainerOnly
+        ? "Container"
+        : $"{LogicOperator} {Table}.{Column} {ComparisonOperator} {Value} - Sub Clauses: {SubClauses.Count}";
 }

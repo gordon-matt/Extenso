@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Extenso.Data;
 
+[DebuggerDisplay("Count: {Count}")]
 public sealed class ForeignKeyInfoCollection : List<ForeignKeyInfo>
 {
     public bool Contains(string fkColumnName)
@@ -14,6 +16,4 @@ public sealed class ForeignKeyInfoCollection : List<ForeignKeyInfo>
         }
         return false;
     }
-
-    public override string ToString() => string.Concat("Count: ", this.Count);
 }

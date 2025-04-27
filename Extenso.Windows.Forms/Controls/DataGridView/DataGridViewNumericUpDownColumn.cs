@@ -1,13 +1,13 @@
 //Source: http://msdn2.microsoft.com/en-us/library/aa730881(VS.80).aspx
 using System.ComponentModel;
-using System.Globalization;
-using System.Text;
+using System.Diagnostics;
 
 namespace Extenso.Windows.Forms.Controls;
 
 /// <summary>
 /// Custom column type dedicated to the DataGridViewNumericUpDownCell cell type.
 /// </summary>
+[DebuggerDisplay("Name = {Name}, Index = {Index}")]
 public class DataGridViewNumericUpDownColumn : DataGridViewColumn
 {
     /// <summary>
@@ -163,8 +163,8 @@ public class DataGridViewNumericUpDownColumn : DataGridViewColumn
     public Decimal Minimum
     {
         get => this.NumericUpDownCellTemplate == null
-                ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
-                : NumericUpDownCellTemplate.Minimum;
+            ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
+            : NumericUpDownCellTemplate.Minimum;
         set
         {
             if (this.NumericUpDownCellTemplate == null)
@@ -232,20 +232,6 @@ public class DataGridViewNumericUpDownColumn : DataGridViewColumn
     /// Small utility function that returns the template cell as a DataGridViewNumericUpDownCell
     /// </summary>
     private DataGridViewNumericUpDownCell NumericUpDownCellTemplate => (DataGridViewNumericUpDownCell)this.CellTemplate;
-
-    /// <summary>
-    /// Returns a standard compact string representation of the column.
-    /// </summary>
-    public override string ToString()
-    {
-        var sb = new StringBuilder(100);
-        sb.Append("DataGridViewNumericUpDownColumn { Name=");
-        sb.Append(this.Name);
-        sb.Append(", Index=");
-        sb.Append(this.Index.ToString(CultureInfo.CurrentCulture));
-        sb.Append(" }");
-        return sb.ToString();
-    }
 
     /// Indicates whether the Increment property should be persisted.
     private bool ShouldSerializeIncrement() => !this.Increment.Equals(DataGridViewNumericUpDownCell.DATAGRIDVIEWNUMERICUPDOWNCELL_defaultIncrement);

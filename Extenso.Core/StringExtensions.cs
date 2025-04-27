@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Xml;
 using System.Xml.Serialization;
 using Extenso.Collections;
 using Extenso.IO;
@@ -22,7 +22,7 @@ public static class StringExtensions
 {
     #region Fields
 
-    private const string RegexArabicAndHebrew = @"[\u0600-\u06FF,\u0590-\u05FF]+";
+    private const string RegexArabicAndHebrew = /*lang=regex*/ @"[\u0600-\u06FF,\u0590-\u05FF]+";
     //private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
 
     #endregion Fields
@@ -489,7 +489,7 @@ public static class StringExtensions
     /// this is null, default serialization settings will be used.
     /// </param>
     /// <returns>The deserialized object from the JSON string.</returns>
-    public static T JsonDeserialize<T>(this string source, JsonSerializerSettings settings = null) => JsonConvert.DeserializeObject<T>(source, settings);
+    public static T JsonDeserialize<T>([StringSyntax(StringSyntaxAttribute.Json)] this string source, JsonSerializerSettings settings = null) => JsonConvert.DeserializeObject<T>(source, settings);
 
     /// <summary>
     /// Deserializes the JSON to the specified .NET type using Newtonsoft.Json.JsonSerializerSettings.
@@ -501,7 +501,7 @@ public static class StringExtensions
     /// this is null, default serialization settings will be used.
     /// </param>
     /// <returns></returns>
-    public static object JsonDeserialize(this string source, Type type, JsonSerializerSettings settings = null) => JsonConvert.DeserializeObject(source, type, settings);
+    public static object JsonDeserialize([StringSyntax(StringSyntaxAttribute.Json)] this string source, Type type, JsonSerializerSettings settings = null) => JsonConvert.DeserializeObject(source, type, settings);
 
     /// <summary>
     /// Retrieves a substring from the given string. The substring starts at 0 and has a specified length.
@@ -939,8 +939,8 @@ public static class StringExtensions
     /// <param name="source">The string to split into lines.</param>
     /// <returns>A collection of strings.</returns>
     public static IEnumerable<string> ToLines(this string source) => !string.IsNullOrEmpty(source)
-            ? source.Split(new[] { "\r\n", Environment.NewLine, "\n" }, StringSplitOptions.None)
-            : (IEnumerable<string>)(new string[0]);
+        ? source.Split(["\r\n", Environment.NewLine, "\n"], StringSplitOptions.None)
+        : [];
 
     /// <summary>
     /// Converts the specified string to pascal case.
@@ -990,14 +990,14 @@ public static class StringExtensions
     /// </summary>
     /// <param name="source">The string to decode.</param>
     /// <returns>A decoded string.</returns>
-    public static string UrlDecode(this string source) => HttpUtility.UrlDecode(source);
+    public static string UrlDecode([StringSyntax(StringSyntaxAttribute.Uri)] this string source) => HttpUtility.UrlDecode(source);
 
     /// <summary>
     /// Encodes a URL string.
     /// </summary>
     /// <param name="source">The text to encode.</param>
     /// <returns>An encoded string.</returns>
-    public static string UrlEncode(this string source) => HttpUtility.UrlEncode(source);
+    public static string UrlEncode([StringSyntax(StringSyntaxAttribute.Uri)] this string source) => HttpUtility.UrlEncode(source);
 
     /// <summary>
     /// Gets a value indicating the number of words in the given string.
@@ -1020,30 +1020,13 @@ public static class StringExtensions
     /// <typeparam name="T">The type of object to deserialize the XML to.</typeparam>
     /// <param name="source">The string to deserialize.</param>
     /// <returns>The deserialized object from the XML data in [source].</returns>
-    public static T XmlDeserialize<T>(this string source)
+    public static T XmlDeserialize<T>([StringSyntax(StringSyntaxAttribute.Xml)] this string source)
     {
-        if (string.IsNullOrEmpty(source))
-        {
-            return default;
-        }
+        if (string.IsNullOrWhiteSpace(source)) return default;
 
-        object locker = new();
-        var stringReader = new StringReader(source);
-        var reader = new XmlTextReader(stringReader);
-        try
-        {
-            var xmlSerializer = new XmlSerializer(typeof(T));
-            lock (locker)
-            {
-                var item = (T)xmlSerializer.Deserialize(reader);
-                reader.Close();
-                return item;
-            }
-        }
-        finally
-        {
-            reader.Close();
-        }
+        var serializer = new XmlSerializer(typeof(T));
+        using var reader = new StringReader(source);
+        return (T)serializer.Deserialize(reader);
     }
 
     /// <summary>
@@ -1052,29 +1035,12 @@ public static class StringExtensions
     /// <param name="source">The string to deserialize.</param>
     /// <param name="type">The type of object to deserialize the XML to.</param>
     /// <returns>The deserialized object from the XML data in [source].</returns>
-    public static object XmlDeserialize(this string source, Type type)
+    public static object XmlDeserialize([StringSyntax(StringSyntaxAttribute.Xml)] this string source, Type type)
     {
-        if (string.IsNullOrEmpty(source))
-        {
-            return null;
-        }
+        if (string.IsNullOrWhiteSpace(source)) return null;
 
-        object locker = new();
-        var stringReader = new StringReader(source);
-        var reader = new XmlTextReader(stringReader);
-        try
-        {
-            var xmlSerializer = new XmlSerializer(type);
-            lock (locker)
-            {
-                object item = xmlSerializer.Deserialize(reader);
-                reader.Close();
-                return item;
-            }
-        }
-        finally
-        {
-            reader.Close();
-        }
+        var serializer = new XmlSerializer(type);
+        using var reader = new StringReader(source);
+        return serializer.Deserialize(reader);
     }
 }
