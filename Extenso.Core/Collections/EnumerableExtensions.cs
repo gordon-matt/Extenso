@@ -246,7 +246,8 @@ public static class EnumerableExtensions
     public static TProp MostOccurring<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func) =>
         items.GroupBy(func).OrderByDescending(x => x.Count()).First().Key;
 
-    public static TProp MostOccurringOrDefault<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func) => items.IsNullOrEmpty() ? default : items.MostOccurring(func);
+    public static TProp MostOccurringOrDefault<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func) =>
+        items.IsNullOrEmpty() ? default : items.MostOccurring(func);
 
     /// <summary>
     /// Produces the set union of two sequences by using the default equality comparer. If either of the sequences is null or empty, the other sequence is returned.
@@ -277,6 +278,9 @@ public static class EnumerableExtensions
     /// <returns>All the elements of source split into chunks of the given size.</returns>
     public static IEnumerable<IEnumerable<T>> ToChunks<T>(this IEnumerable<T> source, int size)
     {
+        if (source == null || !source.Any())
+            return []; // Return empty if source is empty
+
         var chunks = new HashSet<HashSet<T>>();
         var chunk = new HashSet<T>();
 

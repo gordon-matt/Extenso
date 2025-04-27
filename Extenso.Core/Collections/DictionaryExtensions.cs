@@ -89,7 +89,7 @@ public static class DictionaryExtensions
         var result = new Dictionary<TKey, TValue>(source);
         foreach (var kv in other)
         {
-            var value = result.GetOrCreate(kv.Key, kv.Value);
+            _ = result.GetOrCreate(kv.Key, kv.Value);
         }
         return result;
     }

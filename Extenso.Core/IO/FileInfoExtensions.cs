@@ -23,23 +23,28 @@ public static class FileInfoExtensions
     }
 
     /// <summary>
+    /// Compresses the given file using the Brotli algorithm and returns the name of the compressed file.
+    /// </summary>
+    /// <param name="fileInfo">The file to be compressed.</param>
+    /// <returns>The name of the new compressed file.</returns>
+    public static string BrotliCompress(this FileInfo fileInfo)
+        => fileInfo.CompressInternal(stream => new BrotliStream(stream, CompressionMode.Compress), ".br");
+
+    /// <summary>
+    /// Decompresses the given file using the Brotli algorithm and returns the name of the decompressed file.
+    /// </summary>
+    /// <param name="fileInfo">The file to be decompressed.</param>
+    /// <returns>The name of the new decompressed file.</returns>
+    public static string BrotliDecompress(this FileInfo fileInfo)
+        => fileInfo.DecompressInternal(stream => new BrotliStream(stream, CompressionMode.Decompress), ".br");
+
+    /// <summary>
     /// Compresses the given file using the Deflate algorithm and returns the name of the compressed file.
     /// </summary>
     /// <param name="fileInfo">The file to be compressed.</param>
     /// <returns>The name of the new compressed file.</returns>
     public static string DeflateCompress(this FileInfo fileInfo)
-    {
-        string compressedFileName = $"{fileInfo.FullName}.cmp";
-
-        using (var fileStreamIn = fileInfo.OpenRead())
-        using (var fileStreamOut = File.Create(compressedFileName))
-        using (var deflateStream = new DeflateStream(fileStreamOut, CompressionMode.Compress))
-        {
-            fileStreamIn.CopyTo(deflateStream);
-        }
-
-        return compressedFileName;
-    }
+        => fileInfo.CompressInternal(stream => new DeflateStream(stream, CompressionMode.Compress), ".cmp");
 
     /// <summary>
     /// Decompresses the given file using the Deflate algorithm and returns the name of the decompressed file.
@@ -47,18 +52,7 @@ public static class FileInfoExtensions
     /// <param name="fileInfo">The file to be decompressed.</param>
     /// <returns>The name of the new decompressed file.</returns>
     public static string DeflateDecompress(this FileInfo fileInfo)
-    {
-        string deCompressedFileName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
-
-        using (var fileStreamIn = fileInfo.OpenRead())
-        using (var fileStreamOut = File.Create(deCompressedFileName))
-        using (var deflateStream = new DeflateStream(fileStreamIn, CompressionMode.Decompress))
-        {
-            deflateStream.CopyTo(fileStreamOut);
-        }
-
-        return deCompressedFileName;
-    }
+        => fileInfo.DecompressInternal(stream => new DeflateStream(stream, CompressionMode.Decompress), ".cmp");
 
     /// <summary>
     /// Gets the file size and includes the unit of measurement suffix.
@@ -110,18 +104,7 @@ public static class FileInfoExtensions
     /// <param name="fileInfo">The file to be compressed.</param>
     /// <returns>The name of the new compressed file.</returns>
     public static string GZipCompress(this FileInfo fileInfo)
-    {
-        string compressedFileName = $"{fileInfo.FullName}.gz";
-
-        using (var fileStreamIn = fileInfo.OpenRead())
-        using (var fileStreamOut = File.Create(compressedFileName))
-        using (var gZipStream = new GZipStream(fileStreamOut, CompressionMode.Compress))
-        {
-            fileStreamIn.CopyTo(gZipStream);
-        }
-
-        return compressedFileName;
-    }
+        => fileInfo.CompressInternal(stream => new GZipStream(stream, CompressionMode.Compress), ".gz");
 
     /// <summary>
     /// Decompresses the file using the GZip algorithm and returns the name of the decompressed file.
@@ -129,20 +112,7 @@ public static class FileInfoExtensions
     /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
     /// <returns>The name of the new decompressed file.</returns>
     public static string GZipDecompress(this FileInfo fileInfo)
-    {
-        // Get original file extension, for example:
-        // "doc" from report.doc.gz.
-        string deCompressedFileName = fileInfo.FullName.Remove(fileInfo.FullName.Length - fileInfo.Extension.Length);
-
-        using (var fileStreamIn = fileInfo.OpenRead())
-        using (var fileStreamOut = File.Create(deCompressedFileName))
-        using (var gZipStream = new GZipStream(fileStreamIn, CompressionMode.Decompress))
-        {
-            gZipStream.CopyTo(fileStreamOut);
-        }
-
-        return deCompressedFileName;
-    }
+        => fileInfo.DecompressInternal(stream => new GZipStream(stream, CompressionMode.Decompress), ".gz");
 
     /// <summary>
     /// Opens a binary file, reads the contents of the file into a byte array, and then closes the file.
@@ -188,5 +158,46 @@ public static class FileInfoExtensions
         using var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read);
         using var streamReader = new StreamReader(fileStream);
         return streamReader.ReadToEnd().XmlDeserialize<T>();
+    }
+
+    /// <summary>
+    /// Compresses the file using the specified compression algorithm and extension.
+    /// </summary>
+    private static string CompressInternal(this FileInfo fileInfo, Func<Stream, Stream> createCompressionStream, string compressionExtension)
+    {
+        if (fileInfo == null) throw new ArgumentNullException(nameof(fileInfo));
+        if (!fileInfo.Exists) throw new FileNotFoundException("File not found", fileInfo.FullName);
+
+        string compressedFileName = $"{fileInfo.FullName}{compressionExtension}";
+
+        using var input = fileInfo.OpenRead();
+        using var output = File.Create(compressedFileName);
+        using var compressionStream = createCompressionStream(output);
+
+        input.CopyTo(compressionStream);
+
+        return compressedFileName;
+    }
+
+    /// <summary>
+    /// Decompresses the file using the specified decompression algorithm.
+    /// </summary>
+    private static string DecompressInternal(this FileInfo fileInfo, Func<Stream, Stream> createDecompressionStream, string compressionExtension)
+    {
+        if (fileInfo == null) throw new ArgumentNullException(nameof(fileInfo));
+        if (!fileInfo.Exists) throw new FileNotFoundException("File not found", fileInfo.FullName);
+
+        if (!fileInfo.Name.EndsWith(compressionExtension, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException($"File does not have the expected extension '{compressionExtension}'.");
+
+        string decompressedFileName = fileInfo.FullName[..^compressionExtension.Length];
+
+        using var input = fileInfo.OpenRead();
+        using var output = File.Create(decompressedFileName);
+        using var decompressionStream = createDecompressionStream(input);
+
+        decompressionStream.CopyTo(output);
+
+        return decompressedFileName;
     }
 }

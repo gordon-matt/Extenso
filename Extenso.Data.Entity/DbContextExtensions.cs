@@ -10,7 +10,10 @@ public static class DbContextExtensions
 {
     public static T ExecuteScalar<T>(this DbContext dbContext, string queryText)
     {
+#pragma warning disable DF0010 // A DbConnection provided by the DbContext should NOT be disposed
         var connection = dbContext.Database.GetDbConnection();
+#pragma warning restore DF0010
+
         bool isOpen = connection.State == ConnectionState.Open;
 
         if (!isOpen)
@@ -30,7 +33,10 @@ public static class DbContextExtensions
 
     public static DataSet ExecuteStoredProcedure(this DbContext dbContext, string storedProcedure, IEnumerable<DbParameter> parameters)
     {
+#pragma warning disable DF0010 // A DbConnection provided by the DbContext should NOT be disposed
         var connection = dbContext.Database.GetDbConnection();
+#pragma warning restore DF0010
+
         bool isOpen = connection.State == ConnectionState.Open;
 
         if (!isOpen)
@@ -50,7 +56,10 @@ public static class DbContextExtensions
 
     public static DataSet ExecuteStoredProcedure(this DbContext dbContext, string storedProcedure, IEnumerable<DbParameter> parameters, out Dictionary<string, object> outputValues)
     {
+#pragma warning disable DF0010 // A DbConnection provided by the DbContext should NOT be disposed
         var connection = dbContext.Database.GetDbConnection();
+#pragma warning restore DF0010
+
         bool isOpen = connection.State == ConnectionState.Open;
 
         if (!isOpen)
@@ -70,7 +79,10 @@ public static class DbContextExtensions
 
     public static int ExecuteNonQueryStoredProcedure(this DbContext dbContext, string storedProcedure, IEnumerable<DbParameter> parameters)
     {
+#pragma warning disable DF0010 // A DbConnection provided by the DbContext should NOT be disposed
         var connection = dbContext.Database.GetDbConnection();
+#pragma warning restore DF0010
+
         bool isOpen = connection.State == ConnectionState.Open;
 
         if (!isOpen)
@@ -88,5 +100,12 @@ public static class DbContextExtensions
         return result;
     }
 
-    public static DbParameter CreateParameter(this DbContext dbContext, string parameterName, object value) => dbContext.Database.GetDbConnection().CreateParameter(parameterName, value);
+    public static DbParameter CreateParameter(this DbContext dbContext, string parameterName, object value)
+    {
+#pragma warning disable DF0010 // A DbConnection provided by the DbContext should NOT be disposed
+        var connection = dbContext.Database.GetDbConnection();
+#pragma warning restore DF0010
+
+        return connection.CreateParameter(parameterName, value);
+    }
 }
