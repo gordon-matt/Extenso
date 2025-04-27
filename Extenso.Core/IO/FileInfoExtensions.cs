@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 
 namespace Extenso.IO;
 
@@ -27,8 +28,11 @@ public static class FileInfoExtensions
     /// </summary>
     /// <param name="fileInfo">The file to be compressed.</param>
     /// <returns>The name of the new compressed file.</returns>
-    public static string BrotliCompress(this FileInfo fileInfo)
-        => fileInfo.CompressInternal(stream => new BrotliStream(stream, CompressionMode.Compress), ".br");
+    public static string BrotliCompress(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
+        => fileInfo.Compress(CompressionAlgorithm.Brotli, compressionLevel);
+
+    public static async Task<string> BrotliCompressAsync(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
+        => await fileInfo.CompressAsync(CompressionAlgorithm.Brotli, compressionLevel);
 
     /// <summary>
     /// Decompresses the given file using the Brotli algorithm and returns the name of the decompressed file.
@@ -36,15 +40,21 @@ public static class FileInfoExtensions
     /// <param name="fileInfo">The file to be decompressed.</param>
     /// <returns>The name of the new decompressed file.</returns>
     public static string BrotliDecompress(this FileInfo fileInfo)
-        => fileInfo.DecompressInternal(stream => new BrotliStream(stream, CompressionMode.Decompress), ".br");
+        => fileInfo.Decompress(CompressionAlgorithm.Brotli);
+
+    public static async Task<string> BrotliDecompressAsync(this FileInfo fileInfo)
+        => await fileInfo.DecompressAsync(CompressionAlgorithm.Brotli);
 
     /// <summary>
     /// Compresses the given file using the Deflate algorithm and returns the name of the compressed file.
     /// </summary>
     /// <param name="fileInfo">The file to be compressed.</param>
     /// <returns>The name of the new compressed file.</returns>
-    public static string DeflateCompress(this FileInfo fileInfo)
-        => fileInfo.CompressInternal(stream => new DeflateStream(stream, CompressionMode.Compress), ".cmp");
+    public static string DeflateCompress(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
+        => fileInfo.Compress(CompressionAlgorithm.Deflate, compressionLevel);
+
+    public static async Task<string> DeflateCompressAsync(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
+        => await fileInfo.CompressAsync(CompressionAlgorithm.Deflate, compressionLevel);
 
     /// <summary>
     /// Decompresses the given file using the Deflate algorithm and returns the name of the decompressed file.
@@ -52,7 +62,10 @@ public static class FileInfoExtensions
     /// <param name="fileInfo">The file to be decompressed.</param>
     /// <returns>The name of the new decompressed file.</returns>
     public static string DeflateDecompress(this FileInfo fileInfo)
-        => fileInfo.DecompressInternal(stream => new DeflateStream(stream, CompressionMode.Decompress), ".cmp");
+        => fileInfo.Decompress(CompressionAlgorithm.Deflate);
+
+    public static async Task<string> DeflateDecompressAsync(this FileInfo fileInfo)
+        => await fileInfo.DecompressAsync(CompressionAlgorithm.Deflate);
 
     /// <summary>
     /// Gets the file size and includes the unit of measurement suffix.
@@ -103,8 +116,11 @@ public static class FileInfoExtensions
     /// </summary>
     /// <param name="fileInfo">The file to be compressed.</param>
     /// <returns>The name of the new compressed file.</returns>
-    public static string GZipCompress(this FileInfo fileInfo)
-        => fileInfo.CompressInternal(stream => new GZipStream(stream, CompressionMode.Compress), ".gz");
+    public static string GZipCompress(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
+        => fileInfo.Compress(CompressionAlgorithm.GZip, compressionLevel);
+
+    public static async Task<string> GZipCompressAsync(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
+        => await fileInfo.CompressAsync(CompressionAlgorithm.GZip, compressionLevel);
 
     /// <summary>
     /// Decompresses the file using the GZip algorithm and returns the name of the decompressed file.
@@ -112,7 +128,10 @@ public static class FileInfoExtensions
     /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
     /// <returns>The name of the new decompressed file.</returns>
     public static string GZipDecompress(this FileInfo fileInfo)
-        => fileInfo.DecompressInternal(stream => new GZipStream(stream, CompressionMode.Decompress), ".gz");
+        => fileInfo.Decompress(CompressionAlgorithm.GZip);
+
+    public static async Task<string> GZipDecompressAsync(this FileInfo fileInfo)
+        => await fileInfo.DecompressAsync(CompressionAlgorithm.GZip);
 
     /// <summary>
     /// Opens a binary file, reads the contents of the file into a byte array, and then closes the file.
@@ -160,44 +179,106 @@ public static class FileInfoExtensions
         return streamReader.ReadToEnd().XmlDeserialize<T>();
     }
 
-    /// <summary>
-    /// Compresses the file using the specified compression algorithm and extension.
-    /// </summary>
-    private static string CompressInternal(this FileInfo fileInfo, Func<Stream, Stream> createCompressionStream, string compressionExtension)
+    private static string Compress(this FileInfo fileInfo, CompressionAlgorithm algorithm, CompressionLevel compressionLevel)
     {
-        if (fileInfo == null) throw new ArgumentNullException(nameof(fileInfo));
-        if (!fileInfo.Exists) throw new FileNotFoundException("File not found", fileInfo.FullName);
+        string compressedFileName = $"{fileInfo.FullName}.{GetCompressionExtension(algorithm)}";
 
-        string compressedFileName = $"{fileInfo.FullName}{compressionExtension}";
+        using var inputStream = fileInfo.OpenRead();
+        using var compressedStream = CompressStream(inputStream, algorithm, compressionLevel);
 
-        using var input = fileInfo.OpenRead();
-        using var output = File.Create(compressedFileName);
-        using var compressionStream = createCompressionStream(output);
-
-        input.CopyTo(compressionStream);
+        using var outputStream = File.Create(compressedFileName);
+        compressedStream.CopyTo(outputStream);
 
         return compressedFileName;
     }
 
-    /// <summary>
-    /// Decompresses the file using the specified decompression algorithm.
-    /// </summary>
-    private static string DecompressInternal(this FileInfo fileInfo, Func<Stream, Stream> createDecompressionStream, string compressionExtension)
+    private static async Task<string> CompressAsync(this FileInfo fileInfo, CompressionAlgorithm algorithm, CompressionLevel compressionLevel)
     {
-        if (fileInfo == null) throw new ArgumentNullException(nameof(fileInfo));
-        if (!fileInfo.Exists) throw new FileNotFoundException("File not found", fileInfo.FullName);
+        string compressedFileName = $"{fileInfo.FullName}.{GetCompressionExtension(algorithm)}";
 
-        if (!fileInfo.Name.EndsWith(compressionExtension, StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException($"File does not have the expected extension '{compressionExtension}'.");
+        using var inputStream = fileInfo.OpenRead();
+        using var compressedStream = await CompressStreamAsync(inputStream, algorithm, compressionLevel);
 
-        string decompressedFileName = fileInfo.FullName[..^compressionExtension.Length];
+        using var outputStream = File.Create(compressedFileName);
+        await compressedStream.CopyToAsync(outputStream);
 
-        using var input = fileInfo.OpenRead();
-        using var output = File.Create(decompressedFileName);
-        using var decompressionStream = createDecompressionStream(input);
+        return compressedFileName;
+    }
 
-        decompressionStream.CopyTo(output);
+    private static MemoryStream CompressStream(Stream inputStream, CompressionAlgorithm algorithm, CompressionLevel compressionLevel) => algorithm switch
+    {
+        CompressionAlgorithm.Deflate => inputStream.DeflateCompress(compressionLevel),
+        CompressionAlgorithm.GZip => inputStream.GZipCompress(compressionLevel),
+        CompressionAlgorithm.Brotli => inputStream.BrotliCompress(compressionLevel),
+        _ => throw new ArgumentOutOfRangeException(nameof(algorithm), $"Unsupported compression algorithm: {algorithm}")
+    };
+
+    private static async Task<MemoryStream> CompressStreamAsync(Stream inputStream, CompressionAlgorithm algorithm, CompressionLevel compressionLevel) => algorithm switch
+    {
+        CompressionAlgorithm.Deflate => await inputStream.DeflateCompressAsync(compressionLevel),
+        CompressionAlgorithm.GZip => await inputStream.GZipCompressAsync(compressionLevel),
+        CompressionAlgorithm.Brotli => await inputStream.BrotliCompressAsync(compressionLevel),
+        _ => throw new ArgumentOutOfRangeException(nameof(algorithm), $"Unsupported compression algorithm: {algorithm}")
+    };
+
+    private static string Decompress(this FileInfo fileInfo, CompressionAlgorithm algorithm)
+    {
+        string decompressedFileName = GetDecompressedFileName(fileInfo);
+
+        using var inputStream = fileInfo.OpenRead();
+        using var decompressedStream = DecompressStream(inputStream, algorithm);
+
+        using var outputStream = File.Create(decompressedFileName);
+        decompressedStream.CopyTo(outputStream);
 
         return decompressedFileName;
+    }
+
+    private static async Task<string> DecompressAsync(this FileInfo fileInfo, CompressionAlgorithm algorithm)
+    {
+        string decompressedFileName = GetDecompressedFileName(fileInfo);
+
+        using var inputStream = fileInfo.OpenRead();
+        using var decompressedStream = await DecompressStreamAsync(inputStream, algorithm);
+
+        using var outputStream = File.Create(decompressedFileName);
+        await decompressedStream.CopyToAsync(outputStream);
+
+        return decompressedFileName;
+    }
+
+    private static MemoryStream DecompressStream(Stream inputStream, CompressionAlgorithm algorithm) => algorithm switch
+    {
+        CompressionAlgorithm.Deflate => inputStream.DeflateDecompress(),
+        CompressionAlgorithm.GZip => inputStream.GZipDecompress(),
+        CompressionAlgorithm.Brotli => inputStream.BrotliDecompress(),
+        _ => throw new ArgumentOutOfRangeException(nameof(algorithm), $"Unsupported decompression algorithm: {algorithm}")
+    };
+
+    private static async Task<MemoryStream> DecompressStreamAsync(Stream inputStream, CompressionAlgorithm algorithm) => algorithm switch
+    {
+        CompressionAlgorithm.Deflate => await inputStream.DeflateDecompressAsync(),
+        CompressionAlgorithm.GZip => await inputStream.GZipDecompressAsync(),
+        CompressionAlgorithm.Brotli => await inputStream.BrotliDecompressAsync(),
+        _ => throw new ArgumentOutOfRangeException(nameof(algorithm), $"Unsupported decompression algorithm: {algorithm}")
+    };
+
+    private static string GetCompressionExtension(CompressionAlgorithm algorithm) =>
+        algorithm switch
+        {
+            CompressionAlgorithm.Deflate => "cmp",
+            CompressionAlgorithm.GZip => "gz",
+            CompressionAlgorithm.Brotli => "br",
+            _ => throw new ArgumentOutOfRangeException(nameof(algorithm), $"Unsupported compression algorithm: {algorithm}")
+        };
+
+    private static string GetDecompressedFileName(FileInfo fileInfo) =>
+        fileInfo.FullName[..^fileInfo.Extension.Length];
+
+    private enum CompressionAlgorithm
+    {
+        Deflate,
+        GZip,
+        Brotli
     }
 }

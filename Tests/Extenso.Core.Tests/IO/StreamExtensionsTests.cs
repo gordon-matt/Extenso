@@ -34,7 +34,7 @@ public class StreamExtensionsTests
 
     [Fact]
     public async Task BrotliCompressionAsync()
-        => await CompressionRoundtripTestAsync((s, ct) => s.BrotliCompressAsync(ct), (s, ct) => s.BrotliDecompressAsync(ct));
+        => await CompressionRoundtripTestAsync((s, ct) => s.BrotliCompressAsync(cancellationToken: ct), (s, ct) => s.BrotliDecompressAsync(ct));
 
     [Fact]
     public void DeflateCompression()
@@ -42,7 +42,7 @@ public class StreamExtensionsTests
 
     [Fact]
     public async Task DeflateCompressionAsync()
-        => await CompressionRoundtripTestAsync((s, ct) => s.DeflateCompressAsync(ct), (s, ct) => s.DeflateDecompressAsync(ct));
+        => await CompressionRoundtripTestAsync((s, ct) => s.DeflateCompressAsync(cancellationToken: ct), (s, ct) => s.DeflateDecompressAsync(ct));
 
     [Fact]
     public void GZipCompression()
@@ -50,7 +50,7 @@ public class StreamExtensionsTests
 
     [Fact]
     public async Task GZipCompressionAsync()
-        => await CompressionRoundtripTestAsync((s, ct) => s.GZipCompressAsync(ct), (s, ct) => s.GZipDecompressAsync(ct));
+        => await CompressionRoundtripTestAsync((s, ct) => s.GZipCompressAsync(cancellationToken: ct), (s, ct) => s.GZipDecompressAsync(ct));
 
     [Fact]
     public void ToArray()
