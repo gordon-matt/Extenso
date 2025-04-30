@@ -20,5 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Data.Entity.Abstractions\Extenso.Data.Entity.Abstractions.csproj" />
     <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
+    <ProjectReference Include="..\Extenso.Mapping\Extenso.Mapping.csproj" />
   </ItemGroup>
 </Project>
