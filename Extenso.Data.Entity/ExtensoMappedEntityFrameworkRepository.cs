@@ -18,7 +18,7 @@ public class ExtensoMappedEntityFrameworkRepository<TModel, TEntity> : MappedEnt
 
     public override TModel ToModel(TEntity entity) => ExtensoMapper.Map<TEntity, TModel>(entity);
 
-    public override Expression<Func<TEntity, object>> MapIncludeExpression(Expression<Func<TModel, dynamic>> includeExpression) =>
+    public override Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
         throw new NotImplementedException();
 
     public override Expression<Func<TEntity, bool>> MapPredicateExpression(Expression<Func<TModel, bool>> predicate) =>

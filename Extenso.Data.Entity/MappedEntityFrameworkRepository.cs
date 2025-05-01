@@ -74,7 +74,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// </summary>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A collection of all entities in the set.</returns>
-    public virtual IEnumerable<TModel> Find(params Expression<Func<TModel, dynamic>>[] includePaths)
+    public virtual IEnumerable<TModel> Find(params Expression<Func<TModel, object>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -86,7 +86,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
 
         var entities = query.ToList();
-        return entities.Select(x => x.MapTo<TModel>()).ToList();
+        return entities.Select(x => ToModel(x)).ToList();
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A filtered list of entities based on a predicate.</returns>
-    public virtual IEnumerable<TModel> Find(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public virtual IEnumerable<TModel> Find(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -108,7 +108,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
         var mappedPredicate = MapPredicateExpression(predicate);
         var entities = query.Where(mappedPredicate).ToList();
-        return entities.Select(x => x.MapTo<TModel>()).ToList();
+        return entities.Select(x => ToModel(x)).ToList();
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// </summary>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A collection of all entities in the set.</returns>
-    public virtual async Task<IEnumerable<TModel>> FindAsync(params Expression<Func<TModel, dynamic>>[] includePaths)
+    public virtual async Task<IEnumerable<TModel>> FindAsync(params Expression<Func<TModel, object>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -128,7 +128,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
 
         var entities = await query.ToListAsync();
-        return entities.Select(x => x.MapTo<TModel>()).ToList();
+        return entities.Select(x => ToModel(x)).ToList();
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A filtered list of entities based on a predicate.</returns>
-    public virtual async Task<IEnumerable<TModel>> FindAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public virtual async Task<IEnumerable<TModel>> FindAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -150,7 +150,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
         var mappedPredicate = MapPredicateExpression(predicate);
         var entities = await query.Where(mappedPredicate).ToListAsync();
-        return entities.Select(x => x.MapTo<TModel>()).ToList();
+        return entities.Select(x => ToModel(x)).ToList();
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         using var context = GetContext();
         var entity = context.Set<TEntity>().Find(keyValues);
-        return entity.MapTo<TModel>();
+        return ToModel(entity);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>The entity found, or null.</returns>
-    public virtual TModel FindOne(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public virtual TModel FindOne(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
     {
         var mappedPredicate = MapPredicateExpression(predicate);
 
@@ -185,7 +185,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
 
         var entity = query.FirstOrDefault();
-        return entity.MapTo<TModel>();
+        return ToModel(entity);
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         using var context = GetContext();
         var entity = await context.Set<TEntity>().FindAsync(keyValues);
-        return entity.MapTo<TModel>();
+        return ToModel(entity);
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>The entity found, or null.</returns>
-    public virtual async Task<TModel> FindOneAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public virtual async Task<TModel> FindOneAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
     {
         var mappedPredicate = MapPredicateExpression(predicate);
 
@@ -220,7 +220,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
 
         var entity = await query.FirstOrDefaultAsync();
-        return entity.MapTo<TModel>();
+        return ToModel(entity);
     }
 
     #endregion Find
@@ -348,7 +348,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of rows affected.</returns>
     public virtual int Delete(TModel model)
     {
-        var entity = model.MapTo<TEntity>();
+        var entity = ToEntity(model);
 
         using var context = GetContext();
         var set = context.Set<TEntity>();
@@ -381,7 +381,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of rows affected.</returns>
     public virtual int Delete(IEnumerable<TModel> models)
     {
-        var entities = models.Select(x => x.MapTo<TEntity>()).ToList();
+        var entities = models.Select(x => ToEntity(x)).ToList();
 
         using var context = GetContext();
         var set = context.Set<TEntity>();
@@ -439,7 +439,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>A task with the number of rows affected.</returns>
     public virtual async Task<int> DeleteAsync(TModel model)
     {
-        var entity = model.MapTo<TEntity>();
+        var entity = ToEntity(model);
 
         using var context = GetContext();
         var set = context.Set<TEntity>();
@@ -472,7 +472,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>A task with the number of rows affected.</returns>
     public virtual async Task<int> DeleteAsync(IEnumerable<TModel> models)
     {
-        var entities = models.Select(x => x.MapTo<TEntity>()).ToList();
+        var entities = models.Select(x => ToEntity(x)).ToList();
 
         using var context = GetContext();
         var set = context.Set<TEntity>();
@@ -524,7 +524,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of rows affected.</returns>
     public virtual int Insert(TModel model)
     {
-        var entity = model.MapTo<TEntity>();
+        var entity = ToEntity(model);
         using var context = GetContext();
         context.Set<TEntity>().Add(entity);
         return context.SaveChanges();
@@ -537,7 +537,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of rows affected.</returns>
     public virtual int Insert(IEnumerable<TModel> models)
     {
-        var entities = models.Select(x => x.MapTo<TEntity>()).ToList();
+        var entities = models.Select(x => ToEntity(x)).ToList();
         using var context = GetContext();
         context.Set<TEntity>().AddRange(entities);
         return context.SaveChanges();
@@ -550,7 +550,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>A task with the number of rows affected.</returns>
     public virtual async Task<int> InsertAsync(TModel model)
     {
-        var entity = model.MapTo<TEntity>();
+        var entity = ToEntity(model);
         using var context = GetContext();
         await context.Set<TEntity>().AddAsync(entity);
         return await context.SaveChangesAsync();
@@ -563,7 +563,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>A task with the number of rows affected.</returns>
     public virtual async Task<int> InsertAsync(IEnumerable<TModel> models)
     {
-        var entities = models.Select(x => x.MapTo<TEntity>()).ToList();
+        var entities = models.Select(x => ToEntity(x)).ToList();
         using var context = GetContext();
         await context.Set<TEntity>().AddRangeAsync(entities);
         return await context.SaveChangesAsync();
@@ -582,7 +582,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         try
         {
-            var entity = model.MapTo<TEntity>();
+            var entity = ToEntity(model);
 
             if (entity == null)
             {
@@ -631,7 +631,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         try
         {
-            var entities = models.Select(x => x.MapTo<TEntity>()).ToList();
+            var entities = models.Select(x => ToEntity(x)).ToList();
 
             if (entities == null)
             {
@@ -681,7 +681,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         try
         {
-            var entity = model.MapTo<TEntity>();
+            var entity = ToEntity(model);
 
             if (entity == null)
             {
@@ -730,7 +730,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         try
         {
-            var entities = models.Select(x => x.MapTo<TEntity>()).ToList();
+            var entities = models.Select(x => ToEntity(x)).ToList();
 
             if (entities == null)
             {
@@ -859,5 +859,5 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     public abstract Expression<Func<TEntity, TEntity>> MapUpdateExpression(Expression<Func<TModel, TModel>> updateExpression);
 
-    public abstract Expression<Func<TEntity, object>> MapIncludeExpression(Expression<Func<TModel, dynamic>> includeExpression);
+    public abstract Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
 }

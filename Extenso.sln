@@ -100,9 +100,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.Entity.Abstrac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Mapping", "Extenso.Mapping\Extenso.Mapping.csproj", "{D89714CB-C64B-4717-9B42-E6B2BAA942D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Mapping.Tests", "Extenso.Mapping.Tests\Extenso.Mapping.Tests.csproj", "{457B52BD-78BD-437A-9FEE-98523E12AE69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Mapping.Tests", "Tests\Extenso.Mapping.Tests\Extenso.Mapping.Tests.csproj", "{457B52BD-78BD-437A-9FEE-98523E12AE69}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.Entity.AutoMapper", "Extenso.Data.Entity.AutoMapper\Extenso.Data.Entity.AutoMapper.csproj", "{508B7740-20D8-418A-8DDC-29B349F2B099}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Data.Entity.AutoMapper.Tests", "Tests\Extenso.Data.Entity.AutoMapper.Tests\Extenso.Data.Entity.AutoMapper.Tests.csproj", "{D1DBD72C-F08F-46E4-8A5F-1B406A711CB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -278,6 +280,10 @@ Global
 		{508B7740-20D8-418A-8DDC-29B349F2B099}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{508B7740-20D8-418A-8DDC-29B349F2B099}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{508B7740-20D8-418A-8DDC-29B349F2B099}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1DBD72C-F08F-46E4-8A5F-1B406A711CB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1DBD72C-F08F-46E4-8A5F-1B406A711CB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1DBD72C-F08F-46E4-8A5F-1B406A711CB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1DBD72C-F08F-46E4-8A5F-1B406A711CB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -311,6 +317,7 @@ Global
 		{242180EC-1A61-4E3B-AD80-E0F944F816FC} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{10086F25-BC19-4E77-8802-AF0154CFA138} = {F63724D8-A57F-4B23-A73C-41A1EC144331}
 		{457B52BD-78BD-437A-9FEE-98523E12AE69} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
+		{D1DBD72C-F08F-46E4-8A5F-1B406A711CB0} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}

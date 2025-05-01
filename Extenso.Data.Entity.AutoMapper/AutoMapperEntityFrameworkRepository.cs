@@ -1,16 +1,17 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
+using AutoMapper.Extensions.ExpressionMapping;
 using Microsoft.Extensions.Logging;
 
 namespace Extenso.Data.Entity.AutoMapper;
 
-public class AutoMapperMappedEntityFrameworkRepository<TModel, TEntity> : MappedEntityFrameworkRepository<TModel, TEntity>
+public class AutoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEntityFrameworkRepository<TModel, TEntity>
     where TModel : class
     where TEntity : class, IEntity
 {
     private readonly IMapper mapper;
 
-    public AutoMapperMappedEntityFrameworkRepository(IDbContextFactory contextFactory, ILoggerFactory loggerFactory, IMapper mapper)
+    public AutoMapperEntityFrameworkRepository(IDbContextFactory contextFactory, ILoggerFactory loggerFactory, IMapper mapper)
         : base(contextFactory, loggerFactory)
     {
         this.mapper = mapper;
@@ -20,12 +21,12 @@ public class AutoMapperMappedEntityFrameworkRepository<TModel, TEntity> : Mapped
 
     public override TModel ToModel(TEntity entity) => mapper.Map<TEntity, TModel>(entity);
 
-    public override Expression<Func<TEntity, object>> MapIncludeExpression(Expression<Func<TModel, dynamic>> includeExpression) =>
-        mapper.Map<Expression<Func<TEntity, object>>>(includeExpression);
+    public override Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
+        mapper.MapExpressionAsInclude<Expression<Func<TEntity, TProperty>>>(includeExpression);
 
     public override Expression<Func<TEntity, bool>> MapPredicateExpression(Expression<Func<TModel, bool>> predicate) =>
-        mapper.Map<Expression<Func<TEntity, bool>>>(predicate);
+        mapper.MapExpression<Expression<Func<TEntity, bool>>>(predicate);
 
     public override Expression<Func<TEntity, TEntity>> MapUpdateExpression(Expression<Func<TModel, TModel>> updateExpression) =>
-        mapper.Map<Expression<Func<TEntity, TEntity>>>(updateExpression);
+        mapper.MapExpression<Expression<Func<TEntity, TEntity>>>(updateExpression);
 }

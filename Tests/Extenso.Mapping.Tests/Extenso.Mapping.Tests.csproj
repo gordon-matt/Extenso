@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Extenso.Mapping\Extenso.Mapping.csproj" />
+    <ProjectReference Include="..\..\Extenso.Mapping\Extenso.Mapping.csproj" />
   </ItemGroup>
 
   <ItemGroup>
