@@ -16,5 +16,5 @@ public class ProductModelViewModel
 
     public DateTime ModifiedDate { get; set; }
 
-    public virtual ICollection<ProductViewModel> Products { get; } = [];
+    public virtual ICollection<ProductViewModel> Products { get; set; } = [];
 }
