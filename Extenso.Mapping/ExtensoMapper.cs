@@ -44,6 +44,7 @@ namespace Extenso.Mapping;
 public static class ExtensoMapper
 {
     private static readonly ConcurrentDictionary<TypePair, Func<object, object>> mappings = new();
+    private static readonly ConcurrentDictionary<TypePair, Lazy<Delegate>> _expressionMappingCache = new();
 
     public static void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
     {
@@ -75,9 +76,6 @@ public static class ExtensoMapper
             : throw new InvalidOperationException($"Mapping from {sourceType} to {destinationType} is not registered.");
     }
 
-    //Cache for expression mappings
-    private static readonly ConcurrentDictionary<TypePair, Delegate> expressionMappings = new();
-
     public static Expression<Func<TDestination, bool>> MapExpression<TSource, TDestination>(
         Expression<Func<TSource, bool>> predicate)
     {
@@ -85,15 +83,10 @@ public static class ExtensoMapper
 
         var key = new TypePair(typeof(TSource), typeof(TDestination));
 
-        if (expressionMappings.TryGetValue(key, out var cachedDelegate))
-        {
-            var cachedFunc = (Func<Expression<Func<TSource, bool>>, Expression<Func<TDestination, bool>>>)cachedDelegate;
-            return cachedFunc(predicate);
-        }
+        var lazyDelegate = _expressionMappingCache.GetOrAdd(key, k =>
+            new Lazy<Delegate>(() => CompileExpressionMapping<TSource, TDestination>()));
 
-        var compiledFunc = CompileExpressionMapping<TSource, TDestination>();
-        expressionMappings[key] = compiledFunc;
-
+        var compiledFunc = (Func<Expression<Func<TSource, bool>>, Expression<Func<TDestination, bool>>>)lazyDelegate.Value;
         return compiledFunc(predicate);
     }
 
@@ -110,7 +103,7 @@ public static class ExtensoMapper
     }
 
     public static IQueryable<TDestination> MapQueryable<TSource, TDestination>(
-    this IQueryable<TSource> query)
+        this IQueryable<TSource> query)
     {
         var mapFunc = ExtensoMapper.Map<TSource, TDestination>;
         var parameter = Expression.Parameter(typeof(TSource), "x");
@@ -129,7 +122,7 @@ public static class ExtensoMapper
     }
 
     public static Expression<Func<TDestination, TDestination>> MapUpdateExpression<TSource, TDestination>(
-    Expression<Func<TSource, TSource>> updateFactory)
+        Expression<Func<TSource, TSource>> updateFactory)
     {
         ArgumentNullException.ThrowIfNull(updateFactory);
 
@@ -154,6 +147,7 @@ public static class ExtensoMapper
     {
         private static readonly ConcurrentDictionary<MemberInfo, MemberInfo> _memberMappingsCache = new();
         private static readonly ConcurrentDictionary<Type, Type> _typeMappingsCache = new();
+        private readonly Dictionary<MemberExpression, MemberExpression> _visitedMembers = new();
         private readonly ParameterExpression _parameter;
 
         public ExpressionMappingVisitor(ParameterExpression parameter)
@@ -171,26 +165,29 @@ public static class ExtensoMapper
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            // Handle primitive types, strings, decimals directly
-            if (node.Member.DeclaringType.IsPrimitive ||
+            // Check cache first
+            if (_visitedMembers.TryGetValue(node, out var cachedResult))
+            {
+                return cachedResult;
+            }
+
+            // Handle primitive types directly
+            if (node.Member.DeclaringType?.IsPrimitive == true ||
                 node.Member.DeclaringType == typeof(string) ||
                 node.Member.DeclaringType == typeof(decimal))
             {
                 return base.VisitMember(node);
             }
 
-            // Handle both direct properties and nested properties
             var newExpression = Visit(node.Expression);
-            var destMember = GetMappedMember(node.Member, newExpression?.Type);
+            var destMember = GetMappedMember(node.Member, newExpression?.Type) ?? node.Member;
 
-            if (destMember == null)
-            {
-                // If we can't find a mapped member, try to use the original member
-                // (this handles cases where properties have the same name in both types)
-                destMember = node.Member;
-            }
+            var result = Expression.MakeMemberAccess(newExpression, destMember);
 
-            return Expression.MakeMemberAccess(newExpression, destMember);
+            // Cache the result
+            _visitedMembers[node] = result;
+
+            return result;
         }
 
         protected override Expression VisitMemberInit(MemberInitExpression node)
@@ -271,21 +268,21 @@ public static class ExtensoMapper
 
         private MemberInfo GetMappedMember(MemberInfo sourceMember, Type currentDestType)
         {
-            if (currentDestType == null) return null;
+            // First try exact match in current type
+            var destMember = currentDestType?.GetProperty(sourceMember.Name,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
-            // First try to find the property in the current destination type
-            var destMember = currentDestType.GetProperty(sourceMember.Name);
-            if (destMember != null)
-            {
-                return destMember;
-            }
+            if (destMember != null) return destMember;
 
-            // If not found, check if the declaring type is mapped to another type
+            // Check if declaring type is mapped
             var sourceDeclaringType = sourceMember.DeclaringType;
+            if (sourceDeclaringType == null) return null;
+
             var mappedType = GetMappedType(sourceDeclaringType);
             if (mappedType != null)
             {
-                return mappedType.GetProperty(sourceMember.Name);
+                return mappedType.GetProperty(sourceMember.Name,
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             }
 
             return null;
@@ -320,15 +317,26 @@ public static class ExtensoMapper
 
         private Type GetMappedType(Type sourceType)
         {
-            return _typeMappingsCache.GetOrAdd(sourceType, key =>
+            if (sourceType == null) return null;
+
+            // Check cache first
+            if (_typeMappingsCache.TryGetValue(sourceType, out var cachedType))
             {
-                foreach (var mapping in mappings)
+                return cachedType;
+            }
+
+            // Optimized lookup in mappings dictionary
+            foreach (var mapping in mappings)
+            {
+                if (mapping.Key.Source == sourceType)
                 {
-                    if (mapping.Key.Source == sourceType)
-                        return mapping.Key.Destination;
+                    _typeMappingsCache[sourceType] = mapping.Key.Destination;
+                    return mapping.Key.Destination;
                 }
-                return null;
-            });
+            }
+
+            _typeMappingsCache[sourceType] = null; // Cache negative results too
+            return null;
         }
 
         private ConstructorInfo GetMatchingConstructor(Type type, ConstructorInfo sourceConstructor)

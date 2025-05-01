@@ -11,9 +11,6 @@ public class ExtensoMapperTests
     {
         _output = output;
 
-        ExtensoMapper.Register<Source, Destination>(x => x.ToDestination());
-        ExtensoMapper.Register<Destination, Source>(x => x.ToSource());
-
         ExtensoMapper.Register<CategoryEntity, CategoryModel>(x => x.ToModel());
         ExtensoMapper.Register<CategoryModel, CategoryEntity>(x => x.ToEntity());
 
@@ -24,16 +21,16 @@ public class ExtensoMapperTests
     [Fact]
     public void Map()
     {
-        var source = new Source
+        var entity = new CategoryEntity
         {
             Id = 1,
             Name = "Source"
         };
 
-        var destination = ExtensoMapper.Map<Source, Destination>(source);
+        var model = ExtensoMapper.Map<CategoryEntity, CategoryModel>(entity);
 
-        Assert.Equal(source.Id, destination.Id);
-        Assert.Equal(source.Name, destination.Name);
+        Assert.Equal(entity.Id, model.Id);
+        Assert.Equal(entity.Name, model.Name);
     }
 
     #region Work in Progress
@@ -65,8 +62,8 @@ public class ExtensoMapperTests
 
         // Assert
         Assert.Equal(
-            "x=>(x.Category.Name==\"Electronics\")",
-            mappedPredicate.ToString().Replace(" ", string.Empty));
+            "x => (x.Category.Name == \"Electronics\")",
+            mappedPredicate.ToString());
     }
 
     [Fact]
@@ -150,18 +147,6 @@ public class ExtensoMapperTests
 
 #region Models
 
-public class Source
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}
-
-public class Destination
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}
-
 public class CategoryEntity
 {
     public int Id { get; set; }
@@ -196,18 +181,6 @@ public class TestModel
 
 public static class Extensions
 {
-    public static Destination ToDestination(this Source source) => new()
-    {
-        Id = source.Id,
-        Name = source.Name
-    };
-
-    public static Source ToSource(this Destination destination) => new()
-    {
-        Id = destination.Id,
-        Name = destination.Name
-    };
-
     public static CategoryEntity ToEntity(this CategoryModel model) => new()
     {
         Id = model.Id,
