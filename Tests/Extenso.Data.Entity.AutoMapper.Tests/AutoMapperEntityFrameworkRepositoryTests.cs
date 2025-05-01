@@ -12,6 +12,7 @@ using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity.Tests;
 
+[Collection("EntityFrameworkRepositoryTests")]
 public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 {
     private readonly IMapper mapper;

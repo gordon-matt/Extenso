@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Extenso.Data.Entity;
-using Extenso.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Z.EntityFramework.Plus;
@@ -74,7 +73,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// </summary>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A collection of all entities in the set.</returns>
-    public virtual IEnumerable<TModel> Find(params Expression<Func<TModel, object>>[] includePaths)
+    public virtual IEnumerable<TModel> Find(params Expression<Func<TModel, dynamic>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -95,7 +94,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A filtered list of entities based on a predicate.</returns>
-    public virtual IEnumerable<TModel> Find(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
+    public virtual IEnumerable<TModel> Find(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -116,7 +115,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// </summary>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A collection of all entities in the set.</returns>
-    public virtual async Task<IEnumerable<TModel>> FindAsync(params Expression<Func<TModel, object>>[] includePaths)
+    public virtual async Task<IEnumerable<TModel>> FindAsync(params Expression<Func<TModel, dynamic>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -137,7 +136,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>A filtered list of entities based on a predicate.</returns>
-    public virtual async Task<IEnumerable<TModel>> FindAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
+    public virtual async Task<IEnumerable<TModel>> FindAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
@@ -171,7 +170,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>The entity found, or null.</returns>
-    public virtual TModel FindOne(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
+    public virtual TModel FindOne(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
         var mappedPredicate = MapPredicateExpression(predicate);
 
@@ -206,7 +205,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="includePaths">Specifies related entities to include in the query results.</param>
     /// <returns>The entity found, or null.</returns>
-    public virtual async Task<TModel> FindOneAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, object>>[] includePaths)
+    public virtual async Task<TModel> FindOneAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
         var mappedPredicate = MapPredicateExpression(predicate);
 

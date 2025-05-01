@@ -12,6 +12,7 @@ using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity.Tests;
 
+[Collection("EntityFrameworkRepositoryTests")]
 public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 {
     private readonly InMemoryAdventureWorks2019ContextFactory contextFactory;

@@ -171,28 +171,26 @@ public static class ExtensoMapper
 
         protected override Expression VisitMember(MemberExpression node)
         {
+            // Handle primitive types, strings, decimals directly
             if (node.Member.DeclaringType.IsPrimitive ||
-                node.Member.DeclaringType == typeof(string))
+                node.Member.DeclaringType == typeof(string) ||
+                node.Member.DeclaringType == typeof(decimal))
             {
                 return base.VisitMember(node);
             }
 
-            if (node.Member.DeclaringType == typeof(TModel) ||
-                typeof(TModel).IsAssignableFrom(node.Member.DeclaringType))
+            // Handle both direct properties and nested properties
+            var newExpression = Visit(node.Expression);
+            var destMember = GetMappedMember(node.Member, newExpression?.Type);
+
+            if (destMember == null)
             {
-                var newExpression = Visit(node.Expression);
-                var destMember = GetMappedMember(node.Member, newExpression.Type);
-
-                if (destMember == null)
-                {
-                    throw new InvalidOperationException(
-                        $"No mapping found for member {node.Member.DeclaringType.Name}.{node.Member.Name}");
-                }
-
-                return Expression.MakeMemberAccess(newExpression, destMember);
+                // If we can't find a mapped member, try to use the original member
+                // (this handles cases where properties have the same name in both types)
+                destMember = node.Member;
             }
 
-            return base.VisitMember(node);
+            return Expression.MakeMemberAccess(newExpression, destMember);
         }
 
         protected override Expression VisitMemberInit(MemberInitExpression node)
@@ -273,12 +271,16 @@ public static class ExtensoMapper
 
         private MemberInfo GetMappedMember(MemberInfo sourceMember, Type currentDestType)
         {
+            if (currentDestType == null) return null;
+
+            // First try to find the property in the current destination type
             var destMember = currentDestType.GetProperty(sourceMember.Name);
             if (destMember != null)
             {
                 return destMember;
             }
 
+            // If not found, check if the declaring type is mapped to another type
             var sourceDeclaringType = sourceMember.DeclaringType;
             var mappedType = GetMappedType(sourceDeclaringType);
             if (mappedType != null)
@@ -286,7 +288,7 @@ public static class ExtensoMapper
                 return mappedType.GetProperty(sourceMember.Name);
             }
 
-            return sourceMember;
+            return null;
         }
 
         private MemberInfo GetMappedMember(MemberInfo sourceMember)
