@@ -12,7 +12,7 @@
     <DocumentationFile>bin\Release\netstandard2.1\Extenso.Data.MySql.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="9.2.0" />
+    <PackageReference Include="MySql.Data" Version="9.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
