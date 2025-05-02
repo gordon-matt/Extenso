@@ -1,10 +1,10 @@
 ﻿using Autofac;
-using AutoMapper;
 using Demo.Extenso.AspNetCore.Mvc.Data;
 using Demo.Extenso.AspNetCore.Mvc.Data.Entities;
 using Demo.Extenso.AspNetCore.Mvc.Models;
+using Extenso.AspNetCore.Mvc.ExtensoUI;
+using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Extenso.Data.Entity;
-using Extenso.Data.Entity.AutoMapper;
 using Extenso.Mapping;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,11 +42,22 @@ public class Startup
 
         services.AddRazorPages();
 
-        services.AddAutoMapper(cfg =>
-        {
-            cfg.CreateMap<PersonModel, Person>();
-            cfg.CreateMap<Person, PersonModel>();
-        });
+        #region ExtensoMapper Demo
+
+        ExtensoMapper.Register<PersonModel, Person>(x => x.ToEntity());
+        ExtensoMapper.Register<Person, PersonModel>(x => x.ToModel());
+
+        #endregion
+
+        #region AutoMapper Demo
+
+        //services.AddAutoMapper(cfg =>
+        //{
+        //    cfg.CreateMap<PersonModel, Person>();
+        //    cfg.CreateMap<Person, PersonModel>();
+        //});
+
+        #endregion
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,25 +87,28 @@ public class Startup
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             endpoints.MapRazorPages();
         });
+
+        app.UseExtensoUI<Bootstrap3UIProvider>();
     }
 
     public void ConfigureContainer(ContainerBuilder builder)
     {
         builder.RegisterType<ApplicationDbContextFactory>().As<IDbContextFactory>().SingleInstance();
 
-        //builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
-        //    .As(typeof(IRepository<>))
-        //    .InstancePerLifetimeScope();
+        #region ExtensoMapper Demo
 
-        //ExtensoMapper.Register<PersonModel, Person>(x => x.ToEntity());
-        //ExtensoMapper.Register<Person, PersonModel>(x => x.ToModel());
+        builder.RegisterGeneric(typeof(ExtensoMapperEntityFrameworkRepository<,>))
+            .As(typeof(IMappedRepository<,>))
+            .InstancePerLifetimeScope();
 
-        //builder.RegisterGeneric(typeof(ExtensoMapperEntityFrameworkRepository<,>))
+        #endregion
+
+        #region AutoMapper Demo
+
+        //builder.RegisterGeneric(typeof(AutoMapperEntityFrameworkRepository<,>))
         //    .As(typeof(IMappedRepository<,>))
         //    .InstancePerLifetimeScope();
 
-        builder.RegisterGeneric(typeof(AutoMapperEntityFrameworkRepository<,>))
-            .As(typeof(IMappedRepository<,>))
-            .InstancePerLifetimeScope();
+        #endregion
     }
 }

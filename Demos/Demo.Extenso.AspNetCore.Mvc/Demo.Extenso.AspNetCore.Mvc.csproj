@@ -15,6 +15,7 @@
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />
 		<ProjectReference Include="..\..\Extenso.AspNetCore.Mvc\Extenso.AspNetCore.Mvc.csproj" />
 		<ProjectReference Include="..\..\Extenso.Data.Entity.AutoMapper\Extenso.Data.Entity.AutoMapper.csproj" />
 		<ProjectReference Include="..\..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />

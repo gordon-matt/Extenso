@@ -42,7 +42,7 @@ public class ExtensoMapperTests
         Expression<Func<TestModel, bool>> predicate = m => m.Id == 123 && m.FirstName == "Test";
 
         // Act
-        var mappedPredicate = ExtensoMapper.MapExpression<TestModel, TestEntity>(predicate);
+        var mappedPredicate = ExtensoMapper.MapPredicate<TestModel, TestEntity>(predicate);
         _output.WriteLine(mappedPredicate.ToString());
 
         // Assert - now accounts for the FirstName → FullName.Split mapping
@@ -57,7 +57,7 @@ public class ExtensoMapperTests
         Expression<Func<TestModel, bool>> predicate = m => m.Category.Name == "Electronics";
 
         // Act
-        var mappedPredicate = ExtensoMapper.MapExpression<TestModel, TestEntity>(predicate);
+        var mappedPredicate = ExtensoMapper.MapPredicate<TestModel, TestEntity>(predicate);
         _output.WriteLine(mappedPredicate.ToString());
 
         // Assert
@@ -112,7 +112,7 @@ public class ExtensoMapperTests
         // Act
         var query = models
             .Where(m => m.Id > 0)
-            .MapQueryable<TestModel, TestEntity>()
+            .MapQuery<TestModel, TestEntity>()
             .OrderBy(e => e.FirstName)
             .ThenBy(e => e.LastName);
 

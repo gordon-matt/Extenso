@@ -4,47 +4,10 @@ using System.Reflection;
 
 namespace Extenso.Mapping;
 
-//public static class ExtensoMapper
-//{
-//    public static readonly ConcurrentDictionary<TypePair, Func<object, object>> mappings = new();
-
-//    public static void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
-//    {
-//        var key = new TypePair(typeof(TSource), typeof(TDestination));
-//        mappings[key] = (source) => mapFunc((TSource)source);
-//    }
-
-//    public static TDestination Map<TSource, TDestination>(TSource source)
-//    {
-//        ArgumentNullException.ThrowIfNull(source);
-
-//        var key = new TypePair(typeof(TSource), typeof(TDestination));
-
-//        return mappings.TryGetValue(key, out var mapFunc)
-//            ? (TDestination)mapFunc(source)
-//            : throw new InvalidOperationException($"Mapping from {typeof(TSource)} to {typeof(TDestination)} is not registered.");
-//    }
-
-//    public static object Map(object source, Type sourceType, Type destinationType)
-//    {
-//        ArgumentNullException.ThrowIfNull(source);
-//        ArgumentNullException.ThrowIfNull(sourceType);
-//        ArgumentNullException.ThrowIfNull(destinationType);
-
-//        var key = new TypePair(sourceType, destinationType);
-
-//        return mappings.TryGetValue(key, out var mapFunc)
-//            ? mapFunc(source)
-//            : throw new InvalidOperationException($"Mapping from {sourceType} to {destinationType} is not registered.");
-//    }
-//}
-
-#region Work in Progress
-
 public static class ExtensoMapper
 {
-    private static readonly ConcurrentDictionary<TypePair, Func<object, object>> mappings = new();
     private static readonly ConcurrentDictionary<TypePair, Lazy<Delegate>> _expressionMappingCache = new();
+    private static readonly ConcurrentDictionary<TypePair, Func<object, object>> mappings = new();
 
     public static void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
     {
@@ -76,7 +39,7 @@ public static class ExtensoMapper
             : throw new InvalidOperationException($"Mapping from {sourceType} to {destinationType} is not registered.");
     }
 
-    public static Expression<Func<TDestination, bool>> MapExpression<TSource, TDestination>(
+    public static Expression<Func<TDestination, bool>> MapPredicate<TSource, TDestination>(
         Expression<Func<TSource, bool>> predicate)
     {
         ArgumentNullException.ThrowIfNull(predicate);
@@ -90,7 +53,7 @@ public static class ExtensoMapper
         return compiledFunc(predicate);
     }
 
-    public static Expression<Func<TDestination, TProperty>> MapIncludeExpression<TSource, TDestination, TProperty>(
+    public static Expression<Func<TDestination, TProperty>> MapInclude<TSource, TDestination, TProperty>(
         Expression<Func<TSource, TProperty>> includePath)
     {
         ArgumentNullException.ThrowIfNull(includePath);
@@ -102,24 +65,14 @@ public static class ExtensoMapper
         return Expression.Lambda<Func<TDestination, TProperty>>(body, parameter);
     }
 
-    public static IQueryable<TDestination> MapQueryable<TSource, TDestination>(
+    public static IQueryable<TDestination> MapQuery<TSource, TDestination>(
         this IQueryable<TSource> query)
     {
-        var mapFunc = Map<TSource, TDestination>;
         var parameter = Expression.Parameter(typeof(TSource), "x");
-        var body = Expression.Invoke(Expression.Constant(mapFunc), parameter);
+        var body = CreateMapExpression<TSource, TDestination>(parameter);
         var selector = Expression.Lambda<Func<TSource, TDestination>>(body, parameter);
-
         return query.Select(selector);
     }
-
-    ////Alternative version that accepts an existing mapping expression
-    //public static IQueryable<TDestination> MapQueryable<TSource, TDestination>(
-    //    this IQueryable<TSource> query,
-    //    Expression<Func<TSource, TDestination>> mappingExpression)
-    //{
-    //    return query.Select(mappingExpression);
-    //}
 
     public static Expression<Func<TDestination, TDestination>> MapUpdateExpression<TSource, TDestination>(
         Expression<Func<TSource, TSource>> updateFactory)
@@ -134,6 +87,132 @@ public static class ExtensoMapper
         return Expression.Lambda<Func<TDestination, TDestination>>(body, parameter);
     }
 
+    private static Expression CreateMapExpression<TSource, TDestination>(ParameterExpression parameter)
+    {
+        try
+        {
+            var bindings = new List<MemberBinding>();
+            var destinationType = typeof(TDestination);
+
+            foreach (var destProp in destinationType.GetProperties().Where(p => p.CanWrite))
+            {
+                var sourceProp = typeof(TSource).GetProperty(destProp.Name);
+                if (sourceProp == null) continue;
+
+                var sourceExpr = Expression.Property(parameter, sourceProp);
+
+                // Handle nested properties
+                if (!sourceProp.PropertyType.IsPrimitive &&
+                    sourceProp.PropertyType != typeof(string) &&
+                    sourceProp.PropertyType != destProp.PropertyType)
+                {
+                    var nestedParameter = Expression.Parameter(sourceProp.PropertyType, "nested");
+                    var nestedMap = CreateMapExpression(nestedParameter, sourceProp.PropertyType, destProp.PropertyType);
+                    var nestedLambda = Expression.Lambda(nestedMap, nestedParameter);
+                    var mappedExpr = Expression.Invoke(nestedLambda, sourceExpr);
+                    bindings.Add(Expression.Bind(destProp, mappedExpr));
+                }
+                else
+                {
+                    bindings.Add(Expression.Bind(destProp, sourceExpr));
+                }
+            }
+
+            return Expression.MemberInit(Expression.New(destinationType), bindings);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to create mapping expression from {typeof(TSource)} to {typeof(TDestination)}", ex);
+        }
+    }
+
+    private static Expression CreateMapExpression(ParameterExpression parameter, Type sourceType, Type destType)
+    {
+        var bindings = new List<MemberBinding>();
+
+        foreach (var destProp in destType.GetProperties().Where(p => p.CanWrite))
+        {
+            var sourceProp = sourceType.GetProperty(destProp.Name);
+            if (sourceProp == null) continue;
+
+            var sourceExpr = Expression.Property(parameter, sourceProp);
+
+            if (!sourceProp.PropertyType.IsPrimitive &&
+                sourceProp.PropertyType != typeof(string) &&
+                sourceProp.PropertyType != destProp.PropertyType)
+            {
+                var nestedParameter = Expression.Parameter(sourceProp.PropertyType, "nested");
+                var nestedMap = CreateMapExpression(nestedParameter, sourceProp.PropertyType, destProp.PropertyType);
+                var nestedLambda = Expression.Lambda(nestedMap, nestedParameter);
+                bindings.Add(Expression.Bind(destProp, Expression.Invoke(nestedLambda, sourceExpr)));
+            }
+            else
+            {
+                bindings.Add(Expression.Bind(destProp, sourceExpr));
+            }
+        }
+
+        return Expression.MemberInit(Expression.New(destType), bindings);
+    }
+
+    //private static Expression BuildMapExpression<TSource, TDestination>(ParameterExpression parameter)
+    //{
+    //    var visitor = new ExpressionMappingVisitor<TSource, TDestination>(parameter);
+    //    var destinationType = typeof(TDestination);
+
+    //    var bindings = destinationType.GetProperties()
+    //        .Where(p => p.CanWrite)
+    //        .Select(destProp =>
+    //        {
+    //            var sourceProp = typeof(TSource).GetProperty(destProp.Name);
+    //            if (sourceProp == null) return null;
+
+    //            var sourcePropAccess = Expression.Property(parameter, sourceProp);
+
+    //            if (sourceProp.PropertyType != destProp.PropertyType &&
+    //                !sourceProp.PropertyType.IsValueType &&
+    //                !destProp.PropertyType.IsValueType)
+    //            {
+    //                return Expression.Bind(
+    //                    destProp,
+    //                    BuildMapExpression(sourceProp.PropertyType, destProp.PropertyType)
+    //                );
+    //            }
+
+    //            return Expression.Bind(destProp, sourcePropAccess);
+    //        })
+    //        .Where(b => b != null)
+    //        .ToList();
+
+    //    return Expression.MemberInit(
+    //        Expression.New(typeof(TDestination)),
+    //        bindings
+    //    );
+    //}
+
+    //private static Expression BuildMapExpression(Type sourceType, Type destType)
+    //{
+    //    var parameter = Expression.Parameter(sourceType, "x");
+    //    var visitor = new ExpressionMappingVisitor<object, object>(parameter);
+
+    //    var destProperties = destType.GetProperties().Where(p => p.CanWrite);
+    //    var bindings = new List<MemberBinding>();
+
+    //    foreach (var destProp in destProperties)
+    //    {
+    //        var sourceProp = sourceType.GetProperty(destProp.Name);
+    //        if (sourceProp == null) continue;
+
+    //        var sourcePropAccess = Expression.Property(parameter, sourceProp);
+    //        bindings.Add(Expression.Bind(destProp, sourcePropAccess));
+    //    }
+
+    //    return Expression.Lambda(
+    //        Expression.MemberInit(Expression.New(destType), bindings),
+    //        parameter
+    //    ).Body;
+    //}
+
     private static Func<Expression<Func<TSource, bool>>, Expression<Func<TDestination, bool>>> CompileExpressionMapping<TSource, TDestination>() =>
         predicate =>
         {
@@ -147,8 +226,8 @@ public static class ExtensoMapper
     {
         private static readonly ConcurrentDictionary<MemberInfo, MemberInfo> _memberMappingsCache = new();
         private static readonly ConcurrentDictionary<Type, Type> _typeMappingsCache = new();
-        private readonly Dictionary<MemberExpression, MemberExpression> _visitedMembers = new();
         private readonly ParameterExpression _parameter;
+        private readonly Dictionary<MemberExpression, MemberExpression> _visitedMembers = [];
 
         public ExpressionMappingVisitor(ParameterExpression parameter)
         {
@@ -266,7 +345,7 @@ public static class ExtensoMapper
             return node.Type == typeof(TModel) ? _parameter : base.VisitParameter(node);
         }
 
-        private MemberInfo GetMappedMember(MemberInfo sourceMember, Type currentDestType)
+        private static MemberInfo GetMappedMember(MemberInfo sourceMember, Type currentDestType)
         {
             // First try exact match in current type
             var destMember = currentDestType?.GetProperty(sourceMember.Name,
@@ -288,7 +367,7 @@ public static class ExtensoMapper
             return null;
         }
 
-        private MemberInfo GetMappedMember(MemberInfo sourceMember)
+        private static MemberInfo GetMappedMember(MemberInfo sourceMember)
         {
             if (sourceMember.DeclaringType.IsPrimitive ||
                 sourceMember.DeclaringType == typeof(string) ||
@@ -315,7 +394,7 @@ public static class ExtensoMapper
             });
         }
 
-        private Type GetMappedType(Type sourceType)
+        private static Type GetMappedType(Type sourceType)
         {
             if (sourceType == null) return null;
 
@@ -339,17 +418,30 @@ public static class ExtensoMapper
             return null;
         }
 
-        private ConstructorInfo GetMatchingConstructor(Type type, ConstructorInfo sourceConstructor)
-        {
-            if (sourceConstructor == null) return null;
+        private static ConstructorInfo GetMatchingConstructor(Type type, ConstructorInfo sourceConstructor) => sourceConstructor == null
+            ? null
+            : type.GetConstructors()
+            .FirstOrDefault(c =>
+                c.GetParameters().Select(p => p.ParameterType)
+                    .SequenceEqual(sourceConstructor.GetParameters()
+                    .Select(p => GetMappedType(p.ParameterType) ?? p.ParameterType)));
+    }
 
-            return type.GetConstructors()
-                .FirstOrDefault(c =>
-                    c.GetParameters().Select(p => p.ParameterType)
-                     .SequenceEqual(sourceConstructor.GetParameters()
-                        .Select(p => GetMappedType(p.ParameterType) ?? p.ParameterType)));
+    private class ReplaceExpressionVisitor : ExpressionVisitor
+    {
+        private readonly Expression _oldValue;
+        private readonly Expression _newValue;
+
+        public ReplaceExpressionVisitor(Expression oldValue, Expression newValue)
+        {
+            _oldValue = oldValue;
+            _newValue = newValue;
+        }
+
+        public override Expression Visit(Expression node)
+        {
+            if (node == _oldValue) return _newValue;
+            return base.Visit(node);
         }
     }
 }
-
-#endregion Work in Progress

@@ -1,8 +1,21 @@
-﻿@{
+﻿@using Extenso.AspNetCore.Mvc.ExtensoUI
+
+@{
     string rtlClass = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "k-rtl" : string.Empty;
 }
 
 <div id="grid-section" class="row">
+    @using (var panel = Html.ExtensoUI().Begin(new Panel(state: State.Primary)))
+    {
+        using (var header = panel.BeginHeader("Info")) { }
+        using (var header = panel.BeginBody())
+        {
+            <p>This page demonstrates the use of a mapped repository (see PersonController).</p>
+            <p>The default implementation uses ExtensoMapper - a lightweight, simpler alternative to AutoMapper.</p>
+            <p>There is also an AutoMapper implementation. Switch between implementations in Startup.cs</p>
+        }
+    }
+
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <button data-bind="click: create" class="btn btn-primary">
             <i class="fa fa-plus"></i>

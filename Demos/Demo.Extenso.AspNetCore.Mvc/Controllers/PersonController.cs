@@ -46,7 +46,7 @@ public class PersonController : Controller
     public IActionResult Grid([FromBody] KendoGridMvcRequest request)
     {
         using var connection = personRepository.OpenConnection();
-        var query = connection.Query();
+        var query = connection.Query(x => true);
 
         var grid = new KendoGrid<PersonModel>(request, query);
         return Json(grid);
@@ -57,7 +57,7 @@ public class PersonController : Controller
     public async Task<IActionResult> Get(int id)
     {
         var person = await personRepository.FindOneAsync(id);
-        return person != null ? Json(person) : NotFound();
+        return person is null ? NotFound() : Json(person);
     }
 
     [HttpDelete]
@@ -65,37 +65,44 @@ public class PersonController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var person = await personRepository.FindOneAsync(id);
-        if (person != null)
+        if (person is null)
         {
-            await personRepository.DeleteAsync(person);
-            return Json(person);
+            return NotFound();
         }
-        return NotFound();
+
+        await personRepository.DeleteAsync(person);
+        return Json(person);
     }
 
     [HttpPost]
     [Route("")]
     public async Task<IActionResult> Post([FromBody] PersonModel model)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            await personRepository.InsertAsync(model);
-            return Json(model);
+            return BadRequest(ModelState);
         }
 
-        return BadRequest(ModelState);
+        await personRepository.InsertAsync(model);
+        return Json(model);
     }
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<IActionResult> Put([FromBody] PersonModel model)
+    public async Task<IActionResult> Put(int id, [FromBody] PersonModel model)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            await personRepository.UpdateAsync(model);
-            return Json(model);
+            return BadRequest(ModelState);
         }
 
-        return BadRequest(ModelState);
+        var person = await personRepository.FindOneAsync(id);
+        if (person is null)
+        {
+            return NotFound();
+        }
+
+        await personRepository.UpdateAsync(model);
+        return Json(model);
     }
 }
