@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Demo.Extenso.AspNetCore.Mvc.OData.Models;
 using Demo.Extenso.AspNetCore.Mvc.OData.Models.AccountViewModels;
 using Demo.Extenso.AspNetCore.Mvc.OData.Services;
@@ -8,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers;
 

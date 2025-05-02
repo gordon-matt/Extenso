@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Demo.Extenso.AspNetCore.Blazor.OData.Models;
+﻿using Demo.Extenso.AspNetCore.Blazor.OData.Models;
 using Radzen;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData.Services;

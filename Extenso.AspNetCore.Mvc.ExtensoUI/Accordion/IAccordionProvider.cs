@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Extenso.AspNetCore.Mvc.ExtensoUI;
+﻿namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
 public interface IAccordionProvider
 {

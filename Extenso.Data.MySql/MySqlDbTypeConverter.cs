@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using MySql.Data.MySqlClient;
 
 namespace Extenso.Data.MySql;

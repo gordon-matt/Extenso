@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Authors>Matt Gordon</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>Data-related extension methods and other helper classes.</Description>

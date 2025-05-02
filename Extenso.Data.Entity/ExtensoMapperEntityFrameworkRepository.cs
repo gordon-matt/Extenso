@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Extenso.Mapping;
 using Microsoft.Extensions.Logging;
 
@@ -19,24 +17,15 @@ public class ExtensoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEnt
 
     public override TModel ToModel(TEntity entity) => ExtensoMapper.Map<TEntity, TModel>(entity);
 
-    public override IQueryable<TModel> MapQueryable(IQueryable<TEntity> query) =>
+    public override IQueryable<TModel> MapQuery(IQueryable<TEntity> query) =>
         ExtensoMapper.MapQuery<TEntity, TModel>(query);
 
-    public override Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
-        ExtensoMapper.MapInclude<TModel, TEntity, TProperty>(includeExpression);
-
-    public override Expression<Func<TEntity, bool>> MapPredicateExpression(Expression<Func<TModel, bool>> predicate) =>
+    public override Expression<Func<TEntity, bool>> MapPredicate(Expression<Func<TModel, bool>> predicate) =>
         ExtensoMapper.MapPredicate<TModel, TEntity>(predicate);
 
-    public override Expression<Func<TEntity, TEntity>> MapUpdateExpression(Expression<Func<TModel, TModel>> updateExpression) =>
-        ExtensoMapper.MapUpdateExpression<TModel, TEntity>(updateExpression);
+    public override Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
+        ExtensoMapper.MapInclude<TModel, TEntity, TProperty>(includeExpression);
 
-    //public override Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
-    //    throw new NotImplementedException();
-
-    //public override Expression<Func<TEntity, bool>> MapPredicateExpression(Expression<Func<TModel, bool>> predicate) =>
-    //    throw new NotImplementedException();
-
-    //public override Expression<Func<TEntity, TEntity>> MapUpdateExpression(Expression<Func<TModel, TModel>> updateExpression) =>
-    //    throw new NotImplementedException();
+    public override Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression) =>
+        ExtensoMapper.MapUpdate<TModel, TEntity>(updateExpression);
 }

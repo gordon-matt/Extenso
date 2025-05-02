@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Extenso.Collections.Generic;
+﻿namespace Extenso.Collections.Generic;
 
 /// <summary>
 /// Provides a set of extension methods for objects inheriting from or otherwise related to Extenso.Collections.Generic.IPagedCollection`1

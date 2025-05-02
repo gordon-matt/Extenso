@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
+﻿using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;

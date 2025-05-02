@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 
 namespace Extenso;
 
@@ -24,8 +21,8 @@ public static class RandomExtensions
     /// <param name="includeAlphaChannel">If true, a random value will also be generated for the alpha channel.</param>
     /// <returns>System.Drawing.Color</returns>
     public static Color NextColor(this Random random, bool includeAlphaChannel = false) => includeAlphaChannel
-            ? Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255), random.Next(0, 255))
-            : Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+        ? Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255), random.Next(0, 255))
+        : Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
 
     /// <summary>
     /// Returns a random System.DateTime between DateTime.MinValue and DateTime.MaxValue.

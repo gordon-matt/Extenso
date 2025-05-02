@@ -1,5 +1,4 @@
-﻿using System;
-using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
+﻿using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 

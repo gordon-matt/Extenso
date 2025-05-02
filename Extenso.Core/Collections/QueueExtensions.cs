@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Extenso.Collections;
+﻿namespace Extenso.Collections;
 
 /// <summary>
 /// Provides a set of static methods for querying and manipulating objects of type System.Collections.Generic.Queue`1.

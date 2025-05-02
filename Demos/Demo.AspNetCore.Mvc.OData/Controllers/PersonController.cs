@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Demo.Extenso.AspNetCore.Mvc.OData.Data.Entities;
+﻿using Demo.Extenso.AspNetCore.Mvc.OData.Data.Entities;
 using Extenso.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
 

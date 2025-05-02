@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-
-namespace Demo.AspNetCore.Mvc.ExtensoUI.KendoBootstrap3;
+﻿namespace Demo.AspNetCore.Mvc.ExtensoUI.KendoBootstrap3;
 
 public class Program
 {

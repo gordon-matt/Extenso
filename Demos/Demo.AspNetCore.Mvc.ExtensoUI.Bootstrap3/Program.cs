@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-
-namespace Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3;
+﻿namespace Demo.AspNetCore.Mvc.ExtensoUI.Bootstrap3;
 
 public class Program
 {

@@ -3,8 +3,6 @@
 // Email: 4ewout@gmail.com
 // The version used in here has been heavily modified from the original
 
-using System;
-using System.Linq;
 using System.Text;
 using Extenso.Collections;
 

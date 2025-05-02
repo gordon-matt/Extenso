@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Demo.Extenso.AspNetCore.Mvc.Models;
 using Microsoft.AspNetCore.Mvc;
 

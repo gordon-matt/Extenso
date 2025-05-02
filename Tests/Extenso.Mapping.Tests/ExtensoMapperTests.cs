@@ -77,7 +77,7 @@ public class ExtensoMapperTests
         };
 
         // Act
-        var mappedUpdate = ExtensoMapper.MapUpdateExpression<TestModel, TestEntity>(update);
+        var mappedUpdate = ExtensoMapper.MapUpdate<TestModel, TestEntity>(update);
         _output.WriteLine(mappedUpdate.ToString());
 
         // Assert
@@ -136,7 +136,7 @@ public class ExtensoMapperTests
         };
 
         // Act
-        var mappedUpdate = ExtensoMapper.MapUpdateExpression<TestModel, TestEntity>(update);
+        var mappedUpdate = ExtensoMapper.MapUpdate<TestModel, TestEntity>(update);
 
         // Assert
         Assert.Contains("x.Email ?? \"default@email.com\"", mappedUpdate.ToString());

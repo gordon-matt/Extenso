@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Demo.Extenso.AspNetCore.Mvc.OData.Services;
+﻿namespace Demo.Extenso.AspNetCore.Mvc.OData.Services;
 
 public interface IEmailSender
 {

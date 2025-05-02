@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Autofac;
+﻿using Autofac;
 using Demo.Extenso.AspNetCore.Mvc.OData.Data;
 using Demo.Extenso.AspNetCore.Mvc.OData.Infrastructure;
 using Demo.Extenso.AspNetCore.Mvc.OData.Models;
 using Demo.Extenso.AspNetCore.Mvc.OData.Services;
 using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData;
 

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Demo-F3F41096-7E83-4831-99E8-1A9AFC3549D1</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>

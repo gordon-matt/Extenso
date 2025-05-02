@@ -1,6 +1,5 @@
 ﻿using Extenso.Data.Entity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Data;
 

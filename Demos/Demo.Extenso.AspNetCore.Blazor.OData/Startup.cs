@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Autofac;
 using Blazorise;
 using Blazorise.Bootstrap;
@@ -11,15 +9,10 @@ using Demo.Extenso.AspNetCore.Blazor.OData.Infrastructure;
 using Demo.Extenso.AspNetCore.Blazor.OData.Services;
 using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Radzen;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Extenso.Collections.Generic;
+﻿namespace Extenso.Collections.Generic;
 
 /// <summary>
 /// Represents a System.Collections.Generic.List`1 of System.Tuple`2

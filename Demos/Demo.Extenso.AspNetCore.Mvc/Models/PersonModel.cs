@@ -1,5 +1,4 @@
-﻿using System;
-using Demo.Extenso.AspNetCore.Mvc.Data.Entities;
+﻿using Demo.Extenso.AspNetCore.Mvc.Data.Entities;
 
 namespace Demo.Extenso.AspNetCore.Mvc.Models;
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using Extenso.IO;
 
 namespace Extenso;
@@ -20,8 +18,8 @@ public static class ByteArrayExtensions
     /// </param>
     /// <returns>A Base64 encoded string of the byte array.</returns>
     public static string Base64Serialize(this byte[] source, bool prependLength = false) => prependLength
-            ? $"{source.Length}:{Convert.ToBase64String(source, 0, source.Length, Base64FormattingOptions.None)}"
-            : Convert.ToBase64String(source, 0, source.Length, Base64FormattingOptions.None);
+        ? $"{source.Length}:{Convert.ToBase64String(source, 0, source.Length, Base64FormattingOptions.None)}"
+        : Convert.ToBase64String(source, 0, source.Length, Base64FormattingOptions.None);
 
     /// <summary>
     /// Deserializes the data contained in the given byte array to an object of the specified type.

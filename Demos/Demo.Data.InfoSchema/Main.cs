@@ -1,7 +1,5 @@
-﻿using System;
-using System.Data.Common;
+﻿using System.Data.Common;
 using System.Data.OleDb;
-using System.Windows.Forms;
 using Extenso;
 using Extenso.Data.Common;
 using Extenso.Data.MySql;

@@ -21,15 +21,15 @@ public class AutoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEntity
 
     public override TModel ToModel(TEntity entity) => mapper.Map<TEntity, TModel>(entity);
 
-    public override IQueryable<TModel> MapQueryable(IQueryable<TEntity> query) =>
+    public override IQueryable<TModel> MapQuery(IQueryable<TEntity> query) =>
         mapper.ProjectTo<TModel>(query);
 
-    public override Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
-        mapper.MapExpressionAsInclude<Expression<Func<TEntity, TProperty>>>(includeExpression);
-
-    public override Expression<Func<TEntity, bool>> MapPredicateExpression(Expression<Func<TModel, bool>> predicate) =>
+    public override Expression<Func<TEntity, bool>> MapPredicate(Expression<Func<TModel, bool>> predicate) =>
         mapper.MapExpression<Expression<Func<TEntity, bool>>>(predicate);
 
-    public override Expression<Func<TEntity, TEntity>> MapUpdateExpression(Expression<Func<TModel, TModel>> updateExpression) =>
+    public override Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
+        mapper.MapExpressionAsInclude<Expression<Func<TEntity, TProperty>>>(includeExpression);
+
+    public override Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression) =>
         mapper.MapExpression<Expression<Func<TEntity, TEntity>>>(updateExpression);
 }

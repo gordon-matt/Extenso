@@ -6,13 +6,7 @@ using Extenso.AspNetCore.Mvc.ExtensoUI;
 using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Extenso.Data.Entity;
 using Extenso.Mapping;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Demo.Extenso.AspNetCore.Mvc;
 
@@ -47,7 +41,7 @@ public class Startup
         ExtensoMapper.Register<PersonModel, Person>(x => x.ToEntity());
         ExtensoMapper.Register<Person, PersonModel>(x => x.ToModel());
 
-        #endregion
+        #endregion ExtensoMapper Demo
 
         #region AutoMapper Demo
 
@@ -57,7 +51,7 @@ public class Startup
         //    cfg.CreateMap<Person, PersonModel>();
         //});
 
-        #endregion
+        #endregion AutoMapper Demo
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,7 +95,7 @@ public class Startup
             .As(typeof(IMappedRepository<,>))
             .InstancePerLifetimeScope();
 
-        #endregion
+        #endregion ExtensoMapper Demo
 
         #region AutoMapper Demo
 
@@ -109,6 +103,6 @@ public class Startup
         //    .As(typeof(IMappedRepository<,>))
         //    .InstancePerLifetimeScope();
 
-        #endregion
+        #endregion AutoMapper Demo
     }
 }

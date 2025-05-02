@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace Demo.Data.InfoSchema;
+﻿namespace Demo.Data.InfoSchema;
 
 internal static class Program
 {

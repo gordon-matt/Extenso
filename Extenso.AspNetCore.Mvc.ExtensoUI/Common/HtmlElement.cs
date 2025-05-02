@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
+﻿using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;

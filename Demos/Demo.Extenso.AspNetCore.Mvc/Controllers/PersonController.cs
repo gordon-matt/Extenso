@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Demo.Extenso.AspNetCore.Mvc.Data.Entities;
+﻿using Demo.Extenso.AspNetCore.Mvc.Data.Entities;
 using Demo.Extenso.AspNetCore.Mvc.Models;
 using Extenso.Data.Entity;
 using KendoGridBinder;

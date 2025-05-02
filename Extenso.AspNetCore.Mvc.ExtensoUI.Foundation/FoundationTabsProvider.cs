@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Extenso.AspNetCore.Mvc.Rendering;
+﻿using Extenso.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.Foundation;

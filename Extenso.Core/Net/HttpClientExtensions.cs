@@ -1,8 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace Extenso.Net;
+﻿namespace Extenso.Net;
 
 public static class HttpClientExtensions
 {

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Demo.Extenso.AspNetCore.Blazor.OData.Models;
+﻿namespace Demo.Extenso.AspNetCore.Blazor.OData.Models;
 
 public class ApiResponse
 {

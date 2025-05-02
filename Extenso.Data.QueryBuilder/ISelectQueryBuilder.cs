@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Extenso.Data.QueryBuilder;
+﻿namespace Extenso.Data.QueryBuilder;
 
 public interface ISelectQueryBuilder : IQueryBuilder
 {

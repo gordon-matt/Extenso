@@ -1,5 +1,4 @@
-﻿using System;
-using Extenso.Data.Entity;
+﻿using Extenso.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

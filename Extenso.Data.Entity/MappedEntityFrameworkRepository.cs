@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using Extenso.Data.Entity;
 using Extenso.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -48,8 +44,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(
             context,
             true,
-            query => MapQueryable(query),
-            predicate => MapPredicateExpression(predicate));
+            query => MapQuery(query),
+            predicate => MapPredicate(predicate));
     }
 
     /// <summary>
@@ -71,8 +67,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(
             otherConnection.Context,
             false,
-            query => MapQueryable(query),
-            predicate => MapPredicateExpression(predicate));
+            query => MapQuery(query),
+            predicate => MapPredicate(predicate));
     }
 
     #region Find
@@ -87,7 +83,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
 
-        var mappedIncludePaths = includePaths.Select(x => MapIncludeExpression(x)).ToArray();
+        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
         foreach (var path in mappedIncludePaths)
         {
             query = query.Include(path);
@@ -108,13 +104,13 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
 
-        var mappedIncludePaths = includePaths.Select(x => MapIncludeExpression(x)).ToArray();
+        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
         foreach (var path in mappedIncludePaths)
         {
             query = query.Include(path);
         }
 
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         var entities = query.Where(mappedPredicate).ToList();
         return entities.Select(x => ToModel(x)).ToList();
     }
@@ -129,7 +125,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
 
-        var mappedIncludePaths = includePaths.Select(x => MapIncludeExpression(x)).ToArray();
+        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
         foreach (var path in mappedIncludePaths)
         {
             query = query.Include(path);
@@ -150,13 +146,13 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
 
-        var mappedIncludePaths = includePaths.Select(x => MapIncludeExpression(x)).ToArray();
+        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
         foreach (var path in mappedIncludePaths)
         {
             query = query.Include(path);
         }
 
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         var entities = await query.Where(mappedPredicate).ToListAsync();
         return entities.Select(x => ToModel(x)).ToList();
     }
@@ -181,12 +177,12 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The entity found, or null.</returns>
     public virtual TModel FindOne(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
 
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking().Where(mappedPredicate);
 
-        var mappedIncludePaths = includePaths.Select(x => MapIncludeExpression(x)).ToArray();
+        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
         foreach (var path in mappedIncludePaths)
         {
             query = query.Include(path);
@@ -216,12 +212,12 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The entity found, or null.</returns>
     public virtual async Task<TModel> FindOneAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
 
         using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking().Where(mappedPredicate);
 
-        var mappedIncludePaths = includePaths.Select(x => MapIncludeExpression(x)).ToArray();
+        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
         foreach (var path in mappedIncludePaths)
         {
             query = query.Include(path);
@@ -252,7 +248,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
     public virtual int Count(Expression<Func<TModel, bool>> predicate)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().Count(mappedPredicate);
     }
@@ -280,7 +276,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// </returns>
     public virtual async Task<int> CountAsync(Expression<Func<TModel, bool>> predicate)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
         return await context.Set<TEntity>().AsNoTracking().CountAsync(mappedPredicate);
     }
@@ -302,7 +298,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
     public virtual long LongCount(Expression<Func<TModel, bool>> predicate)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().LongCount(mappedPredicate);
     }
@@ -330,7 +326,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// </returns>
     public virtual async Task<long> LongCountAsync(Expression<Func<TModel, bool>> predicate)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
         return await context.Set<TEntity>().AsNoTracking().LongCountAsync(mappedPredicate);
     }
@@ -425,7 +421,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of rows affected.</returns>
     public virtual int Delete(Expression<Func<TModel, bool>> predicate)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
         return context.Set<TEntity>().Where(mappedPredicate).Delete();
     }
@@ -516,7 +512,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>A task with the number of rows affected.</returns>
     public virtual async Task<int> DeleteAsync(Expression<Func<TModel, bool>> predicate)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
+        var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
         return await context.Set<TEntity>().Where(mappedPredicate).DeleteAsync();
     }
@@ -786,7 +782,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of rows affected.</returns>
     public virtual int Update(Expression<Func<TModel, TModel>> updateFactory)
     {
-        var mappedUpdateExpression = MapUpdateExpression(updateFactory);
+        var mappedUpdateExpression = MapUpdate(updateFactory);
         using var context = GetContext();
         return context.Set<TEntity>().Update(mappedUpdateExpression);
     }
@@ -799,8 +795,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>The number of rows affected.</returns>
     public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
-        var mappedUpdateExpression = MapUpdateExpression(updateFactory);
+        var mappedPredicate = MapPredicate(predicate);
+        var mappedUpdateExpression = MapUpdate(updateFactory);
         using var context = GetContext();
         return context.Set<TEntity>().Where(mappedPredicate).Update(mappedUpdateExpression);
     }
@@ -821,7 +817,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>A task with the number of rows affected.</returns>
     public virtual async Task<int> UpdateAsync(Expression<Func<TModel, TModel>> updateFactory)
     {
-        var mappedUpdateExpression = MapUpdateExpression(updateFactory);
+        var mappedUpdateExpression = MapUpdate(updateFactory);
         using var context = GetContext();
         return await context.Set<TEntity>().UpdateAsync(mappedUpdateExpression);
     }
@@ -834,8 +830,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <returns>A task with the number of rows affected.</returns>
     public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory)
     {
-        var mappedPredicate = MapPredicateExpression(predicate);
-        var mappedUpdateExpression = MapUpdateExpression(updateFactory);
+        var mappedPredicate = MapPredicate(predicate);
+        var mappedUpdateExpression = MapUpdate(updateFactory);
         using var context = GetContext();
         return await context.Set<TEntity>().Where(mappedPredicate).UpdateAsync(mappedUpdateExpression);
     }
@@ -863,11 +859,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     public abstract TEntity ToEntity(TModel model);
 
-    public abstract IQueryable<TModel> MapQueryable(IQueryable<TEntity> query);
+    public abstract IQueryable<TModel> MapQuery(IQueryable<TEntity> query);
 
-    public abstract Expression<Func<TEntity, bool>> MapPredicateExpression(Expression<Func<TModel, bool>> predicate);
+    public abstract Expression<Func<TEntity, bool>> MapPredicate(Expression<Func<TModel, bool>> predicate);
 
-    public abstract Expression<Func<TEntity, TEntity>> MapUpdateExpression(Expression<Func<TModel, TModel>> updateExpression);
+    public abstract Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
 
-    public abstract Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
+    public abstract Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression);
 }

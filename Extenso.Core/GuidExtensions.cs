@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Extenso;
+﻿namespace Extenso;
 
 /// <summary>
 /// Provides a set of static methods for querying and manipulating instances of System.Guid.

@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-
-namespace Demo.AspNetCore.Mvc.ExtensoUI.JQueryUI;
+﻿namespace Demo.AspNetCore.Mvc.ExtensoUI.JQueryUI;
 
 public class Program
 {

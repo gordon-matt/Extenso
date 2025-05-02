@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Extenso.Collections;
+﻿namespace Extenso.Collections;
 
 /// <summary>
 /// Provides a set of static methods for querying and manipulating objects that implement System.Collections.Generic.ICollection`1.

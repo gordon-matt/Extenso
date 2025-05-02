@@ -1,5 +1,4 @@
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Services;
 
