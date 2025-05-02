@@ -19,9 +19,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #region Constructor
 
-    public EntityFrameworkRepository(
-        IDbContextFactory contextFactory,
-        ILoggerFactory loggerFactory)
+    public EntityFrameworkRepository(IDbContextFactory contextFactory, ILoggerFactory loggerFactory)
     {
         this.contextFactory = contextFactory;
         logger = loggerFactory.CreateLogger<EntityFrameworkRepository<TEntity>>();
@@ -148,28 +146,6 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return context.Set<TEntity>().Find(keyValues);
     }
 
-    //public virtual TEntity FindOne(object[] keyValues, params Expression<Func<TEntity, dynamic>>[] includePaths)
-    //{
-    //    using (var context = GetContext())
-    //    {
-    //        var entity = context.Set<TEntity>().Find(keyValues);
-
-    //        foreach (var path in includePaths)
-    //        {
-    //            if (path.Body.Type.IsCollection())
-    //            {
-    //                context.Entry(entity).Collection((path.Body as MemberExpression).Member.Name).Load();
-    //            }
-    //            else
-    //            {
-    //                context.Entry(entity).Reference(path).Load();
-    //            }
-    //        }
-
-    //        return entity;
-    //    }
-    //}
-
     /// <summary>
     /// Finds an entity based on a predicate.
     /// </summary>
@@ -199,28 +175,6 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         using var context = GetContext();
         return await context.Set<TEntity>().FindAsync(keyValues);
     }
-
-    //public virtual async Task<TEntity> FindOneAsync(object[] keyValues, params Expression<Func<TEntity, dynamic>>[] includePaths)
-    //{
-    //    using (var context = GetContext())
-    //    {
-    //        var entity = await context.Set<TEntity>().FindAsync(keyValues);
-
-    //        foreach (var path in includePaths)
-    //        {
-    //            if (path.Body.Type.IsCollection())
-    //            {
-    //                await context.Entry(entity).Collection((path.Body as MemberExpression).Member.Name).LoadAsync();
-    //            }
-    //            else
-    //            {
-    //                await context.Entry(entity).Reference(path).LoadAsync();
-    //            }
-    //        }
-
-    //        return entity;
-    //    }
-    //}
 
     /// <summary>
     /// Asynchronously finds an entity based on a predicate.
@@ -792,7 +746,8 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
     /// <param name="query">The query to update rows from without retrieving entities.</param>
     /// <param name="updateFactory">The update expression.</param>
     /// <returns>The number of rows affected.</returns>
-    public virtual int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) => query.Update(updateFactory);
+    public virtual int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) =>
+        query.Update(updateFactory);
 
     /// <summary>
     /// Asynchronously updates all rows using an expression without retrieving entities.
@@ -823,7 +778,8 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
     /// <param name="query">The query to update rows from without retrieving entities.</param>
     /// <param name="updateFactory">The update expression.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) => await query.UpdateAsync(updateFactory);
+    public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) =>
+        await query.UpdateAsync(updateFactory);
 
     #endregion Update
 

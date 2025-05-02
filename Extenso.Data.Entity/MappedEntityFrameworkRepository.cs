@@ -45,7 +45,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             context,
             true,
             query => MapQuery(query),
-            predicate => MapPredicate(predicate));
+            predicate => MapPredicate(predicate),
+            include => MapInclude(include));
     }
 
     /// <summary>
@@ -68,7 +69,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             otherConnection.Context,
             false,
             query => MapQuery(query),
-            predicate => MapPredicate(predicate));
+            predicate => MapPredicate(predicate),
+            include => MapInclude(include));
     }
 
     #region Find

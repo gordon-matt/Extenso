@@ -32,9 +32,29 @@ public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepo
 
     #region IRepositoryConnection<TEntity> Members
 
-    public virtual IQueryable<TEntity> Query() => Context.Set<TEntity>().AsNoTracking();
+    public virtual IQueryable<TEntity> Query(params Expression<Func<TEntity, dynamic>>[] includePaths)
+    {
+        var query = Context.Set<TEntity>().AsNoTracking();
 
-    public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression) => Context.Set<TEntity>().AsNoTracking().Where(filterExpression);
+        foreach (var path in includePaths)
+        {
+            query = query.Include(path);
+        }
+
+        return query;
+    }
+
+    public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, params Expression<Func<TEntity, dynamic>>[] includePaths)
+    {
+        var query = Context.Set<TEntity>().AsNoTracking().Where(filterExpression);
+
+        foreach (var path in includePaths)
+        {
+            query = query.Include(path);
+        }
+
+        return query;
+    }
 
     #endregion IRepositoryConnection<TEntity> Members
 

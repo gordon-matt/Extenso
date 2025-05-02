@@ -6,7 +6,7 @@ namespace Extenso.Mapping;
 
 public static class ExtensoMapper
 {
-    private static readonly ConcurrentDictionary<TypePair, Lazy<Delegate>> _expressionMappingCache = new();
+    private static readonly ConcurrentDictionary<TypePair, Lazy<Delegate>> expressionMappingCache = new();
     private static readonly ConcurrentDictionary<TypePair, Func<object, object>> mappings = new();
 
     public static void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
@@ -58,7 +58,7 @@ public static class ExtensoMapper
 
         var key = new TypePair(typeof(TSource), typeof(TDestination));
 
-        var lazyDelegate = _expressionMappingCache.GetOrAdd(key, k =>
+        var lazyDelegate = expressionMappingCache.GetOrAdd(key, k =>
             new Lazy<Delegate>(() => CompileExpressionMapping<TSource, TDestination>()));
 
         var compiledFunc = (Func<Expression<Func<TSource, bool>>, Expression<Func<TDestination, bool>>>)lazyDelegate.Value;
@@ -200,20 +200,20 @@ public static class ExtensoMapper
 
     private class ExpressionMappingVisitor<TModel, TEntity> : ExpressionVisitor
     {
-        private static readonly ConcurrentDictionary<MemberInfo, MemberInfo> _memberMappingsCache = new();
-        private static readonly ConcurrentDictionary<Type, Type> _typeMappingsCache = new();
-        private readonly ParameterExpression _parameter;
-        private readonly Dictionary<MemberExpression, MemberExpression> _visitedMembers = [];
+        private static readonly ConcurrentDictionary<MemberInfo, MemberInfo> memberMappingsCache = new();
+        private static readonly ConcurrentDictionary<Type, Type> typeMappingsCache = new();
+        private readonly ParameterExpression parameter;
+        private readonly Dictionary<MemberExpression, MemberExpression> visitedMembers = [];
 
         public ExpressionMappingVisitor(ParameterExpression parameter)
         {
-            _parameter = parameter;
+            this.parameter = parameter;
         }
 
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
             var parameters = node.Parameters.Select(p =>
-                p.Type == typeof(TModel) ? _parameter : p).ToArray();
+                p.Type == typeof(TModel) ? parameter : p).ToArray();
             var body = Visit(node.Body);
             return Expression.Lambda(body, parameters);
         }
@@ -221,7 +221,7 @@ public static class ExtensoMapper
         protected override Expression VisitMember(MemberExpression node)
         {
             // Check cache first
-            if (_visitedMembers.TryGetValue(node, out var cachedResult))
+            if (visitedMembers.TryGetValue(node, out var cachedResult))
             {
                 return cachedResult;
             }
@@ -240,7 +240,7 @@ public static class ExtensoMapper
             var result = Expression.MakeMemberAccess(newExpression, destMember);
 
             // Cache the result
-            _visitedMembers[node] = result;
+            visitedMembers[node] = result;
 
             return result;
         }
@@ -317,7 +317,7 @@ public static class ExtensoMapper
         }
 
         protected override Expression VisitParameter(ParameterExpression node) =>
-            node.Type == typeof(TModel) ? _parameter : base.VisitParameter(node);
+            node.Type == typeof(TModel) ? parameter : base.VisitParameter(node);
 
         private static MemberInfo GetMappedMember(MemberInfo sourceMember, Type currentDestType)
         {
@@ -350,7 +350,7 @@ public static class ExtensoMapper
                 return sourceMember;
             }
 
-            return _memberMappingsCache.GetOrAdd(sourceMember, key =>
+            return memberMappingsCache.GetOrAdd(sourceMember, key =>
             {
                 if (key is PropertyInfo sourceProp)
                 {
@@ -373,7 +373,7 @@ public static class ExtensoMapper
             if (sourceType == null) return null;
 
             // Check cache first
-            if (_typeMappingsCache.TryGetValue(sourceType, out var cachedType))
+            if (typeMappingsCache.TryGetValue(sourceType, out var cachedType))
             {
                 return cachedType;
             }
@@ -383,12 +383,12 @@ public static class ExtensoMapper
             {
                 if (mapping.Key.Source == sourceType)
                 {
-                    _typeMappingsCache[sourceType] = mapping.Key.Destination;
+                    typeMappingsCache[sourceType] = mapping.Key.Destination;
                     return mapping.Key.Destination;
                 }
             }
 
-            _typeMappingsCache[sourceType] = null; // Cache negative results too
+            typeMappingsCache[sourceType] = null; // Cache negative results too
             return null;
         }
 
@@ -403,17 +403,17 @@ public static class ExtensoMapper
 
     private class ReplaceExpressionVisitor : ExpressionVisitor
     {
-        private readonly Expression _newValue;
-        private readonly Expression _oldValue;
+        private readonly Expression newValue;
+        private readonly Expression oldValue;
 
         public ReplaceExpressionVisitor(Expression oldValue, Expression newValue)
         {
-            _oldValue = oldValue;
-            _newValue = newValue;
+            this.oldValue = oldValue;
+            this.newValue = newValue;
         }
 
-        public override Expression Visit(Expression node) => node == _oldValue
-            ? _newValue
+        public override Expression Visit(Expression node) => node == oldValue
+            ? newValue
             : base.Visit(node);
     }
 }

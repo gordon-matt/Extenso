@@ -78,14 +78,6 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
             return Unauthorized();
         }
 
-        //    using (var connection = Service.OpenConnection())
-        //    {
-        //        var query = connection.Query();
-        //        query = ApplyMandatoryFilter(query);
-        //        var results = options.ApplyTo(query);
-        //        return await (results as IQueryable<TEntity>).ToHashSetAsync();
-        //    }
-
         // NOTE: Change due to: https://github.com/OData/WebApi/issues/1235
         var connection = GetDisposableConnection();
         var query = connection.Query();
@@ -107,7 +99,11 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     {
         var entity = await Repository.FindOneAsync(key);
 
-        return entity == null ? NotFound() : !await CanViewEntityAsync(entity) ? Unauthorized() : Ok(entity);
+        return entity == null
+            ? NotFound() :
+            !await CanViewEntityAsync(entity)
+                ? Unauthorized()
+                : Ok(entity);
     }
 
     /// <summary>
@@ -316,7 +312,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     }
 
     /// <summary>
-    /// Perform actions after insertingor updating the record. For example, you may wish to push some kind of notification.
+    /// Perform actions after inserting or updating the record. For example, you may wish to push some kind of notification.
     /// </summary>
     /// <param name="entity">The record which has been inserted or updated.</param>
     protected virtual void OnAfterSave(TEntity entity)

@@ -81,6 +81,24 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         repository = new AutoMapperEntityFrameworkRepository<ProductModelViewModel, ProductModel>(contextFactory, Mock.Of<ILoggerFactory>(), mapper);
     }
 
+    [Fact]
+    public void Connection_Query()
+    {
+        var randomProduct = new Random().NextFrom(products);
+
+        int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        using var connection = repository.OpenConnection();
+        int actual = connection
+            .Query(
+                x => x.ProductModelId == randomProduct.ProductModelId,
+                include => include.Products)
+            .SelectMany(x => x.Products)
+            .Count();
+
+        Assert.Equal(expected, actual);
+    }
+
     #region Find
 
     [Fact]

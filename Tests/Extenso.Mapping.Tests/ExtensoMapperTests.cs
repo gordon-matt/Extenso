@@ -5,11 +5,11 @@ namespace Extenso.Mapping.Tests;
 
 public class ExtensoMapperTests
 {
-    private readonly ITestOutputHelper _output;
+    private readonly ITestOutputHelper output;
 
     public ExtensoMapperTests(ITestOutputHelper output)
     {
-        _output = output;
+        this.output = output;
 
         ExtensoMapper.Register<CategoryEntity, CategoryModel>(x => x.ToModel());
         ExtensoMapper.Register<CategoryModel, CategoryEntity>(x => x.ToEntity());
@@ -33,32 +33,15 @@ public class ExtensoMapperTests
         Assert.Equal(entity.Name, model.Name);
     }
 
-    #region Work in Progress
-
     [Fact]
-    public void MapExpression_Should_Map_Simple_Predicate()
-    {
-        // Arrange
-        Expression<Func<TestModel, bool>> predicate = m => m.Id == 123 && m.FirstName == "Test";
-
-        // Act
-        var mappedPredicate = ExtensoMapper.MapPredicate<TestModel, TestEntity>(predicate);
-        _output.WriteLine(mappedPredicate.ToString());
-
-        // Assert - now accounts for the FirstName → FullName.Split mapping
-        Assert.Contains("x.Id == 123", mappedPredicate.ToString());
-        Assert.Contains("FirstName == \"Test\"", mappedPredicate.ToString());
-    }
-
-    [Fact]
-    public void MapExpression_Should_Map_Nested_Properties()
+    public void MapPredicate_Should_Map_Nested_Properties()
     {
         // Arrange
         Expression<Func<TestModel, bool>> predicate = m => m.Category.Name == "Electronics";
 
         // Act
         var mappedPredicate = ExtensoMapper.MapPredicate<TestModel, TestEntity>(predicate);
-        _output.WriteLine(mappedPredicate.ToString());
+        output.WriteLine(mappedPredicate.ToString());
 
         // Assert
         Assert.Equal(
@@ -67,26 +50,22 @@ public class ExtensoMapperTests
     }
 
     [Fact]
-    public void MapUpdateExpression_Should_Map_Property_Assignments()
+    public void MapPredicate_Should_Map_Simple_Predicate()
     {
         // Arrange
-        Expression<Func<TestModel, TestModel>> update = m => new TestModel
-        {
-            Email = m.Email.Replace("@old.com", "@new.com"),
-            FirstName = "Updated_" + m.FirstName
-        };
+        Expression<Func<TestModel, bool>> predicate = m => m.Id == 123 && m.FirstName == "Test";
 
         // Act
-        var mappedUpdate = ExtensoMapper.MapUpdate<TestModel, TestEntity>(update);
-        _output.WriteLine(mappedUpdate.ToString());
+        var mappedPredicate = ExtensoMapper.MapPredicate<TestModel, TestEntity>(predicate);
+        output.WriteLine(mappedPredicate.ToString());
 
-        // Assert
-        Assert.Contains("Email = x.Email.Replace(\"@old.com\", \"@new.com\")", mappedUpdate.ToString());
-        Assert.Contains("FirstName = (\"Updated_\" + x.FirstName)", mappedUpdate.ToString());
+        // Assert - now accounts for the FirstName → FullName.Split mapping
+        Assert.Contains("x.Id == 123", mappedPredicate.ToString());
+        Assert.Contains("FirstName == \"Test\"", mappedPredicate.ToString());
     }
 
     [Fact]
-    public void MapQueryable_Should_Compose_With_Other_LINQ_Methods()
+    public void MapQuery_Should_Compose_With_Other_LINQ_Methods()
     {
         // Arrange
         var models = new List<TestModel>
@@ -127,7 +106,7 @@ public class ExtensoMapperTests
     }
 
     [Fact]
-    public void Should_Handle_Null_In_Update_Expressions()
+    public void MapUpdate_Should_Handle_Null_In_Update_Expressions()
     {
         // Arrange
         Expression<Func<TestModel, TestModel>> update = m => new TestModel
@@ -142,7 +121,24 @@ public class ExtensoMapperTests
         Assert.Contains("x.Email ?? \"default@email.com\"", mappedUpdate.ToString());
     }
 
-    #endregion
+    [Fact]
+    public void MapUpdate_Should_Map_Property_Assignments()
+    {
+        // Arrange
+        Expression<Func<TestModel, TestModel>> update = m => new TestModel
+        {
+            Email = m.Email.Replace("@old.com", "@new.com"),
+            FirstName = "Updated_" + m.FirstName
+        };
+
+        // Act
+        var mappedUpdate = ExtensoMapper.MapUpdate<TestModel, TestEntity>(update);
+        output.WriteLine(mappedUpdate.ToString());
+
+        // Assert
+        Assert.Contains("Email = x.Email.Replace(\"@old.com\", \"@new.com\")", mappedUpdate.ToString());
+        Assert.Contains("FirstName = (\"Updated_\" + x.FirstName)", mappedUpdate.ToString());
+    }
 }
 
 #region Models
@@ -187,12 +183,6 @@ public static class Extensions
         Name = model.Name
     };
 
-    public static CategoryModel ToModel(this CategoryEntity entity) => new()
-    {
-        Id = entity.Id,
-        Name = entity.Name
-    };
-
     public static TestEntity ToEntity(this TestModel model) => new()
     {
         Id = model.Id,
@@ -200,6 +190,12 @@ public static class Extensions
         FirstName = model.FirstName,
         LastName = model.LastName,
         Category = model.Category.ToEntity()
+    };
+
+    public static CategoryModel ToModel(this CategoryEntity entity) => new()
+    {
+        Id = entity.Id,
+        Name = entity.Name
     };
 
     public static TestModel ToModel(this TestEntity entity) => new()
