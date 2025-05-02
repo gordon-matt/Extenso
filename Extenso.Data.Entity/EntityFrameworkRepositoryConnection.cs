@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Extenso.Data.Entity;
 
-public class EntityFrameworkRepositoryConnection<TEntity> : IRepositoryConnection<TEntity>
+public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepositoryConnection<TEntity>
     where TEntity : class
 {
     #region Private Members

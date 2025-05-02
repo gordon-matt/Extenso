@@ -1,6 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Autofac;
+using AutoMapper;
+using Demo.Extenso.AspNetCore.Mvc.Data;
+using Demo.Extenso.AspNetCore.Mvc.Data.Entities;
+using Demo.Extenso.AspNetCore.Mvc.Models;
+using Extenso.Data.Entity;
+using Extenso.Data.Entity.AutoMapper;
+using Extenso.Mapping;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +28,9 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseInMemoryDatabase("DemoDb"));
+
         services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -27,7 +39,14 @@ public class Startup
         });
 
         services.AddControllersWithViews();
+
         services.AddRazorPages();
+
+        services.AddAutoMapper(cfg =>
+        {
+            cfg.CreateMap<PersonModel, Person>();
+            cfg.CreateMap<Person, PersonModel>();
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,5 +76,25 @@ public class Startup
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             endpoints.MapRazorPages();
         });
+    }
+
+    public void ConfigureContainer(ContainerBuilder builder)
+    {
+        builder.RegisterType<ApplicationDbContextFactory>().As<IDbContextFactory>().SingleInstance();
+
+        //builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
+        //    .As(typeof(IRepository<>))
+        //    .InstancePerLifetimeScope();
+
+        //ExtensoMapper.Register<PersonModel, Person>(x => x.ToEntity());
+        //ExtensoMapper.Register<Person, PersonModel>(x => x.ToModel());
+
+        //builder.RegisterGeneric(typeof(ExtensoMapperEntityFrameworkRepository<,>))
+        //    .As(typeof(IMappedRepository<,>))
+        //    .InstancePerLifetimeScope();
+
+        builder.RegisterGeneric(typeof(AutoMapperEntityFrameworkRepository<,>))
+            .As(typeof(IMappedRepository<,>))
+            .InstancePerLifetimeScope();
     }
 }

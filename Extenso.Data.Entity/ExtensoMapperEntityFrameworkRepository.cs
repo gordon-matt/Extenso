@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Extenso.Mapping;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,9 @@ public class ExtensoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEnt
     public override TEntity ToEntity(TModel model) => ExtensoMapper.Map<TModel, TEntity>(model);
 
     public override TModel ToModel(TEntity entity) => ExtensoMapper.Map<TEntity, TModel>(entity);
+
+    public override IQueryable<TModel> MapQueryable(IQueryable<TEntity> query) =>
+        ExtensoMapper.MapQueryable<TEntity, TModel>(query);
 
     public override Expression<Func<TEntity, TProperty>> MapIncludeExpression<TProperty>(Expression<Func<TModel, TProperty>> includeExpression) =>
         ExtensoMapper.MapIncludeExpression<TModel, TEntity, TProperty>(includeExpression);

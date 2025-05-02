@@ -1,0 +1,96 @@
+﻿@{
+    string rtlClass = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "k-rtl" : string.Empty;
+}
+
+<div id="grid-section" class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <button data-bind="click: create" class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            Create
+        </button>
+    </div>
+
+    <div class="clearfix"></div>
+    <br />
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 @rtlClass">
+        <div id="grid"></div>
+    </div>
+</div>
+
+<div id="form-section" class="row" style="display:none">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Details</div>
+            <div class="panel-body">
+                <form id="form-section-form" role="form" class="form-horizontal">
+                    <fieldset>
+                        <legend id="form-section-legend"></legend>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    @Html.Label("FamilyName", "Family Name", new { @class = "control-label col-xs-12 col-sm-4 col-md-3 col-lg-3" })
+                                    <div class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
+                                        <input name="FamilyName" type="text" class="form-control" data-bind="value: familyName" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    @Html.Label("GivenNames", "Given Name/s", new { @class = "control-label col-xs-12 col-sm-4 col-md-3 col-lg-3" })
+                                    <div class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
+                                        <input name="GivenNames" type="text" class="form-control" data-bind="value: givenNames" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    @Html.Label("DateOfBirth", "Date of Birth", new { @class = "control-label col-xs-12 col-sm-4 col-md-3 col-lg-3" })
+                                    <div class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
+                                        <input id="DateOfBirth" name="DateOfBirth" type="text" class="form-control" data-bind="value: dateOfBirth" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group pull-right">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <button type="button" class="btn btn-default" data-bind="click: cancel">Cancel</button>
+                                <button type="button" class="btn btn-primary" data-bind="click: save"><i class="fa fa-save"></i> Save</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </article>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script type="text/javascript">
+        var currentSection = $("#grid-section");
+
+        function switchSection(section) {
+            if (section.attr("id") == currentSection.attr("id")) {
+                return;
+            }
+            currentSection.hide("fast");
+            section.show("fast");
+            currentSection = section;
+        };
+    </script>
+
+    <script src="~/js/app/people.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            viewModel = new ViewModel();
+            ko.applyBindings(viewModel);
+            viewModel.init();
+        });
+    </script>
+}

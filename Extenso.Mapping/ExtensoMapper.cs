@@ -105,7 +105,7 @@ public static class ExtensoMapper
     public static IQueryable<TDestination> MapQueryable<TSource, TDestination>(
         this IQueryable<TSource> query)
     {
-        var mapFunc = ExtensoMapper.Map<TSource, TDestination>;
+        var mapFunc = Map<TSource, TDestination>;
         var parameter = Expression.Parameter(typeof(TSource), "x");
         var body = Expression.Invoke(Expression.Constant(mapFunc), parameter);
         var selector = Expression.Lambda<Func<TSource, TDestination>>(body, parameter);
@@ -113,13 +113,13 @@ public static class ExtensoMapper
         return query.Select(selector);
     }
 
-    //Alternative version that accepts an existing mapping expression
-    public static IQueryable<TDestination> MapQueryable<TSource, TDestination>(
-        this IQueryable<TSource> query,
-        Expression<Func<TSource, TDestination>> mappingExpression)
-    {
-        return query.Select(mappingExpression);
-    }
+    ////Alternative version that accepts an existing mapping expression
+    //public static IQueryable<TDestination> MapQueryable<TSource, TDestination>(
+    //    this IQueryable<TSource> query,
+    //    Expression<Func<TSource, TDestination>> mappingExpression)
+    //{
+    //    return query.Select(mappingExpression);
+    //}
 
     public static Expression<Func<TDestination, TDestination>> MapUpdateExpression<TSource, TDestination>(
         Expression<Func<TSource, TSource>> updateFactory)

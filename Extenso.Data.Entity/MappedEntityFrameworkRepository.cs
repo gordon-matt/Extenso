@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Extenso.Data.Entity;
+using Extenso.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Z.EntityFramework.Plus;
@@ -44,7 +45,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     public virtual IRepositoryConnection<TModel> OpenConnection()
     {
         var context = contextFactory.GetContext();
-        return new EntityFrameworkRepositoryConnection<TModel>(context, true);
+        return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(
+            context,
+            true,
+            query => MapQueryable(query),
+            predicate => MapPredicateExpression(predicate));
     }
 
     /// <summary>
@@ -57,13 +62,17 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     public virtual IRepositoryConnection<TModel> UseConnection<TOther>(IRepositoryConnection<TOther> connection)
         where TOther : class
     {
-        if (connection is not EntityFrameworkRepositoryConnection<TOther>)
+        if (!connection.GetType().IsAssignableToGenericType(typeof(MappedEntityFrameworkRepositoryConnection<,>)))
         {
-            throw new NotSupportedException("The other connection must be of type EntityFrameworkRepositoryConnection<T>");
+            throw new NotSupportedException("The other connection must be of type MappedEntityFrameworkRepositoryConnection<,>");
         }
 
-        var otherConnection = connection as EntityFrameworkRepositoryConnection<TOther>;
-        return new EntityFrameworkRepositoryConnection<TModel>(otherConnection.Context, false);
+        var otherConnection = connection as IEntityFrameworkRepositoryConnection<TOther>;
+        return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(
+            otherConnection.Context,
+            false,
+            query => MapQueryable(query),
+            predicate => MapPredicateExpression(predicate));
     }
 
     #region Find
@@ -853,6 +862,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     public abstract TModel ToModel(TEntity entity);
 
     public abstract TEntity ToEntity(TModel model);
+
+    public abstract IQueryable<TModel> MapQueryable(IQueryable<TEntity> query);
 
     public abstract Expression<Func<TEntity, bool>> MapPredicateExpression(Expression<Func<TModel, bool>> predicate);
 

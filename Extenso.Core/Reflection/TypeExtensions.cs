@@ -132,6 +132,34 @@ public static class TypeExtensions
         return default;
     }
 
+    public static bool IsAssignableToGenericType(this Type givenType, Type genericType)
+    {
+        ArgumentNullException.ThrowIfNull(givenType);
+        ArgumentNullException.ThrowIfNull(genericType);
+        if (!genericType.IsGenericTypeDefinition) throw new ArgumentException("Type must be a generic type definition.", nameof(genericType));
+
+        // Check interfaces
+        foreach (var interfaceType in givenType.GetInterfaces())
+        {
+            if (interfaceType.IsGenericType &&
+                interfaceType.GetGenericTypeDefinition() == genericType)
+            {
+                return true;
+            }
+        }
+
+        // Check the type itself
+        if (givenType.IsGenericType &&
+            givenType.GetGenericTypeDefinition() == genericType)
+        {
+            return true;
+        }
+
+        // Check base types recursively
+        Type baseType = givenType.BaseType;
+        return baseType != null && IsAssignableToGenericType(baseType, genericType);
+    }
+
     /// <summary>
     /// Gets a value indicating whether type is a collection.
     /// </summary>

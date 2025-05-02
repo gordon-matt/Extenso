@@ -7,6 +7,8 @@
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -14,8 +16,13 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
               crossorigin="anonymous"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"/>
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
-    <link rel="stylesheet" href="~/css/site.css" />
+
+    <!-- Kendo -->
+    <link rel="stylesheet" type="text/css" media="screen" href="~/kendo-sdk/styles/kendo.common.min.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="~/kendo-sdk/styles/kendo.bootstrap.min.css" />
 </head>
 <body>
     <header>
@@ -32,7 +39,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Person" asp-action="Index">Mapped Repo</a>
                         </li>
                     </ul>
                 </div>
@@ -54,7 +61,10 @@
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/lib/bootstrap-notify/bootstrap-notify.js"></script>
+        <script src="~/lib/knockout/build/output/knockout-latest.debug.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
@@ -69,8 +79,15 @@
                 crossorigin="anonymous"
                 integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
         </script>
+        <script src="~/lib/bootstrap-notify/bootstrap-notify.min.js"></script>
+        <script src="~/lib/knockout/build/output/knockout-latest.js"></script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/kendo-sdk/js/jszip.min.js"></script>
+    <script src="~/kendo-sdk/js/kendo.all.min.js"></script>
+
+    <script src="~/js/api-helper.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

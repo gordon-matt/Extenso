@@ -1,8 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Extenso.AspNetCore.Mvc\Extenso.AspNetCore.Mvc.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
+		<PackageReference Include="KendoGridBinder.AspNetCore" Version="3.2.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Extenso.AspNetCore.Mvc\Extenso.AspNetCore.Mvc.csproj" />
+		<ProjectReference Include="..\..\Extenso.Data.Entity.AutoMapper\Extenso.Data.Entity.AutoMapper.csproj" />
+		<ProjectReference Include="..\..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
+	</ItemGroup>
 </Project>
