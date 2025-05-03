@@ -14,7 +14,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net7.0\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />

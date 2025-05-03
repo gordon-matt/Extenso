@@ -10,7 +10,7 @@
     <Version>9.2.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.1\Extenso.Data.MySql.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\Extenso.Data.MySql.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="9.3.0" />

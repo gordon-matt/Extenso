@@ -4,17 +4,34 @@ using System.Reflection;
 
 namespace Extenso.Mapping;
 
+/// <summary>
+/// A lightweight, simpler alternative to AutoMapper.
+/// </summary>
 public static class ExtensoMapper
 {
     private static readonly ConcurrentDictionary<TypePair, Lazy<Delegate>> expressionMappingCache = new();
     private static readonly ConcurrentDictionary<TypePair, Func<object, object>> mappings = new();
 
+    /// <summary>
+    /// Registers a mapping function for the specified source and destination types.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TDestination"></typeparam>
+    /// <param name="mapFunc"></param>
     public static void Register<TSource, TDestination>(Func<TSource, TDestination> mapFunc)
     {
         var key = new TypePair(typeof(TSource), typeof(TDestination));
         mappings[key] = source => mapFunc((TSource)source);
     }
 
+    /// <summary>
+    /// Maps an object of type TSource to TDestination using the registered mapping function.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TDestination"></typeparam>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static TDestination Map<TSource, TDestination>(TSource source)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -26,6 +43,14 @@ public static class ExtensoMapper
             : throw new InvalidOperationException($"Mapping from {typeof(TSource)} to {typeof(TDestination)} is not registered.");
     }
 
+    /// <summary>
+    /// Maps an object of type sourceType to destinationType using the registered mapping function.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="sourceType"></param>
+    /// <param name="destinationType"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static object Map(object source, Type sourceType, Type destinationType)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -39,6 +64,14 @@ public static class ExtensoMapper
             : throw new InvalidOperationException($"Mapping from {sourceType} to {destinationType} is not registered.");
     }
 
+    /// <summary>
+    /// Maps a function for use as an Entity Framework include path
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TDestination"></typeparam>
+    /// <typeparam name="TProperty"></typeparam>
+    /// <param name="includePath"></param>
+    /// <returns></returns>
     public static Expression<Func<TDestination, TProperty>> MapInclude<TSource, TDestination, TProperty>(
         Expression<Func<TSource, TProperty>> includePath)
     {
@@ -51,6 +84,13 @@ public static class ExtensoMapper
         return Expression.Lambda<Func<TDestination, TProperty>>(body, parameter);
     }
 
+    /// <summary>
+    /// Maps a predicate for use as an Entity Framework where clause
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TDestination"></typeparam>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static Expression<Func<TDestination, bool>> MapPredicate<TSource, TDestination>(
         Expression<Func<TSource, bool>> predicate)
     {
@@ -65,6 +105,13 @@ public static class ExtensoMapper
         return compiledFunc(predicate);
     }
 
+    /// <summary>
+    /// Maps a queryable of TSource to TDestination.
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TDestination"></typeparam>
+    /// <param name="query"></param>
+    /// <returns></returns>
     public static IQueryable<TDestination> MapQuery<TSource, TDestination>(this IQueryable<TSource> query)
     {
         // Create the parameter expression for the source type

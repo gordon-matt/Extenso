@@ -10,7 +10,7 @@
     <Version>9.2.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net7.0\Extenso.Data.QueryBuilder.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\Extenso.Data.QueryBuilder.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />

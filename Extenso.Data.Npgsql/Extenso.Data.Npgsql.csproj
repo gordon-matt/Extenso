@@ -10,7 +10,7 @@
     <Version>9.2.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net7.0\Extenso.Data.Npgsql.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\Extenso.Data.Npgsql.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />

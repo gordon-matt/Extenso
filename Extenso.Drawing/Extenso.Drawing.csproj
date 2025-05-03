@@ -10,7 +10,7 @@
     <Description>Drawing-related extension methods and other helper classes.</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net7.0\Extenso.Drawing.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\Extenso.Drawing.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.4" />

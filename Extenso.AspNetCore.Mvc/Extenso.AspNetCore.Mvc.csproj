@@ -13,7 +13,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net7.0\Extenso.AspNetCore.Mvc.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net9.0\Extenso.AspNetCore.Mvc.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
