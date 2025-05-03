@@ -22,6 +22,11 @@ public abstract class BaseMappedODataController<TModel, TEntity, TKey> : Generic
     {
     }
 
+    /// <summary>
+    /// Gets the record associated with the given key.
+    /// </summary>
+    /// <param name="key">The primary key value of the existing record.</param>
+    /// <returns>The record associated with the given key.</returns>
     [EnableQuery]
     public override async Task<IActionResult> Get([FromODataUri] TKey key)
     {

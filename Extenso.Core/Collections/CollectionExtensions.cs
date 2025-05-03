@@ -34,6 +34,12 @@ public static class CollectionExtensions
         }
     }
 
+    /// <summary>
+    /// Removes the first element from the System.Collections.Generic.ICollection`1.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="source">The System.Collections.Generic.ICollection`1 to remove the first element from.</param>
+    /// <returns></returns>
     public static bool RemoveFirst<T>(this ICollection<T> source)
     {
         if (source.IsNullOrEmpty())
@@ -45,6 +51,12 @@ public static class CollectionExtensions
         return source.Remove(item);
     }
 
+    /// <summary>
+    /// Removes the last element from the System.Collections.Generic.ICollection`1.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="source">The System.Collections.Generic.ICollection`1 to remove the last element from.</param>
+    /// <returns></returns>
     public static bool RemoveLast<T>(this ICollection<T> source)
     {
         if (source.IsNullOrEmpty())

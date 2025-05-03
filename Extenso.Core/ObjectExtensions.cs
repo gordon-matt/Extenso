@@ -76,8 +76,18 @@ public static class ObjectExtensions
         return hashAlgorithm.Hash;
     }
 
+    /// <summary>
+    /// Computes the MD5 hash value for the given object.
+    /// </summary>
+    /// <param name="source">The object to compute the hash for.</param>
+    /// <returns>The computed hash code.</returns>
     public static byte[] ComputeMD5Hash(this object source) => ComputeHash(source, new MD5CryptoServiceProvider());
 
+    /// <summary>
+    /// Computes the SHA1 hash value for the given object.
+    /// </summary>
+    /// <param name="source">The object to compute the hash for.</param>
+    /// <returns>The computed hash code.</returns>
     public static byte[] ComputeSHA1Hash(this object source) => ComputeHash(source, new SHA1CryptoServiceProvider());
 
     /// <summary>

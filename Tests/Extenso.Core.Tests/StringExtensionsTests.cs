@@ -150,6 +150,16 @@ public class StringExtensionsTests
     }
 
     [Fact]
+    public void BrotliCompressAndDecompress()
+    {
+        string expected = "the quick brown fox";
+        string compressed = expected.BrotliCompress();
+        string decompressed = compressed.BrotliDecompress();
+
+        Assert.Equal(expected, decompressed);
+    }
+
+    [Fact]
     public void CharacterCount()
     {
         string source = "some sample string";

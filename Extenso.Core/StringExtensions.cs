@@ -136,6 +136,54 @@ public static class StringExtensions
     }
 
     /// <summary>
+    /// Compresses the given string using the Brotli algorithm and returns a Base64 encoded string of compressed data.
+    /// </summary>
+    /// <param name="source">The string to compress.</param>
+    /// <returns>A Base64 encoded string of compressed data.</returns>
+    public static string BrotliCompress(this string source)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return null;
+        }
+
+        byte[] bytes = Encoding.UTF8.GetBytes(source);
+
+        using var memoryStream = new MemoryStream();
+        using (var gZipStream = new BrotliStream(memoryStream, CompressionMode.Compress, true))
+        {
+            gZipStream.Write(bytes, 0, bytes.Length);
+        }
+        memoryStream.Position = 0;
+        byte[] compressed = new byte[memoryStream.Length];
+        memoryStream.Read(compressed, 0, compressed.Length);
+        byte[] gZipBuffer = new byte[compressed.Length + 4];
+        Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
+        Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
+        return Convert.ToBase64String(gZipBuffer);
+    }
+
+    /// <summary>
+    /// Decompresses the given Base64 encoded string using the Brotli algorithm and returns a string of decompressed data.
+    /// </summary>
+    /// <param name="source">The Base64 encoded string to decompress.</param>
+    /// <returns>A string of decompressed data.</returns>
+    public static string BrotliDecompress(this string source)
+    {
+        byte[] gZipBuffer = Convert.FromBase64String(source);
+        using var memoryStream = new MemoryStream();
+        int dataLength = BitConverter.ToInt32(gZipBuffer, 0);
+        memoryStream.Write(gZipBuffer, 4, gZipBuffer.Length - 4);
+        byte[] buffer = new byte[dataLength];
+        memoryStream.Position = 0;
+        using (var gZipStream = new BrotliStream(memoryStream, CompressionMode.Decompress))
+        {
+            gZipStream.Read(buffer, 0, buffer.Length);
+        }
+        return Encoding.UTF8.GetString(buffer);
+    }
+
+    /// <summary>
     /// Gets a value indicating the number of times that the specified Unicode character appears in the given string.
     /// </summary>
     /// <param name="source">The string to search for the specified Unicode character.</param>

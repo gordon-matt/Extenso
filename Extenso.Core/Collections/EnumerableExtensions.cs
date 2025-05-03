@@ -240,11 +240,27 @@ public static class EnumerableExtensions
     public static string Join<T, TResult>(this IEnumerable<T> source, Func<T, TResult> selector, string separator = ",") =>
         source.Select(selector).Join(separator);
 
-    public static TProp MostOccurring<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func) =>
-        items.GroupBy(func).OrderByDescending(x => x.Count()).First().Key;
+    /// <summary>
+    /// Returns the most occurring element in the given collection.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <typeparam name="TProp"></typeparam>
+    /// <param name="source">The sequence that contains the objects to examine.</param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static TProp MostOccurring<T, TProp>(this IEnumerable<T> source, Func<T, TProp> selector) =>
+        source.GroupBy(selector).OrderByDescending(x => x.Count()).First().Key;
 
-    public static TProp MostOccurringOrDefault<T, TProp>(this IEnumerable<T> items, Func<T, TProp> func) =>
-        items.IsNullOrEmpty() ? default : items.MostOccurring(func);
+    /// <summary>
+    /// Returns the most occurring element in the given collection or default if the collection is null or empty.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <typeparam name="TProp"></typeparam>
+    /// <param name="source">The sequence that contains the objects to examine.</param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static TProp MostOccurringOrDefault<T, TProp>(this IEnumerable<T> source, Func<T, TProp> selector) =>
+        source.IsNullOrEmpty() ? default : source.MostOccurring(selector);
 
     /// <summary>
     /// Produces the set union of two sequences by using the default equality comparer. If either of the sequences is null or empty, the other sequence is returned.
