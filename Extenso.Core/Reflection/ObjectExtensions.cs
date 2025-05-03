@@ -94,7 +94,8 @@ public static class ObjectExtensions
     /// <param name="obj">The object to examine.</param>
     /// <param name="propertyName">The name of the property to find in obj.</param>
     /// <returns>true if obj has a property with the given name; otherwise false.</returns>
-    public static bool HasProperty<T>(this T obj, string propertyName) => typeof(T).GetTypeInfo().GetProperties().SingleOrDefault(p => p.Name.Equals(propertyName)) != null;
+    public static bool HasProperty<T>(this T obj, string propertyName) =>
+        typeof(T).GetTypeInfo().GetProperties().SingleOrDefault(p => p.Name.Equals(propertyName)) != null;
 
     /// <summary>
     /// Invokes the extension method with the given name in the given assembly, using the specified parameters.
@@ -315,7 +316,8 @@ public static class ObjectExtensions
     /// <param name="obj">The object whose property value will be set.</param>
     /// <param name="propertyName">The name of the property to set the value for.</param>
     /// <param name="value">The value to assign to the property.</param>
-    public static void SetPropertyValue<T>(this T obj, string propertyName, object value) => SetPropertyValue(obj, obj.GetType().GetTypeInfo().GetProperty(propertyName), value);
+    public static void SetPropertyValue<T>(this T obj, string propertyName, object value) =>
+        SetPropertyValue(obj, obj.GetType().GetTypeInfo().GetProperty(propertyName), value);
 
     /// <summary>
     /// Sets the value of the property specified by the given System.Reflection.PropertyInfo for obj.

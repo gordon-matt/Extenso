@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "bootstrap@5.3.5",
+      "destination": "wwwroot/lib/bootstrap5/"
+    },
+    {
+      "library": "foundation-sites@6.4.3",
+      "destination": "wwwroot/lib/foundation-sites/"
+    },
+    {
+      "library": "jquery@3.7.0",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jquery-ui-dist@1.12.1",
+      "destination": "wwwroot/lib/jquery-ui-dist/"
+    },
+    {
+      "library": "jquery-validation@1.19.5",
+      "destination": "wwwroot/lib/jquery-validation/"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.12",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    }
+  ]
+}

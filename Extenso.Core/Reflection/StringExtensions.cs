@@ -17,7 +17,7 @@ public static class StringExtensions
     {
         var parseMethod = type.GetTypeInfo().GetMethod("Parse", new Type[] { typeof(string) });
 
-        return parseMethod?.Invoke(null, new string[] { input });
+        return parseMethod?.Invoke(null, [input]);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public static class StringExtensions
 
         if (parseMethod != null)
         {
-            object value = parseMethod.Invoke(null, new string[] { input });
+            object value = parseMethod.Invoke(null, [input]);
             return value is T t ? t : defaultValue;
         }
         else { return defaultValue; }
@@ -88,7 +88,7 @@ public static class StringExtensions
 
         if (parseMethod != null)
         {
-            object[] parameters = new object[] { input, result };
+            object[] parameters = [input, result];
             object value = parseMethod.Invoke(null, parameters);
 
             if (value is bool successful)

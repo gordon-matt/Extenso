@@ -14,5 +14,6 @@ public static class EnumerableExtensions
     /// <param name="pageSize">The page size</param>
     /// <param name="itemCount">The total number of items in source</param>
     /// <returns></returns>
-    public static IPagedCollection<T> ToPagedList<T>(this IEnumerable<T> source, int pageIndex, int pageSize, int itemCount) => new PagedList<T>(source, pageIndex - 1, pageSize, itemCount);
+    public static IPagedCollection<T> ToPagedList<T>(this IEnumerable<T> source, int pageIndex, int pageSize, int itemCount) =>
+        new PagedList<T>(source, pageIndex - 1, pageSize, itemCount);
 }

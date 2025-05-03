@@ -49,6 +49,6 @@ public static class StringBuilderExtensions
     /// <param name="selector">A function to extract a value from each element.</param>
     /// <returns>A reference to stringBuilder after the append operation has completed.</returns>
     public static StringBuilder Append<T>(this StringBuilder stringBuilder, IEnumerable<T> values, string separator = ",", Func<T, object> selector = null) => selector != null
-            ? stringBuilder.Append(values.Select(selector).Join(separator))
-            : stringBuilder.Append(values.Join(separator));
+        ? stringBuilder.Append(values.Select(selector).Join(separator))
+        : stringBuilder.Append(values.Join(separator));
 }
