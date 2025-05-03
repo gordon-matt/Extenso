@@ -1,6 +1,6 @@
-﻿class ODataHelper {
+﻿class ApiHelper {
     static #defaultOptions = {
-        refreshODataGrid: this.refreshODataGrid,
+        refreshGrid: this.refreshGrid,
         messages: {
             getRecordError: "Error when trying to retrieve record!",
             deleteRecordConfirm: "Are you sure that you want to delete this record?",
@@ -15,7 +15,7 @@
 
     static options = this.#defaultOptions;
 
-    static async getOData(url) {
+    static async getRecord(url) {
         return await fetch(url)
             .then(response => response.json())
             .catch(error => {
@@ -24,12 +24,12 @@
             });
     }
 
-    static async deleteOData(url) {
+    static async deleteRecord(url) {
         if (confirm(this.options.messages.deleteRecordConfirm)) {
             await fetch(url, { method: 'DELETE' })
                 .then(response => {
                     if (response.ok) {
-                        this.options.refreshODataGrid();
+                        this.options.refreshGrid();
                         $.notify({ message: this.options.messages.deleteRecordSuccess, icon: 'fa fa-check' }, { type: 'success' });
                     } else {
                         $.notify({ message: this.options.messages.deleteRecordError, icon: 'fa fa-exclamation-triangle' }, { type: 'danger' });
@@ -42,7 +42,7 @@
         }
     }
 
-    static async postOData(url, record) {
+    static async postRecord(url, record) {
         return await fetch(url, {
             method: "POST",
             headers: {
@@ -52,7 +52,7 @@
         })
         .then(response => {
             if (response.ok) {
-                this.options.refreshODataGrid();
+                this.options.refreshGrid();
                 switchSection($("#grid-section"));
                 $.notify({ message: this.options.messages.insertRecordSuccess, icon: 'fa fa-check' }, { type: 'success' });
             }
@@ -67,7 +67,7 @@
         });
     }
 
-    static async putOData(url, record) {
+    static async putRecord(url, record) {
         return await fetch(url, {
             method: "PUT",
             headers: {
@@ -77,7 +77,7 @@
         })
         .then(response => {
             if (response.ok) {
-                this.options.refreshODataGrid();
+                this.options.refreshGrid();
                 switchSection($("#grid-section"));
                 $.notify({ message: this.options.messages.updateRecordSuccess, icon: 'fa fa-check' }, { type: 'success' });
             }
@@ -92,7 +92,7 @@
         });
     }
 
-    static async patchOData(url, patch) {
+    static async patchRecord(url, patch) {
         return await fetch(url, {
             method: "PATCH",
             headers: {
@@ -102,7 +102,7 @@
         })
         .then(response => {
             if (response.ok) {
-                this.options.refreshODataGrid();
+                this.options.refreshGrid();
                 $.notify({ message: this.options.messages.updateRecordSuccess, icon: 'fa fa-check' }, { type: 'success' });
             }
             else {
@@ -116,7 +116,7 @@
         });
     }
 
-    static refreshODataGrid() {
+    static refreshGrid() {
         $('#grid').data('kendoGrid').dataSource.read();
         $('#grid').data('kendoGrid').refresh();
     };

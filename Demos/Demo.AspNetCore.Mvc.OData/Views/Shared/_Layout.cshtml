@@ -38,6 +38,7 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="Person" asp-action="Index">OData Demo</a></li>
+                    <li><a asp-area="" asp-controller="Person" asp-action="Mapped">OData Mapped Demo</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -79,7 +80,7 @@
     <script src="~/kendo-sdk/js/jszip.min.js"></script>
     <script src="~/kendo-sdk/js/kendo.all.min.js"></script>
     
-    <script src="~/js/odata-helpers.js"></script>
+    <script src="~/js/api-helper.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

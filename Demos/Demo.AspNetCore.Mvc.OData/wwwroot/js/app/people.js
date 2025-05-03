@@ -109,7 +109,7 @@ var ViewModel = function () {
     };
 
     self.edit = async function (id) {
-        const data = await ODataHelper.getOData(`${self.apiUrl}(${id})`);
+        const data = await ApiHelper.getRecord(`${self.apiUrl}(${id})`);
         self.id(data.Id);
         self.familyName(data.FamilyName);
         self.givenNames(data.GivenNames);
@@ -120,7 +120,7 @@ var ViewModel = function () {
     };
 
     self.remove = async function (id) {
-        await ODataHelper.deleteOData(`${self.apiUrl}(${id})`);
+        await ApiHelper.deleteRecord(`${self.apiUrl}(${id})`);
     };
 
     self.save = async function () {
@@ -138,10 +138,10 @@ var ViewModel = function () {
         };
 
         if (isNew) {
-            await ODataHelper.postOData(self.apiUrl, record);
+            await ApiHelper.postRecord(self.apiUrl, record);
         }
         else {
-            await ODataHelper.putOData(`${self.apiUrl}(${self.id()})`, record);
+            await ApiHelper.putRecord(`${self.apiUrl}(${self.id()})`, record);
         }
     };
 

@@ -7,15 +7,7 @@ namespace Demo.Extenso.AspNetCore.Mvc.OData.Controllers;
 [Route("people")]
 public class PersonController : Controller
 {
-    private readonly IRepository<Person> personRepository;
-
     public PersonController(IRepository<Person> personRepository)
-    {
-        this.personRepository = personRepository;
-    }
-
-    [Route("")]
-    public IActionResult Index()
     {
         if (personRepository.Count() == 0)
         {
@@ -30,7 +22,19 @@ public class PersonController : Controller
 
             personRepository.Insert(people);
         }
+    }
 
+    [Route("")]
+    public IActionResult Index()
+    {
+        ViewBag.UseMapped = false;
         return View();
+    }
+
+    [Route("mapped")]
+    public IActionResult Mapped()
+    {
+        ViewBag.UseMapped = true;
+        return View("Index");
     }
 }

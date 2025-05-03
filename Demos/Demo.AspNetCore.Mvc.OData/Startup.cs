@@ -1,10 +1,15 @@
 ﻿using Autofac;
 using Demo.Extenso.AspNetCore.Mvc.OData.Data;
+using Demo.Extenso.AspNetCore.Mvc.OData.Data.Entities;
 using Demo.Extenso.AspNetCore.Mvc.OData.Infrastructure;
 using Demo.Extenso.AspNetCore.Mvc.OData.Models;
 using Demo.Extenso.AspNetCore.Mvc.OData.Services;
+using Demo.Extenso.AspNetCore.OData.Models;
+using Extenso.AspNetCore.Mvc.ExtensoUI;
+using Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 using Extenso.AspNetCore.OData;
 using Extenso.Data.Entity;
+using Extenso.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +29,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            options.UseInMemoryDatabase("DemoDb"));
 
         services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -46,7 +51,25 @@ public class Startup
                     registrar.Register(options);
                 }
             });
+
         services.AddRazorPages();
+
+        #region ExtensoMapper Demo
+
+        ExtensoMapper.Register<PersonModel, Person>(x => x.ToEntity());
+        ExtensoMapper.Register<Person, PersonModel>(x => x.ToModel());
+
+        #endregion ExtensoMapper Demo
+
+        #region AutoMapper Demo
+
+        //services.AddAutoMapper(cfg =>
+        //{
+        //    cfg.CreateMap<PersonModel, Person>();
+        //    cfg.CreateMap<Person, PersonModel>();
+        //});
+
+        #endregion AutoMapper Demo
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +112,8 @@ public class Startup
 
             endpoints.MapRazorPages();
         });
+
+        app.UseExtensoUI<Bootstrap3UIProvider>();
     }
 
     public void ConfigureContainer(ContainerBuilder builder)
@@ -98,6 +123,22 @@ public class Startup
         builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
             .As(typeof(IRepository<>))
             .InstancePerLifetimeScope();
+
+        #region ExtensoMapper Demo
+
+        builder.RegisterGeneric(typeof(ExtensoMapperEntityFrameworkRepository<,>))
+            .As(typeof(IMappedRepository<,>))
+            .InstancePerLifetimeScope();
+
+        #endregion ExtensoMapper Demo
+
+        #region AutoMapper Demo
+
+        //builder.RegisterGeneric(typeof(AutoMapperEntityFrameworkRepository<,>))
+        //    .As(typeof(IMappedRepository<,>))
+        //    .InstancePerLifetimeScope();
+
+        #endregion AutoMapper Demo
 
         builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
     }

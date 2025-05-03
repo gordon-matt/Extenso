@@ -12,19 +12,21 @@ namespace Extenso.AspNetCore.OData;
 /// <summary>
 /// A generic, abstract CRUD controller for OData, with support for checking policy based permissions for users.
 /// </summary>
+/// <typeparam name="TModel"></typeparam>
 /// <typeparam name="TEntity"></typeparam>
 /// <typeparam name="TKey"></typeparam>
-public abstract class GenericODataController<TEntity, TKey> : ODataController, IDisposable
-    where TEntity : class
+public abstract class GenericMappedODataController<TModel, TEntity, TKey> : ODataController, IDisposable
+    where TModel : class
+    where TEntity : class, IEntity
 {
     #region Non-Public Properties
 
-    private IRepositoryConnection<TEntity> disposableConnection = null;
+    private IEntityFrameworkRepositoryConnection<TModel> disposableConnection = null;
 
     /// <summary>
     /// Provides access to the data store.
     /// </summary>
-    protected  IRepository<TEntity> Repository { get; private set; }
+    protected IMappedRepository<TModel, TEntity> Repository { get; private set; }
 
     /// <summary>
     /// OData query options to ignore for querying.
@@ -54,7 +56,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// Initializes a new instance of GenericODataController using the specified Extenso.Data.Entity.IRepository`1.
     /// </summary>
     /// <param name="repository">The Extenso.Data.Entity.IRepository`1 which will provide access to the data store.</param>
-    public GenericODataController(IAuthorizationService authorizationService, IRepository<TEntity> repository)
+    public GenericMappedODataController(IAuthorizationService authorizationService, IMappedRepository<TModel, TEntity> repository)
     {
         AuthorizationService = authorizationService;
         Repository = repository;
@@ -65,12 +67,12 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     #region Public Methods
 
     /// <summary>
-    /// Applies the specified OData query options to an IQueryable to retrieve a collection of TEntity.
+    /// Applies the specified OData query options to an IQueryable to retrieve a collection of TModel.
     /// </summary>
     /// <param name="options">The OData query options that can be used to perform query composition.</param>
-    /// <returns>A collection of TEntity.</returns>
+    /// <returns>A collection of TModel.</returns>
     [HttpGet]
-    public virtual async Task<IActionResult> Get(ODataQueryOptions<TEntity> options)
+    public virtual async Task<IActionResult> Get(ODataQueryOptions<TModel> options)
     {
         if (!await AuthorizeAsync(ReadPermission))
         {
@@ -109,10 +111,10 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// Updates the record associated with the given key.
     /// </summary>
     /// <param name="key">The primary key value of the existing record.</param>
-    /// <param name="entity">An instance of TEntity to use for updating the existing record.</param>
+    /// <param name="entity">An instance of TModel to use for updating the existing record.</param>
     /// <returns>A Microsoft.AspNet.OData.Results.UpdatedODataResult`1 with the specified values that is a response to the PUT operation.</returns>
     [HttpPut]
-    public virtual async Task<IActionResult> Put([FromODataUri] TKey key, [FromBody] TEntity entity)
+    public virtual async Task<IActionResult> Put([FromODataUri] TKey key, [FromBody] TModel entity)
     {
         if (entity == null)
         {
@@ -152,12 +154,12 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     }
 
     /// <summary>
-    /// Inserts a new record from the given TEntity.
+    /// Inserts a new record from the given TModel.
     /// </summary>
-    /// <param name="entity">The instance of TEntity to use for creating the new record.</param>
+    /// <param name="entity">The instance of TModel to use for creating the new record.</param>
     /// <returns>A Microsoft.AspNet.OData.Results.CreatedODataResult`1 with the specified values that is a response to the POST operation.</returns>
     [HttpPost]
-    public virtual async Task<IActionResult> Post([FromBody] TEntity entity)
+    public virtual async Task<IActionResult> Post([FromBody] TModel entity)
     {
         if (entity == null)
         {
@@ -190,7 +192,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <param name="patch">The changes to apply to the existing record.</param>
     /// <returns>A Microsoft.AspNet.OData.Results.UpdatedODataResult`1 with the specified values that is a response to the PATCH or MERGE operation.</returns>
     [AcceptVerbs("PATCH", "MERGE")]
-    public virtual async Task<IActionResult> Patch([FromODataUri] TKey key, Delta<TEntity> patch)
+    public virtual async Task<IActionResult> Patch([FromODataUri] TKey key, Delta<TModel> patch)
     {
         if (!ModelState.IsValid)
         {
@@ -267,16 +269,16 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <summary>
     /// Gets the primary key value for the given record.
     /// </summary>
-    /// <param name="entity">An instance of TEntity for which to obtain the primary key.</param>
+    /// <param name="entity">An instance of TModel for which to obtain the primary key.</param>
     /// <returns>The primary key for the given record.</returns>
-    protected abstract TKey GetId(TEntity entity);
+    protected abstract TKey GetId(TModel entity);
 
     /// <summary>
     /// Creates a primary key value for the given entity. Generally, this should only be necessary if the key type is a System.Guid or a System.String.
     /// Tables with numeric keys usually don't need to have the primary key explicitly set.
     /// </summary>
     /// <param name="entity"></param>
-    protected abstract void SetNewId(TEntity entity);
+    protected abstract void SetNewId(TModel entity);
 
     /// <summary>
     /// Applies any filters which are mandatory for the current user. For example: if there is a "TenantId" field,
@@ -284,7 +286,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// </summary>
     /// <param name="query">The System.Linq.IQueryable`1 upon which to apply the filter.</param>
     /// <returns>A System.Linq.IQueryable`1 that may have had filters applied.</returns>
-    protected virtual async Task<IQueryable<TEntity>> ApplyMandatoryFilterAsync(IQueryable<TEntity> query) =>
+    protected virtual async Task<IQueryable<TModel>> ApplyMandatoryFilterAsync(IQueryable<TModel> query) =>
         // Do nothing, by default
         await Task.FromResult(query);
 
@@ -293,20 +295,20 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// </summary>
     /// <param name="entity">The record to test.</param>
     /// <returns>true if the record can be viewed; otherwise false.</returns>
-    protected virtual async Task<bool> CanViewEntityAsync(TEntity entity) => await AuthorizeAsync(ReadPermission);
+    protected virtual async Task<bool> CanViewEntityAsync(TModel entity) => await AuthorizeAsync(ReadPermission);
 
     /// <summary>
     /// Gets a value indicating whether the given record can be modified.
     /// </summary>
     /// <param name="entity">The record to test.</param>
     /// <returns>true if the record can be modified; otherwise false.</returns>
-    protected virtual async Task<bool> CanModifyEntityAsync(TEntity entity) => await AuthorizeAsync(WritePermission);
+    protected virtual async Task<bool> CanModifyEntityAsync(TModel entity) => await AuthorizeAsync(WritePermission);
 
     /// <summary>
     /// Perform actions before inserting or updating the record. For example, you may wish to update a timestamp field on the given record.
     /// </summary>
     /// <param name="entity">The record which is about to be inserted or updated.</param>
-    protected virtual void OnBeforeSave(TEntity entity)
+    protected virtual void OnBeforeSave(TModel entity)
     {
     }
 
@@ -314,7 +316,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// Perform actions after inserting or updating the record. For example, you may wish to push some kind of notification.
     /// </summary>
     /// <param name="entity">The record which has been inserted or updated.</param>
-    protected virtual void OnAfterSave(TEntity entity)
+    protected virtual void OnAfterSave(TModel entity)
     {
     }
 
@@ -348,7 +350,8 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// Opens a connection to the data store. Remember to dispose of it when no longer needed.
     /// </summary>
     /// <returns>An Extenso.Data.Entity.IRepositoryConnection`1 that provides access to the data store.</returns>
-    protected IRepositoryConnection<TEntity> GetDisposableConnection() => disposableConnection ??= Repository.OpenConnection();
+    protected IEntityFrameworkRepositoryConnection<TModel> GetDisposableConnection() =>
+        disposableConnection ??= Repository.OpenConnection() as IEntityFrameworkRepositoryConnection<TModel>;
 
     #region IDisposable Support
 
