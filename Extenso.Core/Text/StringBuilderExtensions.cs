@@ -14,7 +14,7 @@ public static class StringBuilderExtensions
     /// <param name="stringBuilder">The given System.Text.StringBuilder.</param>
     /// <param name="values">The strings to append.</param>
     /// <returns>A reference to stringBuilder after the append operation has completed.</returns>
-    public static StringBuilder Append(this StringBuilder stringBuilder, params string[] values)
+    public static StringBuilder Append(this StringBuilder stringBuilder, params ReadOnlySpan<string> values)
     {
         foreach (string value in values)
         {
@@ -29,7 +29,7 @@ public static class StringBuilderExtensions
     /// <param name="stringBuilder">The given System.Text.StringBuilder.</param>
     /// <param name="values">The objects to append.</param>
     /// <returns>A reference to stringBuilder after the append operation has completed.</returns>
-    public static StringBuilder Append(this StringBuilder stringBuilder, params object[] values)
+    public static StringBuilder Append(this StringBuilder stringBuilder, params ReadOnlySpan<object> values)
     {
         foreach (object value in values)
         {

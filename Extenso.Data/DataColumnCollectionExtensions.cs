@@ -4,7 +4,7 @@ namespace Extenso.Data;
 
 public static class DataColumnCollectionExtensions
 {
-    public static void AddRange(this DataColumnCollection dataColumns, params string[] columnNames)
+    public static void AddRange(this DataColumnCollection dataColumns, params ReadOnlySpan<string> columnNames)
     {
         foreach (string columnName in columnNames)
         {
@@ -12,7 +12,7 @@ public static class DataColumnCollectionExtensions
         }
     }
 
-    public static void AddRange(this DataColumnCollection dataColumns, params DataColumn[] columns)
+    public static void AddRange(this DataColumnCollection dataColumns, params ReadOnlySpan<DataColumn> columns)
     {
         foreach (var column in columns)
         {

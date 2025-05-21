@@ -43,7 +43,7 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
-    public virtual ISelectQueryBuilder Select(string tableName, params string[] columns)
+    public virtual ISelectQueryBuilder Select(string tableName, params ReadOnlySpan<string> columns)
     {
         selectedColumns.Clear();
         string enclosedTableName = EncloseTable(tableName);
@@ -90,7 +90,7 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
-    public virtual ISelectQueryBuilder From(params string[] tableNames)
+    public virtual ISelectQueryBuilder From(params ReadOnlySpan<string> tableNames)
     {
         selectedTables.Clear();
         foreach (string table in tableNames)
@@ -169,7 +169,7 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
-    public virtual ISelectQueryBuilder GroupBy(string tableName, params string[] columns)
+    public virtual ISelectQueryBuilder GroupBy(string tableName, params ReadOnlySpan<string> columns)
     {
         string enclosedTableName = EncloseTable(tableName);
         foreach (string column in columns)

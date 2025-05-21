@@ -11,7 +11,7 @@ public class FileInfoExtensionsTests
         return tempFile;
     }
 
-    private static void CleanupFiles(params string[] filePaths)
+    private static void CleanupFiles(params ReadOnlySpan<string> filePaths)
     {
         foreach (string filePath in filePaths)
         {

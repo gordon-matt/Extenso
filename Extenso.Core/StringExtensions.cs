@@ -29,26 +29,9 @@ public static class StringExtensions
     /// <param name="source">The string to append values to.</param>
     /// <param name="values">An array of strings to append to source.</param>
     /// <returns>A new string after the append operation has completed.</returns>
-    public static string Append(this string source, params string[] values)
+    public static string Append(this string source, params ReadOnlySpan<object> values)
     {
-        string[] items = new string[values.Length + 1];
-        items[0] = source;
-        values.CopyTo(items, 1);
-        return string.Concat(items);
-    }
-
-    /// <summary>
-    /// Appends the string representations of the specified objects to the given string.
-    /// </summary>
-    /// <param name="source">The string to append values to.</param>
-    /// <param name="values">An array of objects to append to source.</param>
-    /// <returns>A new string after the append operation has completed.</returns>
-    public static string Append(this string source, params object[] values)
-    {
-        object[] items = new object[values.Length + 1];
-        items[0] = source;
-        values.CopyTo(items, 1);
-        return string.Concat(items);
+        return string.Concat([source, .. values]);
     }
 
     /// <summary>
@@ -197,7 +180,7 @@ public static class StringExtensions
     /// <param name="values">The strings to seek.</param>
     /// <para>The first value in the given list that is not null, empty or consisting only of whitespace.</para>
     /// <para>If none of the values are valid, then null is returned.</para>
-    public static string Coalesce(params string[] values) => Coalesce(allowWhitespace: false, values);
+    public static string Coalesce(params Span<string> values) => Coalesce(allowWhitespace: false, values);
 
     /// <summary>
     /// Returns the first value in the given list that has a valid value.
@@ -209,7 +192,7 @@ public static class StringExtensions
     /// <para>Else, the first value in the given list that is not null, empty or consisting only of whitespace.</para>
     /// <para>If none of the values are valid, then null is returned.</para>
     /// </returns>
-    public static string Coalesce(bool allowWhitespace, params string[] values)
+    public static string Coalesce(bool allowWhitespace, Span<string> values)
     {
         Func<string, bool> operation = allowWhitespace
             ? string.IsNullOrEmpty : string.IsNullOrWhiteSpace;
@@ -243,7 +226,7 @@ public static class StringExtensions
     /// <param name="source">The string to examine.</param>
     /// <param name="values">The strings to seek.</param>
     /// <returns>true if all of the specified strings are contained in source; otherwise, false.</returns>
-    public static bool ContainsAll(this string source, params string[] values)
+    public static bool ContainsAll(this string source, params Span<string> values)
     {
         foreach (string value in values)
         {
@@ -259,7 +242,7 @@ public static class StringExtensions
     /// <param name="source">The string to examine.</param>
     /// <param name="values">The Unicode characters to seek</param>
     /// <returns>true if all of the specified characters are contained in source; otherwise, false.</returns>
-    public static bool ContainsAll(this string source, params char[] values)
+    public static bool ContainsAll(this string source, params Span<char> values)
     {
         foreach (char value in values)
         {
@@ -275,7 +258,7 @@ public static class StringExtensions
     /// <param name="source">The string to examine.</param>
     /// <param name="values">The strings to seek.</param>
     /// <returns>true if any of the specified strings are contained in source; otherwise, false.</returns>
-    public static bool ContainsAny(this string source, params string[] values)
+    public static bool ContainsAny(this string source, params Span<string> values)
     {
         foreach (string value in values)
         {
@@ -291,19 +274,20 @@ public static class StringExtensions
     /// <param name="source">The string to examine.</param>
     /// <param name="chars">The Unicode characters to seek.</param>
     /// <returns>true if any of the specified characters occur within source; otherwise, false.</returns>
-    public static bool ContainsAny(this string source, params char[] chars)
+    public static bool ContainsAny(this string source, params ReadOnlySpan<char> chars)
     {
-        if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
+        if (string.IsNullOrEmpty(source) || chars.IsEmpty)
         {
             return false;
         }
 
-        Array.Sort(chars);
+        Span<char> sortedChars = stackalloc char[chars.Length];
+        chars.CopyTo(sortedChars);
+        sortedChars.Sort();
 
         for (int i = 0; i < source.Length; i++)
         {
-            char current = source[i];
-            if (Array.BinarySearch(chars, current) >= 0)
+            if (sortedChars.BinarySearch(source[i]) >= 0)
             {
                 return true;
             }
@@ -422,7 +406,7 @@ public static class StringExtensions
     /// <param name="source">The string to examine.</param>
     /// <param name="values">The strings to compare to the substring at the end of [source].</param>
     /// <returns>true if any of the specified strings match the end of the given string; otherwise, false.</returns>
-    public static bool EndsWithAny(this string source, params string[] values)
+    public static bool EndsWithAny(this string source, params Span<string> values)
     {
         foreach (string value in values)
         {
@@ -674,32 +658,12 @@ public static class StringExtensions
     //}
 
     /// <summary>
-    /// Prepends copies of the specified strings to the given string.
-    /// </summary>
-    /// <param name="source">The string to prepend values to.</param>
-    /// <param name="values">An array of strings to prepend to source.</param>
-    /// <returns>A new string after the prepend operation has completed.</returns>
-    public static string Prepend(this string source, params string[] values)
-    {
-        string[] items = new string[values.Length + 1];
-        values.CopyTo(items, 0);
-        items[^1] = source;
-        return string.Concat(items);
-    }
-
-    /// <summary>
     /// Prepends the string representations of the specified objects to the given string.
     /// </summary>
     /// <param name="source">The string to prepend values to.</param>
     /// <param name="values">An array of objects to prepend to source.</param>
     /// <returns>A new string after the prepend operation has completed.</returns>
-    public static string Prepend(this string source, params object[] values)
-    {
-        object[] items = new object[values.Length + 1];
-        values.CopyTo(items, 0);
-        items[^1] = source;
-        return string.Concat(items);
-    }
+    public static string Prepend(this string source, params ReadOnlySpan<object> values) => string.Concat([.. values, source]);
 
     /// <summary>
     /// Escapes a minimal set of characters (\, *, +, ?, |, {, [, (,), ^, $,., #, and
@@ -922,7 +886,7 @@ public static class StringExtensions
     /// <param name="source">The string to examine.</param>
     /// <param name="values">The strings to compare to the substring at the beginning of [source].</param>
     /// <returns>true if any of the specified strings match the beginning of the given string; otherwise, false.</returns>
-    public static bool StartsWithAny(this string source, params string[] values)
+    public static bool StartsWithAny(this string source, params Span<string> values)
     {
         foreach (string value in values)
         {

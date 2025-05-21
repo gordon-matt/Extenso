@@ -6,7 +6,7 @@ public class StringExtensionsTests
     public void Append_StringValues()
     {
         string source = "test";
-        string[] values = new[] { "_one", "_two" };
+        string[] values = ["_one", "_two"];
 
         string expected = "test_one_two";
         string actual = source.Append(values);
@@ -18,7 +18,7 @@ public class StringExtensionsTests
     public void Append_ObjectValues()
     {
         string source = "test";
-        object[] values = new object[] { "_one_", 2 };
+        object[] values = ["_one_", 2];
 
         string expected = "test_one_2";
         string actual = source.Append(values);
@@ -29,7 +29,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrEmpty_True_Empty()
     {
-        string[] values = new[] { "one", "two", string.Empty, "four" };
+        string[] values = ["one", "two", string.Empty, "four"];
 
         bool expected = true;
         bool actual = StringExtensions.AreAnyNullOrEmpty(values);
@@ -40,7 +40,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrEmpty_True_Null()
     {
-        string?[] values = new[] { "one", "two", null, "four" };
+        string?[] values = ["one", "two", null, "four"];
 
         bool expected = true;
         bool actual = StringExtensions.AreAnyNullOrEmpty(values);
@@ -51,7 +51,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrEmpty_False()
     {
-        string[] values = new[] { "one", "two", "three", "four" };
+        string[] values = ["one", "two", "three", "four"];
 
         bool expected = false;
         bool actual = StringExtensions.AreAnyNullOrEmpty(values);
@@ -62,7 +62,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrWhiteSpace_True_Empty()
     {
-        string[] values = new[] { "one", "two", string.Empty, "four" };
+        string[] values = ["one", "two", string.Empty, "four"];
 
         bool expected = true;
         bool actual = StringExtensions.AreAnyNullOrWhiteSpace(values);
@@ -73,7 +73,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrWhiteSpace_True_Null()
     {
-        string?[] values = new[] { "one", "two", null, "four" };
+        string?[] values = ["one", "two", null, "four"];
 
         bool expected = true;
         bool actual = StringExtensions.AreAnyNullOrWhiteSpace(values);
@@ -84,7 +84,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrWhiteSpace_True_WhiteSpace()
     {
-        string[] values = new[] { "one", "two", Environment.NewLine, "four" };
+        string[] values = ["one", "two", Environment.NewLine, "four"];
 
         bool expected = true;
         bool actual = StringExtensions.AreAnyNullOrWhiteSpace(values);
@@ -95,7 +95,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrWhiteSpace_False()
     {
-        string[] values = new[] { "one", "two", "three", "four" };
+        string[] values = ["one", "two", "three", "four"];
 
         bool expected = false;
         bool actual = StringExtensions.AreAnyNullOrWhiteSpace(values);
@@ -437,7 +437,7 @@ public class StringExtensionsTests
     public void Prepend_StringValues()
     {
         string source = "test";
-        string[] values = new[] { "one_", "two_" };
+        string[] values = ["one_", "two_"];
 
         string expected = "one_two_test";
         string actual = source.Prepend(values);
@@ -449,7 +449,7 @@ public class StringExtensionsTests
     public void Prepend_ObjectValues()
     {
         string source = "test";
-        object[] values = new object[] { 2, "_one_" };
+        object[] values = [2, "_one_"];
 
         string expected = "2_one_test";
         string actual = source.Prepend(values);
@@ -619,7 +619,7 @@ public class StringExtensionsTests
 Line 2
 Line 3";
 
-        string[] expected = new[] { "Line 1", "Line 2", "Line 3" };
+        string[] expected = ["Line 1", "Line 2", "Line 3"];
 
         var actual = source.ToLines();
 

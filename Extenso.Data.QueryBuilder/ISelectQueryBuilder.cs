@@ -6,7 +6,7 @@ public interface ISelectQueryBuilder : IQueryBuilder
 
     ISelectQueryBuilder SelectAs(string tableName, string column, string alias = null);
 
-    ISelectQueryBuilder Select(string tableName, params string[] columns);
+    ISelectQueryBuilder Select(string tableName, params ReadOnlySpan<string> columns);
 
     ISelectQueryBuilder Select(IEnumerable<TableColumnPair> columns);
 
@@ -18,7 +18,7 @@ public interface ISelectQueryBuilder : IQueryBuilder
 
     ISelectQueryBuilder From(string tableName);
 
-    ISelectQueryBuilder From(params string[] tableNames);
+    ISelectQueryBuilder From(params ReadOnlySpan<string> tableNames);
 
     ISelectQueryBuilder Join(JoinType joinType, string toTableName, string toColumnName, ComparisonOperator comparisonOperator, string fromTableName, string fromColumnName);
 
@@ -36,7 +36,7 @@ public interface ISelectQueryBuilder : IQueryBuilder
 
     ISelectQueryBuilder OrderBy(string literal);
 
-    ISelectQueryBuilder GroupBy(string tableName, params string[] columns);
+    ISelectQueryBuilder GroupBy(string tableName, params ReadOnlySpan<string> columns);
 
     ISelectQueryBuilder GroupBy(IEnumerable<TableColumnPair> columns);
 

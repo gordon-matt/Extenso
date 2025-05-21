@@ -44,6 +44,13 @@ public class FluentTagBuilder
         return this;
     }
 
+    public FluentTagBuilder AppendContentFormat(string format, ReadOnlySpan<object> args)
+    {
+        stringBuilder.AppendFormat(format, args);
+        //tagBuilder.InnerHtml += string.Format(format, args);
+        return this;
+    }
+
     public FluentTagBuilder AddCssClass(string value)
     {
         tagBuilder.AddCssClass(value);
