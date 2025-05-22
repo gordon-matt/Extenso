@@ -32,13 +32,13 @@ public class ExtensoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEnt
 
     public override Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> MapInclude(
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
-        throw new NotImplementedException();
+        ExtensoMapper.MapInclude<TModel, TEntity>(includeExpression);
     
     public override Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy(
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
-        throw new NotImplementedException();
+        ExtensoMapper.MapOrderBy<TModel, TEntity>(includeExpression);
     
     public override Expression<Func<TEntity, TResult>> MapProjection<TResult>(
         Expression<Func<TModel, TResult>> projectionExpression) =>
-        throw new NotImplementedException();
+        ExtensoMapper.MapProjection<TModel, TEntity, TResult>(projectionExpression);
 }

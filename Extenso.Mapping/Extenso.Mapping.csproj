@@ -10,4 +10,8 @@
 		<DocumentationFile>bin\Release\net9.0\Extenso.Mapping.xml</DocumentationFile>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+	</ItemGroup>
+
 </Project>

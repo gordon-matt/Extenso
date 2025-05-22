@@ -1,6 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Mapping;
 
@@ -139,6 +142,143 @@ public static class ExtensoMapper
 
         return Expression.Lambda<Func<TDestination, TDestination>>(body, parameter);
     }
+
+    /// <summary>
+    /// Maps an include expression from TModel to TEntity for Entity Framework.
+    /// </summary>
+    /// <typeparam name="TModel">The source type</typeparam>
+    /// <typeparam name="TEntity">The destination type</typeparam>
+    /// <param name="includeExpression">The include expression to map</param>
+    /// <returns>A function that can be used to include related entities in a query</returns>
+    public static Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> MapInclude<TModel, TEntity>(
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression)
+    {
+        ArgumentNullException.ThrowIfNull(includeExpression);
+
+        if (includeExpression.Body is MethodCallExpression methodCall)
+        {
+            // Handle Include/ThenInclude methods
+            if (methodCall.Method.Name == "Include" || methodCall.Method.Name == "ThenInclude")
+            {
+                // Get the lambda expression from the method call
+                if (methodCall.Arguments.Count > 1 &&
+                    methodCall.Arguments[1] is UnaryExpression unary &&
+                    unary.Operand is LambdaExpression lambda)
+                {
+                    // Create a new parameter for the entity type
+                    var parameter = Expression.Parameter(typeof(TEntity), "x");
+                    var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
+                    var body = visitor.Visit(lambda.Body);
+
+                    // Create the new lambda expression
+                    var mappedLambda = Expression.Lambda(body, parameter);
+
+                    // Get all Include/ThenInclude methods
+                    var methods = typeof(EntityFrameworkQueryableExtensions)
+                        .GetMethods()
+                        .Where(m => m.Name == methodCall.Method.Name)
+                        .ToList();
+
+                    // Find the method with matching parameter types
+                    var includeMethod = methods.FirstOrDefault(m =>
+                    {
+                        var parameters = m.GetParameters();
+                        return parameters.Length == 2 &&
+                               parameters[1].ParameterType.IsGenericType &&
+                               parameters[1].ParameterType.GetGenericTypeDefinition() == typeof(Expression<>);
+                    });
+
+                    if (includeMethod == null)
+                    {
+                        throw new InvalidOperationException($"Could not find appropriate {methodCall.Method.Name} method");
+                    }
+
+                    // Make generic method with the correct types
+                    includeMethod = includeMethod.MakeGenericMethod(typeof(TEntity), body.Type);
+
+                    return query => (IIncludableQueryable<TEntity, object>)includeMethod.Invoke(null, new object[] { query, mappedLambda });
+                }
+            }
+        }
+
+        throw new ArgumentException("Invalid include expression format", nameof(includeExpression));
+    }
+
+    /// <summary>
+    /// Maps an order by expression from TModel to TEntity.
+    /// </summary>
+    /// <typeparam name="TModel">The source type</typeparam>
+    /// <typeparam name="TEntity">The destination type</typeparam>
+    /// <param name="orderByExpression">The order by expression to map</param>
+    /// <returns>A function that can be used to order a query</returns>
+    public static Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy<TModel, TEntity>(
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> orderByExpression)
+    {
+        ArgumentNullException.ThrowIfNull(orderByExpression);
+
+        if (orderByExpression.Body is MethodCallExpression methodCall)
+        {
+            // Get the lambda expression from the method call
+            if (methodCall.Arguments.Count > 1 &&
+                methodCall.Arguments[1] is UnaryExpression unary &&
+                unary.Operand is LambdaExpression lambda)
+            {
+                var parameter = Expression.Parameter(typeof(TEntity), "x");
+                var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
+                var body = visitor.Visit(lambda.Body);
+
+                var mappedLambda = Expression.Lambda(body, parameter);
+
+                // Determine the method name (OrderBy, OrderByDescending, ThenBy, etc.)
+                string methodName = methodCall.Method.Name;
+
+                // Get the generic method definition
+                MethodInfo methodInfo;
+                if (methodName == "OrderBy" || methodName == "ThenBy")
+                {
+                    methodInfo = typeof(Queryable).GetMethods()
+                        .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                        .MakeGenericMethod(typeof(TEntity), body.Type);
+                }
+                else if (methodName == "OrderByDescending" || methodName == "ThenByDescending")
+                {
+                    methodInfo = typeof(Queryable).GetMethods()
+                        .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                        .MakeGenericMethod(typeof(TEntity), body.Type);
+                }
+                else
+                {
+                    throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
+                }
+
+                return query => (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { query, mappedLambda });
+            }
+        }
+
+        throw new ArgumentException("Invalid order by expression format", nameof(orderByExpression));
+    }
+
+    /// <summary>
+    /// Maps a projection expression from TModel to TEntity.
+    /// </summary>
+    /// <typeparam name="TModel">The source type</typeparam>
+    /// <typeparam name="TEntity">The destination type</typeparam>
+    /// <typeparam name="TResult">The result type</typeparam>
+    /// <param name="projectionExpression">The projection expression to map</param>
+    /// <returns>A mapped projection expression</returns>
+    public static Expression<Func<TEntity, TResult>> MapProjection<TModel, TEntity, TResult>(
+        Expression<Func<TModel, TResult>> projectionExpression)
+    {
+        ArgumentNullException.ThrowIfNull(projectionExpression);
+
+        var parameter = Expression.Parameter(typeof(TEntity), "x");
+        var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
+        var body = visitor.Visit(projectionExpression.Body);
+
+        return Expression.Lambda<Func<TEntity, TResult>>(body, parameter);
+    }
+
+    #region Private Methods
 
     private static Func<Expression<Func<TSource, bool>>, Expression<Func<TDestination, bool>>> CompileExpressionMapping<TSource, TDestination>() =>
         predicate =>
@@ -463,4 +603,6 @@ public static class ExtensoMapper
             ? newValue
             : base.Visit(node);
     }
+
+    #endregion Private Methods
 }
