@@ -111,7 +111,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int actual = repository
             .Find(new SearchOptions<ProductModelViewModel>
             {
-                Include = x => x.Include(x => x.Products)
+                Include = query => query.Include(x => x.Products)
             })
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
@@ -133,7 +133,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             .Find(new SearchOptions<ProductModelViewModel>
             {
                 Query = x => x.Name.StartsWith(firstLetter),
-                Include = x => x.Include(x => x.Products)
+                Include = query => query.Include(x => x.Products)
             })
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
@@ -151,7 +151,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
         var query = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
-            Include = x => x.Include(x => x.Products)
+            Include = query => query.Include(x => x.Products)
         });
 
         int actual = query.Where(x => x.ProductModelId == randomProduct.ProductModelId)
@@ -174,7 +174,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             .FindAsync(new SearchOptions<ProductModelViewModel>
             {
                 Query = x => x.Name.StartsWith(firstLetter),
-                Include = x => x.Include(x => x.Products)
+                Include = query => query.Include(x => x.Products)
             });
 
         int actual = query.Where(x => x.ProductModelId == randomProduct.ProductModelId)
@@ -200,7 +200,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var entity = repository.FindOne(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.Name == productModel.Name,
-            Include = x => x.Include(x => x.Products)
+            Include = query => query.Include(x => x.Products)
         });
         Assert.NotNull(entity);
     }
@@ -221,7 +221,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var entity = await repository.FindOneAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.Name == productModel.Name,
-            Include = x => x.Include(x => x.Products)
+            Include = query => query.Include(x => x.Products)
         });
         Assert.NotNull(entity);
     }

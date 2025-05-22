@@ -68,7 +68,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
         int actual = repository
             .Find(new SearchOptions<ProductModel>
             {
-                Include = x => x.Include(x => x.Products)
+                Include = query => query.Include(x => x.Products)
             })
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
@@ -90,7 +90,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
             .Find(new SearchOptions<ProductModel>
             {
                 Query = x => x.Name.StartsWith(firstLetter),
-                Include = x => x.Include(x => x.Products)
+                Include = query => query.Include(x => x.Products)
             })
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
@@ -108,7 +108,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
 
         var query = await repository.FindAsync(new SearchOptions<ProductModel>
         {
-            Include = x => x.Include(x => x.Products)
+            Include = query => query.Include(x => x.Products)
         });
 
         int actual = query.Where(x => x.ProductModelId == randomProduct.ProductModelId)
@@ -130,7 +130,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
         var query = await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Query = x => x.Name.StartsWith(firstLetter),
-            Include = x => x.Include(x => x.Products)
+            Include = query => query.Include(x => x.Products)
         });
 
         int actual = query.Where(x => x.ProductModelId == randomProduct.ProductModelId)
@@ -156,7 +156,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
         var entity = repository.FindOne(new SearchOptions<ProductModel>
         {
             Query = x => x.Name == productModel.Name,
-            Include = x => x.Include(x => x.Products)
+            Include = query => query.Include(x => x.Products)
         });
         Assert.NotNull(entity);
     }
@@ -177,7 +177,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
         var entity = await repository.FindOneAsync(new SearchOptions<ProductModel>
         {
             Query = x => x.Name == productModel.Name,
-            Include = x => x.Include(x => x.Products)
+            Include = query => query.Include(x => x.Products)
         });
         Assert.NotNull(entity);
     }

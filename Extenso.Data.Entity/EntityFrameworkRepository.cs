@@ -37,7 +37,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
     /// <returns>An instance of IRepositoryConnectionlt;TEntity&gt;</returns>
     public virtual IRepositoryConnection<TEntity> OpenConnection()
     {
-        var context = contextFactory.GetContext();
+        var context = GetContext();
         return new EntityFrameworkRepositoryConnection<TEntity>(context, true);
     }
 
