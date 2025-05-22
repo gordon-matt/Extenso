@@ -218,40 +218,84 @@ public static class ExtensoMapper
 
         if (orderByExpression.Body is MethodCallExpression methodCall)
         {
-            // Get the lambda expression from the method call
-            if (methodCall.Arguments.Count > 1 &&
-                methodCall.Arguments[1] is UnaryExpression unary &&
-                unary.Operand is LambdaExpression lambda)
+            // Handle method chains
+            if (methodCall.Arguments[0] is MethodCallExpression previousCall)
             {
-                var parameter = Expression.Parameter(typeof(TEntity), "x");
-                var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
-                var body = visitor.Visit(lambda.Body);
+                // Recursively map the previous method call
+                var previousFunc = MapOrderBy<TModel, TEntity>(
+                    Expression.Lambda<Func<IQueryable<TModel>, IQueryable<TModel>>>(
+                        previousCall,
+                        orderByExpression.Parameters));
 
-                var mappedLambda = Expression.Lambda(body, parameter);
-
-                // Determine the method name (OrderBy, OrderByDescending, ThenBy, etc.)
-                string methodName = methodCall.Method.Name;
-
-                // Get the generic method definition
-                MethodInfo methodInfo;
-                if (methodName == "OrderBy" || methodName == "ThenBy")
+                // Map the current method call
+                if (methodCall.Arguments.Count > 1 &&
+                    methodCall.Arguments[1] is UnaryExpression unary &&
+                    unary.Operand is LambdaExpression lambda)
                 {
-                    methodInfo = typeof(Queryable).GetMethods()
-                        .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                        .MakeGenericMethod(typeof(TEntity), body.Type);
-                }
-                else if (methodName == "OrderByDescending" || methodName == "ThenByDescending")
-                {
-                    methodInfo = typeof(Queryable).GetMethods()
-                        .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                        .MakeGenericMethod(typeof(TEntity), body.Type);
-                }
-                else
-                {
-                    throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
-                }
+                    var parameter = Expression.Parameter(typeof(TEntity), "x");
+                    var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
+                    var body = visitor.Visit(lambda.Body);
+                    var mappedLambda = Expression.Lambda(body, parameter);
 
-                return query => (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { query, mappedLambda });
+                    string methodName = methodCall.Method.Name;
+                    MethodInfo methodInfo;
+                    if (methodName == "OrderBy" || methodName == "ThenBy")
+                    {
+                        methodInfo = typeof(Queryable).GetMethods()
+                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                            .MakeGenericMethod(typeof(TEntity), body.Type);
+                    }
+                    else if (methodName == "OrderByDescending" || methodName == "ThenByDescending")
+                    {
+                        methodInfo = typeof(Queryable).GetMethods()
+                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                            .MakeGenericMethod(typeof(TEntity), body.Type);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
+                    }
+
+                    return query =>
+                    {
+                        var orderedQuery = previousFunc(query);
+                        return (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { orderedQuery, mappedLambda });
+                    };
+                }
+            }
+            else
+            {
+                // Handle single method call
+                if (methodCall.Arguments.Count > 1 &&
+                    methodCall.Arguments[1] is UnaryExpression unary &&
+                    unary.Operand is LambdaExpression lambda)
+                {
+                    var parameter = Expression.Parameter(typeof(TEntity), "x");
+                    var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
+                    var body = visitor.Visit(lambda.Body);
+                    var mappedLambda = Expression.Lambda(body, parameter);
+
+                    string methodName = methodCall.Method.Name;
+                    MethodInfo methodInfo;
+                    if (methodName == "OrderBy" || methodName == "ThenBy")
+                    {
+                        methodInfo = typeof(Queryable).GetMethods()
+                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                            .MakeGenericMethod(typeof(TEntity), body.Type);
+                    }
+                    else if (methodName == "OrderByDescending" || methodName == "ThenByDescending")
+                    {
+                        methodInfo = typeof(Queryable).GetMethods()
+                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                            .MakeGenericMethod(typeof(TEntity), body.Type);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
+                    }
+
+                    return query => (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { query, mappedLambda });
+                }
             }
         }
 
