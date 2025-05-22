@@ -1,7 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
+using Extenso.Collections.Generic;
 using Extenso.Data.Entity;
 using Extenso.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using Z.EntityFramework.Plus;
 
@@ -75,88 +78,103 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #region Find
 
-    /// <summary>
-    ///  Finds all entities in the set.
-    /// </summary>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>A collection of all entities in the set.</returns>
-    public virtual IEnumerable<TModel> Find(params Expression<Func<TModel, dynamic>>[] includePaths)
+
+    private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
     {
-        using var context = GetContext();
         var query = context.Set<TEntity>().AsNoTracking();
 
-        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
-        foreach (var path in mappedIncludePaths)
+        if (options.Include is not null)
         {
-            query = query.Include(path);
+            var mappedInclude = MapInclude(options.Include);
+            query = mappedInclude(query);
         }
 
-        var entities = query.ToList();
-        return entities.Select(x => ToModel(x)).ToList();
+        if (options.Query is not null)
+        {
+            var mappedPredicate = MapPredicate(options.Query);
+            query = query.Where(mappedPredicate);
+        }
+
+        if (options.OrderBy is not null)
+        {
+            var mappedOrderBy = MapOrderBy(options.OrderBy);
+            query = mappedOrderBy(query);
+        }
+
+        return query;
     }
 
-    /// <summary>
-    /// Finds a filtered list of entities based on a predicate.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>A filtered list of entities based on a predicate.</returns>
-    public virtual IEnumerable<TModel> Find(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TModel> options)
     {
-        using var context = GetContext();
-        var query = context.Set<TEntity>().AsNoTracking();
-
-        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
-        foreach (var path in mappedIncludePaths)
+        if (options.PageSize > 0 && options.PageNumber > 0)
         {
-            query = query.Include(path);
+            query = query
+                .Skip((options.PageNumber - 1) * options.PageSize)
+                .Take(options.PageSize);
         }
-
-        var mappedPredicate = MapPredicate(predicate);
-        var entities = query.Where(mappedPredicate).ToList();
-        return entities.Select(x => ToModel(x)).ToList();
+        return query;
     }
 
-    /// <summary>
-    /// Asynchronously finds all entities in the set.
-    /// </summary>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>A collection of all entities in the set.</returns>
-    public virtual async Task<IEnumerable<TModel>> FindAsync(params Expression<Func<TModel, dynamic>>[] includePaths)
+    public IPagedCollection<TModel> Find(SearchOptions<TModel> options)
     {
         using var context = GetContext();
-        var query = context.Set<TEntity>().AsNoTracking();
+        var query = BuildBaseQuery(context, options);
+        int totalCount = query.Count();
+        query = ApplyPaging(query, options);
 
-        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
-        foreach (var path in mappedIncludePaths)
-        {
-            query = query.Include(path);
-        }
+        return new PagedList<TModel>(
+            query.ToList().Select(ToModel).ToList(),
+            options.PageNumber > 0 ? options.PageNumber - 1 : 1,
+            options.PageSize,
+            totalCount);
+    }
+    
+    public IPagedCollection<TResult> Find<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    {
+        using var context = GetContext();
+        var query = BuildBaseQuery(context, options);
+        var mappedProjection = MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
 
-        var entities = await query.ToListAsync();
-        return entities.Select(x => ToModel(x)).ToList();
+        int totalCount = projectedQuery.Count();
+        projectedQuery = ApplyPaging(projectedQuery, options);
+
+        return new PagedList<TResult>(
+            projectedQuery.ToList(),
+            options.PageNumber > 0 ? options.PageNumber - 1 : 1,
+            options.PageSize,
+            totalCount);
     }
 
-    /// <summary>
-    /// Asynchronously finds a filtered list of entities based on a predicate.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>A filtered list of entities based on a predicate.</returns>
-    public virtual async Task<IEnumerable<TModel>> FindAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public async Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TModel> options)
     {
         using var context = GetContext();
-        var query = context.Set<TEntity>().AsNoTracking();
+        var query = BuildBaseQuery(context, options);
+        int totalCount = await query.CountAsync();
+        query = ApplyPaging(query, options);
 
-        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
-        foreach (var path in mappedIncludePaths)
-        {
-            query = query.Include(path);
-        }
+        return new PagedList<TModel>(
+            (await query.ToListAsync()).Select(ToModel).ToList(),
+            options.PageNumber > 0 ? options.PageNumber - 1 : 1,
+            options.PageSize,
+            totalCount);
+    }
 
-        var mappedPredicate = MapPredicate(predicate);
-        var entities = await query.Where(mappedPredicate).ToListAsync();
-        return entities.Select(x => ToModel(x)).ToList();
+    public async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    {
+        using var context = GetContext();
+        var query = BuildBaseQuery(context, options);
+        var mappedProjection = MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
+
+        int totalCount = await projectedQuery.CountAsync();
+        projectedQuery = ApplyPaging(projectedQuery, options);
+
+        return new PagedList<TResult>(
+            await projectedQuery.ToListAsync(),
+            options.PageNumber > 0 ? options.PageNumber - 1 : 1,
+            options.PageSize,
+            totalCount);
     }
 
     /// <summary>
@@ -171,27 +189,21 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return ToModel(entity);
     }
 
-    /// <summary>
-    /// Finds an entity based on a predicate.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>The entity found, or null.</returns>
-    public virtual TModel FindOne(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public TModel FindOne(SearchOptions<TModel> options)
     {
-        var mappedPredicate = MapPredicate(predicate);
-
         using var context = GetContext();
-        var query = context.Set<TEntity>().AsNoTracking().Where(mappedPredicate);
-
-        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
-        foreach (var path in mappedIncludePaths)
-        {
-            query = query.Include(path);
-        }
-
+        var query = BuildBaseQuery(context, options);
         var entity = query.FirstOrDefault();
         return ToModel(entity);
+    }
+
+    public TResult FindOne<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    {
+        using var context = GetContext();
+        var query = BuildBaseQuery(context, options);
+        var mappedProjection = MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
+        return projectedQuery.FirstOrDefault();
     }
 
     /// <summary>
@@ -206,27 +218,21 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return ToModel(entity);
     }
 
-    /// <summary>
-    /// Asynchronously finds an entity based on a predicate.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>The entity found, or null.</returns>
-    public virtual async Task<TModel> FindOneAsync(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public async Task<TModel> FindOneAsync(SearchOptions<TModel> options)
     {
-        var mappedPredicate = MapPredicate(predicate);
-
         using var context = GetContext();
-        var query = context.Set<TEntity>().AsNoTracking().Where(mappedPredicate);
-
-        var mappedIncludePaths = includePaths.Select(x => MapInclude(x)).ToArray();
-        foreach (var path in mappedIncludePaths)
-        {
-            query = query.Include(path);
-        }
-
+        var query = BuildBaseQuery(context, options);
         var entity = await query.FirstOrDefaultAsync();
         return ToModel(entity);
+    }
+
+    public async Task<TResult> FindOneAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    {
+        using var context = GetContext();
+        var query = BuildBaseQuery(context, options);
+        var mappedProjection = MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
+        return await projectedQuery.FirstOrDefaultAsync();
     }
 
     #endregion Find
@@ -865,7 +871,15 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     public abstract Expression<Func<TEntity, bool>> MapPredicate(Expression<Func<TModel, bool>> predicate);
 
+    public abstract Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> MapInclude(
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
+
     public abstract Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
 
+    public abstract Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy(
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
+
     public abstract Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression);
+
+    public abstract Expression<Func<TEntity, TResult>> MapProjection<TResult>(Expression<Func<TModel, TResult>> projectionExpression);
 }

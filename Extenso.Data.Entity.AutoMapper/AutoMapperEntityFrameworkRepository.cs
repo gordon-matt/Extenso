@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.Extensions.ExpressionMapping;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace Extenso.Data.Entity.AutoMapper;
@@ -32,4 +34,16 @@ public class AutoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEntity
 
     public override Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression) =>
         mapper.MapExpression<Expression<Func<TEntity, TEntity>>>(updateExpression);
+    
+    public override Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> MapInclude(
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
+        mapper.MapExpressionAsInclude<TModel, TEntity>(includeExpression);
+
+    public override Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy(
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
+        mapper.MapExpressionAsOrderBy<TModel, TEntity>(includeExpression);
+
+    public override Expression<Func<TEntity, TResult>> MapProjection<TResult>(
+        Expression<Func<TModel, TResult>> projectionExpression) =>
+        mapper.MapExpression<Expression<Func<TEntity, TResult>>>(projectionExpression);
 }

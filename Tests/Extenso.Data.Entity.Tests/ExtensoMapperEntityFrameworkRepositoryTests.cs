@@ -85,7 +85,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var models = repository.Find(include => include.Products);
+        var models = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            Include = x => x.Include(x => x.Products)
+        });
 
         int actual = models
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
@@ -104,7 +107,12 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        int actual = repository.Find(x => x.Name.StartsWith(firstLetter), include => include.Products)
+        int actual = repository
+            .Find(new SearchOptions<ProductModelViewModel>
+            {
+                Query = x => x.Name.StartsWith(firstLetter),
+                Include = x => x.Include(x => x.Products)
+            })
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
             .Count();
@@ -119,7 +127,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var query = await repository.FindAsync(include => include.Products);
+        var query = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        {
+            Include = x => x.Include(x => x.Products)
+        });
 
         int actual = query.Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
@@ -137,7 +148,11 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var query = await repository.FindAsync(x => x.Name.StartsWith(firstLetter), include => include.Products);
+        var query = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => x.Name.StartsWith(firstLetter),
+            Include = x => x.Include(x => x.Products)
+        });
 
         int actual = query.Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
@@ -159,7 +174,11 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
-        var entity = repository.FindOne(x => x.Name == productModel.Name, include => include.Products);
+        var entity = repository.FindOne(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => x.Name == productModel.Name,
+            Include = x => x.Include(x => x.Products)
+        });
         Assert.NotNull(entity);
     }
 
@@ -176,7 +195,11 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
-        var entity = await repository.FindOneAsync(x => x.Name == productModel.Name, include => include.Products);
+        var entity = await repository.FindOneAsync(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => x.Name == productModel.Name,
+            Include = x => x.Include(x => x.Products)
+        });
         Assert.NotNull(entity);
     }
 
@@ -277,7 +300,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         int count = repository.Count();
 
-        var models = repository.Find().Take(5);
+        var models = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => true
+        }).Take(5);
         Assert.NotEmpty(models);
 
         int rowsAffected = repository.Delete(models);
@@ -308,7 +334,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         int count = await repository.CountAsync();
 
-        var models = (await repository.FindAsync()).Take(5);
+        var models = (await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => true
+        })).Take(5);
         Assert.NotEmpty(models);
 
         int rowsAffected = await repository.DeleteAsync(models);
@@ -409,7 +438,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string namePrefix = "Foo Bar Baz";
 
-        var models = repository.Find(x => randomProductIds.Contains(x.ProductModelId));
+        var models = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => randomProductIds.Contains(x.ProductModelId)
+        });
         int count1 = models.Count();
         foreach (var model in models)
         {
@@ -419,7 +451,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         int rowsAffected = repository.Update(models);
         Assert.Equal(count1, rowsAffected);
 
-        var entitiesAgain = repository.Find(x => x.Name == namePrefix);
+        var entitiesAgain = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => x.Name == namePrefix
+        });
         Assert.Equal(count1, entitiesAgain.Count());
     }
 
@@ -450,7 +485,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string namePrefix = "Foo Bar Baz";
 
-        var models = await repository.FindAsync(x => randomProductIds.Contains(x.ProductModelId));
+        var models = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => randomProductIds.Contains(x.ProductModelId)
+        });
         int count1 = models.Count();
         foreach (var model in models)
         {
@@ -460,7 +498,10 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         int rowsAffected = await repository.UpdateAsync(models);
         Assert.Equal(count1, rowsAffected);
 
-        var entitiesAgain = await repository.FindAsync(x => x.Name == namePrefix);
+        var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => x.Name == namePrefix
+        });
         Assert.Equal(count1, entitiesAgain.Count());
     }
 

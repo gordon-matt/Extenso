@@ -118,7 +118,10 @@ public class GenericODataControllerTests : IDisposable
     [Fact]
     public async Task Put_Returns_Updated()
     {
-        var entities = repository.Find();
+        var entities = repository.Find(new SearchOptions<ProductModel>
+        {
+            Query = x => true
+        });
         var entity = new Random().NextFrom(entities);
         entity.Name = "Foo Bar Baz";
 
@@ -140,7 +143,10 @@ public class GenericODataControllerTests : IDisposable
     [Fact]
     public async Task Put_Returns_BadRequest_2()
     {
-        var entities = repository.Find();
+        var entities = repository.Find(new SearchOptions<ProductModel>
+        {
+            Query = x => true
+        });
         var entity = new Random().NextFrom(entities);
         var actionResult = await odataController.Put(entity.ProductModelId + 1, entity);
         actionResult.Should().BeOfType<BadRequestResult>();
@@ -149,7 +155,10 @@ public class GenericODataControllerTests : IDisposable
     [Fact]
     public async Task Patch_Returns_Updated()
     {
-        var entities = repository.Find();
+        var entities = repository.Find(new SearchOptions<ProductModel>
+        {
+            Query = x => true
+        });
         var entity = new Random().NextFrom(entities);
         string catalogDescription = entity.CatalogDescription; // Keeping track of this to ensure the patch doesn't override anything other than what we're setting (Name)
 

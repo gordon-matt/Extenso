@@ -12,4 +12,11 @@ public static class Extensions
         Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeFunc) => includeFunc == null
             ? throw new ArgumentNullException(nameof(includeFunc))
             : mapper.MapExpressionAsInclude<Expression<Func<IQueryable<TDest>, IIncludableQueryable<TDest, object>>>>(includeFunc).Compile();
+
+
+    public static Func<IQueryable<TDest>, IOrderedQueryable<TDest>> MapExpressionAsOrderBy<TSource, TDest>(
+        this IMapper mapper,
+        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> orderByFunc) => orderByFunc == null
+            ? throw new ArgumentNullException(nameof(orderByFunc))
+            : mapper.MapExpressionAsInclude<Expression<Func<IQueryable<TDest>, IOrderedQueryable<TDest>>>>(orderByFunc).Compile();
 }

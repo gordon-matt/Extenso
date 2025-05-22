@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Extenso.Collections.Generic;
 
 namespace Extenso.Data.Entity;
 
@@ -26,32 +27,32 @@ public interface IRepository<TEntity> where TEntity : class
     /// <summary>
     ///  Finds all entities in the set.
     /// </summary>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
+    /// <param name="options"></param>
     /// <returns>A collection of all entities in the set.</returns>
-    IEnumerable<TEntity> Find(params Expression<Func<TEntity, dynamic>>[] includePaths);
+    IPagedCollection<TEntity> Find(SearchOptions<TEntity> options);
 
     /// <summary>
-    /// Finds a filtered list of entities based on a predicate.
+    ///  Finds all entities in the set.
     /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>A filtered list of entities based on a predicate.</returns>
-    IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, dynamic>>[] includePaths);
-
-    /// <summary>
-    /// Asynchronously finds all entities in the set.
-    /// </summary>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
+    /// <param name="options"></param>
+    /// <param name="projection"></param>
     /// <returns>A collection of all entities in the set.</returns>
-    Task<IEnumerable<TEntity>> FindAsync(params Expression<Func<TEntity, dynamic>>[] includePaths);
+    IPagedCollection<TResult> Find<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
 
     /// <summary>
-    /// Asynchronously finds a filtered list of entities based on a predicate.
+    ///  Finds all entities in the set.
     /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
-    /// <returns>A filtered list of entities based on a predicate.</returns>
-    Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, dynamic>>[] includePaths);
+    /// <param name="options"></param>
+    /// <returns>A collection of all entities in the set.</returns>
+    Task<IPagedCollection<TEntity>> FindAsync(SearchOptions<TEntity> options);
+
+    /// <summary>
+    ///  Finds all entities in the set.
+    /// </summary>
+    /// <param name="options"></param>
+    /// <param name="projection"></param>
+    /// <returns>A collection of all entities in the set.</returns>
+    Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
 
     /// <summary>
     ///  Finds an entity with the given primary key values.
@@ -63,10 +64,17 @@ public interface IRepository<TEntity> where TEntity : class
     /// <summary>
     /// Finds an entity based on a predicate.
     /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
+    /// <param name="options"></param>
     /// <returns>The entity found, or null.</returns>
-    TEntity FindOne(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, dynamic>>[] includePaths);
+    TEntity FindOne(SearchOptions<TEntity> options);
+
+    /// <summary>
+    /// Finds an entity based on a predicate.
+    /// </summary>
+    /// <param name="options"></param>
+    /// <param name="projection"></param>
+    /// <returns>The entity found, or null.</returns>
+    TResult FindOne<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
 
     /// <summary>
     ///  Asynchronously finds an entity with the given primary key values.
@@ -78,10 +86,17 @@ public interface IRepository<TEntity> where TEntity : class
     /// <summary>
     /// Asynchronously finds an entity based on a predicate.
     /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="includePaths">Specifies related entities to include in the query results.</param>
+    /// <param name="options"></param>
     /// <returns>The entity found, or null.</returns>
-    Task<TEntity> FindOneAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, dynamic>>[] includePaths);
+    Task<TEntity> FindOneAsync(SearchOptions<TEntity> options);
+
+    /// <summary>
+    /// Finds an entity based on a predicate.
+    /// </summary>
+    /// <param name="options"></param>
+    /// <param name="projection"></param>
+    /// <returns>The entity found, or null.</returns>
+    Task<TResult> FindOneAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
 
     #endregion Find
 
