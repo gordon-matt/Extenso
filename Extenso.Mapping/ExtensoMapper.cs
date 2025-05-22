@@ -541,6 +541,12 @@ public static class ExtensoMapper
             {
                 if (key is PropertyInfo sourceProp)
                 {
+                    // For projections, we want to keep the original property
+                    if (sourceProp.DeclaringType != typeof(TModel) && sourceProp.DeclaringType != typeof(TEntity))
+                    {
+                        return sourceProp;
+                    }
+
                     var destProp = typeof(TEntity).GetProperty(sourceProp.Name);
                     if (destProp != null) return destProp;
 

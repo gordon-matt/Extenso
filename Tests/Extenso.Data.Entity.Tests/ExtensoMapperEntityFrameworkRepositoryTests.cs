@@ -225,7 +225,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
-            x => new { x.Name, x.CatalogDescription }
+            x => new ProductModelProjection { Name = x.Name, CatalogDescription = x.CatalogDescription }
         ).First();
 
         Assert.NotNull(result);
@@ -244,7 +244,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
-            x => new { x.Name, x.CatalogDescription }
+            x => new ProductModelProjection { Name = x.Name, CatalogDescription = x.CatalogDescription }
         )).First();
 
         Assert.NotNull(result);
@@ -263,7 +263,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
-            x => new { x.Name, x.CatalogDescription }
+            x => new ProductModelProjection { Name = x.Name, CatalogDescription = x.CatalogDescription }
         );
 
         Assert.NotNull(result);
@@ -282,7 +282,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
-            x => new { x.Name, x.CatalogDescription }
+            x => new ProductModelProjection { Name = x.Name, CatalogDescription = x.CatalogDescription }
         );
 
         Assert.NotNull(result);
@@ -722,4 +722,11 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     }
 
     #endregion Dispose Pattern
+}
+
+public class ProductModelProjection
+{
+    public string Name { get; set; }
+
+    public string CatalogDescription { get; set; }
 }
