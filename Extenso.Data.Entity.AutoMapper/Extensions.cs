@@ -18,5 +18,5 @@ public static class Extensions
         this IMapper mapper,
         Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> orderByFunc) => orderByFunc == null
             ? throw new ArgumentNullException(nameof(orderByFunc))
-            : mapper.MapExpressionAsInclude<Expression<Func<IQueryable<TDest>, IOrderedQueryable<TDest>>>>(orderByFunc).Compile();
+            : mapper.MapExpression<Expression<Func<IQueryable<TDest>, IOrderedQueryable<TDest>>>>(orderByFunc).Compile();
 }

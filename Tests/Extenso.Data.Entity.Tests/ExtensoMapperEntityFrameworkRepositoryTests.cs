@@ -28,8 +28,12 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         ExtensoMapper.Register<ProductViewModel, Product>(x => x.ToEntity());
         ExtensoMapper.Register<Product, ProductViewModel>(x => x.ToModel());
+
         ExtensoMapper.Register<ProductModelViewModel, ProductModel>(x => x.ToEntity());
         ExtensoMapper.Register<ProductModel, ProductModelViewModel>(x => x.ToModel());
+
+        ExtensoMapper.Register<ProductSubcategoryViewModel, ProductSubcategory>(x => x.ToEntity());
+        ExtensoMapper.Register<ProductSubcategory, ProductSubcategoryViewModel>(x => x.ToModel());
 
         var optionsBuilder = new DbContextOptionsBuilder<AdventureWorks2019Context>();
         optionsBuilder.UseInMemoryDatabase("AdventureWorks2019");
@@ -60,7 +64,14 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             .RuleFor(x => x.FinishedGoodsFlag, x => x.Random.Bool())
             .RuleFor(x => x.MakeFlag, x => x.Random.Bool())
             .RuleFor(x => x.Rowguid, x => x.Random.Guid())
-            .RuleFor(x => x.ModifiedDate, x => x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1)));
+            .RuleFor(x => x.ModifiedDate, x => x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1)))
+            .RuleFor(x => x.ProductSubcategory, x => new ProductSubcategoryViewModel
+            {
+                Name = x.Commerce.Categories(1).First(),
+                Rowguid = x.Random.Guid(),
+                ModifiedDate = x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1)),
+                ProductCategoryId = x.Random.Int(),
+            });
 
         products = productFaker.Generate(100);
         context.Products.AddRange(products.Select(x => x.MapTo<Product>()));
@@ -201,6 +212,177 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             Include = query => query.Include(x => x.Products)
         });
         Assert.NotNull(entity);
+    }
+
+    [Fact]
+    public void Find_With_Projection()
+    {
+        var randomProduct = new Random().NextFrom(products);
+        var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        var result = repository.Find(
+            new SearchOptions<ProductModelViewModel>
+            {
+                Query = x => x.ProductModelId == productModel.ProductModelId
+            },
+            x => new { x.Name, x.CatalogDescription }
+        ).First();
+
+        Assert.NotNull(result);
+        Assert.Equal(productModel.Name, result.Name);
+        Assert.Equal(productModel.CatalogDescription, result.CatalogDescription);
+    }
+
+    [Fact]
+    public async Task FindAsync_With_Projection()
+    {
+        var randomProduct = new Random().NextFrom(products);
+        var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        var result = (await repository.FindAsync(
+            new SearchOptions<ProductModelViewModel>
+            {
+                Query = x => x.ProductModelId == productModel.ProductModelId
+            },
+            x => new { x.Name, x.CatalogDescription }
+        )).First();
+
+        Assert.NotNull(result);
+        Assert.Equal(productModel.Name, result.Name);
+        Assert.Equal(productModel.CatalogDescription, result.CatalogDescription);
+    }
+
+    [Fact]
+    public void FindOne_With_Projection()
+    {
+        var randomProduct = new Random().NextFrom(products);
+        var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        var result = repository.FindOne(
+            new SearchOptions<ProductModelViewModel>
+            {
+                Query = x => x.ProductModelId == productModel.ProductModelId
+            },
+            x => new { x.Name, x.CatalogDescription }
+        );
+
+        Assert.NotNull(result);
+        Assert.Equal(productModel.Name, result.Name);
+        Assert.Equal(productModel.CatalogDescription, result.CatalogDescription);
+    }
+
+    [Fact]
+    public async Task FindOneAsync_With_Projection()
+    {
+        var randomProduct = new Random().NextFrom(products);
+        var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        var result = await repository.FindOneAsync(
+            new SearchOptions<ProductModelViewModel>
+            {
+                Query = x => x.ProductModelId == productModel.ProductModelId
+            },
+            x => new { x.Name, x.CatalogDescription }
+        );
+
+        Assert.NotNull(result);
+        Assert.Equal(productModel.Name, result.Name);
+        Assert.Equal(productModel.CatalogDescription, result.CatalogDescription);
+    }
+
+    [Fact]
+    public void Find_With_OrderBy()
+    {
+        var results = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            OrderBy = query => query.OrderBy(x => x.Name)
+        }).ToList();
+
+        var expected = productModels.OrderBy(x => x.Name).ToList();
+        Assert.Equal(expected.Count, results.Count);
+        for (int i = 0; i < expected.Count; i++)
+        {
+            Assert.Equal(expected[i].Name, results[i].Name);
+        }
+    }
+
+    [Fact]
+    public void Find_With_OrderByDescending()
+    {
+        var results = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            OrderBy = query => query.OrderByDescending(x => x.Name)
+        }).ToList();
+
+        var expected = productModels.OrderByDescending(x => x.Name).ToList();
+        Assert.Equal(expected.Count, results.Count);
+        for (int i = 0; i < expected.Count; i++)
+        {
+            Assert.Equal(expected[i].Name, results[i].Name);
+        }
+    }
+
+    [Fact]
+    public void Find_With_MultiLevel_OrderBy()
+    {
+        var results = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            OrderBy = query => query
+                .OrderBy(x => x.Name)
+                .ThenByDescending(x => x.ModifiedDate)
+        }).ToList();
+
+        var expected = productModels
+            .OrderBy(x => x.Name)
+            .ThenByDescending(x => x.ModifiedDate)
+            .ToList();
+
+        Assert.Equal(expected.Count, results.Count);
+        for (int i = 0; i < expected.Count; i++)
+        {
+            Assert.Equal(expected[i].Name, results[i].Name);
+            Assert.Equal(expected[i].ModifiedDate, results[i].ModifiedDate);
+        }
+    }
+
+    [Fact]
+    public void Find_With_MultiLevel_Include()
+    {
+        var randomProduct = new Random().NextFrom(products);
+        var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        var result = repository.Find(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => x.ProductModelId == productModel.ProductModelId,
+            Include = query => query
+                .Include(x => x.Products)
+                .ThenInclude(x => x.ProductSubcategory)
+        }).First();
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Products);
+        Assert.NotEmpty(result.Products);
+        Assert.NotNull(result.Products.First().ProductSubcategory);
+    }
+
+    [Fact]
+    public async Task FindAsync_With_MultiLevel_Include()
+    {
+        var randomProduct = new Random().NextFrom(products);
+        var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        var result = (await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        {
+            Query = x => x.ProductModelId == productModel.ProductModelId,
+            Include = query => query
+                .Include(x => x.Products)
+                .ThenInclude(x => x.ProductSubcategory)
+        })).First();
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.Products);
+        Assert.NotEmpty(result.Products);
+        Assert.NotNull(result.Products.First().ProductSubcategory);
     }
 
     #endregion Find

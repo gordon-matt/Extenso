@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Extenso.TestLib.ViewModels;
+﻿namespace Extenso.TestLib.ViewModels;
 
 public class ProductViewModel
 {
@@ -57,4 +51,6 @@ public class ProductViewModel
     public Guid Rowguid { get; set; }
 
     public DateTime ModifiedDate { get; set; }
+
+    public ProductSubcategoryViewModel ProductSubcategory { get; set; }
 }

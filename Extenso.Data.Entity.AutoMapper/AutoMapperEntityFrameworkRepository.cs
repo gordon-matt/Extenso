@@ -40,8 +40,8 @@ public class AutoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEntity
         mapper.MapExpressionAsInclude<TModel, TEntity>(includeExpression);
 
     public override Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy(
-        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
-        mapper.MapExpressionAsOrderBy<TModel, TEntity>(includeExpression);
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> orderByExpression) =>
+        mapper.MapExpressionAsOrderBy<TModel, TEntity>(orderByExpression);
 
     public override Expression<Func<TEntity, TResult>> MapProjection<TResult>(
         Expression<Func<TModel, TResult>> projectionExpression) =>

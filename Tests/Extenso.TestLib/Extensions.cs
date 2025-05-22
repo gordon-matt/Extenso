@@ -60,7 +60,8 @@ public static class Extensions
         SellEndDate = entity.SellEndDate,
         DiscontinuedDate = entity.DiscontinuedDate,
         Rowguid = entity.Rowguid,
-        ModifiedDate = entity.ModifiedDate
+        ModifiedDate = entity.ModifiedDate,
+        ProductSubcategory = entity.ProductSubcategory?.ToModel()
     };
 
     public static ProductModel ToEntity(this ProductModelViewModel model) => new()
@@ -82,5 +83,23 @@ public static class Extensions
         Rowguid = entity.Rowguid,
         ModifiedDate = entity.ModifiedDate,
         Products = entity.Products.Select(p => p.ToModel()).ToList()
+    };
+
+    public static ProductSubcategory ToEntity(this ProductSubcategoryViewModel model) => new()
+    {
+        ProductSubcategoryId = model.ProductSubcategoryId,
+        ProductCategoryId = model.ProductCategoryId,
+        Name = model.Name,
+        Rowguid = model.Rowguid,
+        ModifiedDate = model.ModifiedDate
+    };
+
+    public static ProductSubcategoryViewModel ToModel(this ProductSubcategory entity) => new()
+    {
+        ProductSubcategoryId = entity.ProductSubcategoryId,
+        ProductCategoryId = entity.ProductCategoryId,
+        Name = entity.Name,
+        Rowguid = entity.Rowguid,
+        ModifiedDate = entity.ModifiedDate,
     };
 }
