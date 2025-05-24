@@ -854,7 +854,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         if (options.Include is not null)
         {
             var mappedInclude = MapInclude(options.Include);
-            query = mappedInclude(query);
+            query = mappedInclude(query); // Happens here. I believe because the `query` variable is an EntityQueryable
         }
 
         if (options.Query is not null)

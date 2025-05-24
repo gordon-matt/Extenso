@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Mapping;
@@ -157,51 +156,67 @@ public static class ExtensoMapper
 
         if (includeExpression.Body is MethodCallExpression methodCall)
         {
-            // Handle Include/ThenInclude methods
-            if (methodCall.Method.Name == "Include" || methodCall.Method.Name == "ThenInclude")
+            if (methodCall.Method.Name is "Include" or "ThenInclude")
             {
-                // Get the lambda expression from the method call
                 if (methodCall.Arguments.Count > 1 &&
                     methodCall.Arguments[1] is UnaryExpression unary &&
                     unary.Operand is LambdaExpression lambda)
                 {
-                    // Create a new parameter for the entity type
                     var parameter = Expression.Parameter(typeof(TEntity), "x");
                     var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
                     var body = visitor.Visit(lambda.Body);
-
-                    // Create the new lambda expression
                     var mappedLambda = Expression.Lambda(body, parameter);
 
-                    // Get all Include/ThenInclude methods
-                    var methods = typeof(EntityFrameworkQueryableExtensions)
-                        .GetMethods()
-                        .Where(m => m.Name == methodCall.Method.Name)
-                        .ToList();
-
-                    // Find the method with matching parameter types
-                    var includeMethod = methods.FirstOrDefault(m =>
+                    return query =>
                     {
-                        var parameters = m.GetParameters();
-                        return parameters.Length == 2 &&
-                               parameters[1].ParameterType.IsGenericType &&
-                               parameters[1].ParameterType.GetGenericTypeDefinition() == typeof(Expression<>);
-                    });
+                        // For first-level includes, convert to IIncludableQueryable
+                        if (methodCall.Method.Name == "Include")
+                        {
+                            return ConvertToIncludable(query, mappedLambda);
+                        }
 
-                    if (includeMethod == null)
-                    {
-                        throw new InvalidOperationException($"Could not find appropriate {methodCall.Method.Name} method");
-                    }
+                        // For ThenInclude, we should already have an IIncludableQueryable
+                        var includeMethod = typeof(EntityFrameworkQueryableExtensions)
+                            .GetMethods()
+                            .First(m =>
+                                m.Name == "ThenInclude" &&
+                                m.GetParameters().Length == 2 &&
+                                m.GetGenericArguments().Length == 3);
 
-                    // Make generic method with the correct types
-                    includeMethod = includeMethod.MakeGenericMethod(typeof(TEntity), body.Type);
+                        var prevPropType = methodCall.Method.GetGenericArguments()[1];
+                        var mappedPrevType = ExpressionMappingVisitor<TModel, TEntity>.GetMappedType(prevPropType) ?? prevPropType;
 
-                    return query => (IIncludableQueryable<TEntity, object>)includeMethod.Invoke(null, new object[] { query, mappedLambda });
+                        includeMethod = includeMethod.MakeGenericMethod(typeof(TEntity), mappedPrevType, body.Type);
+
+                        // Problem is here
+                        object result = includeMethod.Invoke(null, [query, mappedLambda]);
+                        return (IIncludableQueryable<TEntity, object>)result;
+                    };
                 }
             }
         }
 
         throw new ArgumentException("Invalid include expression format", nameof(includeExpression));
+    }
+
+    private static IIncludableQueryable<TEntity, object> ConvertToIncludable<TEntity>(IQueryable<TEntity> query, LambdaExpression includeExpression)
+    {
+        // Get the Include method
+        var includeMethod = typeof(EntityFrameworkQueryableExtensions)
+            .GetMethods()
+            .First(m =>
+                m.Name == "Include" &&
+                m.GetParameters().Length == 2 &&
+                m.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(Expression<>));
+
+        // Create generic Include method
+        includeMethod = includeMethod.MakeGenericMethod(typeof(TEntity), includeExpression.ReturnType);
+
+        // Execute Include to get an IIncludableQueryable
+        object includedQuery = includeMethod.Invoke(null, [query, includeExpression]);
+
+        // This cast should now work since Include returns IIncludableQueryable
+        return (IIncludableQueryable<TEntity, object>)includedQuery;
     }
 
     /// <summary>
@@ -239,13 +254,7 @@ public static class ExtensoMapper
 
                     string methodName = methodCall.Method.Name;
                     MethodInfo methodInfo;
-                    if (methodName == "OrderBy" || methodName == "ThenBy")
-                    {
-                        methodInfo = typeof(Queryable).GetMethods()
-                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type);
-                    }
-                    else if (methodName == "OrderByDescending" || methodName == "ThenByDescending")
+                    if (methodName is "OrderBy" or "ThenBy")
                     {
                         methodInfo = typeof(Queryable).GetMethods()
                             .First(m => m.Name == methodName && m.GetParameters().Length == 2)
@@ -253,7 +262,11 @@ public static class ExtensoMapper
                     }
                     else
                     {
-                        throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
+                        methodInfo = methodName is "OrderByDescending" or "ThenByDescending"
+                            ? typeof(Queryable).GetMethods()
+                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                            .MakeGenericMethod(typeof(TEntity), body.Type)
+                            : throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
                     }
 
                     return query =>
@@ -277,13 +290,7 @@ public static class ExtensoMapper
 
                     string methodName = methodCall.Method.Name;
                     MethodInfo methodInfo;
-                    if (methodName == "OrderBy" || methodName == "ThenBy")
-                    {
-                        methodInfo = typeof(Queryable).GetMethods()
-                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type);
-                    }
-                    else if (methodName == "OrderByDescending" || methodName == "ThenByDescending")
+                    if (methodName is "OrderBy" or "ThenBy")
                     {
                         methodInfo = typeof(Queryable).GetMethods()
                             .First(m => m.Name == methodName && m.GetParameters().Length == 2)
@@ -291,7 +298,11 @@ public static class ExtensoMapper
                     }
                     else
                     {
-                        throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
+                        methodInfo = methodName is "OrderByDescending" or "ThenByDescending"
+                            ? typeof(Queryable).GetMethods()
+                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
+                            .MakeGenericMethod(typeof(TEntity), body.Type)
+                            : throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
                     }
 
                     return query => (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { query, mappedLambda });
@@ -480,17 +491,12 @@ public static class ExtensoMapper
         {
             var newExpression = (NewExpression)Visit(node.NewExpression);
 
-            var bindings = node.Bindings.Select(binding =>
-            {
-                if (binding is MemberAssignment assignment)
-                {
-                    return Expression.Bind(
+            var bindings = node.Bindings.Select(binding => binding is MemberAssignment assignment
+                    ? Expression.Bind(
                         GetMappedMember(binding.Member) ?? binding.Member,
                         Visit(assignment.Expression)
-                    );
-                }
-                return binding;
-            });
+                    )
+                    : binding);
 
             return Expression.MemberInit(newExpression, bindings);
         }
@@ -532,16 +538,13 @@ public static class ExtensoMapper
             var mappedType = GetMappedType(node.Type) ?? node.Type;
             var args = node.Arguments.Select(Visit);
 
-            if (node.Members != null)
-            {
-                return Expression.New(
+            return node.Members != null
+                ? Expression.New(
                     GetMatchingConstructor(mappedType, node.Constructor),
                     args,
                     node.Members.Select(m => GetMappedMember(m) ?? m)
-                );
-            }
-
-            return Expression.New(
+                )
+                : Expression.New(
                 GetMatchingConstructor(mappedType, node.Constructor),
                 args
             );
@@ -563,25 +566,17 @@ public static class ExtensoMapper
             if (sourceDeclaringType == null) return null;
 
             var mappedType = GetMappedType(sourceDeclaringType);
-            if (mappedType != null)
-            {
-                return mappedType.GetProperty(sourceMember.Name,
-                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            }
-
-            return null;
+            return mappedType != null
+                ? mappedType.GetProperty(sourceMember.Name,
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)
+                : (MemberInfo)null;
         }
 
-        private static MemberInfo GetMappedMember(MemberInfo sourceMember)
-        {
-            if (sourceMember.DeclaringType.IsPrimitive ||
+        private static MemberInfo GetMappedMember(MemberInfo sourceMember) => sourceMember.DeclaringType.IsPrimitive ||
                 sourceMember.DeclaringType == typeof(string) ||
-                sourceMember.DeclaringType == typeof(decimal))
-            {
-                return sourceMember;
-            }
-
-            return memberMappingsCache.GetOrAdd(sourceMember, key =>
+                sourceMember.DeclaringType == typeof(decimal)
+                ? sourceMember
+                : memberMappingsCache.GetOrAdd(sourceMember, key =>
             {
                 if (key is PropertyInfo sourceProp)
                 {
@@ -603,9 +598,8 @@ public static class ExtensoMapper
                 }
                 return sourceMember; // Return original if no mapping found
             });
-        }
 
-        private static Type GetMappedType(Type sourceType)
+        internal static Type GetMappedType(Type sourceType)
         {
             if (sourceType == null) return null;
 
