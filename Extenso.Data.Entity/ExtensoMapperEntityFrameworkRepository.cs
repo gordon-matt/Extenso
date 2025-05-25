@@ -33,7 +33,7 @@ public class ExtensoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEnt
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
         ExtensoMapper.MapInclude<TModel, TEntity>(includeExpression);
 
-    public override Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy(
+    public override Func<IQueryable<TEntity>, IQueryable<TEntity>> MapOrderBy(
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
         ExtensoMapper.MapOrderBy<TModel, TEntity>(includeExpression);
 

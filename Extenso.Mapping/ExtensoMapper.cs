@@ -77,11 +77,9 @@ public static class ExtensoMapper
     {
         ArgumentNullException.ThrowIfNull(includePath);
 
-        var parameter = Expression.Parameter(typeof(TDestination), "x");
-        var visitor = new ExpressionMappingVisitor<TSource, TDestination>(parameter);
-        var body = visitor.Visit(includePath.Body);
-
-        return Expression.Lambda<Func<TDestination, TProperty>>(body, parameter);
+        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
+        var newInclude = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(includePath, mapping);
+        return (Expression<Func<TDestination, TProperty>>)newInclude;
     }
 
     /// <summary>
@@ -132,135 +130,55 @@ public static class ExtensoMapper
     {
         ArgumentNullException.ThrowIfNull(updateFactory);
 
-        var parameter = Expression.Parameter(typeof(TDestination), "x");
-        var visitor = new ExpressionMappingVisitor<TSource, TDestination>(parameter);
-
-        var body = (MemberInitExpression)visitor.Visit(updateFactory.Body);
-
-        return Expression.Lambda<Func<TDestination, TDestination>>(body, parameter);
+        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
+        var newUpdate = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(updateFactory, mapping);
+        return (Expression<Func<TDestination, TDestination>>)newUpdate;
     }
 
     /// <summary>
-    /// Maps an include expression from TModel to TEntity for Entity Framework.
+    /// Maps an include expression from TSource to TDestination for Entity Framework.
     /// </summary>
-    /// <typeparam name="TModel">The source type</typeparam>
-    /// <typeparam name="TEntity">The destination type</typeparam>
+    /// <typeparam name="TSource">The source type</typeparam>
+    /// <typeparam name="TDestination">The destination type</typeparam>
     /// <param name="includeExpression">The include expression to map</param>
     /// <returns>A function that can be used to include related entities in a query</returns>
 
-    public static Func<IQueryable<TEntity>, IQueryable<TEntity>> MapInclude<TModel, TEntity>(
-        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression)
+    public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapInclude<TSource, TDestination>(
+        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeExpression) => MapQuery<TSource, TDestination>(includeExpression);
+
+    public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapOrderBy<TSource, TDestination>(
+        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> orderByExpression) => MapQuery<TSource, TDestination>(orderByExpression);
+
+    private static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapQuery<TSource, TDestination>(
+       Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> queryExpression)
     {
-        ArgumentNullException.ThrowIfNull(includeExpression);
+        ArgumentNullException.ThrowIfNull(queryExpression);
 
-        var mapping = new Dictionary<Type, Type> { { typeof(TModel), typeof(TEntity) } };
-        var newInclude = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(includeExpression, mapping);
+        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
+        var newInclude = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(queryExpression, mapping);
 
-        var newBody = Expression.Convert(newInclude.Body, typeof(IQueryable<TEntity>));
-        var lambda = Expression.Lambda<Func<IQueryable<TEntity>, IQueryable<TEntity>>>(
-            newBody, newInclude.Parameters[0]);
+        var newBody = Expression.Convert(newInclude.Body, typeof(IQueryable<TDestination>));
+        var lambda = Expression.Lambda<Func<IQueryable<TDestination>, IQueryable<TDestination>>>(newBody, newInclude.Parameters[0]);
 
         return lambda.Compile();
     }
 
     /// <summary>
-    /// Maps an order by expression from TModel to TEntity.
+    /// Maps a projection expression from TSource to TDestination.
     /// </summary>
-    /// <typeparam name="TModel">The source type</typeparam>
-    /// <typeparam name="TEntity">The destination type</typeparam>
-    /// <param name="orderByExpression">The order by expression to map</param>
-    /// <returns>A function that can be used to order a query</returns>
-    public static Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy<TModel, TEntity>(
-        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> orderByExpression)
-    {
-        ArgumentNullException.ThrowIfNull(orderByExpression);
-
-        if (orderByExpression.Body is MethodCallExpression methodCall)
-        {
-            // Handle method chains
-            if (methodCall.Arguments[0] is MethodCallExpression previousCall)
-            {
-                // Recursively map the previous method call
-                var previousFunc = MapOrderBy<TModel, TEntity>(
-                    Expression.Lambda<Func<IQueryable<TModel>, IQueryable<TModel>>>(
-                        previousCall,
-                        orderByExpression.Parameters));
-
-                // Map the current method call
-                if (methodCall.Arguments.Count > 1 &&
-                    methodCall.Arguments[1] is UnaryExpression unary &&
-                    unary.Operand is LambdaExpression lambda)
-                {
-                    var parameter = Expression.Parameter(typeof(TEntity), "x");
-                    var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
-                    var body = visitor.Visit(lambda.Body);
-                    var mappedLambda = Expression.Lambda(body, parameter);
-
-                    string methodName = methodCall.Method.Name;
-                    var methodInfo = methodName is "OrderBy" or "ThenBy"
-                        ? typeof(Queryable).GetMethods()
-                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type)
-                        : methodName is "OrderByDescending" or "ThenByDescending"
-                            ? typeof(Queryable).GetMethods()
-                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type)
-                            : throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
-                    return query =>
-                    {
-                        var orderedQuery = previousFunc(query);
-                        return (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { orderedQuery, mappedLambda });
-                    };
-                }
-            }
-            else
-            {
-                // Handle single method call
-                if (methodCall.Arguments.Count > 1 &&
-                    methodCall.Arguments[1] is UnaryExpression unary &&
-                    unary.Operand is LambdaExpression lambda)
-                {
-                    var parameter = Expression.Parameter(typeof(TEntity), "x");
-                    var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
-                    var body = visitor.Visit(lambda.Body);
-                    var mappedLambda = Expression.Lambda(body, parameter);
-
-                    string methodName = methodCall.Method.Name;
-                    var methodInfo = methodName is "OrderBy" or "ThenBy"
-                        ? typeof(Queryable).GetMethods()
-                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type)
-                        : methodName is "OrderByDescending" or "ThenByDescending"
-                            ? typeof(Queryable).GetMethods()
-                            .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type)
-                            : throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
-                    return query => (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { query, mappedLambda });
-                }
-            }
-        }
-
-        throw new ArgumentException("Invalid order by expression format", nameof(orderByExpression));
-    }
-
-    /// <summary>
-    /// Maps a projection expression from TModel to TEntity.
-    /// </summary>
-    /// <typeparam name="TModel">The source type</typeparam>
-    /// <typeparam name="TEntity">The destination type</typeparam>
+    /// <typeparam name="TSource">The source type</typeparam>
+    /// <typeparam name="TDestination">The destination type</typeparam>
     /// <typeparam name="TResult">The result type</typeparam>
     /// <param name="projectionExpression">The projection expression to map</param>
     /// <returns>A mapped projection expression</returns>
-    public static Expression<Func<TEntity, TResult>> MapProjection<TModel, TEntity, TResult>(
-        Expression<Func<TModel, TResult>> projectionExpression)
+    public static Expression<Func<TDestination, TResult>> MapProjection<TSource, TDestination, TResult>(
+        Expression<Func<TSource, TResult>> projectionExpression)
     {
         ArgumentNullException.ThrowIfNull(projectionExpression);
 
-        var parameter = Expression.Parameter(typeof(TEntity), "x");
-        var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
-        var body = visitor.Visit(projectionExpression.Body);
-
-        return Expression.Lambda<Func<TEntity, TResult>>(body, parameter);
+        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
+        var newProjection = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(projectionExpression, mapping);
+        return (Expression<Func<TDestination, TResult>>)newProjection;
     }
 
     #region Private Methods
@@ -370,7 +288,7 @@ public static class ExtensoMapper
         destType != typeof(string) &&
         sourceType != destType;
 
-    private class ExpressionMappingVisitor<TModel, TEntity> : ExpressionVisitor
+    private class ExpressionMappingVisitor<TSource, TDestination> : ExpressionVisitor
     {
         private static readonly ConcurrentDictionary<MemberInfo, MemberInfo> memberMappingsCache = new();
         private static readonly ConcurrentDictionary<Type, Type> typeMappingsCache = new();
@@ -385,7 +303,7 @@ public static class ExtensoMapper
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
             var parameters = node.Parameters.Select(p =>
-                p.Type == typeof(TModel) ? parameter : p).ToArray();
+                p.Type == typeof(TSource) ? parameter : p).ToArray();
             var body = Visit(node.Body);
             return Expression.Lambda(body, parameters);
         }
@@ -481,7 +399,7 @@ public static class ExtensoMapper
         }
 
         protected override Expression VisitParameter(ParameterExpression node) =>
-            node.Type == typeof(TModel) ? parameter : base.VisitParameter(node);
+            node.Type == typeof(TSource) ? parameter : base.VisitParameter(node);
 
         private static MemberInfo GetMappedMember(MemberInfo sourceMember, Type currentDestType)
         {
@@ -511,12 +429,12 @@ public static class ExtensoMapper
                 if (key is PropertyInfo sourceProp)
                 {
                     // For projections, we want to keep the original property
-                    if (sourceProp.DeclaringType != typeof(TModel) && sourceProp.DeclaringType != typeof(TEntity))
+                    if (sourceProp.DeclaringType != typeof(TSource) && sourceProp.DeclaringType != typeof(TDestination))
                     {
                         return sourceProp;
                     }
 
-                    var destProp = typeof(TEntity).GetProperty(sourceProp.Name);
+                    var destProp = typeof(TDestination).GetProperty(sourceProp.Name);
                     if (destProp != null) return destProp;
 
                     var sourceDeclaringType = sourceProp.DeclaringType;

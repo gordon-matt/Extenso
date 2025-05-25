@@ -823,7 +823,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     public abstract Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
 
-    public abstract Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy(
+    public abstract Func<IQueryable<TEntity>, IQueryable<TEntity>> MapOrderBy(
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
 
     public abstract Expression<Func<TEntity, bool>> MapPredicate(Expression<Func<TModel, bool>> predicate);
