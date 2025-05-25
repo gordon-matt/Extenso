@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
+using Extenso.Reflection;
 
 namespace Extenso.Mapping;
 
@@ -85,7 +86,7 @@ public static class ExtensoMapper
     }
 
     public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapInclude<TSource, TDestination>(
-        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeExpression) => MapQuery<TSource, TDestination>(includeExpression);
+            Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeExpression) => MapQuery<TSource, TDestination>(includeExpression);
 
     /// <summary>
     /// Maps an include expression from TSource to TDestination for Entity Framework.
@@ -157,13 +158,8 @@ public static class ExtensoMapper
         return query.Select(selector);
     }
 
-
-
-
-
-
     public static Expression<Func<TDestination, TDestination>> MapUpdate<TSource, TDestination>(
-        Expression<Func<TSource, TSource>> updateFactory)
+            Expression<Func<TSource, TSource>> updateFactory)
     {
         ArgumentNullException.ThrowIfNull(updateFactory);
         var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
@@ -259,6 +255,37 @@ public static class ExtensoMapper
 
     private static Expression CreateNestedMappingExpression(Expression sourceExpr, Type sourceType, Type destType)
     {
+        // Handle collection types
+        if (sourceType.IsCollection() && destType.IsCollection())
+        {
+            var sourceElementType = sourceType.GetGenericArguments()[0];
+            var destElementType = destType.GetGenericArguments()[0];
+
+            // Create the mapping expression for the elements
+            var elementParam = Expression.Parameter(sourceElementType, "element");
+            var elementMapping = CreateMappingExpression(elementParam, sourceElementType, destElementType);
+            var elementLambda = Expression.Lambda(elementMapping, elementParam);
+
+            // Call Select() to map each element
+            var selectMethod = typeof(Enumerable).GetMethods()
+                .First(m => m.Name == "Select" && m.GetParameters().Length == 2)
+                .MakeGenericMethod(sourceElementType, destElementType);
+
+            var selectCall = Expression.Call(selectMethod, sourceExpr, elementLambda);
+
+            // Convert to destination collection type if needed
+            if (destType.IsAssignableFrom(selectCall.Type))
+            {
+                return selectCall;
+            }
+
+            // Handle case where we need to convert to a specific collection type (like List<T>)
+            var toListMethod = typeof(Enumerable).GetMethod("ToList")
+                .MakeGenericMethod(destElementType);
+            return Expression.Call(toListMethod, selectCall);
+        }
+
+        // Original handling for non-collection types
         var nestedParameter = Expression.Parameter(sourceType, "nested");
         var nestedBody = CreateMappingExpression(nestedParameter, sourceType, destType);
         var nestedLambda = Expression.Lambda(nestedBody, nestedParameter);
@@ -279,12 +306,21 @@ public static class ExtensoMapper
         return lambda.Compile();
     }
 
-    private static bool RequiresNestedMapping(Type sourceType, Type destType) =>
-        !sourceType.IsValueType &&
-        !destType.IsValueType &&
-        sourceType != typeof(string) &&
-        destType != typeof(string) &&
-        sourceType != destType;
+    private static bool RequiresNestedMapping(Type sourceType, Type destType)
+    {
+        if (sourceType.IsCollection() && destType.IsCollection())
+        {
+            var sourceElementType = sourceType.GetGenericArguments()[0];
+            var destElementType = destType.GetGenericArguments()[0];
+            return RequiresNestedMapping(sourceElementType, destElementType);
+        }
+
+        return !sourceType.IsValueType &&
+               !destType.IsValueType &&
+               sourceType != typeof(string) &&
+               destType != typeof(string) &&
+               sourceType != destType;
+    }
 
     #endregion Private Methods
 
@@ -482,5 +518,5 @@ public static class ExtensoMapper
                     .Select(p => GetMappedType(p.ParameterType) ?? p.ParameterType)));
     }
 
-    #endregion
+    #endregion Nested Types
 }

@@ -10,4 +10,8 @@
 		<DocumentationFile>bin\Release\net9.0\Extenso.Mapping.xml</DocumentationFile>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
+	</ItemGroup>
+
 </Project>
