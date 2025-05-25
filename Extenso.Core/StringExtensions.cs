@@ -29,10 +29,7 @@ public static class StringExtensions
     /// <param name="source">The string to append values to.</param>
     /// <param name="values">An array of strings to append to source.</param>
     /// <returns>A new string after the append operation has completed.</returns>
-    public static string Append(this string source, params ReadOnlySpan<object> values)
-    {
-        return string.Concat([source, .. values]);
-    }
+    public static string Append(this string source, params ReadOnlySpan<object> values) => string.Concat([source, .. values]);
 
     /// <summary>
     /// Gets a value indicating whether any of the given values are null or an empty string.

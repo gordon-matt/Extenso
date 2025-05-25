@@ -22,7 +22,7 @@ internal class DataGridViewNumericTextBoxEditingControl : NumericTextBox, IDataG
         get => this.Text;
         set
         {
-            if (value is String)
+            if (value is string)
             {
                 this.Text = value.ToString();
             }

@@ -24,7 +24,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <summary>
     /// Provides access to the data store.
     /// </summary>
-    protected  IRepository<TEntity> Repository { get; private set; }
+    protected IRepository<TEntity> Repository { get; private set; }
 
     /// <summary>
     /// OData query options to ignore for querying.

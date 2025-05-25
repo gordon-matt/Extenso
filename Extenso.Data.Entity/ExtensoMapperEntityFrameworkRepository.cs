@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using Extenso.Mapping;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 
 namespace Extenso.Data.Entity;
@@ -30,14 +29,14 @@ public class ExtensoMapperEntityFrameworkRepository<TModel, TEntity> : MappedEnt
     public override Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression) =>
         ExtensoMapper.MapUpdate<TModel, TEntity>(updateExpression);
 
-    public override Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> MapInclude(
+    public override Func<IQueryable<TEntity>, IQueryable<TEntity>> MapInclude(
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
         ExtensoMapper.MapInclude<TModel, TEntity>(includeExpression);
-    
+
     public override Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> MapOrderBy(
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression) =>
         ExtensoMapper.MapOrderBy<TModel, TEntity>(includeExpression);
-    
+
     public override Expression<Func<TEntity, TResult>> MapProjection<TResult>(
         Expression<Func<TModel, TResult>> projectionExpression) =>
         ExtensoMapper.MapProjection<TModel, TEntity, TResult>(projectionExpression);

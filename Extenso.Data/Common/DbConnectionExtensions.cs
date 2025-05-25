@@ -487,7 +487,7 @@ public static class DbConnectionExtensions
         fieldNames.ForEach(f =>
         {
             string parameterName = f;
-            "¬`!\"£$%^&*()-=+{}[]:;@'~#|<>,.?/ ".ToCharArray().ForEach(c => { parameterName = parameterName.Replace(c, '_'); });
+            "¬`!\"£$%^&*()-=+{}[]:;@'~#|<>,.?/ ".ToCharArray().ForEach(c => parameterName = parameterName.Replace(c, '_'));
             parameterNames.Add(f, parameterName.ToPascalCase().Prepend("@"));
         });
         return parameterNames;

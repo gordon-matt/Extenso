@@ -152,5 +152,5 @@ internal class DataGridViewMaskedTextBoxCell : DataGridViewTextBoxCell
 
     //   Quick routine to convert from DataGridViewTriState to boolean.
     //   True goes to true while False and NotSet go to false.
-    protected static bool BoolFromTri(DataGridViewTriState tri) => (tri == DataGridViewTriState.True) ? true : false;
+    protected static bool BoolFromTri(DataGridViewTriState tri) => (tri == DataGridViewTriState.True);
 }

@@ -1,6 +1,4 @@
-﻿using Extenso.TestLib.Data.Entities;
-
-namespace Extenso.TestLib.ViewModels;
+﻿namespace Extenso.TestLib.ViewModels;
 
 public class ProductModelViewModel
 {

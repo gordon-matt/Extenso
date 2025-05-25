@@ -13,7 +13,6 @@ public static class Extensions
             ? throw new ArgumentNullException(nameof(includeFunc))
             : mapper.MapExpressionAsInclude<Expression<Func<IQueryable<TDest>, IIncludableQueryable<TDest, object>>>>(includeFunc).Compile();
 
-
     public static Func<IQueryable<TDest>, IOrderedQueryable<TDest>> MapExpressionAsOrderBy<TSource, TDest>(
         this IMapper mapper,
         Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> orderByFunc) => orderByFunc == null

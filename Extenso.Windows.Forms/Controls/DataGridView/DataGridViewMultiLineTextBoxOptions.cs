@@ -2,6 +2,6 @@
 
 public class DataGridViewMultiLineTextBoxOptions
 {
-    static public bool multiline = false;
-    static public bool wordwrap = false;
+    public static bool multiline = false;
+    public static bool wordwrap = false;
 }

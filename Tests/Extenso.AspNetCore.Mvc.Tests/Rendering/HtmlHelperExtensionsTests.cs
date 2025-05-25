@@ -26,10 +26,7 @@ public class HtmlHelperExtensionsTests
     public HtmlHelperExtensionsTests()
     {
         var webHost = Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            })
+            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
             .Build();
 
         serviceProvider = webHost.Services;

@@ -364,7 +364,7 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
         return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(tableName)}");
     }
 
-    public static IEnumerable<string> GetTableNames(this MySqlConnection connection, bool includeViews = false) => !string.IsNullOrEmpty(connection.Database) ? connection.GetTableNames(connection.Database, includeViews) : ([]);
+    public static IEnumerable<string> GetTableNames(this MySqlConnection connection, bool includeViews = false) => !string.IsNullOrEmpty(connection.Database) ? connection.GetTableNames(connection.Database, includeViews) : [];
 
     public static IEnumerable<string> GetTableNames(this MySqlConnection connection, string databaseName, bool includeViews = false)
     {
@@ -401,7 +401,7 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
         return tables;
     }
 
-    public static IEnumerable<string> GetViewNames(this MySqlConnection connection) => !string.IsNullOrEmpty(connection.Database) ? connection.GetViewNames(connection.Database) : ([]);
+    public static IEnumerable<string> GetViewNames(this MySqlConnection connection) => !string.IsNullOrEmpty(connection.Database) ? connection.GetViewNames(connection.Database) : [];
 
     public static IEnumerable<string> GetViewNames(this MySqlConnection connection, string databaseName)
     {

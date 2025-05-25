@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Extenso.Collections.Generic;
-using Extenso.Data.Entity;
 using Extenso.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using Z.EntityFramework.Plus;
 
@@ -821,7 +818,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #endregion IRepository<TModel> Members
 
-    public abstract Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> MapInclude(
+    public abstract Func<IQueryable<TEntity>, IQueryable<TEntity>> MapInclude(
         Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
 
     public abstract Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);

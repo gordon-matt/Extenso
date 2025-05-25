@@ -25,7 +25,7 @@ internal class DataGridViewMultiLineTextBoxEditingControl : TextBox, IDataGridVi
         get => this.Text;
         set
         {
-            if (value is String)
+            if (value is string)
             {
                 this.Text = value.ToString();
             }

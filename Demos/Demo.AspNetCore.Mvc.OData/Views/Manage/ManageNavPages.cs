@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using System;
 
 namespace Demo.Extenso.AspNetCore.Mvc.OData.Views.Manage;
 

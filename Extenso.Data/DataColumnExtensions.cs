@@ -20,7 +20,7 @@ public static class DataColumnExtensions
 
                 foreach (DataRow row in column.Table.Rows)
                 {
-                    row[newColumn] = isEnum ? Enum.ToObject(column.DataType, Convert.ToInt32(row[column])).ToString() : (object)row[column].ToString();
+                    row[newColumn] = isEnum ? Enum.ToObject(column.DataType, Convert.ToInt32(row[column])).ToString() : row[column].ToString();
                 }
 
                 //Delete original column

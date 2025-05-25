@@ -17,7 +17,7 @@ public class DataGridViewNumericTextBoxCell : DataGridViewTextBoxCell
 
     public override Type ValueType =>
             // Return the type of the value that  DataGridViewNumericTextBoxCell contains.
-            typeof(System.String);
+            typeof(string);
 
     public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
     {

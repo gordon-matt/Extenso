@@ -14,10 +14,7 @@ public partial class AddPersonEntity : Migration
             GivenNames = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
             DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false)
         },
-        constraints: table =>
-        {
-            table.PrimaryKey("PK_People", x => x.Id);
-        });
+        constraints: table => table.PrimaryKey("PK_People", x => x.Id));
 
     protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.DropTable(
         name: "People");

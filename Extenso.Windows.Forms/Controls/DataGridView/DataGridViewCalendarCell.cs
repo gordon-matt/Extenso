@@ -42,7 +42,7 @@ public class DataGridViewCalendarCell : DataGridViewTextBoxCell
         // Return the type of the value that CalendarCell contains.
         => typeof(DateTime);
 
-    public override void InitializeEditingControl(Int32 rowIndex, Object initialFormattedValue,
+    public override void InitializeEditingControl(int rowIndex, object initialFormattedValue,
                                 DataGridViewCellStyle dataGridViewCellStyle)
     {
         // Set the value of the editing control to the current cell value.

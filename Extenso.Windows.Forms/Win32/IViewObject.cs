@@ -11,7 +11,7 @@ public interface IViewObject
     [return: MarshalAs(UnmanagedType.I4)]
     [PreserveSig]
     int Draw(
-        [MarshalAs(UnmanagedType.U4)] UInt32 dwDrawAspect,
+        [MarshalAs(UnmanagedType.U4)] uint dwDrawAspect,
         int lindex,
         IntPtr pvAspect,
         [In] IntPtr ptd,
@@ -20,7 +20,7 @@ public interface IViewObject
         [MarshalAs(UnmanagedType.Struct)] ref Rectangle lprcBounds,
         [MarshalAs(UnmanagedType.Struct)] ref Rectangle lprcWBounds,
         IntPtr pfnContinue,
-        [MarshalAs(UnmanagedType.U4)] UInt32 dwContinue);
+        [MarshalAs(UnmanagedType.U4)] uint dwContinue);
 
     [PreserveSig]
     int GetColorSet([In, MarshalAs(UnmanagedType.U4)] int dwDrawAspect,

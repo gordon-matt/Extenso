@@ -9,14 +9,14 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
     /// <para>Will return false if Page Location is currently the last page.</para>
     /// <para>Otherwise, true.</para>
     /// </summary>
-    public bool CanMoveNext => Count == 1 ? false : Count > 0 && PageLocation != WizardPageLocation.End;
+    public bool CanMoveNext => Count != 1 && Count > 0 && PageLocation != WizardPageLocation.End;
 
     /// <summary>
     /// <para>Determines whether the wizard is able to move to the previous page.</para>
     /// <para>Will return false if Page Location is currently the first page.</para>
     /// <para>Otherwise, true.</para>
     /// </summary>
-    public bool CanMovePrevious => Count == 1 ? false : Count > 0 && PageLocation != WizardPageLocation.Start;
+    public bool CanMovePrevious => Count != 1 && Count > 0 && PageLocation != WizardPageLocation.Start;
 
     /// <summary>
     /// The current IWizardPage

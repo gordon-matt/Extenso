@@ -3,8 +3,6 @@ using Extenso.Collections;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData.Pages;
 

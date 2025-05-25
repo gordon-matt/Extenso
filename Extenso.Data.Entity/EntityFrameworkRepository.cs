@@ -1,9 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Extenso.Collections.Generic;
-using Extenso.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity;

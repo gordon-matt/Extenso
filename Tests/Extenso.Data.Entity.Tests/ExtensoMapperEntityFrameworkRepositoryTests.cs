@@ -19,10 +19,12 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     private readonly IMappedRepository<ProductModelViewModel, ProductModel> repository;
     private readonly ICollection<ProductModelViewModel> productModels;
     private readonly ICollection<ProductViewModel> products;
+    private readonly ICollection<ProductSubcategoryViewModel> productSubcategoryModels;
     private bool isDisposed;
 
     private readonly Faker<ProductModelViewModel> productModelFaker;
     private readonly Faker<ProductViewModel> productFaker;
+    private readonly Faker<ProductSubcategoryViewModel> productSubcategoryFaker;
 
     public ExtensoMapperEntityFrameworkRepositoryTests()
     {
@@ -56,6 +58,22 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             .Select(x => x.MapTo<ProductModelViewModel>())
             .ToList();
 
+        productSubcategoryFaker = new Faker<ProductSubcategoryViewModel>()
+            .RuleFor(x => x.Name, x => x.Commerce.Categories(1).First())
+            .RuleFor(x => x.Rowguid, x => x.Random.Guid())
+            .RuleFor(x => x.ModifiedDate, x => x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1)))
+            .RuleFor(x => x.ProductCategoryId, x => x.Random.Int());
+
+        productSubcategoryModels = productSubcategoryFaker.Generate(100);
+        context.ProductSubcategories.AddRange(productSubcategoryModels.Select(x => x.MapTo<ProductSubcategory>()));
+        context.SaveChanges();
+
+        // Get them again, so we have IDs:
+        productSubcategoryModels = context.ProductSubcategories
+            .ToList()
+            .Select(x => x.MapTo<ProductSubcategoryViewModel>())
+            .ToList();
+
         productFaker = new Faker<ProductViewModel>()
             .RuleFor(x => x.ProductModelId, x => x.PickRandom(productModels).ProductModelId)
             .RuleFor(x => x.Name, x => x.Commerce.ProductName())
@@ -65,13 +83,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             .RuleFor(x => x.MakeFlag, x => x.Random.Bool())
             .RuleFor(x => x.Rowguid, x => x.Random.Guid())
             .RuleFor(x => x.ModifiedDate, x => x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1)))
-            .RuleFor(x => x.ProductSubcategory, x => new ProductSubcategoryViewModel
-            {
-                Name = x.Commerce.Categories(1).First(),
-                Rowguid = x.Random.Guid(),
-                ModifiedDate = x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1)),
-                ProductCategoryId = x.Random.Int(),
-            });
+            .RuleFor(x => x.ProductSubcategoryId, x => x.PickRandom(productSubcategoryModels).ProductSubcategoryId);
 
         products = productFaker.Generate(100);
         context.Products.AddRange(products.Select(x => x.MapTo<Product>()));

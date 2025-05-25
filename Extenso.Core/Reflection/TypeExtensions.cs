@@ -153,7 +153,7 @@ public static class TypeExtensions
         }
 
         // Check base types recursively
-        Type baseType = givenType.BaseType;
+        var baseType = givenType.BaseType;
         return baseType != null && IsAssignableToGenericType(baseType, genericType);
     }
 
@@ -210,7 +210,7 @@ public static class TypeExtensions
         }
 
         var typeInfo = type.GetTypeInfo();
-        return !typeInfo.IsValueType ? true : typeInfo.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        return !typeInfo.IsValueType || typeInfo.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 
         //return Nullable.GetUnderlyingType(type) != null; //faster than above version? Needs testing
     }

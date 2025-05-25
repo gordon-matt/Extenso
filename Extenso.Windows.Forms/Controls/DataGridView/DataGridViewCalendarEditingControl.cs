@@ -61,7 +61,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
     }
 
     // Implements the IDataGridViewEditingControl.EditingControlWantsInputKey method.
-    public Boolean EditingControlWantsInputKey(Keys key, Boolean dataGridViewWantsInputKey)
+    public bool EditingControlWantsInputKey(Keys key, bool dataGridViewWantsInputKey)
     {
         // Let the DateTimePicker handle the keys listed.
         switch (key & Keys.KeyCode)
@@ -96,7 +96,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
     // Implements the IDataGridViewEditingControl.PrepareEditingControlForEdit
     // method.
-    public void PrepareEditingControlForEdit(Boolean selectAll)
+    public void PrepareEditingControlForEdit(bool selectAll)
     {
         // No preparation needs to be done.
     }

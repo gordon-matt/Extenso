@@ -509,7 +509,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
 
             if (freeDimension == DataGridViewRadioButtonFreeDimension.Width)
             {
-                var contentSize = new Size(Int32.MaxValue, constraintSize.Height - borderAndPaddingHeights);
+                var contentSize = new Size(int.MaxValue, constraintSize.Height - borderAndPaddingHeights);
                 if (GetScrollingNeeded(graphics, rowIndex, cellStyle, contentSize))
                 {
                     // Accommodate the scrolling buttons
@@ -1426,7 +1426,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     {
         if (this.DataManager != null)
         {
-            if (String.IsNullOrEmpty(displayMember))
+            if (string.IsNullOrEmpty(displayMember))
             {
                 this.displayMemberProperty = null;
             }
@@ -1450,7 +1450,7 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
     {
         if (this.DataManager != null)
         {
-            if (String.IsNullOrEmpty(valueMember))
+            if (string.IsNullOrEmpty(valueMember))
             {
                 this.valueMemberProperty = null;
             }
@@ -1543,10 +1543,8 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
             int localMouseLocationCode = mouseOverCell ? mouseLocationCode : DATAGRIDVIEWRADIOBUTTONCELL_mouseLocationGeneric;
             using var clipRegion = graphics.Clip;
             graphics.SetClip(radiosBounds);
-            RadioButtonState radioButtonState;
-            if (itemSelected)
-            {
-                radioButtonState = itemReadOnly
+            var radioButtonState = itemSelected
+                ? itemReadOnly
                     ? RadioButtonState.CheckedDisabled
                     : mouseOverCell && this.pressedItemIndex == itemIndex
                         ? localMouseLocationCode + this.layout.FirstDisplayedItemIndex == this.pressedItemIndex
@@ -1554,11 +1552,8 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                             : RadioButtonState.CheckedHot
                         : localMouseLocationCode + this.layout.FirstDisplayedItemIndex == itemIndex && this.pressedItemIndex == -1
                             ? RadioButtonState.CheckedHot
-                            : RadioButtonState.CheckedNormal;
-            }
-            else
-            {
-                radioButtonState = itemReadOnly
+                            : RadioButtonState.CheckedNormal
+                : itemReadOnly
                     ? RadioButtonState.UncheckedDisabled
                     : mouseOverCell && this.pressedItemIndex == itemIndex
                         ? localMouseLocationCode + this.layout.FirstDisplayedItemIndex == this.pressedItemIndex
@@ -1567,7 +1562,6 @@ public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridVi
                         : localMouseLocationCode + this.layout.FirstDisplayedItemIndex == itemIndex && this.pressedItemIndex == -1
                             ? RadioButtonState.UncheckedHot
                             : RadioButtonState.UncheckedNormal;
-            }
             // Note: The cell should only show the focus rectangle when this.DataGridView.ShowFocusCues is true. However that property is
             // protected and can't be accessed directly. A custom grid derived from DataGridView could expose this notion publicly.
             RadioButtonRenderer.DrawRadioButton(graphics,

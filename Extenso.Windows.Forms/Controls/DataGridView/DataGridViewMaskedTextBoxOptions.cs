@@ -17,5 +17,5 @@ namespace Extenso.Windows.Forms.Controls;
 
 public class DataGridViewMaskedTextBoxOptions
 {
-    static public Color foreClr;
+    public static Color foreClr;
 }

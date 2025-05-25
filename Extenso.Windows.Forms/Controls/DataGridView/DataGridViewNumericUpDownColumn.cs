@@ -88,7 +88,7 @@ public class DataGridViewNumericUpDownColumn : DataGridViewColumn
         Category("Data"),
         Description("Indicates the amount to increment or decrement on each button click.")
     ]
-    public Decimal Increment
+    public decimal Increment
     {
         get => this.NumericUpDownCellTemplate == null
                 ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
@@ -122,7 +122,7 @@ public class DataGridViewNumericUpDownColumn : DataGridViewColumn
         Description("Indicates the maximum value for the numeric up-down cells."),
         RefreshProperties(RefreshProperties.All)
     ]
-    public Decimal Maximum
+    public decimal Maximum
     {
         get => this.NumericUpDownCellTemplate == null
                 ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
@@ -160,7 +160,7 @@ public class DataGridViewNumericUpDownColumn : DataGridViewColumn
         Description("Indicates the minimum value for the numeric up-down cells."),
         RefreshProperties(RefreshProperties.All)
     ]
-    public Decimal Minimum
+    public decimal Minimum
     {
         get => this.NumericUpDownCellTemplate == null
             ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
