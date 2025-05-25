@@ -149,75 +149,324 @@ public static class ExtensoMapper
     /// <typeparam name="TEntity">The destination type</typeparam>
     /// <param name="includeExpression">The include expression to map</param>
     /// <returns>A function that can be used to include related entities in a query</returns>
+
     public static Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> MapInclude<TModel, TEntity>(
-        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression)
+    Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression)
     {
         ArgumentNullException.ThrowIfNull(includeExpression);
 
         if (includeExpression.Body is MethodCallExpression methodCall)
         {
-            if (methodCall.Method.Name is "Include" or "ThenInclude")
-            {
-                if (methodCall.Arguments.Count > 1 &&
-                    methodCall.Arguments[1] is UnaryExpression unary &&
-                    unary.Operand is LambdaExpression lambda)
-                {
-                    var parameter = Expression.Parameter(typeof(TEntity), "x");
-                    var visitor = new ExpressionMappingVisitor<TModel, TEntity>(parameter);
-                    var body = visitor.Visit(lambda.Body);
-                    var mappedLambda = Expression.Lambda(body, parameter);
+            // First build complete type mappings
+            var typeMappings = BuildTypeMappings<TModel, TEntity>(includeExpression);
 
-                    return query =>
+            // Process the include chain in original order (don't reverse)
+            var includeChain = GetIncludeChain(methodCall, typeMappings).ToList();
+
+            return query =>
+            {
+                try
+                {
+                    var currentQuery = query;
+                    IIncludableQueryable<TEntity, object> includableQuery = null;
+
+                    foreach (var include in includeChain)
                     {
-                        // For first-level includes, convert to IIncludableQueryable
-                        if (methodCall.Method.Name == "Include")
+                        var parameter = Expression.Parameter(typeMappings[include.SourceType], "x");
+                        var visitor = new IncludeExpressionMappingVisitor(parameter);
+                        var body = visitor.Visit(include.Lambda.Body);
+                        var lambda = Expression.Lambda(body, parameter);
+
+                        MethodInfo method;
+                        if (include.IsThenInclude)
                         {
-                            return ConvertToIncludable(query, mappedLambda);
+                            var previousEntityType = typeMappings[include.SourceType];
+                            var targetEntityType = typeMappings[include.TargetType];
+
+                            method = include.IsCollection
+                                ? GetThenIncludeAfterCollectionMethod(typeof(TEntity), previousEntityType, targetEntityType)
+                                : GetThenIncludeMethod(typeof(TEntity), previousEntityType, targetEntityType);
+                        }
+                        else
+                        {// ICollection : what if collection is other type? List or IEnumerable or whatever?
+                            method = include.IsCollection
+                                ? GetIncludeMethod(typeof(TEntity), typeof(ICollection<>).MakeGenericType(typeMappings[include.TargetType]))
+                                : GetIncludeMethod(typeof(TEntity), typeMappings[include.TargetType]);
                         }
 
-                        // For ThenInclude, we should already have an IIncludableQueryable
-                        var includeMethod = typeof(EntityFrameworkQueryableExtensions)
-                            .GetMethods()
-                            .First(m =>
-                                m.Name == "ThenInclude" &&
-                                m.GetParameters().Length == 2 &&
-                                m.GetGenericArguments().Length == 3);
+                        object result = method.Invoke(null, [includableQuery ?? currentQuery, lambda]);
 
-                        var prevPropType = methodCall.Method.GetGenericArguments()[1];
-                        var mappedPrevType = ExpressionMappingVisitor<TModel, TEntity>.GetMappedType(prevPropType) ?? prevPropType;
+                        if (result is IIncludableQueryable<TEntity, object> newIncludable)
+                        {
+                            includableQuery = newIncludable;
+                            if (!include.IsThenInclude)
+                            {
+                                currentQuery = includableQuery;
+                            }
+                        }
+                        else if (result is IQueryable<TEntity> newQuery)
+                        {
+                            currentQuery = newQuery;
+                            includableQuery = null;
+                        }
+                    }
 
-                        includeMethod = includeMethod.MakeGenericMethod(typeof(TEntity), mappedPrevType, body.Type);
-
-                        // Problem is here
-                        object result = includeMethod.Invoke(null, [query, mappedLambda]);
-                        return (IIncludableQueryable<TEntity, object>)result;
-                    };
+                    return includableQuery ?? (IIncludableQueryable<TEntity, object>)currentQuery;
                 }
-            }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException(
+                        $"Failed to map include expression. Please ensure:\n" +
+                        $"1. All navigation properties exist in both view model and entity\n" +
+                        $"2. Property names match exactly (case-sensitive)\n" +
+                        $"3. Collection properties are properly mapped", ex);
+                }
+            };
         }
 
         throw new ArgumentException("Invalid include expression format", nameof(includeExpression));
     }
 
-    private static IIncludableQueryable<TEntity, object> ConvertToIncludable<TEntity>(IQueryable<TEntity> query, LambdaExpression includeExpression)
+    private static MethodInfo GetIncludeMethod(Type entityType, Type propertyType)
     {
-        // Get the Include method
-        var includeMethod = typeof(EntityFrameworkQueryableExtensions)
-            .GetMethods()
-            .First(m =>
+        // Get the standard Include method for single navigation properties
+        var method = typeof(EntityFrameworkQueryableExtensions)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .FirstOrDefault(m =>
                 m.Name == "Include" &&
                 m.GetParameters().Length == 2 &&
+                m.GetGenericArguments().Length == 2 &&
                 m.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(Expression<>));
 
-        // Create generic Include method
-        includeMethod = includeMethod.MakeGenericMethod(typeof(TEntity), includeExpression.ReturnType);
-
-        // Execute Include to get an IIncludableQueryable
-        object includedQuery = includeMethod.Invoke(null, [query, includeExpression]);
-
-        // This cast should now work since Include returns IIncludableQueryable
-        return (IIncludableQueryable<TEntity, object>)includedQuery;
+        return method == null
+            ? throw new InvalidOperationException("Could not find standard Include method")
+            : method.MakeGenericMethod(entityType, propertyType);
     }
+
+    private static MethodInfo GetThenIncludeMethod(Type entityType, Type previousPropertyType, Type propertyType) => typeof(EntityFrameworkQueryableExtensions)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .First(m => m.Name == "ThenInclude" &&
+                       m.GetParameters().Length == 2 &&
+                       m.GetGenericArguments().Length == 3 &&
+                       m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IIncludableQueryable<,>))
+            .MakeGenericMethod(entityType, previousPropertyType, propertyType);
+
+    private static MethodInfo GetThenIncludeAfterCollectionMethod(Type entityType, Type previousPropertyType, Type propertyType)
+    {
+        var enumerablePreviousType = typeof(IEnumerable<>).MakeGenericType(previousPropertyType);
+
+        return typeof(EntityFrameworkQueryableExtensions)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .First(m => m.Name == "ThenInclude" &&
+                       m.GetParameters().Length == 2 &&
+                       m.GetGenericArguments().Length == 3 &&
+                       m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IIncludableQueryable<,>))
+            .MakeGenericMethod(entityType, enumerablePreviousType, propertyType);
+    }
+
+    private class IncludeExpressionMappingVisitor : ExpressionVisitor
+    {
+        private readonly ParameterExpression _parameter;
+
+        public IncludeExpressionMappingVisitor(ParameterExpression parameter)
+        {
+            _parameter = parameter;
+        }
+
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            var newExpression = Visit(node.Expression);
+            var declaringType = newExpression?.Type ?? _parameter.Type;
+
+            var entityProperty = declaringType.GetProperty(node.Member.Name)
+                ?? throw new InvalidOperationException(
+                    $"Navigation property '{node.Member.Name}' not found on type {declaringType}");
+
+            return Expression.MakeMemberAccess(newExpression, entityProperty);
+        }
+
+        protected override Expression VisitParameter(ParameterExpression node) => _parameter;
+    }
+
+    //private static Type GetCurrentPropertyType(IQueryable query)
+    //{
+    //    var queryType = query.GetType();
+    //    if (queryType.IsGenericType)
+    //    {
+    //        var genericArgs = queryType.GetGenericArguments();
+    //        if (genericArgs.Length >= 2)
+    //        {
+    //            // For collection navigations, return the element type
+    //            var propertyType = genericArgs[1];
+    //            if (propertyType.IsGenericType &&
+    //                (propertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+    //                 propertyType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+    //            {
+    //                return propertyType.GetGenericArguments()[0];
+    //            }
+    //            return propertyType;
+    //        }
+    //    }
+    //    throw new InvalidOperationException("Cannot determine current property type");
+    //}
+
+    private static IEnumerable<(bool IsThenInclude, LambdaExpression Lambda, Type SourceType, Type TargetType, bool IsCollection)>
+        GetIncludeChain(MethodCallExpression methodCall, Dictionary<Type, Type> typeMappings)
+    {
+        // First collect all include operations in order
+        var includeOperations = new List<(MethodCallExpression Call, LambdaExpression Lambda)>();
+        var currentCall = methodCall;
+
+        while (currentCall != null)
+        {
+            if (currentCall.Method.Name is "Include" or "ThenInclude")
+            {
+                if (currentCall.Arguments.Count > 1 &&
+                    currentCall.Arguments[1] is UnaryExpression unary &&
+                    unary.Operand is LambdaExpression lambda)
+                {
+                    includeOperations.Insert(0, (currentCall, lambda)); // Insert at beginning to reverse order
+                }
+            }
+            currentCall = currentCall.Arguments[0] as MethodCallExpression;
+        }
+
+        // Now process in the correct order (outermost to innermost)
+        var currentModelType = typeMappings.First().Key;
+        var currentEntityType = typeMappings.First().Value;
+
+        foreach (var (call, lambda) in includeOperations)
+        {
+            if (lambda.Body is MemberExpression memberExpr)
+            {
+                string propertyName = memberExpr.Member.Name;
+                var propertyInfo = currentModelType.GetProperty(propertyName);
+                if (propertyInfo == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Property '{propertyName}' not found on model type {currentModelType}");
+                }
+
+                var propertyType = propertyInfo.PropertyType;
+                bool isCollection = false;
+
+                // Handle collection properties
+                if (propertyType.IsGenericType &&
+                   (propertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+                    propertyType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                {
+                    propertyType = propertyType.GetGenericArguments()[0];
+                    isCollection = true;
+                }
+
+                yield return !typeMappings.TryGetValue(propertyType, out var targetEntityType)
+                    ? throw new InvalidOperationException(
+                        $"No entity type mapping found for model type {propertyType}")
+                    : ((bool IsThenInclude, LambdaExpression Lambda, Type SourceType, Type TargetType, bool IsCollection))(
+                    call.Method.Name == "ThenInclude",
+                    lambda,
+                    currentModelType,
+                    propertyType,
+                    isCollection
+                );
+
+                // Update current types for next iteration
+                currentModelType = propertyType;
+                currentEntityType = targetEntityType;
+            }
+        }
+    }
+
+    private static Dictionary<Type, Type> BuildTypeMappings<TModel, TEntity>(
+        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression)
+    {
+        var typeMappings = new Dictionary<Type, Type> { { typeof(TModel), typeof(TEntity) } };
+
+        if (includeExpression.Body is MethodCallExpression methodCall)
+        {
+            // First collect all property accesses in the include chain
+            var includeChain = new List<(Type ModelType, string PropertyName)>();
+            var currentMethodCall = methodCall;
+
+            while (currentMethodCall != null)
+            {
+                if (currentMethodCall.Method.Name is "Include" or "ThenInclude")
+                {
+                    if (currentMethodCall.Arguments.Count > 1 &&
+                        currentMethodCall.Arguments[1] is UnaryExpression unary &&
+                        unary.Operand is LambdaExpression lambda)
+                    {
+                        if (lambda.Body is MemberExpression memberExpr)
+                        {
+                            var parameterType = lambda.Parameters[0].Type;
+                            includeChain.Add((parameterType, memberExpr.Member.Name));
+                        }
+                    }
+                }
+                currentMethodCall = currentMethodCall.Arguments[0] as MethodCallExpression;
+            }
+
+            // Process in reverse order to build the complete type mapping
+            for (int i = includeChain.Count - 1; i >= 0; i--)
+            {
+                var (modelType, propertyName) = includeChain[i];
+
+                // Get model property
+                var modelProperty = modelType.GetProperty(propertyName);
+                if (modelProperty == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Property '{propertyName}' not found on model type {modelType}");
+                }
+
+                var modelPropertyType = modelProperty.PropertyType;
+                bool isCollection = false;
+
+                // Handle collection properties
+                if (modelPropertyType.IsGenericType &&
+                   (modelPropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+                    modelPropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                {
+                    modelPropertyType = modelPropertyType.GetGenericArguments()[0];
+                    isCollection = true;
+                }
+
+                // Get corresponding entity type
+                if (!typeMappings.TryGetValue(modelType, out var entityType))
+                {
+                    throw new InvalidOperationException(
+                        $"No entity type mapping found for model type {modelType}");
+                }
+
+                // Get entity property
+                var entityProperty = entityType.GetProperty(propertyName);
+                if (entityProperty == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Property '{propertyName}' not found on entity type {entityType}");
+                }
+
+                var entityPropertyType = entityProperty.PropertyType;
+                if (isCollection && entityPropertyType.IsGenericType &&
+                   (entityPropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
+                    entityPropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                {
+                    entityPropertyType = entityPropertyType.GetGenericArguments()[0];
+                }
+
+                // Add the type mapping if it's not already there
+                if (!typeMappings.ContainsKey(modelPropertyType))
+                {
+                    typeMappings[modelPropertyType] = entityPropertyType;
+                }
+            }
+        }
+
+        return typeMappings;
+    }
+
+
+
 
     /// <summary>
     /// Maps an order by expression from TModel to TEntity.
@@ -253,22 +502,15 @@ public static class ExtensoMapper
                     var mappedLambda = Expression.Lambda(body, parameter);
 
                     string methodName = methodCall.Method.Name;
-                    MethodInfo methodInfo;
-                    if (methodName is "OrderBy" or "ThenBy")
-                    {
-                        methodInfo = typeof(Queryable).GetMethods()
+                    var methodInfo = methodName is "OrderBy" or "ThenBy"
+                        ? typeof(Queryable).GetMethods()
                             .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type);
-                    }
-                    else
-                    {
-                        methodInfo = methodName is "OrderByDescending" or "ThenByDescending"
+                            .MakeGenericMethod(typeof(TEntity), body.Type)
+                        : methodName is "OrderByDescending" or "ThenByDescending"
                             ? typeof(Queryable).GetMethods()
                             .First(m => m.Name == methodName && m.GetParameters().Length == 2)
                             .MakeGenericMethod(typeof(TEntity), body.Type)
                             : throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
-                    }
-
                     return query =>
                     {
                         var orderedQuery = previousFunc(query);
@@ -289,22 +531,15 @@ public static class ExtensoMapper
                     var mappedLambda = Expression.Lambda(body, parameter);
 
                     string methodName = methodCall.Method.Name;
-                    MethodInfo methodInfo;
-                    if (methodName is "OrderBy" or "ThenBy")
-                    {
-                        methodInfo = typeof(Queryable).GetMethods()
+                    var methodInfo = methodName is "OrderBy" or "ThenBy"
+                        ? typeof(Queryable).GetMethods()
                             .First(m => m.Name == methodName && m.GetParameters().Length == 2)
-                            .MakeGenericMethod(typeof(TEntity), body.Type);
-                    }
-                    else
-                    {
-                        methodInfo = methodName is "OrderByDescending" or "ThenByDescending"
+                            .MakeGenericMethod(typeof(TEntity), body.Type)
+                        : methodName is "OrderByDescending" or "ThenByDescending"
                             ? typeof(Queryable).GetMethods()
                             .First(m => m.Name == methodName && m.GetParameters().Length == 2)
                             .MakeGenericMethod(typeof(TEntity), body.Type)
                             : throw new ArgumentException($"Unsupported ordering method: {methodName}", nameof(orderByExpression));
-                    }
-
                     return query => (IOrderedQueryable<TEntity>)methodInfo.Invoke(null, new object[] { query, mappedLambda });
                 }
             }
