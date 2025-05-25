@@ -85,8 +85,15 @@ public static class ExtensoMapper
         return Expression.Lambda<Func<TDestination, TProperty>>(body, parameter);
     }
 
+    /// <summary>
+    /// Maps an include expression from the source queryable type to the destination queryable type.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source queryable.</typeparam>
+    /// <typeparam name="TDestination">The type of the destination queryable.</typeparam>
+    /// <param name="includeExpression">An expression defining the include operation on the source queryable.</param>
+    /// <returns>A function that applies the mapped include operation to a queryable of the destination type.</returns>
     public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapInclude<TSource, TDestination>(
-            Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeExpression) => MapQuery<TSource, TDestination>(includeExpression);
+        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeExpression) => MapQuery<TSource, TDestination>(includeExpression);
 
     /// <summary>
     /// Maps an include expression from TSource to TDestination for Entity Framework.
@@ -158,8 +165,15 @@ public static class ExtensoMapper
         return query.Select(selector);
     }
 
+    /// <summary>
+    /// Creates a mapping expression that transforms an update operation from the source type to the destination type.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the source object used in the update operation.</typeparam>
+    /// <typeparam name="TDestination">The type of the destination object to which the update operation is mapped.</typeparam>
+    /// <param name="updateFactory">An expression representing the update operation for the source type.</param>
+    /// <returns>An expression representing the mapped update operation for the destination type.</returns>
     public static Expression<Func<TDestination, TDestination>> MapUpdate<TSource, TDestination>(
-            Expression<Func<TSource, TSource>> updateFactory)
+        Expression<Func<TSource, TSource>> updateFactory)
     {
         ArgumentNullException.ThrowIfNull(updateFactory);
         var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };

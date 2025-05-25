@@ -6,12 +6,20 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <Version>9.2.0</Version>
+    <Version>9.3.0</Version>
     <Description>Drawing-related extension methods and other helper classes.</Description>
+    <PackageIcon>ExtensoIcon.jpg</PackageIcon>
+    <RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\net9.0\Extenso.Drawing.xml</DocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\_Misc\ExtensoIcon.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
   </ItemGroup>
