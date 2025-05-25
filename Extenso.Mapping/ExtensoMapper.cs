@@ -77,10 +77,25 @@ public static class ExtensoMapper
     {
         ArgumentNullException.ThrowIfNull(includePath);
 
-        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
-        var newInclude = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(includePath, mapping);
-        return (Expression<Func<TDestination, TProperty>>)newInclude;
+        var parameter = Expression.Parameter(typeof(TDestination), "x");
+        var visitor = new ExpressionMappingVisitor<TSource, TDestination>(parameter);
+        var body = visitor.Visit(includePath.Body);
+
+        return Expression.Lambda<Func<TDestination, TProperty>>(body, parameter);
     }
+
+    public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapInclude<TSource, TDestination>(
+        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeExpression) => MapQuery<TSource, TDestination>(includeExpression);
+
+    /// <summary>
+    /// Maps an include expression from TSource to TDestination for Entity Framework.
+    /// </summary>
+    /// <typeparam name="TSource">The source type</typeparam>
+    /// <typeparam name="TDestination">The destination type</typeparam>
+    /// <param name="includeExpression">The include expression to map</param>
+    /// <returns>A function that can be used to include related entities in a query</returns>
+    public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapOrderBy<TSource, TDestination>(
+        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> orderByExpression) => MapQuery<TSource, TDestination>(orderByExpression);
 
     /// <summary>
     /// Maps a predicate for use as an Entity Framework where clause
@@ -101,6 +116,23 @@ public static class ExtensoMapper
 
         var compiledFunc = (Func<Expression<Func<TSource, bool>>, Expression<Func<TDestination, bool>>>)lazyDelegate.Value;
         return compiledFunc(predicate);
+    }
+
+    /// <summary>
+    /// Maps a projection expression from TSource to TDestination.
+    /// </summary>
+    /// <typeparam name="TSource">The source type</typeparam>
+    /// <typeparam name="TDestination">The destination type</typeparam>
+    /// <typeparam name="TResult">The result type</typeparam>
+    /// <param name="projectionExpression">The projection expression to map</param>
+    /// <returns>A mapped projection expression</returns>
+    public static Expression<Func<TDestination, TResult>> MapProjection<TSource, TDestination, TResult>(
+        Expression<Func<TSource, TResult>> projectionExpression)
+    {
+        ArgumentNullException.ThrowIfNull(projectionExpression);
+        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
+        var newProjection = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(projectionExpression, mapping);
+        return (Expression<Func<TDestination, TResult>>)newProjection;
     }
 
     /// <summary>
@@ -125,60 +157,18 @@ public static class ExtensoMapper
         return query.Select(selector);
     }
 
+
+
+
+
+
     public static Expression<Func<TDestination, TDestination>> MapUpdate<TSource, TDestination>(
         Expression<Func<TSource, TSource>> updateFactory)
     {
         ArgumentNullException.ThrowIfNull(updateFactory);
-
         var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
         var newUpdate = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(updateFactory, mapping);
         return (Expression<Func<TDestination, TDestination>>)newUpdate;
-    }
-
-    /// <summary>
-    /// Maps an include expression from TSource to TDestination for Entity Framework.
-    /// </summary>
-    /// <typeparam name="TSource">The source type</typeparam>
-    /// <typeparam name="TDestination">The destination type</typeparam>
-    /// <param name="includeExpression">The include expression to map</param>
-    /// <returns>A function that can be used to include related entities in a query</returns>
-
-    public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapInclude<TSource, TDestination>(
-        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> includeExpression) => MapQuery<TSource, TDestination>(includeExpression);
-
-    public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapOrderBy<TSource, TDestination>(
-        Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> orderByExpression) => MapQuery<TSource, TDestination>(orderByExpression);
-
-    private static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapQuery<TSource, TDestination>(
-       Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> queryExpression)
-    {
-        ArgumentNullException.ThrowIfNull(queryExpression);
-
-        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
-        var newInclude = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(queryExpression, mapping);
-
-        var newBody = Expression.Convert(newInclude.Body, typeof(IQueryable<TDestination>));
-        var lambda = Expression.Lambda<Func<IQueryable<TDestination>, IQueryable<TDestination>>>(newBody, newInclude.Parameters[0]);
-
-        return lambda.Compile();
-    }
-
-    /// <summary>
-    /// Maps a projection expression from TSource to TDestination.
-    /// </summary>
-    /// <typeparam name="TSource">The source type</typeparam>
-    /// <typeparam name="TDestination">The destination type</typeparam>
-    /// <typeparam name="TResult">The result type</typeparam>
-    /// <param name="projectionExpression">The projection expression to map</param>
-    /// <returns>A mapped projection expression</returns>
-    public static Expression<Func<TDestination, TResult>> MapProjection<TSource, TDestination, TResult>(
-        Expression<Func<TSource, TResult>> projectionExpression)
-    {
-        ArgumentNullException.ThrowIfNull(projectionExpression);
-
-        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
-        var newProjection = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(projectionExpression, mapping);
-        return (Expression<Func<TDestination, TResult>>)newProjection;
     }
 
     #region Private Methods
@@ -236,10 +226,7 @@ public static class ExtensoMapper
         return Expression.MemberInit(Expression.New(destinationType), bindings);
     }
 
-    private static Expression CreateMappingExpression(
-        ParameterExpression parameter,
-        Type sourceType,
-        Type destType)
+    private static Expression CreateMappingExpression(ParameterExpression parameter, Type sourceType, Type destType)
     {
         var bindings = new List<MemberBinding>();
 
@@ -270,15 +257,26 @@ public static class ExtensoMapper
         return Expression.MemberInit(Expression.New(destType), bindings);
     }
 
-    private static Expression CreateNestedMappingExpression(
-        Expression sourceExpr,
-        Type sourceType,
-        Type destType)
+    private static Expression CreateNestedMappingExpression(Expression sourceExpr, Type sourceType, Type destType)
     {
         var nestedParameter = Expression.Parameter(sourceType, "nested");
         var nestedBody = CreateMappingExpression(nestedParameter, sourceType, destType);
         var nestedLambda = Expression.Lambda(nestedBody, nestedParameter);
         return Expression.Invoke(nestedLambda, sourceExpr);
+    }
+
+    private static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapQuery<TSource, TDestination>(
+       Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> queryExpression)
+    {
+        ArgumentNullException.ThrowIfNull(queryExpression);
+
+        var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
+        var newInclude = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(queryExpression, mapping);
+
+        var newBody = Expression.Convert(newInclude.Body, typeof(IQueryable<TDestination>));
+        var lambda = Expression.Lambda<Func<IQueryable<TDestination>, IQueryable<TDestination>>>(newBody, newInclude.Parameters[0]);
+
+        return lambda.Compile();
     }
 
     private static bool RequiresNestedMapping(Type sourceType, Type destType) =>
@@ -287,6 +285,10 @@ public static class ExtensoMapper
         sourceType != typeof(string) &&
         destType != typeof(string) &&
         sourceType != destType;
+
+    #endregion Private Methods
+
+    #region Nested Types
 
     private class ExpressionMappingVisitor<TSource, TDestination> : ExpressionVisitor
     {
@@ -298,6 +300,30 @@ public static class ExtensoMapper
         public ExpressionMappingVisitor(ParameterExpression parameter)
         {
             this.parameter = parameter;
+        }
+
+        internal static Type GetMappedType(Type sourceType)
+        {
+            if (sourceType == null) return null;
+
+            // Check cache first
+            if (typeMappingsCache.TryGetValue(sourceType, out var cachedType))
+            {
+                return cachedType;
+            }
+
+            // Optimized lookup in mappings dictionary
+            foreach (var mapping in mappings)
+            {
+                if (mapping.Key.Source == sourceType)
+                {
+                    typeMappingsCache[sourceType] = mapping.Key.Destination;
+                    return mapping.Key.Destination;
+                }
+            }
+
+            typeMappingsCache[sourceType] = null; // Cache negative results too
+            return null;
         }
 
         protected override Expression VisitLambda<T>(Expression<T> node)
@@ -421,10 +447,10 @@ public static class ExtensoMapper
         }
 
         private static MemberInfo GetMappedMember(MemberInfo sourceMember) => sourceMember.DeclaringType.IsPrimitive ||
-                sourceMember.DeclaringType == typeof(string) ||
-                sourceMember.DeclaringType == typeof(decimal)
-                ? sourceMember
-                : memberMappingsCache.GetOrAdd(sourceMember, key =>
+            sourceMember.DeclaringType == typeof(string) ||
+            sourceMember.DeclaringType == typeof(decimal)
+            ? sourceMember
+            : memberMappingsCache.GetOrAdd(sourceMember, key =>
             {
                 if (key is PropertyInfo sourceProp)
                 {
@@ -447,30 +473,6 @@ public static class ExtensoMapper
                 return sourceMember; // Return original if no mapping found
             });
 
-        internal static Type GetMappedType(Type sourceType)
-        {
-            if (sourceType == null) return null;
-
-            // Check cache first
-            if (typeMappingsCache.TryGetValue(sourceType, out var cachedType))
-            {
-                return cachedType;
-            }
-
-            // Optimized lookup in mappings dictionary
-            foreach (var mapping in mappings)
-            {
-                if (mapping.Key.Source == sourceType)
-                {
-                    typeMappingsCache[sourceType] = mapping.Key.Destination;
-                    return mapping.Key.Destination;
-                }
-            }
-
-            typeMappingsCache[sourceType] = null; // Cache negative results too
-            return null;
-        }
-
         private static ConstructorInfo GetMatchingConstructor(Type type, ConstructorInfo sourceConstructor) => sourceConstructor == null
             ? null
             : type.GetConstructors()
@@ -480,21 +482,5 @@ public static class ExtensoMapper
                     .Select(p => GetMappedType(p.ParameterType) ?? p.ParameterType)));
     }
 
-    private class ReplaceExpressionVisitor : ExpressionVisitor
-    {
-        private readonly Expression newValue;
-        private readonly Expression oldValue;
-
-        public ReplaceExpressionVisitor(Expression oldValue, Expression newValue)
-        {
-            this.oldValue = oldValue;
-            this.newValue = newValue;
-        }
-
-        public override Expression Visit(Expression node) => node == oldValue
-            ? newValue
-            : base.Visit(node);
-    }
-
-    #endregion Private Methods
+    #endregion
 }

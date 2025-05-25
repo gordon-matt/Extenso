@@ -82,7 +82,7 @@ public class Startup
             endpoints.MapRazorPages();
         });
 
-        app.UseExtensoUI<Bootstrap3UIProvider>();
+        app.UseExtensoUI<Bootstrap4UIProvider>();
     }
 
     public void ConfigureContainer(ContainerBuilder builder)

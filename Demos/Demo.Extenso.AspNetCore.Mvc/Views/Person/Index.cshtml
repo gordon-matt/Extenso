@@ -5,26 +5,26 @@
 }
 
 <div id="grid-section" class="row">
-    @using (var panel = Html.ExtensoUI().Begin(new Panel(state: State.Primary)))
-    {
-        using (var header = panel.BeginHeader("Info")) { }
-        using (var header = panel.BeginBody())
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mb-3">
+        @using (var panel = Html.ExtensoUI().Begin(new Panel(state: State.Primary)))
         {
-            <p>This page demonstrates the use of a mapped repository (see PersonController).</p>
-            <p>The default implementation uses ExtensoMapper - a lightweight, simpler alternative to AutoMapper.</p>
-            <p>There is also an AutoMapper implementation. Switch between implementations in Startup.cs</p>
+            using (var header = panel.BeginHeader("Info")) { }
+            using (var header = panel.BeginBody())
+            {
+                <p>This page demonstrates the use of a mapped repository (see PersonController).</p>
+                <p>The default implementation uses ExtensoMapper - a lightweight, simpler alternative to AutoMapper.</p>
+                <p>There is also an AutoMapper implementation. Switch between implementations in Startup.cs</p>
+            }
         }
-    }
+    </div>
 
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mb-3">
         <button data-bind="click: create" class="btn btn-primary">
             <i class="fa fa-plus"></i>
             Create
         </button>
     </div>
 
-    <div class="clearfix"></div>
-    <br />
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 @rtlClass">
         <div id="grid"></div>
     </div>
@@ -32,9 +32,11 @@
 
 <div id="form-section" class="row" style="display:none">
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">Details</div>
-            <div class="panel-body">
+        @using (var panel = Html.ExtensoUI().Begin(new Panel(state: State.Primary)))
+        {
+            using (var header = panel.BeginHeader("Details")) { }
+            using (var header = panel.BeginBody())
+            {
                 <form id="form-section-form" role="form" class="form-horizontal">
                     <fieldset>
                         <legend id="form-section-legend"></legend>
@@ -75,9 +77,9 @@
                             </div>
                         </div>
                     </fieldset>
-                </form>
-            </div>
-        </div>
+                </form>                
+            }
+        }
     </article>
 </div>
 
