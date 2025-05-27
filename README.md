@@ -12,133 +12,49 @@ Documentation can be found here: https://gordon-matt.github.io/Extenso/
 
 ## NuGet Packages
 
+| Package | Link | Downloads |
+|---------|------|-------------|
+| Extenso.Core | [![NuGet](https://img.shields.io/nuget/v/Extenso.Core?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Core) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Core?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Core) |
+| Extenso.Data | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data) |
+| Extenso.Data.MySql | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.MySql?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.MySql) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.MySql?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.MySql) |
+| Extenso.Data.Npgsql | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.Npgsql?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.Npgsql) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.Npgsql?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.Npgsql) |
+| Extenso.Data.OleDb | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.OleDb?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.OleDb) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.OleDb?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.OleDb) |
+| Extenso.Data.Entity.Abstractions | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.Entity.Abstractions?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.Entity.Abstractions) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.Entity.Abstractions?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.Entity.Abstractions) |
+| Extenso.Data.Entity | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.Entity) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.Entity) |
+| Extenso.Data.Entity | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.Entity) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.Entity) |
+| Extenso.Mapping | [![NuGet](https://img.shields.io/nuget/v/Extenso.Mapping?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Mapping) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Mapping?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Mapping) |
+| Extenso.Data.QueryBuilder | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.QueryBuilder?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.QueryBuilder) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.QueryBuilder?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.QueryBuilder) |
+| Extenso.Data.QueryBuilder.MySql | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.QueryBuilder.MySql?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.QueryBuilder.MySql) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.QueryBuilder.MySql?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.QueryBuilder.MySql) |
+| Extenso.Data.QueryBuilder.Npgsql | [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.QueryBuilder.Npgsql?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.QueryBuilder.Npgsql) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.QueryBuilder.Npgsql?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.QueryBuilder.Npgsql) |
+| Extenso.Drawing | [![NuGet](https://img.shields.io/nuget/v/Extenso.Drawing?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Drawing) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Drawing?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Drawing) |
+| Extenso.AspNetCore.Mvc | [![NuGet](https://img.shields.io/nuget/v/Extenso.AspNetCore.Mvc?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.AspNetCore.Mvc) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.AspNetCore.Mvc?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.AspNetCore.Mvc) |
+| Extenso.AspNetCore.Mvc.ExtensoUI | [![NuGet](https://img.shields.io/nuget/v/Extenso.AspNetCore.Mvc.ExtensoUI?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.AspNetCore.Mvc.ExtensoUI?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI) |
+| Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI | [![NuGet](https://img.shields.io/nuget/v/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI) |
+| Extenso.AspNetCore.OData | [![NuGet](https://img.shields.io/nuget/v/Extenso.AspNetCore.OData?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.AspNetCore.OData) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.AspNetCore.OData?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.AspNetCore.OData) |
+| Extenso.Windows.Forms | [![NuGet](https://img.shields.io/nuget/v/Extenso.Windows.Forms?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Windows.Forms) | [![NuGet](https://img.shields.io/nuget/dt/Extenso.Windows.Forms?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Windows.Forms) |
 
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Core">
-    <img src="https://img.shields.io/nuget/v/Extenso.Core?style=flat-square&logo=nuget&label=Extenso.Core" alt="Extenso.Core" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">This is the main library and mostly contains various extension methods.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data?style=flat-square&logo=nuget&label=Extenso.Data" alt="Extenso.Data" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Extension methods and other data-related helper classes.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.MySql">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.MySql?style=flat-square&logo=nuget&label=Extenso.Data.MySql" alt="Extenso.Data.MySql" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Data-related extension methods and other helper classes for MySql.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.Npgsql">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.Npgsql?style=flat-square&logo=nuget&label=Extenso.Data.Npgsql" alt="Extenso.Data.Npgsql" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Data-related extension methods and other helper classes for Npgsql.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.OleDb">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.OleDb?style=flat-square&logo=nuget&label=Extenso.Data.OleDb" alt="Extenso.Data.OleDb" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Data-related extension methods and other helper classes for OleDb.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.Entity.Abstractions">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.Entity.Abstractions?style=flat-square&logo=nuget&label=Extenso.Data.Entity.Abstractions" alt="Extenso.Data.Entity.Abstractions" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">This package contains generic IRepository and IMappedRepository<TModel, TEntity> interfaces</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.Entity">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Extenso.Data.Entity" alt="Extenso.Data.Entity" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">This package contains a generic IRepository and IMappedRepository<TModel, TEntity> implementations for Entity Framework.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.Entity">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Extenso.Data.Entity" alt="Extenso.Data.Entity" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">This package contains an AutoMapper implementation of IMappedRepository<TModel, TEntity> for Entity Framework.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Mapping">
-    <img src="https://img.shields.io/nuget/v/Extenso.Mapping?style=flat-square&logo=nuget&label=Extenso.Mapping" alt="Extenso.Mapping" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">A lightweight, simpler alternative to AutoMapper, complete with expression mapping for predicates, includes, projections, etc.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.QueryBuilder">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.QueryBuilder?style=flat-square&logo=nuget&label=Extenso.Data.QueryBuilder" alt="Extenso.Data.QueryBuilder" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">This package consists of a Query Builder which lets you build T-SQL statements through a fluent interface.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.QueryBuilder.MySql">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.QueryBuilder.MySql?style=flat-square&logo=nuget&label=Extenso.Data.QueryBuilder.MySql" alt="Extenso.Data.QueryBuilder.MySql" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Fluent T-SQL Query Builder for MySQL.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Data.QueryBuilder.Npgsql">
-    <img src="https://img.shields.io/nuget/v/Extenso.Data.QueryBuilder.Npgsql?style=flat-square&logo=nuget&label=Extenso.Data.QueryBuilder.Npgsql" alt="Extenso.Data.QueryBuilder.Npgsql" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Fluent T-SQL Query Builder for PostgreSQL.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Drawing">
-    <img src="https://img.shields.io/nuget/v/Extenso.Drawing?style=flat-square&logo=nuget&label=Extenso.Drawing" alt="Extenso.Drawing" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Drawing-related extension methods and other helper classes.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.AspNetCore.Mvc">
-    <img src="https://img.shields.io/nuget/v/Extenso.AspNetCore.Mvc?style=flat-square&logo=nuget&label=Extenso.AspNetCore.Mvc" alt="Extenso.AspNetCore.Mvc" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">MVC-related extension methods and other helper classes. Includes a FluentTagBuilder, an IRazorViewRenderService (to render Razor views to a string), various HTML Helpers and more.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI">
-    <img src="https://img.shields.io/nuget/v/Extenso.AspNetCore.Mvc.ExtensoUI?style=flat-square&logo=nuget&label=Extenso.AspNetCore.Mvc.ExtensoUI" alt="Extenso.AspNetCore.Mvc.ExtensoUI" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">HTML Helpers for creating common UI components (Accordions, Tabs, Panels, Modal Dialogs, etc). This package includes providers for Bootstrap 3, 4 and 5.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI">
-    <img src="https://img.shields.io/nuget/v/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI?style=flat-square&logo=nuget&label=Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI" alt="Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">ExtensoUI provider for KendoUI / Bootstrap.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.AspNetCore.OData">
-    <img src="https://img.shields.io/nuget/v/Extenso.AspNetCore.OData?style=flat-square&logo=nuget&label=Extenso.AspNetCore.OData" alt="Extenso.AspNetCore.OData" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">This library contains a GenericODataController. To get started, see the Demo project in this repo, which has a fully working CRUD demo using OData, KendoGrid and KnockoutJS.</span>
-</p>
-<p>
-  <a href="https://www.nuget.org/packages/Extenso.Windows.Forms">
-    <img src="https://img.shields.io/nuget/v/Extenso.Windows.Forms?style=flat-square&logo=nuget&label=Extenso.Windows.Forms" alt="Extenso.Windows.Forms" height="20">
-  </a>
-  <br />
-  <span style="margin-left: 10px;">Various WinForms-related controls and helper classes. Check out the DataGridView bar graph, calendar, masked textbox, multiline textbox, numeric updown and rado button column types!</span>
-</p>
+## Package Details
+
+| Package | Description |
+|---------|------|
+| Extenso.Core | This is the main library and mostly contains various extension methods. |
+| Extenso.Data | Extension methods and other data-related helper classes. |
+| Extenso.Data.MySql | Data-related extension methods and other helper classes for MySql. |
+| Extenso.Data.Npgsql | Data-related extension methods and other helper classes for Npgsql. |
+| Extenso.Data.OleDb | Data-related extension methods and other helper classes for OleDb. |
+| Extenso.Data.Entity.Abstractions | This package contains generic IRepository and IMappedRepository<TModel, TEntity> interfaces |
+| Extenso.Data.Entity | This package contains a generic IRepository and IMappedRepository<TModel, TEntity> implementations for Entity Framework. |
+| Extenso.Data.Entity | This package contains an AutoMapper implementation of IMappedRepository<TModel, TEntity> for Entity Framework. |
+| Extenso.Mapping | A lightweight, simpler alternative to AutoMapper, complete with expression mapping for predicates, includes, projections, etc. |
+| Extenso.Data.QueryBuilder | This package consists of a Query Builder which lets you build T-SQL statements through a fluent interface. |
+| Extenso.Data.QueryBuilder.MySql | Fluent T-SQL Query Builder for MySQL. |
+| Extenso.Data.QueryBuilder.Npgsql | Fluent T-SQL Query Builder for PostgreSQL. |
+| Extenso.Drawing | Drawing-related extension methods and other helper classes. |
+| Extenso.AspNetCore.Mvc | MVC-related extension methods and other helper classes. Includes a FluentTagBuilder, an IRazorViewRenderService (to render Razor views to a string), various HTML Helpers and more. |
+| Extenso.AspNetCore.Mvc.ExtensoUI | HTML Helpers for creating common UI components (Accordions, Tabs, Panels, Modal Dialogs, etc). This package includes providers for Bootstrap 3, 4 and 5. |
+| Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI | ExtensoUI provider for KendoUI / Bootstrap. |
+| Extenso.AspNetCore.OData | This library contains a GenericODataController. To get started, see the Demo project in this repo, which has a fully working CRUD demo using OData, KendoGrid and KnockoutJS. |
+| Extenso.Windows.Forms | Various WinForms-related controls and helper classes. Check out the DataGridView bar graph, calendar, masked textbox, multiline textbox, numeric updown and rado button column types! |
 
 ## License
 
