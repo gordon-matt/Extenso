@@ -100,7 +100,7 @@ public static class ExtensoMapper
     /// </summary>
     /// <typeparam name="TSource">The source type</typeparam>
     /// <typeparam name="TDestination">The destination type</typeparam>
-    /// <param name="includeExpression">The include expression to map</param>
+    /// <param name="orderByExpression">The include expression to map</param>
     /// <returns>A function that can be used to include related entities in a query</returns>
     public static Func<IQueryable<TDestination>, IQueryable<TDestination>> MapOrderBy<TSource, TDestination>(
         Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> orderByExpression) => MapQuery<TSource, TDestination>(orderByExpression);
