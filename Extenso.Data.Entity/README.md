@@ -103,3 +103,23 @@ public class BlogService
 
 All CRUD operations are supported, including paging, searching, and sorting.
 Even projections are supported via method overloads of `Find()`, `FindAsync()`, `FindOne()`, and `FindOneAsync()`.
+
+## Limitations
+
+The mapped repositories are currently unable to support filtered includes. Either use the normal `IRepository<>` which does support that, or cast your `IMappedRepository<,>` to the relevant implementation and use `GetContext()` to run your own advanced queries that way. Example:
+
+```csharp
+var efRepository = repository as ExtensoMapperEntityFrameworkRepository<ProductModelViewModel, ProductModel>;
+using var context = efRepository.GetContext();
+var advancedQuery = context.Set<ProductModel>()
+    .Include(x => x.Products)
+        .ThenInclude(x => x.ProductSubcategory)
+    .Include(x => x.ProductModelIllustrations)
+    .AsSplitQuery()
+    .IgnoreAutoIncludes()
+    .TagWith("My advanced query!")
+    .Where(x => x.ModifiedDate >= DateTime.UtcNow.AddYears(-10))
+    .ToList()
+    .Select(x => x.MapTo<ProductModelViewModel>())
+    .ToList();
+```
