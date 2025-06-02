@@ -7,7 +7,7 @@ using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity;
 
-public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity>
+public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity>, IEntityFrameworkRepository<TModel>
     where TModel : class
     where TEntity : class, IEntity
 {
@@ -32,11 +32,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #region IRepository<TModel> Members
 
-    /// <summary>
-    /// <para>This is typically used to create queries with custom projections. For example, you may wish</para>
-    /// <para>to select only a small number of columns from the table.</para>
-    /// </summary>
-    /// <returns>An instance of IRepositoryConnectionlt;TModel&gt;</returns>
+    /// <inheritdoc/>
     public virtual IRepositoryConnection<TModel> OpenConnection()
     {
 #pragma warning disable DF0010 // Should not be disposed here. Call Dispose() on the IRepositoryConnection instead.
@@ -51,13 +47,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             include => MapInclude(include));
     }
 
-    /// <summary>
-    /// <para>If OpenConnection() has already been called and you wish to use the same connection</para>
-    /// <para> (same DbContext), then use this.</para>
-    /// </summary>
-    /// <typeparam name="TOther">The type used in the other connection.</typeparam>
-    /// <param name="connection">An instance of IRepositoryConnectionlt;TOther&gt;</param>
-    /// <returns>An instance of IRepositoryConnectionlt;TModel&gt;</returns>
+    /// <inheritdoc/>
     public virtual IRepositoryConnection<TModel> UseConnection<TOther>(IRepositoryConnection<TOther> connection)
         where TOther : class
     {
@@ -77,6 +67,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #region Find
 
+    /// <inheritdoc/>
     public IPagedCollection<TModel> Find(SearchOptions<TModel> options)
     {
         using var context = GetContext();
@@ -91,6 +82,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             totalCount);
     }
 
+    /// <inheritdoc/>
     public IPagedCollection<TResult> Find<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         using var context = GetContext();
@@ -108,6 +100,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             totalCount);
     }
 
+    /// <inheritdoc/>
     public async Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TModel> options)
     {
         using var context = GetContext();
@@ -122,6 +115,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             totalCount);
     }
 
+    /// <inheritdoc/>
     public async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         using var context = GetContext();
@@ -139,11 +133,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             totalCount);
     }
 
-    /// <summary>
-    ///  Finds an entity with the given primary key values.
-    /// </summary>
-    /// <param name="keyValues">The values of the primary key for the entity to be found.</param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual TModel FindOne(params object[] keyValues)
     {
         using var context = GetContext();
@@ -151,6 +141,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return ToModel(entity);
     }
 
+    /// <inheritdoc/>
     public TModel FindOne(SearchOptions<TModel> options)
     {
         using var context = GetContext();
@@ -159,6 +150,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return ToModel(entity);
     }
 
+    /// <inheritdoc/>
     public TResult FindOne<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         using var context = GetContext();
@@ -168,11 +160,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return projectedQuery.FirstOrDefault();
     }
 
-    /// <summary>
-    ///  Asynchronously finds an entity with the given primary key values.
-    /// </summary>
-    /// <param name="keyValues">The values of the primary key for the entity to be found.</param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual async Task<TModel> FindOneAsync(params object[] keyValues)
     {
         using var context = GetContext();
@@ -180,6 +168,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return ToModel(entity);
     }
 
+    /// <inheritdoc/>
     public async Task<TModel> FindOneAsync(SearchOptions<TModel> options)
     {
         using var context = GetContext();
@@ -188,6 +177,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return ToModel(entity);
     }
 
+    /// <inheritdoc/>
     public async Task<TResult> FindOneAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         using var context = GetContext();
@@ -201,21 +191,14 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #region Count
 
-    /// <summary>
-    /// Returns the number of elements in a sequence.
-    /// </summary>
-    /// <returns>The number of elements in the sequence.</returns>
+    /// <inheritdoc/>
     public virtual int Count()
     {
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().Count();
     }
 
-    /// <summary>
-    /// Returns the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
+    /// <inheritdoc/>
     public virtual int Count(Expression<Func<TModel, bool>> predicate)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -223,27 +206,14 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.Set<TEntity>().AsNoTracking().Count(mappedPredicate);
     }
 
-    /// <summary>
-    /// Asynchronously returns the number of elements in a sequence.
-    /// </summary>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<int> CountAsync()
     {
         using var context = GetContext();
         return await context.Set<TEntity>().AsNoTracking().CountAsync();
     }
 
-    /// <summary>
-    /// Asynchronously returns the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence that satisfy the condition in the predicate function.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<int> CountAsync(Expression<Func<TModel, bool>> predicate)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -251,21 +221,14 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return await context.Set<TEntity>().AsNoTracking().CountAsync(mappedPredicate);
     }
 
-    /// <summary>
-    /// Returns a System.Int64 that represents the number of elements in a sequence.
-    /// </summary>
-    /// <returns>The number of elements in the sequence.</returns>
+    /// <inheritdoc/>
     public virtual long LongCount()
     {
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().LongCount();
     }
 
-    /// <summary>
-    /// Returns a System.Int64 that represents the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
+    /// <inheritdoc/>
     public virtual long LongCount(Expression<Func<TModel, bool>> predicate)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -273,27 +236,14 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.Set<TEntity>().AsNoTracking().LongCount(mappedPredicate);
     }
 
-    /// <summary>
-    /// Asynchronously returns a System.Int64 that represents the number of elements in a sequence.
-    /// </summary>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<long> LongCountAsync()
     {
         using var context = GetContext();
         return await context.Set<TEntity>().AsNoTracking().LongCountAsync();
     }
 
-    /// <summary>
-    /// Asynchronously returns a System.Int64 that represents the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence that satisfy the condition in the predicate function.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<long> LongCountAsync(Expression<Func<TModel, bool>> predicate)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -305,11 +255,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #region Delete
 
-    /// <summary>
-    /// Deletes the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to delete.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Delete(TModel model)
     {
         var entity = ToEntity(model);
@@ -338,11 +284,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Deletes the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to delete.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Delete(IEnumerable<TModel> models)
     {
         var entities = models.Select(ToEntity).ToList();
@@ -374,11 +316,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Deletes all entities that match the given predicate
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Delete(Expression<Func<TModel, bool>> predicate)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -386,31 +324,21 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.Set<TEntity>().Where(mappedPredicate).Delete();
     }
 
-    /// <summary>
-    /// Deletes all rows without retrieving entities.
-    /// </summary>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int DeleteAll()
     {
         using var context = GetContext();
         return context.Set<TEntity>().Delete();
     }
 
-    /// <summary>
-    /// Asynchronously deletes all rows without retrieving entities.
-    /// </summary>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAllAsync()
     {
         using var context = GetContext();
         return await context.Set<TEntity>().DeleteAsync();
     }
 
-    /// <summary>
-    /// Asynchronously deletes the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to delete.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAsync(TModel model)
     {
         var entity = ToEntity(model);
@@ -439,11 +367,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return await context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Asynchronously deletes the given entities
-    /// </summary>
-    /// <param name="entities">The entities to delete.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAsync(IEnumerable<TModel> models)
     {
         var entities = models.Select(ToEntity).ToList();
@@ -475,11 +399,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return await context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Asynchronously deletes all entities that match the given predicate
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAsync(Expression<Func<TModel, bool>> predicate)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -491,11 +411,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #region Insert
 
-    /// <summary>
-    /// Inserts the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to insert.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Insert(TModel model)
     {
         var entity = ToEntity(model);
@@ -504,11 +420,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Inserts the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to insert.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Insert(IEnumerable<TModel> models)
     {
         var entities = models.Select(ToEntity).ToList();
@@ -517,11 +429,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Asynchronously inserts the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to insert.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> InsertAsync(TModel model)
     {
         var entity = ToEntity(model);
@@ -530,11 +438,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return await context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Asynchronously inserts the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to insert.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> InsertAsync(IEnumerable<TModel> models)
     {
         var entities = models.Select(ToEntity).ToList();
@@ -547,12 +451,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #region Update
 
-    /// <summary>
-    /// Updates the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to update.</param>
-    /// <returns>The number of rows affected.</returns>
-    public virtual int Update(TModel model)
+    /// <inheritdoc/>
+    public virtual TModel Update(TModel model)
     {
         try
         {
@@ -586,7 +486,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 context.Entry(entity).State = EntityState.Modified;
             }
 
-            return context.SaveChanges();
+            context.SaveChanges();
+            return ToModel(entity);
         }
         catch (Exception x)
         {
@@ -596,12 +497,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
     }
 
-    /// <summary>
-    /// Updates the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to update.</param>
-    /// <returns>The number of rows affected.</returns>
-    public virtual int Update(IEnumerable<TModel> models)
+    /// <inheritdoc/>
+    public virtual IEnumerable<TModel> Update(IEnumerable<TModel> models)
     {
         try
         {
@@ -636,7 +533,9 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                     context.Entry(entity).State = EntityState.Modified;
                 }
             }
-            return context.SaveChanges();
+
+            context.SaveChanges();
+            return entities.Select(ToModel).ToList();
         }
         catch (Exception x)
         {
@@ -646,11 +545,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
     }
 
-    /// <summary>
-    /// Updates all rows using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Update(Expression<Func<TModel, TModel>> updateFactory)
     {
         var mappedUpdateExpression = MapUpdate(updateFactory);
@@ -658,12 +553,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.Set<TEntity>().Update(mappedUpdateExpression);
     }
 
-    /// <summary>
-    /// Updates all rows that match the given predicate using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -672,21 +562,12 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return context.Set<TEntity>().Where(mappedPredicate).Update(mappedUpdateExpression);
     }
 
-    /// <summary>
-    /// Updates all rows from the query using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Update(IQueryable<TModel> query, Expression<Func<TModel, TModel>> updateFactory) =>
         throw new NotSupportedException();
 
-    /// <summary>
-    /// Asynchronously updates the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to update.</param>
-    /// <returns>A task with the number of rows affected.</returns>
-    public virtual async Task<int> UpdateAsync(TModel model)
+    /// <inheritdoc/>
+    public virtual async Task<TModel> UpdateAsync(TModel model)
     {
         try
         {
@@ -720,7 +601,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 context.Entry(entity).State = EntityState.Modified;
             }
 
-            return await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
+            return ToModel(entity);
         }
         catch (Exception x)
         {
@@ -730,12 +612,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
     }
 
-    /// <summary>
-    /// Asynchronously updates the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to update.</param>
-    /// <returns>A task with the number of rows affected.</returns>
-    public virtual async Task<int> UpdateAsync(IEnumerable<TModel> models)
+    /// <inheritdoc/>
+    public virtual async Task<IEnumerable<TModel>> UpdateAsync(IEnumerable<TModel> models)
     {
         try
         {
@@ -769,7 +647,9 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                     context.Entry(entity).State = EntityState.Modified;
                 }
             }
-            return await context.SaveChangesAsync();
+
+            await context.SaveChangesAsync();
+            return entities.Select(ToModel).ToList();
         }
         catch (Exception x)
         {
@@ -779,11 +659,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         }
     }
 
-    /// <summary>
-    /// Asynchronously updates all rows using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(Expression<Func<TModel, TModel>> updateFactory)
     {
         var mappedUpdateExpression = MapUpdate(updateFactory);
@@ -791,12 +667,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return await context.Set<TEntity>().UpdateAsync(mappedUpdateExpression);
     }
 
-    /// <summary>
-    /// Asynchronously updates all rows that match the given predicate using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory)
     {
         var mappedPredicate = MapPredicate(predicate);
@@ -805,12 +676,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         return await context.Set<TEntity>().Where(mappedPredicate).UpdateAsync(mappedUpdateExpression);
     }
 
-    /// <summary>
-    /// Asynchronously updates all rows from the query using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(IQueryable<TModel> query, Expression<Func<TModel, TModel>> updateFactory) =>
         throw new NotSupportedException();
 
@@ -818,31 +684,34 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #endregion IRepository<TModel> Members
 
-    public abstract Func<IQueryable<TEntity>, IQueryable<TEntity>> MapInclude(
-        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
+    #region  IEntityFrameworkRepository<TEntity> Members
 
-    public abstract Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
+    /// <inheritdoc/>
+    public DbContext GetContext() => contextFactory.GetContext();
 
-    public abstract Func<IQueryable<TEntity>, IQueryable<TEntity>> MapOrderBy(
-        Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
+    #endregion
 
-    public abstract Expression<Func<TEntity, bool>> MapPredicate(Expression<Func<TModel, bool>> predicate);
+    #region Mapping
 
-    public abstract Expression<Func<TEntity, TResult>> MapProjection<TResult>(Expression<Func<TModel, TResult>> projectionExpression);
+    protected abstract Func<IQueryable<TEntity>, IQueryable<TEntity>> MapInclude(Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
 
-    public abstract IQueryable<TModel> MapQuery(IQueryable<TEntity> query);
+    protected abstract Expression<Func<TEntity, TProperty>> MapInclude<TProperty>(Expression<Func<TModel, TProperty>> includeExpression);
 
-    public abstract Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression);
+    protected abstract Func<IQueryable<TEntity>, IQueryable<TEntity>> MapOrderBy(Expression<Func<IQueryable<TModel>, IQueryable<TModel>>> includeExpression);
 
-    public abstract TEntity ToEntity(TModel model);
+    protected abstract Expression<Func<TEntity, bool>> MapPredicate(Expression<Func<TModel, bool>> predicate);
 
-    public abstract TModel ToModel(TEntity entity);
+    protected abstract Expression<Func<TEntity, TResult>> MapProjection<TResult>(Expression<Func<TModel, TResult>> projectionExpression);
 
-    /// <summary>
-    /// Returns an instance of the DbContext used in this EntityFrameworkRepository&lt;TModel&gt;
-    /// </summary>
-    /// <returns>An instance of the DbContext.</returns>
-    protected virtual DbContext GetContext() => contextFactory.GetContext();
+    protected abstract IQueryable<TModel> MapQuery(IQueryable<TEntity> query);
+
+    protected abstract Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression);
+
+    protected abstract TEntity ToEntity(TModel model);
+
+    protected abstract TModel ToModel(TEntity entity);
+
+    #endregion
 
     private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
     {
@@ -852,6 +721,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         {
             var mappedInclude = MapInclude(options.Include);
             query = mappedInclude(query); // Happens here. I believe because the `query` variable is an EntityQueryable
+
+            if (options.SplitQuery)
+            {
+                query = query.AsSplitQuery();
+            }
         }
 
         if (options.Query is not null)

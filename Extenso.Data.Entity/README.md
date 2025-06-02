@@ -1,6 +1,5 @@
 [![NuGet](https://img.shields.io/nuget/v/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Data.Entity)
 [![NuGet](https://img.shields.io/nuget/dt/Extenso.Data.Entity?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Data.Entity)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=gordon_matt%40live%2ecom&lc=AU&currency_code=AUD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 
 <img src="https://github.com/gordon-matt/Extenso/blob/master/_Misc/ExtensoLogo.png" alt="Logo" width="250" />
 
@@ -93,7 +92,9 @@ public class BlogService
                 .Include(x => x.Posts)
                 .ThenInclude(x => x.Tags),
 
-            OrderBy = query => query.OrderBy(x => x.Name)
+            OrderBy = query => query.OrderBy(x => x.Name),
+
+            SplitQuery = true, // Optional, defaults to false
         });
 
     // etc...
@@ -102,11 +103,3 @@ public class BlogService
 
 All CRUD operations are supported, including paging, searching, and sorting.
 Even projections are supported via method overloads of `Find()`, `FindAsync()`, `FindOne()`, and `FindOneAsync()`.
-
-## Donate
-If you find this project helpful, consider buying me a cup of coffee.  :-)
-
-[![PayPal](https://img.shields.io/badge/PayPal-003087?logo=paypal&logoColor=fff)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=gordon_matt%40live%2ecom&lc=AU&currency_code=AUD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
-[![Bitcoin](https://img.shields.io/badge/Bitcoin-FF9900?logo=bitcoin&logoColor=white)](bitcoin:1EeDfbcqoEaz6bbcWsymwPbYv4uyEaZ3Lp)
-[![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?logo=ethereum&logoColor=white)](ethereum:0x277552efd6ea9ca9052a249e781abf1719ea9414)
-[![Litecoin](https://img.shields.io/badge/Litecoin-A6A9AA?logo=litecoin&logoColor=white)](litecoin:LRUP8hukWGXRrcPK6Tm7iUp9vPvnNNt3uz)

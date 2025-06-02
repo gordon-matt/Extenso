@@ -265,28 +265,28 @@ public interface IRepository<TEntity> where TEntity : class
     /// </summary>
     /// <param name="entity">The entity to update.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(TEntity entity);
+    TEntity Update(TEntity entity);
 
     /// <summary>
     /// Updates the given entities.
     /// </summary>
     /// <param name="entities">The entities to update.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(IEnumerable<TEntity> entities);
+    IEnumerable<TEntity> Update(IEnumerable<TEntity> entities);
 
     /// <summary>
     /// Asynchronously updates the given entity.
     /// </summary>
     /// <param name="entity">The entity to update.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> UpdateAsync(TEntity entity);
+    Task<TEntity> UpdateAsync(TEntity entity);
 
     /// <summary>
     /// Asynchronously updates the given entities.
     /// </summary>
     /// <param name="entities">The entities to update.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> UpdateAsync(IEnumerable<TEntity> entities);
+    Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities);
 
     /// <summary>
     /// Updates all rows using an expression without retrieving entities.

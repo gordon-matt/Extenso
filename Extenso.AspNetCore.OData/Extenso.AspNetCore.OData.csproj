@@ -6,10 +6,11 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <Version>9.3.0</Version>
+    <Version>9.3.1</Version>
     <Description></Description>
     <PackageIcon>ExtensoIcon.jpg</PackageIcon>
     <RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -28,5 +29,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>

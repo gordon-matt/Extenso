@@ -2,6 +2,7 @@
 using AutoMapper;
 using Bogus;
 using Extenso.Data.Entity.AutoMapper;
+using Extenso.Mapping;
 using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Extenso.TestLib.ViewModels;
@@ -627,8 +628,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
         model.Name = newName;
-        int rowsAffected = repository.Update(model);
-        Assert.Equal(1, rowsAffected);
+        var updatedModel = repository.Update(model);
+        Assert.True(updatedModel.ProductModelId > 0);
 
         var entityAgain = repository.FindOne(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -656,8 +657,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             model.Name = namePrefix;
         }
 
-        int rowsAffected = repository.Update(models);
-        Assert.Equal(count1, rowsAffected);
+        var updatedModels = repository.Update(models);
+        Assert.All(updatedModels, x => Assert.True(x.ProductModelId > 0));
 
         var entitiesAgain = repository.Find(new SearchOptions<ProductModelViewModel>
         {
@@ -674,8 +675,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
         model.Name = newName;
-        int rowsAffected = await repository.UpdateAsync(model);
-        Assert.Equal(1, rowsAffected);
+        var updatedModel = await repository.UpdateAsync(model);
+        Assert.True(updatedModel.ProductModelId > 0);
 
         var entityAgain = await repository.FindOneAsync(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -703,8 +704,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             model.Name = namePrefix;
         }
 
-        int rowsAffected = await repository.UpdateAsync(models);
-        Assert.Equal(count1, rowsAffected);
+        var updatedModels = await repository.UpdateAsync(models);
+        Assert.All(updatedModels, x => Assert.True(x.ProductModelId > 0));
 
         var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {

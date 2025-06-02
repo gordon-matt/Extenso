@@ -6,7 +6,7 @@ using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity;
 
-public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
+public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityFrameworkRepository<TEntity>
     where TEntity : class, IEntity
 {
     #region Non-Public Members
@@ -28,24 +28,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #region IRepository<TEntity> Members
 
-    /// <summary>
-    /// <para>This is typically used to create queries with custom projections. For example, you may wish</para>
-    /// <para>to select only a small number of columns from the table.</para>
-    /// </summary>
-    /// <returns>An instance of IRepositoryConnectionlt;TEntity&gt;</returns>
+    /// <inheritdoc/>
     public virtual IRepositoryConnection<TEntity> OpenConnection()
     {
         var context = GetContext();
         return new EntityFrameworkRepositoryConnection<TEntity>(context, true);
     }
 
-    /// <summary>
-    /// <para>If OpenConnection() has already been called and you wish to use the same connection</para>
-    /// <para> (same DbContext), then use this.</para>
-    /// </summary>
-    /// <typeparam name="TOther">The type used in the other connection.</typeparam>
-    /// <param name="connection">An instance of IRepositoryConnectionlt;TOther&gt;</param>
-    /// <returns>An instance of IRepositoryConnectionlt;TEntity&gt;</returns>
+    /// <inheritdoc/>
     public virtual IRepositoryConnection<TEntity> UseConnection<TOther>(IRepositoryConnection<TOther> connection)
         where TOther : class
     {
@@ -60,11 +50,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #region Find
 
-    /// <summary>
-    ///  Finds all entities in the set.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <returns>A collection of all entities in the set.</returns>
+    /// <inheritdoc/>
     public virtual IPagedCollection<TEntity> Find(SearchOptions<TEntity> options)
     {
         using var context = GetContext();
@@ -79,12 +65,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
             totalCount);
     }
 
-    /// <summary>
-    ///  Finds all entities in the set.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="projection"></param>
-    /// <returns>A collection of all entities in the set.</returns>
+    /// <inheritdoc/>
     public virtual IPagedCollection<TResult> Find<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
         using var context = GetContext();
@@ -101,11 +82,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
             totalCount);
     }
 
-    /// <summary>
-    ///  Finds all entities in the set.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <returns>A collection of all entities in the set.</returns>
+    /// <inheritdoc/>
     public virtual async Task<IPagedCollection<TEntity>> FindAsync(SearchOptions<TEntity> options)
     {
         using var context = GetContext();
@@ -120,12 +97,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
             totalCount);
     }
 
-    /// <summary>
-    ///  Finds all entities in the set.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="projection"></param>
-    /// <returns>A collection of all entities in the set.</returns>
+    /// <inheritdoc/>
     public virtual async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
         using var context = GetContext();
@@ -142,22 +114,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
             totalCount);
     }
 
-    /// <summary>
-    ///  Finds an entity with the given primary key values.
-    /// </summary>
-    /// <param name="keyValues">The values of the primary key for the entity to be found.</param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual TEntity FindOne(params object[] keyValues)
     {
         using var context = GetContext();
         return context.Set<TEntity>().Find(keyValues);
     }
 
-    /// <summary>
-    /// Finds an entity based on a predicate.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual TEntity FindOne(SearchOptions<TEntity> options)
     {
         using var context = GetContext();
@@ -165,12 +129,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return query.FirstOrDefault();
     }
 
-    /// <summary>
-    /// Finds an entity based on a predicate.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="projection"></param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual TResult FindOne<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
         using var context = GetContext();
@@ -179,22 +138,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return projectedQuery.FirstOrDefault();
     }
 
-    /// <summary>
-    ///  Asynchronously finds an entity with the given primary key values.
-    /// </summary>
-    /// <param name="keyValues">The values of the primary key for the entity to be found.</param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual async Task<TEntity> FindOneAsync(params object[] keyValues)
     {
         using var context = GetContext();
         return await context.Set<TEntity>().FindAsync(keyValues);
     }
 
-    /// <summary>
-    /// Asynchronously finds an entity based on a predicate.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual async Task<TEntity> FindOneAsync(SearchOptions<TEntity> options)
     {
         using var context = GetContext();
@@ -202,12 +153,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return await query.FirstOrDefaultAsync();
     }
 
-    /// <summary>
-    /// Finds an entity based on a predicate.
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="projection"></param>
-    /// <returns>The entity found, or null.</returns>
+    /// <inheritdoc/>
     public virtual async Task<TResult> FindOneAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
         using var context = GetContext();
@@ -220,96 +166,56 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #region Count
 
-    /// <summary>
-    /// Returns the number of elements in a sequence.
-    /// </summary>
-    /// <returns>The number of elements in the sequence.</returns>
+    /// <inheritdoc/>
     public virtual int Count()
     {
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().Count();
     }
 
-    /// <summary>
-    /// Returns the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
+    /// <inheritdoc/>
     public virtual int Count(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().Count(predicate);
     }
 
-    /// <summary>
-    /// Asynchronously returns the number of elements in a sequence.
-    /// </summary>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<int> CountAsync()
     {
         using var context = GetContext();
         return await context.Set<TEntity>().AsNoTracking().CountAsync();
     }
 
-    /// <summary>
-    /// Asynchronously returns the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence that satisfy the condition in the predicate function.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
         return await context.Set<TEntity>().AsNoTracking().CountAsync(predicate);
     }
 
-    /// <summary>
-    /// Returns a System.Int64 that represents the number of elements in a sequence.
-    /// </summary>
-    /// <returns>The number of elements in the sequence.</returns>
+    /// <inheritdoc/>
     public virtual long LongCount()
     {
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().LongCount();
     }
 
-    /// <summary>
-    /// Returns a System.Int64 that represents the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
+    /// <inheritdoc/>
     public virtual long LongCount(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
         return context.Set<TEntity>().AsNoTracking().LongCount(predicate);
     }
 
-    /// <summary>
-    /// Asynchronously returns a System.Int64 that represents the number of elements in a sequence.
-    /// </summary>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<long> LongCountAsync()
     {
         using var context = GetContext();
         return await context.Set<TEntity>().AsNoTracking().LongCountAsync();
     }
 
-    /// <summary>
-    /// Asynchronously returns a System.Int64 that represents the number of elements in a sequence that satisfy a condition.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>
-    /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
-    /// <para>of elements in the sequence that satisfy the condition in the predicate function.</para>
-    /// </returns>
+    /// <inheritdoc/>
     public virtual async Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
@@ -320,11 +226,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #region Delete
 
-    /// <summary>
-    /// Deletes the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to delete.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Delete(TEntity entity)
     {
         using var context = GetContext();
@@ -351,11 +253,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Deletes the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to delete.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Delete(IEnumerable<TEntity> entities)
     {
         using var context = GetContext();
@@ -385,42 +283,28 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Deletes all entities that match the given predicate
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Delete(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
         return context.Set<TEntity>().Where(predicate).Delete();
     }
 
-    /// <summary>
-    /// Deletes all rows without retrieving entities.
-    /// </summary>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int DeleteAll()
     {
         using var context = GetContext();
         return context.Set<TEntity>().Delete();
     }
 
-    /// <summary>
-    /// Asynchronously deletes all rows without retrieving entities.
-    /// </summary>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAllAsync()
     {
         using var context = GetContext();
         return await context.Set<TEntity>().DeleteAsync();
     }
 
-    /// <summary>
-    /// Asynchronously deletes the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to delete.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAsync(TEntity entity)
     {
         using var context = GetContext();
@@ -447,11 +331,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return await context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Asynchronously deletes the given entities
-    /// </summary>
-    /// <param name="entities">The entities to delete.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAsync(IEnumerable<TEntity> entities)
     {
         using var context = GetContext();
@@ -481,11 +361,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return await context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Asynchronously deletes all entities that match the given predicate
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
@@ -496,11 +372,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #region Insert
 
-    /// <summary>
-    /// Inserts the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to insert.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Insert(TEntity entity)
     {
         using var context = GetContext();
@@ -508,11 +380,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Inserts the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to insert.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Insert(IEnumerable<TEntity> entities)
     {
         using var context = GetContext();
@@ -520,11 +388,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return context.SaveChanges();
     }
 
-    /// <summary>
-    /// Asynchronously inserts the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to insert.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> InsertAsync(TEntity entity)
     {
         using var context = GetContext();
@@ -532,11 +396,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         return await context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Asynchronously inserts the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to insert.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> InsertAsync(IEnumerable<TEntity> entities)
     {
         using var context = GetContext();
@@ -548,19 +408,12 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #region Update
 
-    /// <summary>
-    /// Updates the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to update.</param>
-    /// <returns>The number of rows affected.</returns>
-    public virtual int Update(TEntity entity)
+    /// <inheritdoc/>
+    public virtual TEntity Update(TEntity entity)
     {
         try
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
+            ArgumentNullException.ThrowIfNull(entity);
 
             using var context = GetContext();
             var set = context.Set<TEntity>();
@@ -585,7 +438,8 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
                 context.Entry(entity).State = EntityState.Modified;
             }
 
-            return context.SaveChanges();
+            context.SaveChanges();
+            return entity;
         }
         catch (Exception x)
         {
@@ -595,12 +449,8 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         }
     }
 
-    /// <summary>
-    /// Updates the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to update.</param>
-    /// <returns>The number of rows affected.</returns>
-    public virtual int Update(IEnumerable<TEntity> entities)
+    /// <inheritdoc/>
+    public virtual IEnumerable<TEntity> Update(IEnumerable<TEntity> entities)
     {
         try
         {
@@ -633,7 +483,9 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
                     context.Entry(entity).State = EntityState.Modified;
                 }
             }
-            return context.SaveChanges();
+
+            context.SaveChanges();
+            return entities;
         }
         catch (Exception x)
         {
@@ -643,44 +495,26 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         }
     }
 
-    /// <summary>
-    /// Updates all rows using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Update(Expression<Func<TEntity, TEntity>> updateFactory)
     {
         using var context = GetContext();
         return context.Set<TEntity>().Update(updateFactory);
     }
 
-    /// <summary>
-    /// Updates all rows that match the given predicate using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory)
     {
         using var context = GetContext();
         return context.Set<TEntity>().Where(predicate).Update(updateFactory);
     }
 
-    /// <summary>
-    /// Updates all rows from the query using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>The number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) =>
         query.Update(updateFactory);
 
-    /// <summary>
-    /// Asynchronously updates the given entity.
-    /// </summary>
-    /// <param name="entity">The entity to update.</param>
-    /// <returns>A task with the number of rows affected.</returns>
-    public virtual async Task<int> UpdateAsync(TEntity entity)
+    /// <inheritdoc/>
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity)
     {
         try
         {
@@ -712,7 +546,8 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
                 context.Entry(entity).State = EntityState.Modified;
             }
 
-            return await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
+            return entity;
         }
         catch (Exception x)
         {
@@ -722,12 +557,8 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         }
     }
 
-    /// <summary>
-    /// Asynchronously updates the given entities.
-    /// </summary>
-    /// <param name="entities">The entities to update.</param>
-    /// <returns>A task with the number of rows affected.</returns>
-    public virtual async Task<int> UpdateAsync(IEnumerable<TEntity> entities)
+    /// <inheritdoc/>
+    public virtual async Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities)
     {
         try
         {
@@ -760,7 +591,9 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
                     context.Entry(entity).State = EntityState.Modified;
                 }
             }
-            return await context.SaveChangesAsync();
+
+            await context.SaveChangesAsync();
+            return entities;
         }
         catch (Exception x)
         {
@@ -770,35 +603,21 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         }
     }
 
-    /// <summary>
-    /// Asynchronously updates all rows using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory)
     {
         using var context = GetContext();
         return await context.Set<TEntity>().UpdateAsync(updateFactory);
     }
 
-    /// <summary>
-    /// Asynchronously updates all rows that match the given predicate using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory)
     {
         using var context = GetContext();
         return await context.Set<TEntity>().Where(predicate).UpdateAsync(updateFactory);
     }
 
-    /// <summary>
-    /// Asynchronously updates all rows from the query using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>A task with the number of rows affected.</returns>
+    /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) =>
         await query.UpdateAsync(updateFactory);
 
@@ -806,11 +625,12 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
 
     #endregion IRepository<TEntity> Members
 
-    /// <summary>
-    /// Returns an instance of the DbContext used in this EntityFrameworkRepository&lt;TEntity&gt;
-    /// </summary>
-    /// <returns>An instance of the DbContext.</returns>
-    protected virtual DbContext GetContext() => contextFactory.GetContext();
+    #region  IEntityFrameworkRepository<TEntity> Members
+
+    /// <inheritdoc/>
+    public DbContext GetContext() => contextFactory.GetContext();
+
+    #endregion
 
     private static IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
     {
@@ -819,6 +639,11 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>
         if (options.Include is not null)
         {
             query = options.Include.Compile()(query);
+
+            if (options.SplitQuery)
+            {
+                query = query.AsSplitQuery();
+            }
         }
 
         if (options.Query is not null)

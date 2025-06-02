@@ -70,12 +70,12 @@ public class EntityFrameworkRepositoryTests : IDisposable
     {
         var randomProduct = new Random().NextFrom(products);
 
-        int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
+        int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId && x.Name.StartsWith('A'));
 
         int actual = repository
             .Find(new SearchOptions<ProductModel>
             {
-                Include = query => query.Include(x => x.Products)
+                Include = query => query.Include(x => x.Products.Where(p => p.Name.StartsWith('A')))
             })
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
@@ -584,8 +584,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
         entity.Name = newName;
-        int rowsAffected = repository.Update(entity);
-        Assert.Equal(1, rowsAffected);
+        var updatedEntity = repository.Update(entity);
+        Assert.True(updatedEntity.ProductModelId > 0);
 
         var entityAgain = repository.FindOne(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -613,8 +613,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
             entity.Name = namePrefix;
         }
 
-        int rowsAffected = repository.Update(entities);
-        Assert.Equal(count1, rowsAffected);
+        var updatedEntities = repository.Update(entities);
+        Assert.All(updatedEntities, x => Assert.True(x.ProductModelId > 0));
 
         var entitiesAgain = repository.Find(new SearchOptions<ProductModel>
         {
@@ -631,8 +631,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
         entity.Name = newName;
-        int rowsAffected = await repository.UpdateAsync(entity);
-        Assert.Equal(1, rowsAffected);
+        var updatedEntity = await repository.UpdateAsync(entity);
+        Assert.True(updatedEntity.ProductModelId > 0);
 
         var entityAgain = await repository.FindOneAsync(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -660,8 +660,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
             entity.Name = namePrefix;
         }
 
-        int rowsAffected = await repository.UpdateAsync(entities);
-        Assert.Equal(count1, rowsAffected);
+        var updatedEntities = await repository.UpdateAsync(entities);
+        Assert.All(updatedEntities, x => Assert.True(x.ProductModelId > 0));
 
         var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModel>
         {

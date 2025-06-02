@@ -14,4 +14,6 @@ public class SearchOptions<TEntity>
     public int PageSize { get; set; }
 
     public int PageNumber { get; set; }
+
+    public bool SplitQuery { get; set; }
 }
