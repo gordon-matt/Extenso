@@ -123,3 +123,5 @@ var advancedQuery = context.Set<ProductModel>()
     .Select(x => x.MapTo<ProductModelViewModel>())
     .ToList();
 ```
+
+Or simply just use your `DbContext` without any repository for those situations.
