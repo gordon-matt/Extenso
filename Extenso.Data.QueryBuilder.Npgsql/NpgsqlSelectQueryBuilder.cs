@@ -5,10 +5,9 @@ namespace Extenso.Data.QueryBuilder.Npgsql;
 
 public class NpgsqlSelectQueryBuilder : BaseSelectQueryBuilder
 {
-    public NpgsqlSelectQueryBuilder(string schema)
+    public NpgsqlSelectQueryBuilder()
         : base()
     {
-        base.schema = schema;
     }
 
     public override ISelectQueryBuilder SelectCountAll()

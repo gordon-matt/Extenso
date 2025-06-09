@@ -7,7 +7,7 @@
     <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>Fluent T-SQL Query Builder for MySQL</Description>
-    <Version>9.3.0</Version>
+    <Version>9.3.1</Version>
     <PackageIcon>ExtensoIcon.jpg</PackageIcon>
     <RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
   </PropertyGroup>

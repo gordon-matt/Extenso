@@ -23,11 +23,11 @@ public class SqlServerSelectQueryBuilderTests
     public void Distinct()
     {
         var query = new SqlServerSelectQueryBuilder()
-            .Select("Products", "Name")
-            .From("Products")
+            .Select("dbo.Products", "Name")
+            .From("dbo.Products")
             .Distinct();
 
-        string expected = "SELECT DISTINCT [Products].[Name] FROM [Products]";
+        string expected = "SELECT DISTINCT [dbo].[Products].[Name] FROM [dbo].[Products]";
         string actual = query.BuildQuery();
 
         Assert.Equal(expected, actual);

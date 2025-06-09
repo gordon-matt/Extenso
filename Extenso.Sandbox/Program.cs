@@ -110,7 +110,7 @@ lines 	2"
         //    .OrderBy(tableName, "BookingDate", SortDirection.Descending)
         //    .Take(25);
 
-        var query = new NpgsqlSelectQueryBuilder("dbo")
+        var query = new NpgsqlSelectQueryBuilder()
             .SelectAs(tableName, "BookingDate", "Booking Date")
             .SelectAs(tableName, "BookingConfirmRef", "Confirm Ref")
             .Select(new SqlLiteral(@"GetProductTypeNameFull(""ProductType"") AS ""Product Type"""))

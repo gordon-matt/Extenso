@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using Extenso.Collections;
@@ -10,7 +11,6 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
 {
     #region Non-Public Members
 
-    protected string schema;
     protected readonly ICollection<string> groupByColumns = [];
     protected readonly IDictionary<string, string> selectedColumns = new Dictionary<string, string>();
     protected WhereStatement havingStatement = [];
@@ -239,9 +239,13 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
 
     protected abstract string EncloseIdentifier(string identifier);
 
-    protected virtual string EncloseTable(string tableName) => !string.IsNullOrEmpty(schema) ? string.Concat(schema, '.', EncloseIdentifier(tableName)) : EncloseIdentifier(tableName);
+    protected virtual string EncloseTable(string tableName) =>
+        tableName.Contains('.')
+            ? string.Join(".", tableName.Split('.').Select(EncloseIdentifier))
+            : EncloseIdentifier(tableName);
 
-    protected virtual string CreateFieldName(string tableName, string column) => $"{EncloseTable(tableName)}.{EncloseIdentifier(column)}";
+    protected virtual string CreateFieldName(string tableName, string column) =>
+        $"{EncloseTable(tableName)}.{EncloseIdentifier(column)}";
 
     protected virtual string CreateWhereStatement(WhereStatement statement, bool isHaving)
     {
