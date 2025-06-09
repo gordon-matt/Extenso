@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		
+		<CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+		<EnableDefaultContentItems>false</EnableDefaultContentItems>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+		
+		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+		<EmbedAllSources>true</EmbedAllSources>
+		<EnableDefaultEmbeddedResourceItems>true</EnableDefaultEmbeddedResourceItems>
+		
+		<Version>1.0.0</Version>
+		<Description>KendoUIWeb (2014.1.318)</Description>
+		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="wwwroot\**\*" Pack="true" PackagePath="wwwroot\" />
+	</ItemGroup>
+
+</Project>

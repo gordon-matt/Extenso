@@ -14,6 +14,7 @@
     <ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI\Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI.csproj" />
     <ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI\Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.csproj" />
     <ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />
+    <ProjectReference Include="..\..\Extenso.WebAssets.KendoUI\Extenso.WebAssets.KendoUI.csproj" />
   </ItemGroup>
 
 </Project>

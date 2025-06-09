@@ -19,5 +19,6 @@
 		  <TreatAsUsed>true</TreatAsUsed>
 		</ProjectReference>
 		<ProjectReference Include="..\..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
+		<ProjectReference Include="..\..\Extenso.WebAssets.KendoUI\Extenso.WebAssets.KendoUI.csproj" />
 	</ItemGroup>
 </Project>

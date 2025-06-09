@@ -100,6 +100,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solutio
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.WebAssets.KendoUI", "Extenso.WebAssets.KendoUI\Extenso.WebAssets.KendoUI.csproj", "{5D389509-FCA4-49E3-80BA-76784DAAF7E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -258,6 +260,10 @@ Global
 		{54557E64-60D8-434A-9264-CC1BCAE62259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54557E64-60D8-434A-9264-CC1BCAE62259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54557E64-60D8-434A-9264-CC1BCAE62259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D389509-FCA4-49E3-80BA-76784DAAF7E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D389509-FCA4-49E3-80BA-76784DAAF7E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D389509-FCA4-49E3-80BA-76784DAAF7E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D389509-FCA4-49E3-80BA-76784DAAF7E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
