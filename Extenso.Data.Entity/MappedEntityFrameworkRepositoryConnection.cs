@@ -61,9 +61,9 @@ public class MappedEntityFrameworkRepositoryConnection<TEntity, TModel> : IEntit
         return queryMapper(query);
     }
 
-    public virtual IQueryable<TModel> Query(Expression<Func<TModel, bool>> filterExpression, params Expression<Func<TModel, dynamic>>[] includePaths)
+    public virtual IQueryable<TModel> Query(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
-        var mappedPredicate = predicateMapper(filterExpression);
+        var mappedPredicate = predicateMapper(predicate);
         var query = Context.Set<TEntity>().AsNoTracking().Where(mappedPredicate);
 
         if (!includePaths.IsNullOrEmpty())

@@ -373,17 +373,75 @@ ORDER BY 1,2,3,4";
         return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
     }
 
-    public static IEnumerable<string> GetTableNames(this NpgsqlConnection connection, bool includeViews = false, string schema = "public")
+    /// <summary>
+    /// Get table names for all schemas in the specified database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="includeViews"></param>
+    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetTableNames(this NpgsqlConnection connection, bool includeViews = false, bool excludeSystemSchemas = true)
     {
         string query = includeViews
-            ? @"SELECT table_name
+            ? $@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
+FROM information_schema.tables
+{(excludeSystemSchemas ? "WHERE table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
+ORDER BY table_name"
+            : $@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
+FROM information_schema.tables
+WHERE table_type = 'BASE TABLE'
+{(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
+ORDER BY table_name";
+        var tables = new List<string>();
+
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
+
+        if (!alreadyOpen)
+        {
+            connection.Open();
+        }
+
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandType = CommandType.Text;
+            command.CommandText = query;
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                tables.Add(reader.GetString(0));
+            }
+        }
+
+        if (!alreadyOpen)
+        {
+            connection.Close();
+        }
+
+        return tables;
+    }
+
+    /// <summary>
+    /// Get table names for a specific schema in the database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="schema"></param>
+    /// <param name="includeViews"></param>
+    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetTableNamesForSchema(this NpgsqlConnection connection, string schema, bool includeViews = false, bool excludeSystemSchemas = true)
+    {
+        string query = includeViews
+            ? $@"SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = @SchemaName
+{(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name"
-            : @"SELECT table_name
+            : $@"SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = @SchemaName
 AND table_type = 'BASE TABLE'
+{(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name";
         var tables = new List<string>();
 
@@ -422,13 +480,65 @@ ORDER BY table_name";
         return tables;
     }
 
-    public static IEnumerable<string> GetViewNames(this NpgsqlConnection connection, string schema = "public")
+    /// <summary>
+    /// Get view names for all schemas in the specified database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetViewNames(this NpgsqlConnection connection, bool excludeSystemSchemas = true)
     {
         string query =
-@"SELECT table_name
+$@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
+FROM information_schema.tables
+WHERE table_type = 'VIEW'
+{(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
+ORDER BY table_name";
+
+        var views = new List<string>();
+
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
+
+        if (!alreadyOpen)
+        {
+            connection.Open();
+        }
+
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandType = CommandType.Text;
+            command.CommandText = query;
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                views.Add(reader.GetString(0));
+            }
+        }
+
+        if (!alreadyOpen)
+        {
+            connection.Close();
+        }
+
+        return views;
+    }
+
+    /// <summary>
+    /// Get view names for a specific schema in the database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="schema"></param>
+    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetViewNamesForSchema(this NpgsqlConnection connection, string schema, bool excludeSystemSchemas = true)
+    {
+        string query =
+$@"SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = @SchemaName
 AND table_type = 'VIEW'
+{(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name";
 
         var views = new List<string>();

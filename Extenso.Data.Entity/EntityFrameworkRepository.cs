@@ -287,7 +287,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     public virtual int Delete(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
-        return context.Set<TEntity>().Where(predicate).Delete();
+        return context.Set<TEntity>().Where(predicate).ExecuteDelete();
     }
 
     /// <inheritdoc/>
@@ -365,7 +365,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     public virtual async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate)
     {
         using var context = GetContext();
-        return await context.Set<TEntity>().Where(predicate).DeleteAsync();
+        return await context.Set<TEntity>().Where(predicate).ExecuteDeleteAsync();
     }
 
     #endregion Delete
@@ -635,6 +635,11 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     private static IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
     {
         var query = context.Set<TEntity>().AsNoTracking();
+
+        if (!string.IsNullOrEmpty(options.Tag))
+        {
+            query = query.TagWith(options.Tag);
+        }
 
         if (options.Include is not null)
         {

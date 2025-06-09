@@ -385,12 +385,82 @@ ORDER BY 1,2,3,4";
         return connection.ExecuteScalar($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
     }
 
-    public static IEnumerable<string> GetTableNames(this SqlConnection connection, bool includeViews = false, string schema = "dbo") => !string.IsNullOrEmpty(connection.Database)
-            ? connection.GetTableNames(connection.Database, includeViews, schema)
-            : Enumerable.Empty<string>();
-
-    public static IEnumerable<string> GetTableNames(this SqlConnection connection, string databaseName, bool includeViews = false, string schema = "dbo")
+    /// <summary>
+    /// Get table names for all schemas in the specified database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="databaseName"></param>
+    /// <param name="includeViews"></param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetTableNames(this SqlConnection connection, string databaseName = null, bool includeViews = false)
     {
+        if (string.IsNullOrEmpty(databaseName))
+        {
+            databaseName = connection.Database;
+        }
+
+        using var commandBuilder = new SqlCommandBuilder();
+
+        string query = includeViews
+            ? $@"USE {commandBuilder.QuoteIdentifier(databaseName)};
+SELECT CONCAT(SCHEMA_NAME([schema_id]),'.', [name]) AS [name]
+FROM sys.Tables
+WHERE [name] <> 'sysdiagrams'
+UNION
+SELECT CONCAT(SCHEMA_NAME([schema_id]),'.', [name]) AS [name]
+FROM sys.Views
+WHERE [name] <> 'sysdiagrams'
+ORDER BY [name]"
+            : $@"USE {commandBuilder.QuoteIdentifier(databaseName)};
+SELECT CONCAT(SCHEMA_NAME([schema_id]),'.', [name]) AS [name]
+FROM sys.Tables
+WHERE [name] <> 'sysdiagrams'
+ORDER BY [name]";
+
+        var tables = new List<string>();
+
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
+
+        if (!alreadyOpen)
+        {
+            connection.Open();
+        }
+
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandType = CommandType.Text;
+            command.CommandText = query;
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                tables.Add(reader.GetString(0));
+            }
+        }
+
+        if (!alreadyOpen)
+        {
+            connection.Close();
+        }
+
+        return tables;
+    }
+
+    /// <summary>
+    /// Get table names for a specific schema in the database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="databaseName"></param>
+    /// <param name="schema"></param>
+    /// <param name="includeViews"></param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetTableNamesForSchema(this SqlConnection connection, string schema, string databaseName = null, bool includeViews = false)
+    {
+        if (string.IsNullOrEmpty(databaseName))
+        {
+            databaseName = connection.Database;
+        }
+
         using var commandBuilder = new SqlCommandBuilder();
 
         string query = includeViews
@@ -411,6 +481,7 @@ FROM sys.Tables
 WHERE [name] <> 'sysdiagrams'
 AND SCHEMA_NAME([schema_id]) = @SchemaName
 ORDER BY [name]";
+
         var tables = new List<string>();
 
         bool alreadyOpen = connection.State != ConnectionState.Closed;
@@ -448,10 +519,71 @@ ORDER BY [name]";
         return tables;
     }
 
-    public static IEnumerable<string> GetViewNames(this SqlConnection connection, string schema = "dbo") => !string.IsNullOrEmpty(connection.Database) ? connection.GetViewNames(connection.Database, schema) : Enumerable.Empty<string>();
-
-    public static IEnumerable<string> GetViewNames(this SqlConnection connection, string databaseName, string schema = "dbo")
+    /// <summary>
+    /// Get view names for all schemas in the specified database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="databaseName"></param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetViewNames(this SqlConnection connection, string databaseName = null)
     {
+        if (string.IsNullOrEmpty(databaseName))
+        {
+            databaseName = connection.Database;
+        }
+
+        using var commandBuilder = new SqlCommandBuilder();
+
+        string query =
+$@"USE {commandBuilder.QuoteIdentifier(databaseName)};
+SELECT CONCAT(SCHEMA_NAME([schema_id]),'.', [name]) AS [name]
+FROM sys.Views
+WHERE [name] <> 'sysdiagrams'
+ORDER BY [name]";
+
+        var views = new List<string>();
+
+        bool alreadyOpen = connection.State != ConnectionState.Closed;
+
+        if (!alreadyOpen)
+        {
+            connection.Open();
+        }
+
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandType = CommandType.Text;
+            command.CommandText = query;
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                views.Add(reader.GetString(0));
+            }
+        }
+
+        if (!alreadyOpen)
+        {
+            connection.Close();
+        }
+
+        return views;
+    }
+
+    /// <summary>
+    /// Get view names for a specific schema in the database.
+    /// </summary>
+    /// <param name="connection"></param>
+    /// <param name="schema"></param>
+    /// <param name="databaseName"></param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetViewNamesForSchema(this SqlConnection connection, string schema, string databaseName = null)
+    {
+        if (string.IsNullOrEmpty(databaseName))
+        {
+            databaseName = connection.Database;
+        }
+
         using var commandBuilder = new SqlCommandBuilder();
 
         string query =

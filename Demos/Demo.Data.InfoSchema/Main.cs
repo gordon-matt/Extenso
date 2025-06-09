@@ -111,9 +111,9 @@ public partial class Main : Form
             connection.ChangeDatabase(SelectedDatabase);
             switch (SelectedDataSource)
             {
-                case DataSource.SqlServer: lbTables.DataSource = (connection as SqlConnection).GetTableNames(includeViews: true, SelectedSchema); break;
+                case DataSource.SqlServer: lbTables.DataSource = (connection as SqlConnection).GetTableNamesForSchema(SelectedSchema, includeViews: true); break;
                 case DataSource.MySql: lbTables.DataSource = (connection as MySqlConnection).GetTableNames(includeViews: true); break;
-                case DataSource.PostgreSql: lbTables.DataSource = (connection as NpgsqlConnection).GetTableNames(includeViews: true, SelectedSchema); break;
+                case DataSource.PostgreSql: lbTables.DataSource = (connection as NpgsqlConnection).GetTableNamesForSchema(SelectedSchema, includeViews: true); break;
                 default: break;
             }
         }

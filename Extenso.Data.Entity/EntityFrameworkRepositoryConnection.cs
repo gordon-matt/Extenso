@@ -44,9 +44,9 @@ public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepo
         return query;
     }
 
-    public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, params Expression<Func<TEntity, dynamic>>[] includePaths)
+    public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, dynamic>>[] includePaths)
     {
-        var query = Context.Set<TEntity>().AsNoTracking().Where(filterExpression);
+        var query = Context.Set<TEntity>().AsNoTracking().Where(predicate);
 
         foreach (var path in includePaths)
         {

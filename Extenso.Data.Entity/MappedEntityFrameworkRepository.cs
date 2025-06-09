@@ -321,7 +321,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
-        return context.Set<TEntity>().Where(mappedPredicate).Delete();
+        return context.Set<TEntity>().Where(mappedPredicate).ExecuteDelete();
     }
 
     /// <inheritdoc/>
@@ -404,7 +404,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     {
         var mappedPredicate = MapPredicate(predicate);
         using var context = GetContext();
-        return await context.Set<TEntity>().Where(mappedPredicate).DeleteAsync();
+        return await context.Set<TEntity>().Where(mappedPredicate).ExecuteDeleteAsync();
     }
 
     #endregion Delete
@@ -684,7 +684,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #endregion IRepository<TModel> Members
 
-    #region  IEntityFrameworkRepository<TEntity> Members
+    #region IEntityFrameworkRepository<TEntity> Members
 
     /// <inheritdoc/>
     public DbContext GetContext() => contextFactory.GetContext();
@@ -716,6 +716,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
     {
         var query = context.Set<TEntity>().AsNoTracking();
+
+        if (!string.IsNullOrEmpty(options.Tag))
+        {
+            query = query.TagWith(options.Tag);
+        }
 
         if (options.Include is not null)
         {
