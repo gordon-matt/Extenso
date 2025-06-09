@@ -1,9 +1,9 @@
-[![NuGet](https://img.shields.io/nuget/v/Extenso.Mapping?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.Mapping)
-[![NuGet](https://img.shields.io/nuget/dt/Extenso.Mapping?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.Mapping)
+[![NuGet](https://img.shields.io/nuget/v/Extenso.WebAssets.KendoUI?style=flat-square&logo=nuget&label=Version)](https://www.nuget.org/packages/Extenso.WebAssets.KendoUI)
+[![NuGet](https://img.shields.io/nuget/dt/Extenso.WebAssets.KendoUI?style=flat-square&logo=nuget&label=Downloads)](https://www.nuget.org/packages/Extenso.WebAssets.KendoUI)
 
 <img src="https://github.com/gordon-matt/Extenso/blob/master/_Misc/ExtensoLogo.png" alt="Logo" width="250" />
 
-# Extenso.Mapping
+# Extenso.WebAssets.KendoUI
 
 ## Intro
 Kendo UI Web 2014.1.318 was the final version released under the GPLv3 license, making it suitable for non-commercial use.
