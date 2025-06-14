@@ -1,22 +1,21 @@
 ﻿'use strict'
 
-var ViewModel = function () {
-    var self = this;
+class ViewModel {
+    constructor() {
+        this.apiUrl = "/odata/PersonApi";
 
-    self.apiUrl = "/odata/PersonApi";
-    
-    self.validator = false;
+        this.validator = false;
 
-    self.id = ko.observable(0);
-    self.familyName = ko.observable(null);
-    self.givenNames = ko.observable(null);
-    self.dateOfBirth = ko.observable(null);
+        this.id = ko.observable(0);
+        this.familyName = ko.observable(null);
+        this.givenNames = ko.observable(null);
+        this.dateOfBirth = ko.observable(null);
+    }
 
-    self.init = function () {
-
+    init = () => {
         currentSection = $("#grid-section");
-        
-        self.validator = $("#form-section-form").validate({
+
+        this.validator = $("#form-section-form").validate({
             rules: {
                 FamilyName: { required: true, maxlength: 128 },
                 GivenNames: { required: true, maxlength: 128 },
@@ -30,7 +29,7 @@ var ViewModel = function () {
                 type: 'odata',
                 transport: {
                     read: {
-                        url: self.apiUrl,
+                        url: this.apiUrl,
                         dataType: "json"
                     },
                     parameterMap: function (options, operation) {
@@ -102,10 +101,9 @@ var ViewModel = function () {
             }, {
                 field: "Id",
                 title: "&nbsp;",
-                template:
-                    '<div class="btn-group">' +
-                        '<button type="button" data-bind="click: edit.bind($data,\'#=Id#\')" class="btn btn-default btn-sm" title="Edit"><i class="fa fa-edit"></i></button>' +
-                        '<button type="button" data-bind="click: remove.bind($data,\'#=Id#\')" class="btn btn-danger btn-sm" title="Delete"><i class="fa fa-remove"></i></button>' +
+                template: '<div class="btn-group">' +
+                    '<button type="button" data-bind="click: edit.bind($data,\'#=Id#\')" class="btn btn-default btn-sm" title="Edit"><i class="fa fa-edit"></i></button>' +
+                    '<button type="button" data-bind="click: remove.bind($data,\'#=Id#\')" class="btn btn-danger btn-sm" title="Delete"><i class="fa fa-remove"></i></button>' +
                     '</div>',
                 attributes: { "class": "text-center" },
                 filterable: false,
@@ -119,55 +117,55 @@ var ViewModel = function () {
         });
     };
 
-    self.create = function () {
-        self.id(0);
-        self.familyName(null);
-        self.givenNames(null);
-        self.dateOfBirth(null);
+    create = () => {
+        this.id(0);
+        this.familyName(null);
+        this.givenNames(null);
+        this.dateOfBirth(null);
 
-        self.validator.resetForm();
+        this.validator.resetForm();
         switchSection($("#form-section"));
         $("#form-section-legend").html("Create");
     };
 
-    self.edit = async function (id) {
-        const data = await ApiHelper.getRecord(`${self.apiUrl}(${id})`);
-        self.id(data.Id);
-        self.familyName(data.FamilyName);
-        self.givenNames(data.GivenNames);
-        self.dateOfBirth(data.DateOfBirth);
+    edit = async (id) => {
+        const data = await ApiHelper.getRecord(`${this.apiUrl}(${id})`);
+        this.id(data.Id);
+        this.familyName(data.FamilyName);
+        this.givenNames(data.GivenNames);
+        this.dateOfBirth(data.DateOfBirth);
 
         switchSection($("#form-section"));
         $("#form-section-legend").html("Edit");
     };
 
-    self.remove = async function (id) {
-        await ApiHelper.deleteRecord(`${self.apiUrl}(${id})`);
+    remove = async (id) => {
+        await ApiHelper.deleteRecord(`${this.apiUrl}(${id})`);
     };
 
-    self.save = async function () {
-        const isNew = (self.id() == 0);
+    save = async () => {
+        const isNew = (this.id() == 0);
 
         if (!$("#form-section-form").valid()) {
             return false;
         }
 
         const record = {
-            Id: self.id(),
-            FamilyName: self.familyName(),
-            GivenNames: self.givenNames(),
-            DateOfBirth: self.dateOfBirth()
+            Id: this.id(),
+            FamilyName: this.familyName(),
+            GivenNames: this.givenNames(),
+            DateOfBirth: this.dateOfBirth()
         };
 
         if (isNew) {
-            await ApiHelper.postRecord(self.apiUrl, record);
+            await ApiHelper.postRecord(this.apiUrl, record);
         }
         else {
-            await ApiHelper.putRecord(`${self.apiUrl}(${self.id()})`, record);
+            await ApiHelper.putRecord(`${this.apiUrl}(${this.id()})`, record);
         }
     };
 
-    self.cancel = function () {
+    cancel = () => {
         switchSection($("#grid-section"));
     };
-};
+}
