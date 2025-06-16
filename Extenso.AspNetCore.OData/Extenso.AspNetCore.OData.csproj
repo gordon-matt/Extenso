@@ -1,39 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Authors>Matt Gordon</Authors>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <Version>9.3.1</Version>
-    <Description></Description>
-    <PackageIcon>ExtensoIcon.jpg</PackageIcon>
-    <RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net9.0\Extenso.AspNetCore.OData.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\_Misc\ExtensoIcon.jpg">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="9.3.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Matt Gordon</Authors>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<Version>9.4.0</Version>
+		<Description></Description>
+		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
+		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>bin\Release\net9.0\Extenso.AspNetCore.OData.xml</DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\_Misc\ExtensoIcon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="9.3.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

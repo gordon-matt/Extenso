@@ -1,29 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Authors>Matt Gordon</Authors>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Description>MVC-related extension methods and other helper classes. Includes a FluentTagBuilder, an IRazorViewRenderService (to render Razor views to a string), various HTML Helpers and more</Description>
-    <Version>9.3.0</Version>
-    <PackageIcon>ExtensoIcon.jpg</PackageIcon>
-    <RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
-  </PropertyGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net9.0\Extenso.AspNetCore.Mvc.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\_Misc\ExtensoIcon.jpg">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Matt Gordon</Authors>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Description>MVC-related extension methods and other helper classes. Includes a FluentTagBuilder, an IRazorViewRenderService (to render Razor views to a string), various HTML Helpers and more</Description>
+		<Version>9.4.0</Version>
+		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
+		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+	</PropertyGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>bin\Release\net9.0\Extenso.AspNetCore.Mvc.xml</DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\_Misc\ExtensoIcon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
+	</ItemGroup>
 </Project>

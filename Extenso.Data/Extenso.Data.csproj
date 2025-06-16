@@ -1,29 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Authors>Matt Gordon</Authors>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Description>Data-related extension methods and other helper classes.</Description>
-    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
-    <Version>9.3.1</Version>
-    <PackageIcon>ExtensoIcon.jpg</PackageIcon>
-    <RepositoryType>https://github.com/gordon-matt/Extenso</RepositoryType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net9.0\Extenso.Data.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\_Misc\ExtensoIcon.jpg">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Matt Gordon</Authors>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Description>Data-related extension methods and other helper classes.</Description>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+		<Version>9.4.0</Version>
+		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
+		<RepositoryType>https://github.com/gordon-matt/Extenso</RepositoryType>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>bin\Release\net9.0\Extenso.Data.xml</DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\_Misc\ExtensoIcon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
+	</ItemGroup>
 </Project>
