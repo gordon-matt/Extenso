@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Extenso.Collections;
 using Extenso.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -373,35 +374,39 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region Insert
 
     /// <inheritdoc/>
-    public virtual int Insert(TEntity entity)
+    public virtual TEntity Insert(TEntity entity)
     {
         using var context = GetContext();
         context.Set<TEntity>().Add(entity);
-        return context.SaveChanges();
+        context.SaveChanges();
+        return entity;
     }
 
     /// <inheritdoc/>
-    public virtual int Insert(IEnumerable<TEntity> entities)
+    public virtual IEnumerable<TEntity> Insert(IEnumerable<TEntity> entities)
     {
         using var context = GetContext();
         context.Set<TEntity>().AddRange(entities);
-        return context.SaveChanges();
+        context.SaveChanges();
+        return entities;
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> InsertAsync(TEntity entity)
+    public virtual async Task<TEntity> InsertAsync(TEntity entity)
     {
         using var context = GetContext();
         await context.Set<TEntity>().AddAsync(entity);
-        return await context.SaveChangesAsync();
+        await context.SaveChangesAsync();
+        return entity;
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> InsertAsync(IEnumerable<TEntity> entities)
+    public virtual async Task<IEnumerable<TEntity>> InsertAsync(IEnumerable<TEntity> entities)
     {
         using var context = GetContext();
         await context.Set<TEntity>().AddRangeAsync(entities);
-        return await context.SaveChangesAsync();
+        await context.SaveChangesAsync();
+        return entities;
     }
 
     #endregion Insert
@@ -636,9 +641,17 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     {
         var query = context.Set<TEntity>().AsNoTracking();
 
-        if (!string.IsNullOrEmpty(options.Tag))
+        if (options.TagWithCallSite)
         {
-            query = query.TagWith(options.Tag);
+            query = query.TagWith(options.CallSiteTag);
+        }
+
+        if (!options.Tags.IsNullOrEmpty())
+        {
+            foreach (string tag in options.Tags)
+            {
+                query = query.TagWith(tag);
+            }
         }
 
         if (options.Include is not null)

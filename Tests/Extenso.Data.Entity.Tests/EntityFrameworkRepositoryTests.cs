@@ -526,8 +526,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
         int count = repository.Count();
         var newProductModel = productModelFaker.Generate();
 
-        int rowsAffected = repository.Insert(newProductModel);
-        Assert.Equal(1, rowsAffected);
+        var insertedModel = repository.Insert(newProductModel);
+        Assert.True(insertedModel.ProductModelId > 0);
 
         int newCount = repository.Count();
         Assert.Equal(count + 1, newCount);
@@ -539,8 +539,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
         int count = repository.Count();
         var newProductModels = productModelFaker.Generate(10);
 
-        int rowsAffected = repository.Insert(newProductModels);
-        Assert.Equal(10, rowsAffected);
+        var insertedModels = repository.Insert(newProductModels);
+        Assert.All(insertedModels, x => Assert.True(x.ProductModelId > 0));
 
         int newCount = repository.Count();
         Assert.Equal(count + 10, newCount);
@@ -552,8 +552,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
         int count = await repository.CountAsync();
         var newProductModel = productModelFaker.Generate();
 
-        int rowsAffected = await repository.InsertAsync(newProductModel);
-        Assert.Equal(1, rowsAffected);
+        var insertedModel = await repository.InsertAsync(newProductModel);
+        Assert.True(insertedModel.ProductModelId > 0);
 
         int newCount = await repository.CountAsync();
         Assert.Equal(count + 1, newCount);
@@ -565,8 +565,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
         int count = await repository.CountAsync();
         var newProductModels = productModelFaker.Generate(10);
 
-        int rowsAffected = await repository.InsertAsync(newProductModels);
-        Assert.Equal(10, rowsAffected);
+        var insertedModels = await repository.InsertAsync(newProductModels);
+        Assert.All(insertedModels, x => Assert.True(x.ProductModelId > 0));
 
         int newCount = await repository.CountAsync();
         Assert.Equal(count + 10, newCount);
@@ -585,7 +585,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
         string newName = "Foo Bar Baz";
         entity.Name = newName;
         var updatedEntity = repository.Update(entity);
-        Assert.True(updatedEntity.ProductModelId > 0);
+        Assert.True(updatedEntity.Name == newName);
 
         var entityAgain = repository.FindOne(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -601,7 +601,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
             .Select(x => x.ProductModelId)
             .ToList();
 
-        string namePrefix = "Foo Bar Baz";
+        string newName = "Foo Bar Baz";
 
         var entities = repository.Find(new SearchOptions<ProductModel>
         {
@@ -610,15 +610,15 @@ public class EntityFrameworkRepositoryTests : IDisposable
         int count1 = entities.Count();
         foreach (var entity in entities)
         {
-            entity.Name = namePrefix;
+            entity.Name = newName;
         }
 
         var updatedEntities = repository.Update(entities);
-        Assert.All(updatedEntities, x => Assert.True(x.ProductModelId > 0));
+        Assert.All(updatedEntities, x => Assert.True(x.Name == newName));
 
         var entitiesAgain = repository.Find(new SearchOptions<ProductModel>
         {
-            Query = x => x.Name == namePrefix
+            Query = x => x.Name == newName
         });
         Assert.Equal(count1, entitiesAgain.Count());
     }
@@ -632,7 +632,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
         string newName = "Foo Bar Baz";
         entity.Name = newName;
         var updatedEntity = await repository.UpdateAsync(entity);
-        Assert.True(updatedEntity.ProductModelId > 0);
+        Assert.True(updatedEntity.Name == newName);
 
         var entityAgain = await repository.FindOneAsync(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -648,7 +648,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
             .Select(x => x.ProductModelId)
             .ToList();
 
-        string namePrefix = "Foo Bar Baz";
+        string newName = "Foo Bar Baz";
 
         var entities = await repository.FindAsync(new SearchOptions<ProductModel>
         {
@@ -657,15 +657,15 @@ public class EntityFrameworkRepositoryTests : IDisposable
         int count1 = entities.Count();
         foreach (var entity in entities)
         {
-            entity.Name = namePrefix;
+            entity.Name = newName;
         }
 
         var updatedEntities = await repository.UpdateAsync(entities);
-        Assert.All(updatedEntities, x => Assert.True(x.ProductModelId > 0));
+        Assert.All(updatedEntities, x => Assert.True(x.Name == newName));
 
         var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModel>
         {
-            Query = x => x.Name == namePrefix
+            Query = x => x.Name == newName
         });
         Assert.Equal(count1, entitiesAgain.Count());
     }

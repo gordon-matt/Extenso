@@ -19,21 +19,21 @@ public static class ObjectExtensions
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static object GetPrivateFieldValue<T>(this T obj, string fieldName)
     {
-        if (obj == null)
+        if (obj is null)
         {
             throw new ArgumentNullException(nameof(obj));
         }
 
         var type = typeof(T);
         FieldInfo fieldInfo = null;
-        while (fieldInfo == null && type != null)
+        while (fieldInfo is null && type is not null)
         {
             var typeInfo = type.GetTypeInfo();
             fieldInfo = typeInfo.GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             type = typeInfo.BaseType;
         }
 
-        return fieldInfo == null
+        return fieldInfo is null
             ? throw new ArgumentOutOfRangeException(
                 "fieldName",
                 $"Field {fieldName} was not found in Type {typeof(T).FullName}")
@@ -49,7 +49,7 @@ public static class ObjectExtensions
     /// <returns>The value of the specified non-public property for obj.</returns>
     public static object GetPrivatePropertyValue<T>(this T obj, string propertyName)
     {
-        if (obj == null)
+        if (obj is null)
         {
             throw new ArgumentNullException(nameof(obj));
         }
@@ -58,7 +58,7 @@ public static class ObjectExtensions
             propertyName,
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-        return property == null
+        return property is null
             ? throw new ArgumentOutOfRangeException(
                "propertyName",
                $"Property {propertyName} was not found in Type {typeof(T).FullName}")
@@ -95,7 +95,7 @@ public static class ObjectExtensions
     /// <param name="propertyName">The name of the property to find in obj.</param>
     /// <returns>true if obj has a property with the given name; otherwise false.</returns>
     public static bool HasProperty<T>(this T obj, string propertyName) =>
-        typeof(T).GetTypeInfo().GetProperties().SingleOrDefault(p => p.Name.Equals(propertyName)) != null;
+        typeof(T).GetTypeInfo().GetProperties().SingleOrDefault(p => p.Name.Equals(propertyName)) is not null;
 
     /// <summary>
     /// Invokes the extension method with the given name in the given assembly, using the specified parameters.
@@ -180,7 +180,7 @@ public static class ObjectExtensions
         var methodInfo = typeof(T).GetExtensionMethod(extensionsAssembly, methodName, types);
         object value = methodInfo.Invoke(obj, newParameters);
 
-        return value == null ? Enumerable.Empty<object>() : ((IEnumerable)value).OfType<object>();
+        return value is null ? Enumerable.Empty<object>() : ((IEnumerable)value).OfType<object>();
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public static class ObjectExtensions
     /// <param name="value">The value to assign to the non-public field.</param>
     public static void SetPrivateFieldValue<T>(this T obj, string fieldName, object value)
     {
-        if (obj == null)
+        if (obj is null)
         {
             throw new ArgumentNullException(nameof(obj));
         }
@@ -264,17 +264,17 @@ public static class ObjectExtensions
         var type = typeof(T);
         FieldInfo fieldInfo = null;
 
-        while (fieldInfo == null && type != null)
+        while (fieldInfo is null && type is not null)
         {
             var typeInfo = type.GetTypeInfo();
             fieldInfo = typeInfo.GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             type = typeInfo.BaseType;
         }
 
-        if (fieldInfo == null)
+        if (fieldInfo is null)
         {
             throw new ArgumentOutOfRangeException(
-               "fieldName",
+               nameof(fieldName),
                $"Field {fieldName} was not found in Type {obj.GetType().FullName}");
         }
 
@@ -295,7 +295,7 @@ public static class ObjectExtensions
 
         if (typeInfo.GetProperty(
             propertyName,
-            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) == null)
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) is null)
         {
             throw new ArgumentOutOfRangeException(
                 "propertyName",

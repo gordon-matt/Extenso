@@ -40,7 +40,7 @@ public static class StringExtensions
         var type = typeof(T);
         var parseMethod = type.GetTypeInfo().GetMethod("Parse", new Type[] { typeof(string) });
 
-        if (parseMethod != null)
+        if (parseMethod is not null)
         {
             object value = parseMethod.Invoke(null, [input]);
             return value is T t ? t : defaultValue;
@@ -86,7 +86,7 @@ public static class StringExtensions
             "TryParse",
             new Type[] { typeof(string), typeof(T).MakeByRefType() });
 
-        if (parseMethod != null)
+        if (parseMethod is not null)
         {
             object[] parameters = [input, result];
             object value = parseMethod.Invoke(null, parameters);

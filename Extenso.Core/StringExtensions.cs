@@ -534,7 +534,7 @@ public static class StringExtensions
     /// <param name="source">The string from which to extract a substring.</param>
     /// <param name="length">The number of characters in the substring.</param>
     /// <returns>A string that is equivalent to the substring of length that starts at 0.</returns>
-    public static string Left(this string source, int length) => source == null ? null : source.Length <= length ? source : source[..length];
+    public static string Left(this string source, int length) => source is null ? null : source.Length <= length ? source : source[..length];
 
     /// <summary>
     /// Retrieves a substring from the given string. The substring starts at 0 and ends at the first occurrence of [value].
@@ -544,7 +544,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at 0 and ends at the first occurrence of [value].</returns>
     public static string LeftOf(this string source, char value)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -562,7 +562,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at 0 and ends at the [n]th occurrence of [value].</returns>
     public static string LeftOf(this string source, char value, int n)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -586,7 +586,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at 0 and ends at the first occurrence of [value].</returns>
     public static string LeftOf(this string source, string value)
     {
-        if (value == null)
+        if (value is null)
         {
             return null;
         }
@@ -603,7 +603,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at 0 and ends at the last occurrence of [value].</returns>
     public static string LeftOfLastIndexOf(this string source, char value)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -625,7 +625,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at 0 and ends at the last occurrence of [value].</returns>
     public static string LeftOfLastIndexOf(this string source, string value)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -729,7 +729,7 @@ public static class StringExtensions
     /// <param name="source">The string from which to extract a substring.</param>
     /// <param name="length">The number of characters in the substring.</param>
     /// <returns>A string that is equivalent to the substring of length that starts at [length] characters before the end of [source].</returns>
-    public static string Right(this string source, int length) => source == null ? null : source.Length <= length ? source : source.Substring(source.Length - length, length);
+    public static string Right(this string source, int length) => source is null ? null : source.Length <= length ? source : source.Substring(source.Length - length, length);
 
     /// <summary>
     /// Retrieves a substring from the given string. The substring starts at first occurrence of [value].
@@ -739,7 +739,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at the first occurrence of [value].</returns>
     public static string RightOf(this string source, char value)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -757,7 +757,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at the [n]th occurrence of [value].</returns>
     public static string RightOf(this string source, char value, int n)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -782,7 +782,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at the first occurrence of [value].</returns>
     public static string RightOf(this string source, string value)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -799,7 +799,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at the last occurrence of [value].</returns>
     public static string RightOfLastIndexOf(this string source, char value)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }
@@ -821,7 +821,7 @@ public static class StringExtensions
     /// <returns>A substring of [source] that starts at the last occurrence of [value].</returns>
     public static string RightOfLastIndexOf(this string source, string value)
     {
-        if (source == null)
+        if (source is null)
         {
             return null;
         }

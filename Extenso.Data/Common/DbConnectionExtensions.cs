@@ -472,14 +472,14 @@ public static class DbConnectionExtensions
     }
 
     private static object GetFormattedValue(Type type, object value) => value == null
-            ? null
-            : type.Name switch
-            {
-                "Boolean" => (bool)value ? 1 : 0,
-                "String" => ((string)value).Replace("'", "''"),
-                "DBNull" => null,
-                _ => value,
-            };
+        ? null
+        : type.Name switch
+        {
+            "Boolean" => (bool)value ? 1 : 0,
+            "String" => ((string)value).Replace("'", "''"),
+            "DBNull" => null,
+            _ => value,
+        };
 
     private static IDictionary<string, string> CreateParameterNames(IEnumerable<string> fieldNames)
     {

@@ -1,10 +1,20 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Extenso.Data.Entity;
 
 public class SearchOptions<TEntity>
     where TEntity : class
 {
+    private readonly string filePath;
+    private readonly int lineNumber;
+
+    public SearchOptions([CallerFilePath] string filePath = null, [CallerLineNumber] int lineNumber = 0)
+    {
+        this.filePath = filePath;
+        this.lineNumber = lineNumber;
+    }
+
     public Expression<Func<TEntity, bool>> Query { get; set; }
 
     public Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>> Include { get; set; }
@@ -20,10 +30,14 @@ public class SearchOptions<TEntity>
     /// </summary>
     public bool SplitQuery { get; set; }
 
+    public bool TagWithCallSite { get; set; }
+
     /// <summary>
     ///  Adds a tag to the collection of tags associated with an EF LINQ query. Tags are
     ///  query annotations that can provide contextual tracing information at different
     ///  points in the query pipeline.
     /// </summary>
-    public string Tag { get; set; }
+    public IEnumerable<string> Tags { get; set; }
+
+    public string CallSiteTag => $"{filePath}:{lineNumber}";
 }

@@ -180,7 +180,7 @@ public static class ObjectExtensions
     /// is null, default serialization settings will be used.
     /// </param>
     /// <returns>A JSON string representation of the object.</returns>
-    public static string JsonSerialize<T>(this T source, JsonSerializerSettings settings = null) => source == null ? null : JsonConvert.SerializeObject(source, settings);
+    public static string JsonSerialize<T>(this T source, JsonSerializerSettings settings = null) => source is null ? null : JsonConvert.SerializeObject(source, settings);
 
     /// <summary>
     /// Creates a System.Dynamic.ExpandoObject from the given System.Object.
@@ -267,7 +267,7 @@ public static class ObjectExtensions
             var stringBuilder = new StringBuilder();
             using var stringWriter = new CustomEncodingStringWriter(encoding, stringBuilder);
             using var xmlWriter = XmlWriter.Create(stringWriter, settings);
-            if (xmlns != null)
+            if (xmlns is not null)
             {
                 xmlSerializer.Serialize(xmlWriter, source, xmlns);
             }

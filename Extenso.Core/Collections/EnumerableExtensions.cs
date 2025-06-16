@@ -116,9 +116,9 @@ public static class EnumerableExtensions
         Func<TSource, TKey> keySelector,
         IEqualityComparer<TKey> comparer = null)
     {
-        return source == null
+        return source is null
             ? throw new ArgumentNullException(nameof(source))
-            : keySelector == null ? throw new ArgumentNullException(nameof(keySelector)) : _();
+            : keySelector is null ? throw new ArgumentNullException(nameof(keySelector)) : _();
         IEnumerable<TSource> _()
         {
             var knownKeys = new HashSet<TKey>(comparer);
@@ -146,7 +146,7 @@ public static class EnumerableExtensions
             yield return current;
 
             var children = selector(current);
-            if (children == null)
+            if (children is null)
             {
                 continue;
             }
@@ -181,7 +181,7 @@ public static class EnumerableExtensions
     /// <returns>true if the number of elements is greater than (n); otherwise false.</returns>
     public static bool HasMoreThan<T>(this IEnumerable<T> source, int n)
     {
-        if (source == null)
+        if (source is null)
         {
             return false;
             //throw new ArgumentNullException("source");
@@ -216,7 +216,7 @@ public static class EnumerableExtensions
     /// <param name="source">The System.Collections.Generic.IEnumerable`1 to evaluate.</param>
     /// <returns>true if the System.Collections.Generic.IEnumerable`1 is null or empty; otherwise, false.</returns>
     public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) =>
-        source == null || !source.FastAny();
+        source is null || !source.FastAny();
 
     /// <summary>
     /// Concatenates the members of a sequence, using the specified separator between each member.
@@ -291,7 +291,7 @@ public static class EnumerableExtensions
     /// <returns>All the elements of source split into chunks of the given size.</returns>
     public static IEnumerable<IEnumerable<T>> ToChunks<T>(this IEnumerable<T> source, int size)
     {
-        if (source == null || !source.Any())
+        if (source.IsNullOrEmpty())
             return []; // Return empty if source is empty
 
         var chunks = new HashSet<HashSet<T>>();
@@ -734,7 +734,7 @@ public static class EnumerableExtensions
 
     internal static bool FastAny<TSource>(this IEnumerable<TSource> source)
     {
-        if (source == null)
+        if (source is null)
         {
             throw new ArgumentNullException(nameof(source));
         }

@@ -25,7 +25,7 @@ public static class DateTimeExtensions
     /// </summary>
     /// <param name="source">The nullable System.DateTime to examine.</param>
     /// <returns>true if source is null or the default; otherwise, false.</returns>
-    public static bool IsNullOrDefault(this DateTime? source) => source == null || source == default(DateTime);
+    public static bool IsNullOrDefault(this DateTime? source) => source is null || source == default(DateTime);
 
     /// <summary>
     /// Converts the Unix Timestamp (a.k.a POSIX time) to its System.DateTime equivalent.

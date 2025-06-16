@@ -14,7 +14,7 @@ public static class ExceptionExtensions
     /// <returns>A System.String with the given exception's message and the messages of all inner exceptions on separate lines.</returns>
     public static string GetMessageStack(this Exception exception)
     {
-        if (exception == null)
+        if (exception is null)
         {
             return null;
         }
@@ -22,7 +22,7 @@ public static class ExceptionExtensions
         var sb = new StringBuilder();
         sb.AppendLine(exception.Message);
 
-        while (exception.InnerException != null)
+        while (exception.InnerException is not null)
         {
             exception = exception.InnerException;
             sb.Append("--> ");

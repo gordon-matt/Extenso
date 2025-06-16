@@ -26,7 +26,7 @@ public static class EnumExtensions
         var field = typeof(T).GetField(@enum.ToString());
 
         object displayAttribute = field.GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
-        if (displayAttribute != null)
+        if (displayAttribute is not null)
         {
             var attribute = (DisplayAttribute)displayAttribute;
 
@@ -63,7 +63,7 @@ public static class EnumExtensions
         var field = typeof(T).GetField(@enum.ToString());
 
         object displayAttribute = field.GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
-        if (displayAttribute != null)
+        if (displayAttribute is not null)
         {
             var attribute = (DisplayAttribute)displayAttribute;
 

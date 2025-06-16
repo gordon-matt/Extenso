@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Extenso.Collections;
 using Extenso.Collections.Generic;
 using Extenso.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -40,11 +41,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 #pragma warning restore DF0010
 
         return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(
-            context,
-            true,
-            query => MapQuery(query),
-            predicate => MapPredicate(predicate),
-            include => MapInclude(include));
+            context, true, MapQuery, MapPredicate, MapInclude);
     }
 
     /// <inheritdoc/>
@@ -58,11 +55,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
         var otherConnection = connection as IEntityFrameworkRepositoryConnection<TOther>;
         return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(
-            otherConnection.Context,
-            false,
-            query => MapQuery(query),
-            predicate => MapPredicate(predicate),
-            include => MapInclude(include));
+            otherConnection.Context, false, MapQuery, MapPredicate, MapInclude);
     }
 
     #region Find
@@ -412,39 +405,43 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region Insert
 
     /// <inheritdoc/>
-    public virtual int Insert(TModel model)
+    public virtual TModel Insert(TModel model)
     {
         var entity = ToEntity(model);
         using var context = GetContext();
         context.Set<TEntity>().Add(entity);
-        return context.SaveChanges();
+        context.SaveChanges();
+        return ToModel(entity);
     }
 
     /// <inheritdoc/>
-    public virtual int Insert(IEnumerable<TModel> models)
+    public virtual IEnumerable<TModel> Insert(IEnumerable<TModel> models)
     {
         var entities = models.Select(ToEntity).ToList();
         using var context = GetContext();
         context.Set<TEntity>().AddRange(entities);
-        return context.SaveChanges();
+        context.SaveChanges();
+        return entities.Select(ToModel).ToList();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> InsertAsync(TModel model)
+    public virtual async Task<TModel> InsertAsync(TModel model)
     {
         var entity = ToEntity(model);
         using var context = GetContext();
         await context.Set<TEntity>().AddAsync(entity);
-        return await context.SaveChangesAsync();
+        await context.SaveChangesAsync();
+        return ToModel(entity);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> InsertAsync(IEnumerable<TModel> models)
+    public virtual async Task<IEnumerable<TModel>> InsertAsync(IEnumerable<TModel> models)
     {
         var entities = models.Select(ToEntity).ToList();
         using var context = GetContext();
         await context.Set<TEntity>().AddRangeAsync(entities);
-        return await context.SaveChangesAsync();
+        await context.SaveChangesAsync();
+        return entities.Select(ToModel).ToList();
     }
 
     #endregion Insert
@@ -689,7 +686,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     /// <inheritdoc/>
     public DbContext GetContext() => contextFactory.GetContext();
 
-    #endregion
+    #endregion IEntityFrameworkRepository<TEntity> Members
 
     #region Mapping
 
@@ -711,15 +708,23 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     protected abstract TModel ToModel(TEntity entity);
 
-    #endregion
+    #endregion Mapping
 
     private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
     {
         var query = context.Set<TEntity>().AsNoTracking();
 
-        if (!string.IsNullOrEmpty(options.Tag))
+        if (options.TagWithCallSite)
         {
-            query = query.TagWith(options.Tag);
+            query = query.TagWith(options.CallSiteTag);
+        }
+
+        if (!options.Tags.IsNullOrEmpty())
+        {
+            foreach (string tag in options.Tags)
+            {
+                query = query.TagWith(tag);
+            }
         }
 
         if (options.Include is not null)
@@ -756,6 +761,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 .Skip((options.PageNumber - 1) * options.PageSize)
                 .Take(options.PageSize);
         }
+
         return query;
     }
 }

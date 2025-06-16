@@ -154,7 +154,7 @@ public static class TypeExtensions
 
         // Check base types recursively
         var baseType = givenType.BaseType;
-        return baseType != null && IsAssignableToGenericType(baseType, genericType);
+        return baseType is not null && IsAssignableToGenericType(baseType, genericType);
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ public static class TypeExtensions
     /// <returns>true if type is nullable; otherwise false.</returns>
     public static bool IsNullable(this Type type)
     {
-        if (type == null)
+        if (type is null)
         {
             return false;
         }
@@ -212,7 +212,7 @@ public static class TypeExtensions
         var typeInfo = type.GetTypeInfo();
         return !typeInfo.IsValueType || typeInfo.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 
-        //return Nullable.GetUnderlyingType(type) != null; //faster than above version? Needs testing
+        //return Nullable.GetUnderlyingType(type) is not null; //faster than above version? Needs testing
     }
 
     /// <summary>
@@ -261,7 +261,7 @@ public static class TypeExtensions
     //    }
 
     //    var nut = Nullable.GetUnderlyingType(type);
-    //    return nut != null && nut.GetTypeInfo().IsEnum;
+    //    return nut is not null && nut.GetTypeInfo().IsEnum;
     //}
 
     /// <summary>
@@ -269,9 +269,9 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type">The type to convert.</param>
     /// <returns>The nullable equivalent of type.</returns>
-    public static Type ToNullable(this Type type) => type == null
-            ? null
-            : type.IsNullable()
+    public static Type ToNullable(this Type type) => type is null
+        ? null
+        : type.IsNullable()
             ? type
             : type.GetTypeInfo().IsValueType && type != typeof(void) ? typeof(Nullable<>).MakeGenericType(type) : null;
 }

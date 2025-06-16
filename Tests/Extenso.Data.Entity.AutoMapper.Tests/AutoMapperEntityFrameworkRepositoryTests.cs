@@ -2,7 +2,6 @@
 using AutoMapper;
 using Bogus;
 using Extenso.Data.Entity.AutoMapper;
-using Extenso.Mapping;
 using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Extenso.TestLib.ViewModels;
@@ -570,8 +569,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int count = repository.Count();
         var newProductModel = productModelFaker.Generate();
 
-        int rowsAffected = repository.Insert(newProductModel);
-        Assert.Equal(1, rowsAffected);
+        var insertedModel = repository.Insert(newProductModel);
+        Assert.True(insertedModel.ProductModelId > 0);
 
         int newCount = repository.Count();
         Assert.Equal(count + 1, newCount);
@@ -583,8 +582,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int count = repository.Count();
         var newProductModels = productModelFaker.Generate(10);
 
-        int rowsAffected = repository.Insert(newProductModels);
-        Assert.Equal(10, rowsAffected);
+        var insertedModels = repository.Insert(newProductModels);
+        Assert.All(insertedModels, x => Assert.True(x.ProductModelId > 0));
 
         int newCount = repository.Count();
         Assert.Equal(count + 10, newCount);
@@ -596,8 +595,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int count = await repository.CountAsync();
         var newProductModel = productModelFaker.Generate();
 
-        int rowsAffected = await repository.InsertAsync(newProductModel);
-        Assert.Equal(1, rowsAffected);
+        var insertedModel = await repository.InsertAsync(newProductModel);
+        Assert.True(insertedModel.ProductModelId > 0);
 
         int newCount = await repository.CountAsync();
         Assert.Equal(count + 1, newCount);
@@ -609,8 +608,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int count = await repository.CountAsync();
         var newProductModels = productModelFaker.Generate(10);
 
-        int rowsAffected = await repository.InsertAsync(newProductModels);
-        Assert.Equal(10, rowsAffected);
+        var insertedModels = await repository.InsertAsync(newProductModels);
+        Assert.All(insertedModels, x => Assert.True(x.ProductModelId > 0));
 
         int newCount = await repository.CountAsync();
         Assert.Equal(count + 10, newCount);
@@ -629,7 +628,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         string newName = "Foo Bar Baz";
         model.Name = newName;
         var updatedModel = repository.Update(model);
-        Assert.True(updatedModel.ProductModelId > 0);
+        Assert.True(updatedModel.Name == newName);
 
         var entityAgain = repository.FindOne(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -645,7 +644,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             .Select(x => x.ProductModelId)
             .ToList();
 
-        string namePrefix = "Foo Bar Baz";
+        string newName = "Foo Bar Baz";
 
         var models = repository.Find(new SearchOptions<ProductModelViewModel>
         {
@@ -654,15 +653,15 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int count1 = models.Count();
         foreach (var model in models)
         {
-            model.Name = namePrefix;
+            model.Name = newName;
         }
 
         var updatedModels = repository.Update(models);
-        Assert.All(updatedModels, x => Assert.True(x.ProductModelId > 0));
+        Assert.All(updatedModels, x => Assert.True(x.Name == newName));
 
         var entitiesAgain = repository.Find(new SearchOptions<ProductModelViewModel>
         {
-            Query = x => x.Name == namePrefix
+            Query = x => x.Name == newName
         });
         Assert.Equal(count1, entitiesAgain.Count());
     }
@@ -676,7 +675,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         string newName = "Foo Bar Baz";
         model.Name = newName;
         var updatedModel = await repository.UpdateAsync(model);
-        Assert.True(updatedModel.ProductModelId > 0);
+        Assert.True(updatedModel.Name == newName);
 
         var entityAgain = await repository.FindOneAsync(randomProduct.ProductModelId);
         Assert.Equal(newName, entityAgain.Name);
@@ -692,7 +691,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             .Select(x => x.ProductModelId)
             .ToList();
 
-        string namePrefix = "Foo Bar Baz";
+        string newName = "Foo Bar Baz";
 
         var models = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
@@ -701,15 +700,15 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int count1 = models.Count();
         foreach (var model in models)
         {
-            model.Name = namePrefix;
+            model.Name = newName;
         }
 
         var updatedModels = await repository.UpdateAsync(models);
-        Assert.All(updatedModels, x => Assert.True(x.ProductModelId > 0));
+        Assert.All(updatedModels, x => Assert.True(x.Name == newName));
 
         var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
-            Query = x => x.Name == namePrefix
+            Query = x => x.Name == newName
         });
         Assert.Equal(count1, entitiesAgain.Count());
     }

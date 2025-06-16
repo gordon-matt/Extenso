@@ -233,28 +233,28 @@ public interface IRepository<TEntity> where TEntity : class
     /// </summary>
     /// <param name="entity">The entity to insert.</param>
     /// <returns>The number of rows affected.</returns>
-    int Insert(TEntity entity);
+    TEntity Insert(TEntity entity);
 
     /// <summary>
     /// Inserts the given entities.
     /// </summary>
     /// <param name="entities">The entities to insert.</param>
     /// <returns>The number of rows affected.</returns>
-    int Insert(IEnumerable<TEntity> entities);
+    IEnumerable<TEntity> Insert(IEnumerable<TEntity> entities);
 
     /// <summary>
     /// Asynchronously inserts the given entity.
     /// </summary>
     /// <param name="entity">The entity to insert.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> InsertAsync(TEntity entity);
+    Task<TEntity> InsertAsync(TEntity entity);
 
     /// <summary>
     /// Asynchronously inserts the given entities.
     /// </summary>
     /// <param name="entities">The entities to insert.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> InsertAsync(IEnumerable<TEntity> entities);
+    Task<IEnumerable<TEntity>> InsertAsync(IEnumerable<TEntity> entities);
 
     #endregion Insert
 
