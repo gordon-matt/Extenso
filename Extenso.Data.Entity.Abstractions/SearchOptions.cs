@@ -32,6 +32,10 @@ public class SearchOptions<TEntity> : ContextOptions
 
     public bool TagWithCallSite { get; set; }
 
+    public bool IgnoreMandatoryFilters { get; set; }
+
+    public Dictionary<string, object> MandatoryFilters { get; set; } = [];
+
     /// <summary>
     ///  Adds a tag to the collection of tags associated with an EF LINQ query. Tags are
     ///  query annotations that can provide contextual tracing information at different

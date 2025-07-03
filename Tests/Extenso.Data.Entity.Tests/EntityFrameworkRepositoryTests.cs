@@ -14,6 +14,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
 {
     private readonly InMemoryAdventureWorks2019ContextFactory contextFactory;
     private readonly IRepository<ProductModel> repository;
+    private readonly IRepository<ProductModel> repositoryForMandatoryFilterTests;
     private readonly ICollection<ProductModel> productModels;
     private readonly ICollection<Product> products;
     private bool isDisposed;
@@ -53,6 +54,12 @@ public class EntityFrameworkRepositoryTests : IDisposable
                 Rowguid = x.Random.Guid(),
                 ModifiedDate = x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1)),
                 ProductCategoryId = x.Random.Int(),
+                ProductCategory = new ProductCategory
+                {
+                    Name = x.Commerce.Categories(1).First(),
+                    Rowguid = x.Random.Guid(),
+                    ModifiedDate = x.Date.Between(DateTime.Today.AddYears(-10), DateTime.Today.AddDays(-1))
+                }
             });
 
         products = productFaker.Generate(100);
@@ -61,6 +68,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
 
         contextFactory = new InMemoryAdventureWorks2019ContextFactory();
         repository = new EntityFrameworkRepository<ProductModel>(contextFactory, Mock.Of<ILoggerFactory>());
+        repositoryForMandatoryFilterTests = new ProductModelRepository(contextFactory, Mock.Of<ILoggerFactory>());
     }
 
     #region Find
@@ -79,6 +87,30 @@ public class EntityFrameworkRepositoryTests : IDisposable
             })
             .Where(x => x.ProductModelId == randomProduct.ProductModelId)
             .SelectMany(x => x.Products)
+            .Count();
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Find_IncludePaths_WithMandatoryFilter()
+    {
+        var randomCategory = productModels.SelectMany(x => x.Products)
+            .Select(p => p.ProductSubcategory.ProductCategory.Name)
+            .FirstOrDefault();
+
+        int expected = productModels
+            .Where(x => x.Products.Any(p => p.ProductSubcategory.ProductCategory.Name == randomCategory))
+            .Count();
+
+        int actual = repositoryForMandatoryFilterTests
+            .Find(new SearchOptions<ProductModel>
+            {
+                MandatoryFilters = new Dictionary<string, object>
+                {
+                    { "Category", randomCategory }
+                },
+            })
             .Count();
 
         Assert.Equal(expected, actual);

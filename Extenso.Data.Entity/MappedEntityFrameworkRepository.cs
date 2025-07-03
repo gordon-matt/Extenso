@@ -2,6 +2,7 @@
 using Extenso.Collections;
 using Extenso.Collections.Generic;
 using Extenso.Reflection;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Z.EntityFramework.Plus;
@@ -724,7 +725,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #endregion Mapping
 
-    private static IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
+    private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
     {
         var query = context.Set<TEntity>().AsNoTracking();
 
@@ -751,10 +752,19 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             }
         }
 
+        var predicate = PredicateBuilder.New<TEntity>(true);
+
         if (options.Query is not null)
         {
-            query = query.Where(options.Query);
+            predicate = predicate.And(options.Query);
         }
+
+        if (!options.IgnoreMandatoryFilters && !options.MandatoryFilters.IsNullOrEmpty())
+        {
+            predicate = ApplyMandatoryFilters(predicate, options.MandatoryFilters);
+        }
+
+        query = query.Where(predicate);
 
         if (options.OrderBy is not null)
         {
@@ -763,6 +773,8 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
         return query;
     }
+
+    protected virtual Expression<Func<TEntity, bool>> ApplyMandatoryFilters(Expression<Func<TEntity, bool>> predicate, IDictionary<string, object> filters) => predicate;
 
     private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TEntity> options)
     {
