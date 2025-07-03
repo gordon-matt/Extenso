@@ -19,8 +19,6 @@ public class ProductModelRepository : EntityFrameworkRepository<ProductModel>
         Expression<Func<ProductModel, bool>> predicate,
         IDictionary<string, object> filters)
     {
-        predicate = base.ApplyMandatoryFilters(predicate, filters);
-
         predicate = filters.TryGetValue("Category", out var category) && category is string cat
             ? predicate.And(p => p.Products.Any(p => p.ProductSubcategory.ProductCategory.Name == cat))
             : throw new ArgumentException("Category filter is required.", nameof(filters));

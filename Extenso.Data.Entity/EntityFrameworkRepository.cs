@@ -690,7 +690,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
             predicate = predicate.And(options.Query);
         }
 
-        if (!options.IgnoreMandatoryFilters && !options.MandatoryFilters.IsNullOrEmpty())
+        if (!options.IgnoreMandatoryFilters)
         {
             predicate = ApplyMandatoryFilters(predicate, options.MandatoryFilters);
         }

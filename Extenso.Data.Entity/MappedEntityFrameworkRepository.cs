@@ -759,7 +759,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
             predicate = predicate.And(options.Query);
         }
 
-        if (!options.IgnoreMandatoryFilters && !options.MandatoryFilters.IsNullOrEmpty())
+        if (!options.IgnoreMandatoryFilters)
         {
             predicate = ApplyMandatoryFilters(predicate, options.MandatoryFilters);
         }
