@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Extenso.Data.Entity;
 
-public class SearchOptions<TEntity>
+public class SearchOptions<TEntity> : ContextOptions
     where TEntity : class
 {
     private readonly string filePath;
@@ -39,5 +39,5 @@ public class SearchOptions<TEntity>
     /// </summary>
     public IEnumerable<string> Tags { get; set; }
 
-    public string CallSiteTag => $"{filePath}:{lineNumber}";
+    public string CallSiteTag => $"File: {filePath}:{lineNumber}";
 }

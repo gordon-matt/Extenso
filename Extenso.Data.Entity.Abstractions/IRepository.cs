@@ -10,7 +10,7 @@ public interface IRepository<TEntity> where TEntity : class
     /// <para>to select only a small number of columns from the table.</para>
     /// </summary>
     /// <returns>An instance of IRepositoryConnectionlt;TEntity&gt;</returns>
-    IRepositoryConnection<TEntity> OpenConnection();
+    IRepositoryConnection<TEntity> OpenConnection(ContextOptions options = null);
 
     /// <summary>
     /// <para>If OpenConnection() has already been called and you wish to use the same connection (same DbContext</para>
@@ -106,14 +106,14 @@ public interface IRepository<TEntity> where TEntity : class
     /// Returns the number of elements in a sequence.
     /// </summary>
     /// <returns>The number of elements in the sequence.</returns>
-    int Count();
+    int Count(ContextOptions options = null);
 
     /// <summary>
     /// Returns the number of elements in a sequence that satisfy a condition.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
-    int Count(Expression<Func<TEntity, bool>> predicate);
+    int Count(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously returns the number of elements in a sequence.
@@ -122,7 +122,7 @@ public interface IRepository<TEntity> where TEntity : class
     /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
     /// <para>of elements in the sequence.</para>
     /// </returns>
-    Task<int> CountAsync();
+    Task<int> CountAsync(ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously returns the number of elements in a sequence that satisfy a condition.
@@ -132,20 +132,20 @@ public interface IRepository<TEntity> where TEntity : class
     /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
     /// <para>of elements in the sequence that satisfy the condition in the predicate function.</para>
     /// </returns>
-    Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null);
 
     /// <summary>
     /// Returns a System.Int64 that represents the number of elements in a sequence.
     /// </summary>
     /// <returns>The number of elements in the sequence.</returns>
-    long LongCount();
+    long LongCount(ContextOptions options = null);
 
     /// <summary>
     /// Returns a System.Int64 that represents the number of elements in a sequence that satisfy a condition.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>The number of elements in the sequence that satisfy the condition in the predicate function.</returns>
-    long LongCount(Expression<Func<TEntity, bool>> predicate);
+    long LongCount(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously returns a System.Int64 that represents the number of elements in a sequence.
@@ -154,7 +154,7 @@ public interface IRepository<TEntity> where TEntity : class
     /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
     /// <para>of elements in the sequence.</para>
     /// </returns>
-    Task<long> LongCountAsync();
+    Task<long> LongCountAsync(ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously returns a System.Int64 that represents the number of elements in a sequence that satisfy a condition.
@@ -164,7 +164,7 @@ public interface IRepository<TEntity> where TEntity : class
     /// <para>A task that represents the asynchronous operation. The task result contains the number</para>
     /// <para>of elements in the sequence that satisfy the condition in the predicate function.</para>
     /// </returns>
-    Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null);
 
     #endregion Count
 
@@ -174,55 +174,55 @@ public interface IRepository<TEntity> where TEntity : class
     /// Deletes all rows without retrieving entities.
     /// </summary>
     /// <returns>The number of rows affected.</returns>
-    int DeleteAll();
+    int DeleteAll(ContextOptions options = null);
 
     /// <summary>
     /// Deletes the given entity.
     /// </summary>
     /// <param name="entity">The entity to delete.</param>
     /// <returns>The number of rows affected.</returns>
-    int Delete(TEntity entity);
+    int Delete(TEntity entity, ContextOptions options = null);
 
     /// <summary>
     /// Deletes the given entities.
     /// </summary>
     /// <param name="entities">The entities to delete.</param>
     /// <returns>The number of rows affected.</returns>
-    int Delete(IEnumerable<TEntity> entities);
+    int Delete(IEnumerable<TEntity> entities, ContextOptions options = null);
 
     /// <summary>
     /// Deletes all entities that match the given predicate
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>The number of rows affected.</returns>
-    int Delete(Expression<Func<TEntity, bool>> predicate);
+    int Delete(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously deletes all rows without retrieving entities.
     /// </summary>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> DeleteAllAsync();
+    Task<int> DeleteAllAsync(ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously deletes the given entity.
     /// </summary>
     /// <param name="entity">The entity to delete.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> DeleteAsync(TEntity entity);
+    Task<int> DeleteAsync(TEntity entity, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously deletes the given entities
     /// </summary>
     /// <param name="entities">The entities to delete.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> DeleteAsync(IEnumerable<TEntity> entities);
+    Task<int> DeleteAsync(IEnumerable<TEntity> entities, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously deletes all entities that match the given predicate
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null);
 
     #endregion Delete
 
@@ -233,28 +233,28 @@ public interface IRepository<TEntity> where TEntity : class
     /// </summary>
     /// <param name="entity">The entity to insert.</param>
     /// <returns>The number of rows affected.</returns>
-    TEntity Insert(TEntity entity);
+    TEntity Insert(TEntity entity, ContextOptions options = null);
 
     /// <summary>
     /// Inserts the given entities.
     /// </summary>
     /// <param name="entities">The entities to insert.</param>
     /// <returns>The number of rows affected.</returns>
-    IEnumerable<TEntity> Insert(IEnumerable<TEntity> entities);
+    IEnumerable<TEntity> Insert(IEnumerable<TEntity> entities, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously inserts the given entity.
     /// </summary>
     /// <param name="entity">The entity to insert.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<TEntity> InsertAsync(TEntity entity);
+    Task<TEntity> InsertAsync(TEntity entity, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously inserts the given entities.
     /// </summary>
     /// <param name="entities">The entities to insert.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<IEnumerable<TEntity>> InsertAsync(IEnumerable<TEntity> entities);
+    Task<IEnumerable<TEntity>> InsertAsync(IEnumerable<TEntity> entities, ContextOptions options = null);
 
     #endregion Insert
 
@@ -265,35 +265,35 @@ public interface IRepository<TEntity> where TEntity : class
     /// </summary>
     /// <param name="entity">The entity to update.</param>
     /// <returns>The number of rows affected.</returns>
-    TEntity Update(TEntity entity);
+    TEntity Update(TEntity entity, ContextOptions options = null);
 
     /// <summary>
     /// Updates the given entities.
     /// </summary>
     /// <param name="entities">The entities to update.</param>
     /// <returns>The number of rows affected.</returns>
-    IEnumerable<TEntity> Update(IEnumerable<TEntity> entities);
+    IEnumerable<TEntity> Update(IEnumerable<TEntity> entities, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously updates the given entity.
     /// </summary>
     /// <param name="entity">The entity to update.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<TEntity> UpdateAsync(TEntity entity);
+    Task<TEntity> UpdateAsync(TEntity entity, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously updates the given entities.
     /// </summary>
     /// <param name="entities">The entities to update.</param>
     /// <returns>A task with the number of rows affected.</returns>
-    Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities);
+    Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities, ContextOptions options = null);
 
     /// <summary>
     /// Updates all rows using an expression without retrieving entities.
     /// </summary>
     /// <param name="updateFactory">The update expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(Expression<Func<TEntity, TEntity>> updateFactory);
+    int Update(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
 
     /// <summary>
     /// Updates all rows that match the given predicate using an expression without retrieving entities.
@@ -301,7 +301,7 @@ public interface IRepository<TEntity> where TEntity : class
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="updateFactory">The update expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory);
+    int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
 
     /// <summary>
     /// Updates all rows from the query using an expression without retrieving entities.
@@ -309,14 +309,14 @@ public interface IRepository<TEntity> where TEntity : class
     /// <param name="query">The query to update rows from without retrieving entities.</param>
     /// <param name="updateFactory">The update expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory);
+    int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously updates all rows using an expression without retrieving entities.
     /// </summary>
     /// <param name="updateFactory">The update expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory);
+    Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously updates all rows that match the given predicate using an expression without retrieving entities.
@@ -324,7 +324,7 @@ public interface IRepository<TEntity> where TEntity : class
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="updateFactory">The update expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory);
+    Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously updates all rows from the query using an expression without retrieving entities.

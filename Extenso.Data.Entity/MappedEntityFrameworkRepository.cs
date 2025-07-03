@@ -8,7 +8,7 @@ using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity;
 
-public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity>, IEntityFrameworkRepository<TModel>
+public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepository<TModel, TEntity>, IEntityFrameworkRepository
     where TModel : class
     where TEntity : class, IEntity
 {
@@ -34,10 +34,10 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region IRepository<TModel> Members
 
     /// <inheritdoc/>
-    public virtual IRepositoryConnection<TModel> OpenConnection()
+    public virtual IRepositoryConnection<TModel> OpenConnection(ContextOptions options = null)
     {
 #pragma warning disable DF0010 // Should not be disposed here. Call Dispose() on the IRepositoryConnection instead.
-        var context = GetContext();
+        var context = GetContext(options);
 #pragma warning restore DF0010
 
         return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(
@@ -61,9 +61,9 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region Find
 
     /// <inheritdoc/>
-    public IPagedCollection<TModel> Find(SearchOptions<TModel> options)
+    public IPagedCollection<TModel> Find(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         int totalCount = query.Count();
         query = ApplyPaging(query, options);
@@ -76,12 +76,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public IPagedCollection<TResult> Find<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    public IPagedCollection<TResult> Find<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var mappedProjection = MapProjection(projection);
-        var projectedQuery = query.Select(mappedProjection);
+        var projectedQuery = query.Select(projection);
 
         int totalCount = projectedQuery.Count();
         projectedQuery = ApplyPaging(projectedQuery, options);
@@ -94,9 +93,9 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public async Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TModel> options)
+    public async Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         int totalCount = await query.CountAsync();
         query = ApplyPaging(query, options);
@@ -109,12 +108,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    public async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var mappedProjection = MapProjection(projection);
-        var projectedQuery = query.Select(mappedProjection);
+        var projectedQuery = query.Select(projection);
 
         int totalCount = await projectedQuery.CountAsync();
         projectedQuery = ApplyPaging(projectedQuery, options);
@@ -135,21 +133,20 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public TModel FindOne(SearchOptions<TModel> options)
+    public TModel FindOne(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var entity = query.FirstOrDefault();
         return ToModel(entity);
     }
 
     /// <inheritdoc/>
-    public TResult FindOne<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    public TResult FindOne<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var mappedProjection = MapProjection(projection);
-        var projectedQuery = query.Select(mappedProjection);
+        var projectedQuery = query.Select(projection);
         return projectedQuery.FirstOrDefault();
     }
 
@@ -162,21 +159,20 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public async Task<TModel> FindOneAsync(SearchOptions<TModel> options)
+    public async Task<TModel> FindOneAsync(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var entity = await query.FirstOrDefaultAsync();
         return ToModel(entity);
     }
 
     /// <inheritdoc/>
-    public async Task<TResult> FindOneAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
+    public async Task<TResult> FindOneAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var mappedProjection = MapProjection(projection);
-        var projectedQuery = query.Select(mappedProjection);
+        var projectedQuery = query.Select(projection);
         return await projectedQuery.FirstOrDefaultAsync();
     }
 
@@ -185,62 +181,62 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region Count
 
     /// <inheritdoc/>
-    public virtual int Count()
+    public virtual int Count(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().Count();
     }
 
     /// <inheritdoc/>
-    public virtual int Count(Expression<Func<TModel, bool>> predicate)
+    public virtual int Count(Expression<Func<TModel, bool>> predicate, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().Count(mappedPredicate);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> CountAsync()
+    public virtual async Task<int> CountAsync(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().CountAsync();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> CountAsync(Expression<Func<TModel, bool>> predicate)
+    public virtual async Task<int> CountAsync(Expression<Func<TModel, bool>> predicate, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().CountAsync(mappedPredicate);
     }
 
     /// <inheritdoc/>
-    public virtual long LongCount()
+    public virtual long LongCount(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().LongCount();
     }
 
     /// <inheritdoc/>
-    public virtual long LongCount(Expression<Func<TModel, bool>> predicate)
+    public virtual long LongCount(Expression<Func<TModel, bool>> predicate, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().LongCount(mappedPredicate);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<long> LongCountAsync()
+    public virtual async Task<long> LongCountAsync(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().LongCountAsync();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<long> LongCountAsync(Expression<Func<TModel, bool>> predicate)
+    public virtual async Task<long> LongCountAsync(Expression<Func<TModel, bool>> predicate, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().LongCountAsync(mappedPredicate);
     }
 
@@ -249,11 +245,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region Delete
 
     /// <inheritdoc/>
-    public virtual int Delete(TModel model)
+    public virtual int Delete(TModel model, ContextOptions options = null)
     {
         var entity = ToEntity(model);
 
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         if (context.Entry(entity).State == EntityState.Detached)
@@ -278,11 +274,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual int Delete(IEnumerable<TModel> models)
+    public virtual int Delete(IEnumerable<TModel> models, ContextOptions options = null)
     {
         var entities = models.Select(ToEntity).ToList();
 
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         foreach (var entity in entities)
@@ -310,33 +306,33 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual int Delete(Expression<Func<TModel, bool>> predicate)
+    public virtual int Delete(Expression<Func<TModel, bool>> predicate, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Where(mappedPredicate).ExecuteDelete();
     }
 
     /// <inheritdoc/>
-    public virtual int DeleteAll()
+    public virtual int DeleteAll(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Delete();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAllAsync()
+    public virtual async Task<int> DeleteAllAsync(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().DeleteAsync();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(TModel model)
+    public virtual async Task<int> DeleteAsync(TModel model, ContextOptions options = null)
     {
         var entity = ToEntity(model);
 
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         if (context.Entry(entity).State == EntityState.Detached)
@@ -361,11 +357,11 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(IEnumerable<TModel> models)
+    public virtual async Task<int> DeleteAsync(IEnumerable<TModel> models, ContextOptions options = null)
     {
         var entities = models.Select(ToEntity).ToList();
 
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         foreach (var entity in entities)
@@ -393,10 +389,10 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(Expression<Func<TModel, bool>> predicate)
+    public virtual async Task<int> DeleteAsync(Expression<Func<TModel, bool>> predicate, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().Where(mappedPredicate).ExecuteDeleteAsync();
     }
 
@@ -405,40 +401,40 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region Insert
 
     /// <inheritdoc/>
-    public virtual TModel Insert(TModel model)
+    public virtual TModel Insert(TModel model, ContextOptions options = null)
     {
         var entity = ToEntity(model);
-        using var context = GetContext();
+        using var context = GetContext(options);
         context.Set<TEntity>().Add(entity);
         context.SaveChanges();
         return ToModel(entity);
     }
 
     /// <inheritdoc/>
-    public virtual IEnumerable<TModel> Insert(IEnumerable<TModel> models)
+    public virtual IEnumerable<TModel> Insert(IEnumerable<TModel> models, ContextOptions options = null)
     {
         var entities = models.Select(ToEntity).ToList();
-        using var context = GetContext();
+        using var context = GetContext(options);
         context.Set<TEntity>().AddRange(entities);
         context.SaveChanges();
         return entities.Select(ToModel).ToList();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<TModel> InsertAsync(TModel model)
+    public virtual async Task<TModel> InsertAsync(TModel model, ContextOptions options = null)
     {
         var entity = ToEntity(model);
-        using var context = GetContext();
+        using var context = GetContext(options);
         await context.Set<TEntity>().AddAsync(entity);
         await context.SaveChangesAsync();
         return ToModel(entity);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<IEnumerable<TModel>> InsertAsync(IEnumerable<TModel> models)
+    public virtual async Task<IEnumerable<TModel>> InsertAsync(IEnumerable<TModel> models, ContextOptions options = null)
     {
         var entities = models.Select(ToEntity).ToList();
-        using var context = GetContext();
+        using var context = GetContext(options);
         await context.Set<TEntity>().AddRangeAsync(entities);
         await context.SaveChangesAsync();
         return entities.Select(ToModel).ToList();
@@ -449,7 +445,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region Update
 
     /// <inheritdoc/>
-    public virtual TModel Update(TModel model)
+    public virtual TModel Update(TModel model, ContextOptions options = null)
     {
         try
         {
@@ -460,7 +456,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             if (context.Entry(entity).State == EntityState.Detached)
@@ -495,7 +491,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual IEnumerable<TModel> Update(IEnumerable<TModel> models)
+    public virtual IEnumerable<TModel> Update(IEnumerable<TModel> models, ContextOptions options = null)
     {
         try
         {
@@ -506,7 +502,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             foreach (var entity in entities)
@@ -543,19 +539,19 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TModel, TModel>> updateFactory)
+    public virtual int Update(Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
     {
         var mappedUpdateExpression = MapUpdate(updateFactory);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Update(mappedUpdateExpression);
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory)
+    public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
         var mappedUpdateExpression = MapUpdate(updateFactory);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Where(mappedPredicate).Update(mappedUpdateExpression);
     }
 
@@ -564,7 +560,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
         throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public virtual async Task<TModel> UpdateAsync(TModel model)
+    public virtual async Task<TModel> UpdateAsync(TModel model, ContextOptions options = null)
     {
         try
         {
@@ -575,7 +571,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             if (context.Entry(entity).State == EntityState.Detached)
@@ -610,7 +606,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual async Task<IEnumerable<TModel>> UpdateAsync(IEnumerable<TModel> models)
+    public virtual async Task<IEnumerable<TModel>> UpdateAsync(IEnumerable<TModel> models, ContextOptions options = null)
     {
         try
         {
@@ -620,7 +616,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             foreach (var entity in entities)
@@ -657,19 +653,19 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, TModel>> updateFactory)
+    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
     {
         var mappedUpdateExpression = MapUpdate(updateFactory);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().UpdateAsync(mappedUpdateExpression);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory)
+    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
     {
         var mappedPredicate = MapPredicate(predicate);
         var mappedUpdateExpression = MapUpdate(updateFactory);
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().Where(mappedPredicate).UpdateAsync(mappedUpdateExpression);
     }
 
@@ -684,7 +680,25 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
     #region IEntityFrameworkRepository<TEntity> Members
 
     /// <inheritdoc/>
-    public DbContext GetContext() => contextFactory.GetContext();
+    public DbContext GetContext(ContextOptions options = null)
+    {
+        var context = contextFactory.GetContext();
+
+        if (options is not null)
+        {
+            if (options.CommandTimeout.HasValue)
+            {
+                context.Database.SetCommandTimeout(options.CommandTimeout.Value);
+            }
+
+            if (options.Transaction is not null)
+            {
+                context.Database.UseTransaction(options.Transaction);
+            }
+        }
+
+        return context;
+    }
 
     #endregion IEntityFrameworkRepository<TEntity> Members
 
@@ -710,7 +724,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
     #endregion Mapping
 
-    private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
+    private static IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
     {
         var query = context.Set<TEntity>().AsNoTracking();
 
@@ -729,8 +743,7 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
         if (options.Include is not null)
         {
-            var mappedInclude = MapInclude(options.Include);
-            query = mappedInclude(query); // Happens here. I believe because the `query` variable is an EntityQueryable
+            query = options.Include.Compile()(query);
 
             if (options.SplitQuery)
             {
@@ -740,20 +753,18 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
 
         if (options.Query is not null)
         {
-            var mappedPredicate = MapPredicate(options.Query);
-            query = query.Where(mappedPredicate);
+            query = query.Where(options.Query);
         }
 
         if (options.OrderBy is not null)
         {
-            var mappedOrderBy = MapOrderBy(options.OrderBy);
-            query = mappedOrderBy(query);
+            query = options.OrderBy.Compile()(query);
         }
 
         return query;
     }
 
-    private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TModel> options)
+    private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TEntity> options)
     {
         if (options.PageSize > 0 && options.PageNumber > 0)
         {
@@ -761,7 +772,68 @@ public abstract class MappedEntityFrameworkRepository<TModel, TEntity> : IMapped
                 .Skip((options.PageNumber - 1) * options.PageSize)
                 .Take(options.PageSize);
         }
-
         return query;
     }
+
+    #region Experimental
+
+    // Mostly works, but there are some issues mapping filtered includes.
+    // As such, I've opted to use TEntity instead of TModel for the SearchOptions
+
+    //private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
+    //{
+    //    var query = context.Set<TEntity>().AsNoTracking();
+
+    //    if (options.TagWithCallSite)
+    //    {
+    //        query = query.TagWith(options.CallSiteTag);
+    //    }
+
+    //    if (!options.Tags.IsNullOrEmpty())
+    //    {
+    //        foreach (string tag in options.Tags)
+    //        {
+    //            query = query.TagWith(tag);
+    //        }
+    //    }
+
+    //    if (options.Include is not null)
+    //    {
+    //        var mappedInclude = MapInclude(options.Include);
+    //        query = mappedInclude(query);
+
+    //        if (options.SplitQuery)
+    //        {
+    //            query = query.AsSplitQuery();
+    //        }
+    //    }
+
+    //    if (options.Query is not null)
+    //    {
+    //        var mappedPredicate = MapPredicate(options.Query);
+    //        query = query.Where(mappedPredicate);
+    //    }
+
+    //    if (options.OrderBy is not null)
+    //    {
+    //        var mappedOrderBy = MapOrderBy(options.OrderBy);
+    //        query = mappedOrderBy(query);
+    //    }
+
+    //    return query;
+    //}
+
+    //private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TModel> options)
+    //{
+    //    if (options.PageSize > 0 && options.PageNumber > 0)
+    //    {
+    //        query = query
+    //            .Skip((options.PageNumber - 1) * options.PageSize)
+    //            .Take(options.PageSize);
+    //    }
+
+    //    return query;
+    //}
+
+    #endregion
 }

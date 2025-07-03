@@ -7,7 +7,7 @@ using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity;
 
-public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityFrameworkRepository<TEntity>
+public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityFrameworkRepository
     where TEntity : class, IEntity
 {
     #region Non-Public Members
@@ -30,9 +30,9 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region IRepository<TEntity> Members
 
     /// <inheritdoc/>
-    public virtual IRepositoryConnection<TEntity> OpenConnection()
+    public virtual IRepositoryConnection<TEntity> OpenConnection(ContextOptions options = null)
     {
-        var context = GetContext();
+        var context = GetContext(options);
         return new EntityFrameworkRepositoryConnection<TEntity>(context, true);
     }
 
@@ -54,7 +54,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual IPagedCollection<TEntity> Find(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         int totalCount = query.Count();
         query = ApplyPaging(query, options);
@@ -69,7 +69,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual IPagedCollection<TResult> Find<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
 
@@ -86,7 +86,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<IPagedCollection<TEntity>> FindAsync(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         int totalCount = await query.CountAsync();
         query = ApplyPaging(query, options);
@@ -101,7 +101,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
 
@@ -125,7 +125,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual TEntity FindOne(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         return query.FirstOrDefault();
     }
@@ -133,7 +133,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual TResult FindOne<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
         return projectedQuery.FirstOrDefault();
@@ -149,7 +149,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<TEntity> FindOneAsync(SearchOptions<TEntity> options)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         return await query.FirstOrDefaultAsync();
     }
@@ -157,7 +157,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<TResult> FindOneAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
         return await projectedQuery.FirstOrDefaultAsync();
@@ -168,58 +168,58 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region Count
 
     /// <inheritdoc/>
-    public virtual int Count()
+    public virtual int Count(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().Count();
     }
 
     /// <inheritdoc/>
-    public virtual int Count(Expression<Func<TEntity, bool>> predicate)
+    public virtual int Count(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().Count(predicate);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> CountAsync()
+    public virtual async Task<int> CountAsync(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().CountAsync();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().CountAsync(predicate);
     }
 
     /// <inheritdoc/>
-    public virtual long LongCount()
+    public virtual long LongCount(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().LongCount();
     }
 
     /// <inheritdoc/>
-    public virtual long LongCount(Expression<Func<TEntity, bool>> predicate)
+    public virtual long LongCount(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().AsNoTracking().LongCount(predicate);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<long> LongCountAsync()
+    public virtual async Task<long> LongCountAsync(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().LongCountAsync();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().AsNoTracking().LongCountAsync(predicate);
     }
 
@@ -228,9 +228,9 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region Delete
 
     /// <inheritdoc/>
-    public virtual int Delete(TEntity entity)
+    public virtual int Delete(TEntity entity, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         if (context.Entry(entity).State == EntityState.Detached)
@@ -255,9 +255,9 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual int Delete(IEnumerable<TEntity> entities)
+    public virtual int Delete(IEnumerable<TEntity> entities, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         foreach (var entity in entities)
@@ -285,30 +285,30 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual int Delete(Expression<Func<TEntity, bool>> predicate)
+    public virtual int Delete(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Where(predicate).ExecuteDelete();
     }
 
     /// <inheritdoc/>
-    public virtual int DeleteAll()
+    public virtual int DeleteAll(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Delete();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAllAsync()
+    public virtual async Task<int> DeleteAllAsync(ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().DeleteAsync();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(TEntity entity)
+    public virtual async Task<int> DeleteAsync(TEntity entity, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         if (context.Entry(entity).State == EntityState.Detached)
@@ -333,9 +333,9 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(IEnumerable<TEntity> entities)
+    public virtual async Task<int> DeleteAsync(IEnumerable<TEntity> entities, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         var set = context.Set<TEntity>();
 
         foreach (var entity in entities)
@@ -363,9 +363,9 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().Where(predicate).ExecuteDeleteAsync();
     }
 
@@ -374,36 +374,36 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region Insert
 
     /// <inheritdoc/>
-    public virtual TEntity Insert(TEntity entity)
+    public virtual TEntity Insert(TEntity entity, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         context.Set<TEntity>().Add(entity);
         context.SaveChanges();
         return entity;
     }
 
     /// <inheritdoc/>
-    public virtual IEnumerable<TEntity> Insert(IEnumerable<TEntity> entities)
+    public virtual IEnumerable<TEntity> Insert(IEnumerable<TEntity> entities, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         context.Set<TEntity>().AddRange(entities);
         context.SaveChanges();
         return entities;
     }
 
     /// <inheritdoc/>
-    public virtual async Task<TEntity> InsertAsync(TEntity entity)
+    public virtual async Task<TEntity> InsertAsync(TEntity entity, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         await context.Set<TEntity>().AddAsync(entity);
         await context.SaveChangesAsync();
         return entity;
     }
 
     /// <inheritdoc/>
-    public virtual async Task<IEnumerable<TEntity>> InsertAsync(IEnumerable<TEntity> entities)
+    public virtual async Task<IEnumerable<TEntity>> InsertAsync(IEnumerable<TEntity> entities, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         await context.Set<TEntity>().AddRangeAsync(entities);
         await context.SaveChangesAsync();
         return entities;
@@ -414,13 +414,13 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region Update
 
     /// <inheritdoc/>
-    public virtual TEntity Update(TEntity entity)
+    public virtual TEntity Update(TEntity entity, ContextOptions options = null)
     {
         try
         {
             ArgumentNullException.ThrowIfNull(entity);
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             if (context.Entry(entity).State == EntityState.Detached)
@@ -455,7 +455,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual IEnumerable<TEntity> Update(IEnumerable<TEntity> entities)
+    public virtual IEnumerable<TEntity> Update(IEnumerable<TEntity> entities, ContextOptions options = null)
     {
         try
         {
@@ -464,7 +464,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             foreach (var entity in entities)
@@ -501,25 +501,25 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TEntity, TEntity>> updateFactory)
+    public virtual int Update(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Update(updateFactory);
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory)
+    public virtual int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return context.Set<TEntity>().Where(predicate).Update(updateFactory);
     }
 
     /// <inheritdoc/>
-    public virtual int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) =>
+    public virtual int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null) =>
         query.Update(updateFactory);
 
     /// <inheritdoc/>
-    public virtual async Task<TEntity> UpdateAsync(TEntity entity)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity, ContextOptions options = null)
     {
         try
         {
@@ -528,7 +528,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             if (context.Entry(entity).State == EntityState.Detached)
@@ -563,7 +563,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual async Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities)
+    public virtual async Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities, ContextOptions options = null)
     {
         try
         {
@@ -572,7 +572,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
                 throw new ArgumentNullException(nameof(entities));
             }
 
-            using var context = GetContext();
+            using var context = GetContext(options);
             var set = context.Set<TEntity>();
 
             foreach (var entity in entities)
@@ -609,16 +609,16 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory)
+    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().UpdateAsync(updateFactory);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory)
+    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
     {
-        using var context = GetContext();
+        using var context = GetContext(options);
         return await context.Set<TEntity>().Where(predicate).UpdateAsync(updateFactory);
     }
 
@@ -633,7 +633,25 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region  IEntityFrameworkRepository<TEntity> Members
 
     /// <inheritdoc/>
-    public DbContext GetContext() => contextFactory.GetContext();
+    public DbContext GetContext(ContextOptions options = null)
+    {
+        var context = contextFactory.GetContext();
+
+        if (options is not null)
+        {
+            if (options.CommandTimeout.HasValue)
+            {
+                context.Database.SetCommandTimeout(options.CommandTimeout.Value);
+            }
+
+            if (options.Transaction is not null)
+            {
+                context.Database.UseTransaction(options.Transaction);
+            }
+        }
+
+        return context;
+    }
 
     #endregion
 

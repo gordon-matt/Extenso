@@ -123,7 +123,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
         int actual = repository
-            .Find(new SearchOptions<ProductModelViewModel>
+            .Find(new SearchOptions<ProductModel>
             {
                 Include = query => query.Include(x => x.Products)
             })
@@ -144,7 +144,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
         int actual = repository
-            .Find(new SearchOptions<ProductModelViewModel>
+            .Find(new SearchOptions<ProductModel>
             {
                 Query = x => x.Name.StartsWith(firstLetter),
                 Include = query => query.Include(x => x.Products)
@@ -163,7 +163,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var query = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        var query = await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Include = query => query.Include(x => x.Products)
         });
@@ -185,7 +185,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var query = await repository
-            .FindAsync(new SearchOptions<ProductModelViewModel>
+            .FindAsync(new SearchOptions<ProductModel>
             {
                 Query = x => x.Name.StartsWith(firstLetter),
                 Include = query => query.Include(x => x.Products)
@@ -211,7 +211,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
-        var entity = repository.FindOne(new SearchOptions<ProductModelViewModel>
+        var entity = repository.FindOne(new SearchOptions<ProductModel>
         {
             Query = x => x.Name == productModel.Name,
             Include = query => query.Include(x => x.Products)
@@ -232,7 +232,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
-        var entity = await repository.FindOneAsync(new SearchOptions<ProductModelViewModel>
+        var entity = await repository.FindOneAsync(new SearchOptions<ProductModel>
         {
             Query = x => x.Name == productModel.Name,
             Include = query => query.Include(x => x.Products)
@@ -247,7 +247,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = repository.Find(
-            new SearchOptions<ProductModelViewModel>
+            new SearchOptions<ProductModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -266,7 +266,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = (await repository.FindAsync(
-            new SearchOptions<ProductModelViewModel>
+            new SearchOptions<ProductModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -285,7 +285,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = repository.FindOne(
-            new SearchOptions<ProductModelViewModel>
+            new SearchOptions<ProductModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -304,7 +304,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = await repository.FindOneAsync(
-            new SearchOptions<ProductModelViewModel>
+            new SearchOptions<ProductModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -319,7 +319,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     [Fact]
     public void Find_With_OrderBy()
     {
-        var results = repository.Find(new SearchOptions<ProductModelViewModel>
+        var results = repository.Find(new SearchOptions<ProductModel>
         {
             OrderBy = query => query.OrderBy(x => x.Name)
         }).ToList();
@@ -335,7 +335,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     [Fact]
     public void Find_With_OrderByDescending()
     {
-        var results = repository.Find(new SearchOptions<ProductModelViewModel>
+        var results = repository.Find(new SearchOptions<ProductModel>
         {
             OrderBy = query => query.OrderByDescending(x => x.Name)
         }).ToList();
@@ -351,7 +351,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     [Fact]
     public void Find_With_MultiLevel_OrderBy()
     {
-        var results = repository.Find(new SearchOptions<ProductModelViewModel>
+        var results = repository.Find(new SearchOptions<ProductModel>
         {
             OrderBy = query => query
                 .OrderBy(x => x.Name)
@@ -377,7 +377,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var result = repository.Find(new SearchOptions<ProductModelViewModel>
+        var result = repository.Find(new SearchOptions<ProductModel>
         {
             Query = x => x.ProductModelId == productModel.ProductModelId,
             Include = query => query
@@ -397,7 +397,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var result = (await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        var result = (await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Query = x => x.ProductModelId == productModel.ProductModelId,
             Include = query => query
@@ -508,7 +508,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         int count = repository.Count();
 
-        var models = repository.Find(new SearchOptions<ProductModelViewModel>
+        var models = repository.Find(new SearchOptions<ProductModel>
         {
             Query = x => true
         }).Take(5);
@@ -542,7 +542,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         int count = await repository.CountAsync();
 
-        var models = (await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        var models = (await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Query = x => true
         })).Take(5);
@@ -646,7 +646,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
 
-        var models = repository.Find(new SearchOptions<ProductModelViewModel>
+        var models = repository.Find(new SearchOptions<ProductModel>
         {
             Query = x => randomProductIds.Contains(x.ProductModelId)
         });
@@ -659,7 +659,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var updatedModels = repository.Update(models);
         Assert.All(updatedModels, x => Assert.True(x.Name == newName));
 
-        var entitiesAgain = repository.Find(new SearchOptions<ProductModelViewModel>
+        var entitiesAgain = repository.Find(new SearchOptions<ProductModel>
         {
             Query = x => x.Name == newName
         });
@@ -693,7 +693,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
 
-        var models = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        var models = await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Query = x => randomProductIds.Contains(x.ProductModelId)
         });
@@ -706,7 +706,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         var updatedModels = await repository.UpdateAsync(models);
         Assert.All(updatedModels, x => Assert.True(x.Name == newName));
 
-        var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
+        var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Query = x => x.Name == newName
         });
