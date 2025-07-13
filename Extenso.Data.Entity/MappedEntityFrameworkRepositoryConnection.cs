@@ -12,9 +12,7 @@ public class MappedEntityFrameworkRepositoryConnection<TEntity, TModel> : IEntit
     private readonly bool isContextOwner;
     private bool disposed;
 
-    private readonly Func<IQueryable<TEntity>, IQueryable<TModel>> queryMapper;
-    private readonly Func<Expression<Func<TModel, bool>>, Expression<Func<TEntity, bool>>> predicateMapper;
-    private readonly Func<Expression<Func<TModel, dynamic>>, Expression<Func<TEntity, dynamic>>> includeMapper;
+    private readonly IEntityModelMapper<TEntity, TModel> entityModelMapper;
 
     #endregion Private Members
 
@@ -24,16 +22,12 @@ public class MappedEntityFrameworkRepositoryConnection<TEntity, TModel> : IEntit
 
     public MappedEntityFrameworkRepositoryConnection(
         DbContext context,
-        bool isContextOwner,
-        Func<IQueryable<TEntity>, IQueryable<TModel>> queryMapper,
-        Func<Expression<Func<TModel, bool>>, Expression<Func<TEntity, bool>>> predicateMapper,
-        Func<Expression<Func<TModel, dynamic>>, Expression<Func<TEntity, dynamic>>> includeMapper)
+        IEntityModelMapper<TEntity, TModel> entityModelMapper,
+        bool isContextOwner)
     {
         this.Context = context;
+        this.entityModelMapper = entityModelMapper;
         this.isContextOwner = isContextOwner;
-        this.queryMapper = queryMapper;
-        this.predicateMapper = predicateMapper;
-        this.includeMapper = includeMapper;
     }
 
     ~MappedEntityFrameworkRepositoryConnection()
@@ -51,31 +45,31 @@ public class MappedEntityFrameworkRepositoryConnection<TEntity, TModel> : IEntit
 
         if (!includePaths.IsNullOrEmpty())
         {
-            var mappedIncludes = includePaths.Select(includeMapper).ToArray();
+            var mappedIncludes = includePaths.Select(entityModelMapper.MapInclude).ToArray();
             foreach (var mappedInclude in mappedIncludes)
             {
                 query = query.Include(mappedInclude);
             }
         }
 
-        return queryMapper(query);
+        return entityModelMapper.MapQuery(query);
     }
 
     public virtual IQueryable<TModel> Query(Expression<Func<TModel, bool>> predicate, params Expression<Func<TModel, dynamic>>[] includePaths)
     {
-        var mappedPredicate = predicateMapper(predicate);
+        var mappedPredicate = entityModelMapper.MapPredicate(predicate);
         var query = Context.Set<TEntity>().AsNoTracking().Where(mappedPredicate);
 
         if (!includePaths.IsNullOrEmpty())
         {
-            var mappedIncludes = includePaths.Select(includeMapper).ToArray();
+            var mappedIncludes = includePaths.Select(entityModelMapper.MapInclude).ToArray();
             foreach (var mappedInclude in mappedIncludes)
             {
                 query = query.Include(mappedInclude);
             }
         }
 
-        return queryMapper(query);
+        return entityModelMapper.MapQuery(query);
     }
 
     #endregion IRepositoryConnection<TEntity> Members

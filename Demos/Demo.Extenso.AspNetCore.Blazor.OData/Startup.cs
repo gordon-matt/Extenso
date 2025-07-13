@@ -63,6 +63,8 @@ public class Startup
         })
         .AddBootstrapProviders()
         .AddFontAwesomeIcons();
+
+        services.AddEntityFrameworkRepository();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -112,9 +114,9 @@ public class Startup
     {
         builder.RegisterType<ApplicationDbContextFactory>().As<IDbContextFactory>().SingleInstance();
 
-        builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
-            .As(typeof(IRepository<>))
-            .InstancePerLifetimeScope();
+        //builder.RegisterGeneric(typeof(EntityFrameworkRepository<>))
+        //    .As(typeof(IRepository<>))
+        //    .InstancePerLifetimeScope();
 
         builder.RegisterType<ODataRegistrar>().As<IODataRegistrar>().SingleInstance();
 

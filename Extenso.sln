@@ -98,6 +98,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solutio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.WebAssets.KendoUI", "Extenso.WebAssets.KendoUI\Extenso.WebAssets.KendoUI.csproj", "{5D389509-FCA4-49E3-80BA-76784DAAF7E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Mapping.Abstractions", "Extenso.Mapping.Abstractions\Extenso.Mapping.Abstractions.csproj", "{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -256,6 +258,10 @@ Global
 		{5D389509-FCA4-49E3-80BA-76784DAAF7E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D389509-FCA4-49E3-80BA-76784DAAF7E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D389509-FCA4-49E3-80BA-76784DAAF7E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

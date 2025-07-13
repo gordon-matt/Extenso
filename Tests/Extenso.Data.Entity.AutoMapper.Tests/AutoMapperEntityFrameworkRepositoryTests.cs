@@ -92,7 +92,9 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             .ToList();
 
         contextFactory = new InMemoryAdventureWorks2019ContextFactory();
-        repository = new AutoMapperEntityFrameworkRepository<ProductModelViewModel, ProductModel>(contextFactory, Mock.Of<ILoggerFactory>(), mapper);
+
+        var entityModelMapper = new AutoMapperEntityModelMapper<ProductModel, ProductModelViewModel>(mapper);
+        repository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(contextFactory, Mock.Of<ILoggerFactory>(), entityModelMapper);
     }
 
     [Fact]

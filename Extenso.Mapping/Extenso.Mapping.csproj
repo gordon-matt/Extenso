@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>9.4.0</Version>
+		<Version>9.4.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
+	  <ProjectReference Include="..\Extenso.Mapping.Abstractions\Extenso.Mapping.Abstractions.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

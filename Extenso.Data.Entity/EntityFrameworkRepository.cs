@@ -3,7 +3,6 @@ using Extenso.Collections;
 using Extenso.Collections.Generic;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Z.EntityFramework.Plus;
 
 namespace Extenso.Data.Entity;
@@ -14,16 +13,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     #region Non-Public Members
 
     protected IDbContextFactory contextFactory;
-    private readonly ILogger logger;
 
     #endregion Non-Public Members
 
     #region Constructor
 
-    public EntityFrameworkRepository(IDbContextFactory contextFactory, ILoggerFactory loggerFactory)
+    public EntityFrameworkRepository(IDbContextFactory contextFactory)
     {
         this.contextFactory = contextFactory;
-        logger = loggerFactory.CreateLogger<EntityFrameworkRepository<TEntity>>();
     }
 
     #endregion Constructor
@@ -417,13 +414,48 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual TEntity Update(TEntity entity, ContextOptions options = null)
     {
-        try
+        ArgumentNullException.ThrowIfNull(entity);
+
+        using var context = GetContext(options);
+        var set = context.Set<TEntity>();
+
+        if (context.Entry(entity).State == EntityState.Detached)
         {
-            ArgumentNullException.ThrowIfNull(entity);
+            var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
 
-            using var context = GetContext(options);
-            var set = context.Set<TEntity>();
+            if (localEntity != null)
+            {
+                context.Entry(localEntity).CurrentValues.SetValues(entity);
+                context.Entry(localEntity).State = EntityState.Modified;
+            }
+            else
+            {
+                entity = set.Attach(entity).Entity;
+                context.Entry(entity).State = EntityState.Modified;
+            }
+        }
+        else
+        {
+            context.Entry(entity).State = EntityState.Modified;
+        }
 
+        context.SaveChanges();
+        return entity;
+    }
+
+    /// <inheritdoc/>
+    public virtual IEnumerable<TEntity> Update(IEnumerable<TEntity> entities, ContextOptions options = null)
+    {
+        if (entities == null)
+        {
+            throw new ArgumentNullException(nameof(entities));
+        }
+
+        using var context = GetContext(options);
+        var set = context.Set<TEntity>();
+
+        foreach (var entity in entities)
+        {
             if (context.Entry(entity).State == EntityState.Detached)
             {
                 var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
@@ -431,11 +463,10 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
                 if (localEntity != null)
                 {
                     context.Entry(localEntity).CurrentValues.SetValues(entity);
-                    context.Entry(localEntity).State = EntityState.Modified;
                 }
                 else
                 {
-                    entity = set.Attach(entity).Entity;
+                    set.Attach(entity);
                     context.Entry(entity).State = EntityState.Modified;
                 }
             }
@@ -443,62 +474,10 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
             {
                 context.Entry(entity).State = EntityState.Modified;
             }
-
-            context.SaveChanges();
-            return entity;
         }
-        catch (Exception x)
-        {
-            string message = x.GetBaseException().Message;
-            logger.LogError(new EventId(), x, message);
-            throw new ApplicationException(message);
-        }
-    }
 
-    /// <inheritdoc/>
-    public virtual IEnumerable<TEntity> Update(IEnumerable<TEntity> entities, ContextOptions options = null)
-    {
-        try
-        {
-            if (entities == null)
-            {
-                throw new ArgumentNullException(nameof(entities));
-            }
-
-            using var context = GetContext(options);
-            var set = context.Set<TEntity>();
-
-            foreach (var entity in entities)
-            {
-                if (context.Entry(entity).State == EntityState.Detached)
-                {
-                    var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
-
-                    if (localEntity != null)
-                    {
-                        context.Entry(localEntity).CurrentValues.SetValues(entity);
-                    }
-                    else
-                    {
-                        set.Attach(entity);
-                        context.Entry(entity).State = EntityState.Modified;
-                    }
-                }
-                else
-                {
-                    context.Entry(entity).State = EntityState.Modified;
-                }
-            }
-
-            context.SaveChanges();
-            return entities;
-        }
-        catch (Exception x)
-        {
-            string message = x.GetBaseException().Message;
-            logger.LogError(new EventId(), x, message);
-            throw new ApplicationException(message);
-        }
+        context.SaveChanges();
+        return entities;
     }
 
     /// <inheritdoc/>
@@ -522,16 +501,51 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<TEntity> UpdateAsync(TEntity entity, ContextOptions options = null)
     {
-        try
+        if (entity == null)
         {
-            if (entity == null)
+            throw new ArgumentNullException(nameof(entity));
+        }
+
+        using var context = GetContext(options);
+        var set = context.Set<TEntity>();
+
+        if (context.Entry(entity).State == EntityState.Detached)
+        {
+            var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
+
+            if (localEntity != null)
             {
-                throw new ArgumentNullException(nameof(entity));
+                context.Entry(localEntity).CurrentValues.SetValues(entity);
+                context.Entry(localEntity).State = EntityState.Modified;
             }
+            else
+            {
+                entity = set.Attach(entity).Entity;
+                context.Entry(entity).State = EntityState.Modified;
+            }
+        }
+        else
+        {
+            context.Entry(entity).State = EntityState.Modified;
+        }
 
-            using var context = GetContext(options);
-            var set = context.Set<TEntity>();
+        await context.SaveChangesAsync();
+        return entity;
+    }
 
+    /// <inheritdoc/>
+    public virtual async Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities, ContextOptions options = null)
+    {
+        if (entities == null)
+        {
+            throw new ArgumentNullException(nameof(entities));
+        }
+
+        using var context = GetContext(options);
+        var set = context.Set<TEntity>();
+
+        foreach (var entity in entities)
+        {
             if (context.Entry(entity).State == EntityState.Detached)
             {
                 var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
@@ -539,11 +553,10 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
                 if (localEntity != null)
                 {
                     context.Entry(localEntity).CurrentValues.SetValues(entity);
-                    context.Entry(localEntity).State = EntityState.Modified;
                 }
                 else
                 {
-                    entity = set.Attach(entity).Entity;
+                    set.Attach(entity);
                     context.Entry(entity).State = EntityState.Modified;
                 }
             }
@@ -551,62 +564,10 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
             {
                 context.Entry(entity).State = EntityState.Modified;
             }
-
-            await context.SaveChangesAsync();
-            return entity;
         }
-        catch (Exception x)
-        {
-            string message = x.GetBaseException().Message;
-            logger.LogError(new EventId(), x, message);
-            throw new ApplicationException(message);
-        }
-    }
 
-    /// <inheritdoc/>
-    public virtual async Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities, ContextOptions options = null)
-    {
-        try
-        {
-            if (entities == null)
-            {
-                throw new ArgumentNullException(nameof(entities));
-            }
-
-            using var context = GetContext(options);
-            var set = context.Set<TEntity>();
-
-            foreach (var entity in entities)
-            {
-                if (context.Entry(entity).State == EntityState.Detached)
-                {
-                    var localEntity = set.Local.FirstOrDefault(x => Enumerable.SequenceEqual(x.KeyValues, entity.KeyValues));
-
-                    if (localEntity != null)
-                    {
-                        context.Entry(localEntity).CurrentValues.SetValues(entity);
-                    }
-                    else
-                    {
-                        set.Attach(entity);
-                        context.Entry(entity).State = EntityState.Modified;
-                    }
-                }
-                else
-                {
-                    context.Entry(entity).State = EntityState.Modified;
-                }
-            }
-
-            await context.SaveChangesAsync();
-            return entities;
-        }
-        catch (Exception x)
-        {
-            string message = x.GetBaseException().Message;
-            logger.LogError(new EventId(), x, message);
-            throw new ApplicationException(message);
-        }
+        await context.SaveChangesAsync();
+        return entities;
     }
 
     /// <inheritdoc/>
@@ -631,7 +592,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
 
     #endregion IRepository<TEntity> Members
 
-    #region  IEntityFrameworkRepository<TEntity> Members
+    #region IEntityFrameworkRepository<TEntity> Members
 
     /// <inheritdoc/>
     public DbContext GetContext(ContextOptions options = null)
@@ -654,7 +615,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
         return context;
     }
 
-    #endregion
+    #endregion IEntityFrameworkRepository<TEntity> Members
 
     private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
     {
@@ -715,6 +676,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
                 .Skip((options.PageNumber - 1) * options.PageSize)
                 .Take(options.PageSize);
         }
+
         return query;
     }
 }

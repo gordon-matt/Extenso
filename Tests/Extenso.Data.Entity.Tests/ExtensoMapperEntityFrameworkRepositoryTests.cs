@@ -96,7 +96,9 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
             .ToList();
 
         contextFactory = new InMemoryAdventureWorks2019ContextFactory();
-        repository = new ExtensoMapperEntityFrameworkRepository<ProductModelViewModel, ProductModel>(contextFactory, Mock.Of<ILoggerFactory>());
+
+        var entityModelMapper = new ExtensoEntityModelMapper<ProductModel, ProductModelViewModel>();
+        repository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(contextFactory, Mock.Of<ILoggerFactory>(), entityModelMapper);
     }
 
     [Fact]
