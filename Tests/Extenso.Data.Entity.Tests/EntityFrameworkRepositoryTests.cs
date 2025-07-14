@@ -3,9 +3,11 @@ using Bogus;
 using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Z.EntityFramework.Plus;
+
 
 namespace Extenso.Data.Entity.Tests;
 
@@ -67,8 +69,8 @@ public class EntityFrameworkRepositoryTests : IDisposable
         context.SaveChanges();
 
         contextFactory = new InMemoryAdventureWorks2019ContextFactory();
-        repository = new EntityFrameworkRepository<ProductModel>(contextFactory, Mock.Of<ILoggerFactory>());
-        repositoryForMandatoryFilterTests = new ProductModelRepository(contextFactory, Mock.Of<ILoggerFactory>());
+        repository = new EntityFrameworkRepository<ProductModel>(contextFactory);
+        repositoryForMandatoryFilterTests = new ProductModelRepository(contextFactory);
     }
 
     #region Find
@@ -464,7 +466,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
 
     #region Delete
 
-    // repository.DeleteAll() relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+            // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
     //[Fact]
     //public void DeleteAll();
 
@@ -502,11 +504,11 @@ public class EntityFrameworkRepositoryTests : IDisposable
         Assert.Equal(count - 5, newCount);
     }
 
-    // repository.DeleteWhere() relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // repository.DeleteWhere() uses ExecuteDelete which may not work with in-memory database.
     //[Fact]
     //public void DeleteWhere();
 
-    // repository.DeleteAllAsync() relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // repository.DeleteAllAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
     //[Fact]
     //public async Task DeleteAllAsync();
 
@@ -544,7 +546,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
         Assert.Equal(count - 5, newCount);
     }
 
-    // repository.DeleteWhereAsync() relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
     //[Fact]
     //public async Task DeleteWhereAsync();
 
@@ -702,7 +704,121 @@ public class EntityFrameworkRepositoryTests : IDisposable
         Assert.Equal(count1, entitiesAgain.Count());
     }
 
-    // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    [Fact]
+    public void Update_WithSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var realRepository = new EntityFrameworkRepository<ProductModel>(realContextFactory);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        // First get a record to update
+        var existingEntity = realRepository.FindOne(new SearchOptions<ProductModel>
+        {
+            Query = p => p.ProductModelId == 1
+        });
+        Assert.NotNull(existingEntity);
+
+        int affectedRows = realRepository.Update(
+            p => p.ProductModelId == 1,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = realRepository.FindOne(1);
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var realRepository = new EntityFrameworkRepository<ProductModel>(realContextFactory);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        // First get a record to update
+        var existingEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModel>
+        {
+            Query = p => p.ProductModelId == 2
+        });
+        Assert.NotNull(existingEntity);
+
+        int affectedRows = await realRepository.UpdateAsync(
+            p => p.ProductModelId == 2,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = await realRepository.FindOneAsync(2);
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
+    }
+
+    [Fact]
+    public void Update_WithPredicateAndSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var realRepository = new EntityFrameworkRepository<ProductModel>(realContextFactory);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        int affectedRows = realRepository.Update(
+            p => p.ProductModelId == 1,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = realRepository.FindOne(1);
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithPredicateAndSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var realRepository = new EntityFrameworkRepository<ProductModel>(realContextFactory);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        int affectedRows = await realRepository.UpdateAsync(
+            p => p.ProductModelId == 2,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = await realRepository.FindOneAsync(2);
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
+    }
+
+    // Uses ExecuteUpdate which may not work with in-memory database.
     //[Fact]
     //public void Update_Factory()
     //{
@@ -715,7 +831,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
     //    Assert.Equal(expected, actual);
     //}
 
-    // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // Uses ExecuteUpdate which may not work with in-memory database.
     //[Fact]
     //public void Update_Predicate_And_Factory()
     //{
@@ -728,7 +844,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
     //    Assert.Equal(expected, actual);
     //}
 
-    // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // Uses ExecuteUpdate which may not work with in-memory database.
     //[Fact]
     //public void Update_Query_And_Factory()
     //{
@@ -742,7 +858,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
     //    Assert.Equal(expected, actual);
     //}
 
-    // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // Uses ExecuteUpdateAsync which may not work with in-memory database.
     //[Fact]
     //public async Task UpdateAsync_Factory()
     //{
@@ -755,7 +871,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
     //    Assert.Equal(expected, actual);
     //}
 
-    // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // Uses ExecuteUpdateAsync which may not work with in-memory database.
     //[Fact]
     //public async Task UpdateAsync_Predicate_And_Factory()
     //{
@@ -768,7 +884,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
     //    Assert.Equal(expected, actual);
     //}
 
-    // Relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+    // Uses ExecuteUpdateAsync which may not work with in-memory database.
     //[Fact]
     //public async Task UpdateAsync_Query_And_Factory()
     //{

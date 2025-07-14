@@ -24,4 +24,8 @@
 	  <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+	</ItemGroup>
+
 </Project>

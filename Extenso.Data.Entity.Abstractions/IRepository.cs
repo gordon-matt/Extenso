@@ -1,9 +1,11 @@
 ﻿using System.Linq.Expressions;
 using Extenso.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
-public interface IRepository<TEntity> where TEntity : class
+public interface IRepository<TEntity>
+    where TEntity : class
 {
     /// <summary>
     /// <para>This is typically used to create queries with custom projections. For example, you may wish</para>
@@ -289,50 +291,50 @@ public interface IRepository<TEntity> where TEntity : class
     Task<IEnumerable<TEntity>> UpdateAsync(IEnumerable<TEntity> entities, ContextOptions options = null);
 
     /// <summary>
-    /// Updates all rows using an expression without retrieving entities.
+    /// Updates all rows using SetPropertyCalls without retrieving entities.
     /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
+    int Update(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
-    /// Updates all rows that match the given predicate using an expression without retrieving entities.
+    /// Updates all rows that match the given predicate using SetPropertyCalls without retrieving entities.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="updateFactory">The update expression.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
+    int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
-    /// Updates all rows from the query using an expression without retrieving entities.
+    /// Updates all rows from the query using SetPropertyCalls without retrieving entities.
     /// </summary>
     /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="updateFactory">The update expression.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
+    int Update(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
-    /// Asynchronously updates all rows using an expression without retrieving entities.
+    /// Asynchronously updates all rows using SetPropertyCalls without retrieving entities.
     /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
+    Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
-    /// Asynchronously updates all rows that match the given predicate using an expression without retrieving entities.
+    /// Asynchronously updates all rows that match the given predicate using SetPropertyCalls without retrieving entities.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <param name="updateFactory">The update expression.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null);
+    Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
-    /// Asynchronously updates all rows from the query using an expression without retrieving entities.
+    /// Asynchronously updates all rows from the query using SetPropertyCalls without retrieving entities.
     /// </summary>
     /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="updateFactory">The update expression.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory);
+    Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls);
 
     #endregion Update
 }

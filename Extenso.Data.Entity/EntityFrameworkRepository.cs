@@ -3,7 +3,7 @@ using Extenso.Collections;
 using Extenso.Collections.Generic;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using Z.EntityFramework.Plus;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
@@ -293,14 +293,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     public virtual int DeleteAll(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return context.Set<TEntity>().Delete();
+        return context.Set<TEntity>().ExecuteDelete();
     }
 
     /// <inheritdoc/>
     public virtual async Task<int> DeleteAllAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().DeleteAsync();
+        return await context.Set<TEntity>().ExecuteDeleteAsync();
     }
 
     /// <inheritdoc/>
@@ -481,24 +481,6 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
-    {
-        using var context = GetContext(options);
-        return context.Set<TEntity>().Update(updateFactory);
-    }
-
-    /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
-    {
-        using var context = GetContext(options);
-        return context.Set<TEntity>().Where(predicate).Update(updateFactory);
-    }
-
-    /// <inheritdoc/>
-    public virtual int Update(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null) =>
-        query.Update(updateFactory);
-
-    /// <inheritdoc/>
     public virtual async Task<TEntity> UpdateAsync(TEntity entity, ContextOptions options = null)
     {
         if (entity == null)
@@ -571,22 +553,40 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
+    public virtual int Update(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().UpdateAsync(updateFactory);
+        return context.Set<TEntity>().ExecuteUpdate(setPropertyCalls);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateFactory, ContextOptions options = null)
+    public virtual int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().Where(predicate).UpdateAsync(updateFactory);
+        return context.Set<TEntity>().Where(predicate).ExecuteUpdate(setPropertyCalls);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<TEntity, TEntity>> updateFactory) =>
-        await query.UpdateAsync(updateFactory);
+    public virtual int Update(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null) =>
+        query.ExecuteUpdate(setPropertyCalls);
+
+    /// <inheritdoc/>
+    public virtual async Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
+    {
+        using var context = GetContext(options);
+        return await context.Set<TEntity>().ExecuteUpdateAsync(setPropertyCalls);
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
+    {
+        using var context = GetContext(options);
+        return await context.Set<TEntity>().Where(predicate).ExecuteUpdateAsync(setPropertyCalls);
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls) =>
+        await query.ExecuteUpdateAsync(setPropertyCalls);
 
     #endregion Update
 

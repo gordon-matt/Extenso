@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
@@ -17,6 +18,14 @@ public interface IEntityModelMapper<TEntity, TModel>
     IQueryable<TModel> MapQuery(IQueryable<TEntity> query);
 
     Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression);
+
+    /// <summary>
+    /// Maps SetPropertyCalls from TModel to TEntity for use with ExecuteUpdate operations.
+    /// </summary>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression for TModel</param>
+    /// <returns>A SetPropertyCalls expression for TEntity</returns>
+    Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> MapSetPropertyCalls(
+        Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls);
 
     TEntity ToEntity(TModel model);
 

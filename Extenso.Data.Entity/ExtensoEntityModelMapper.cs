@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Extenso.Mapping;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
@@ -28,6 +29,10 @@ public class ExtensoEntityModelMapper<TEntity, TModel> : IEntityModelMapper<TEnt
 
     public Expression<Func<TEntity, TEntity>> MapUpdate(Expression<Func<TModel, TModel>> updateExpression) =>
         ExtensoMapper.MapUpdate<TModel, TEntity>(updateExpression);
+
+    public Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> MapSetPropertyCalls(
+        Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls) =>
+        ExtensoMapper.MapSetPropertyCalls<TModel, TEntity>(setPropertyCalls);
 
     public TEntity ToEntity(TModel model) => ExtensoMapper.Map<TModel, TEntity>(model);
 

@@ -6,9 +6,10 @@ using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Extenso.TestLib.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Z.EntityFramework.Plus;
+
 
 namespace Extenso.Data.Entity.Tests;
 
@@ -25,8 +26,15 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     private readonly Faker<ProductModelViewModel> productModelFaker;
     private readonly Faker<ProductViewModel> productFaker;
 
+    private readonly ILoggerFactory loggerFactory;
+
     public AutoMapperEntityFrameworkRepositoryTests()
     {
+        loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+        });
+
         mapper = new MapperConfiguration(cfg =>
         {
             cfg.CreateMap<ProductViewModel, Product>();
@@ -41,7 +49,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             // Configure anonymous type mapping
             cfg.CreateMap<ProductModel, object>()
                 .ConvertUsing((src, dest) => new { src.Name, src.CatalogDescription });
-        }).CreateMapper();
+        }, loggerFactory).CreateMapper();
 
         var optionsBuilder = new DbContextOptionsBuilder<AdventureWorks2019Context>();
         optionsBuilder.UseInMemoryDatabase("AdventureWorks2019");
@@ -94,7 +102,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         contextFactory = new InMemoryAdventureWorks2019ContextFactory();
 
         var entityModelMapper = new AutoMapperEntityModelMapper<ProductModel, ProductModelViewModel>(mapper);
-        repository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(contextFactory, Mock.Of<ILoggerFactory>(), entityModelMapper);
+        repository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(contextFactory, entityModelMapper);
     }
 
     [Fact]
@@ -485,7 +493,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
     #region Delete
 
-    // repository.DeleteAll() relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+                // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
     //[Fact]
     //public void DeleteAll();
 
@@ -557,7 +565,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.Equal(count - 5, newCount);
     }
 
-    // repository.DeleteWhereAsync() relies on Z.EntityFramework.Plus which does not seem to support in memory db.
+                // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
     //[Fact]
     //public async Task DeleteWhereAsync();
 
@@ -695,24 +703,154 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
 
-        var models = await repository.FindAsync(new SearchOptions<ProductModel>
+        var entities = await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Query = x => randomProductIds.Contains(x.ProductModelId)
         });
-        int count1 = models.Count();
-        foreach (var model in models)
+        int count1 = entities.Count();
+        foreach (var entity in entities)
         {
-            model.Name = newName;
+            entity.Name = newName;
         }
 
-        var updatedModels = await repository.UpdateAsync(models);
-        Assert.All(updatedModels, x => Assert.True(x.Name == newName));
+        var updatedEntities = await repository.UpdateAsync(entities);
+        Assert.All(updatedEntities, x => Assert.True(x.Name == newName));
 
         var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModel>
         {
             Query = x => x.Name == newName
         });
         Assert.Equal(count1, entitiesAgain.Count());
+    }
+
+    [Fact]
+    public void Update_WithSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var autoMapper = new AutoMapperEntityModelMapper<ProductModel, ProductModelViewModel>(mapper);
+        var realRepository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(realContextFactory, autoMapper);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        // First get a record to update
+        var existingEntity = realRepository.FindOne(new SearchOptions<ProductModel>
+        {
+            Query = p => p.ProductModelId == 5
+        });
+        Assert.NotNull(existingEntity);
+
+        int affectedRows = realRepository.Update(
+            p => p.ProductModelId == 5,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = realRepository.FindOne(new SearchOptions<ProductModel>
+        {
+            Query = p => p.ProductModelId == 5
+        });
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var autoMapper = new AutoMapperEntityModelMapper<ProductModel, ProductModelViewModel>(mapper);
+        var realRepository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(realContextFactory, autoMapper);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        // First get a record to update
+        var existingEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModel>
+        {
+            Query = p => p.ProductModelId == 6
+        });
+        Assert.NotNull(existingEntity);
+
+        int affectedRows = await realRepository.UpdateAsync(
+            p => p.ProductModelId == 6,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModel>
+        {
+            Query = p => p.ProductModelId == 6
+        });
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
+    }
+
+    [Fact]
+    public void Update_WithPredicateAndSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var autoMapper = new AutoMapperEntityModelMapper<ProductModel, ProductModelViewModel>(mapper);
+        var realRepository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(realContextFactory, autoMapper);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        int affectedRows = realRepository.Update(
+            p => p.ProductModelId == 1,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = realRepository.FindOne(new SearchOptions<ProductModel>
+        {
+            Query = p => p.Name == newName
+        });
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithPredicateAndSetPropertyCalls()
+    {
+        // This test requires a real database connection since SetPropertyCalls doesn't work with in-memory database
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        var realContextFactory = new AdventureWorks2019ContextFactory(config);
+        var autoMapper = new AutoMapperEntityModelMapper<ProductModel, ProductModelViewModel>(mapper);
+        var realRepository = new MappedEntityFrameworkRepository<ProductModelViewModel, ProductModel>(realContextFactory, autoMapper);
+
+        string newName = $"Test{DateTime.Now.Ticks % 1000000}";
+
+        int affectedRows = await realRepository.UpdateAsync(
+            p => p.ProductModelId == 2,
+            s => s.SetProperty(p => p.Name, newName));
+
+        Assert.True(affectedRows > 0);
+
+        // Verify the update worked
+        var updatedEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModel>
+        {
+            Query = p => p.Name == newName
+        });
+        Assert.NotNull(updatedEntity);
+        Assert.Equal(newName, updatedEntity.Name);
     }
 
     #endregion Update

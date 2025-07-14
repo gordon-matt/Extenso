@@ -7,8 +7,8 @@ namespace Extenso.Data.Entity.Tests;
 
 public class ProductModelRepository : EntityFrameworkRepository<ProductModel>
 {
-    public ProductModelRepository(IDbContextFactory contextFactory, ILoggerFactory loggerFactory)
-        : base(contextFactory, loggerFactory)
+    public ProductModelRepository(IDbContextFactory contextFactory)
+        : base(contextFactory)
     {
     }
 

@@ -11,9 +11,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Tests.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.OData.ModelBuilder;
-using Moq;
 
 namespace Extenso.AspNetCore.OData.Tests;
 
@@ -48,7 +46,7 @@ public class GenericODataControllerTests : IDisposable
         authorizationService = new FakeAuthorizationService(AuthorizationState.Authorized);
 
         contextFactory = new InMemoryAdventureWorks2019ContextFactory();
-        repository = new EntityFrameworkRepository<ProductModel>(contextFactory, Mock.Of<ILoggerFactory>());
+        repository = new EntityFrameworkRepository<ProductModel>(contextFactory);
         odataController = new ProductModelApiController(authorizationService, repository);
     }
 

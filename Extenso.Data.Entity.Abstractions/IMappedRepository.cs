@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Extenso.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
@@ -277,16 +278,6 @@ public interface IMappedRepository<TModel, TEntity>
     IEnumerable<TModel> Update(IEnumerable<TModel> models, ContextOptions options = null);
 
     /// <summary>
-    /// Updates all rows using an expression without retrieving entities.
-    /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
-    /// <returns>The number of rows affected.</returns>
-    int Update(Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null);
-
-    /// <inheritdoc/>
-    int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null);
-
-    /// <summary>
     /// Asynchronously updates the given entity.
     /// </summary>
     /// <param name="model">The entity to update.</param>
@@ -301,11 +292,34 @@ public interface IMappedRepository<TModel, TEntity>
     Task<IEnumerable<TModel>> UpdateAsync(IEnumerable<TModel> models, ContextOptions options = null);
 
     /// <summary>
-    /// Asynchronously updates all rows using an expression without retrieving entities.
+    /// Updates all rows using SetPropertyCalls without retrieving entities.
     /// </summary>
-    /// <param name="updateFactory">The update expression.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null);
+    int Update(Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null);
+
+    /// <summary>
+    /// Updates all rows that match the given predicate using SetPropertyCalls without retrieving entities.
+    /// </summary>
+    /// <param name="predicate">A function to test each element for a condition.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
+    /// <returns>The number of rows affected.</returns>
+    int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null);
+
+    /// <summary>
+    /// Asynchronously updates all rows using SetPropertyCalls without retrieving entities.
+    /// </summary>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
+    /// <returns>The number of rows affected.</returns>
+    Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null);
+
+    /// <summary>
+    /// Asynchronously updates all rows that match the given predicate using SetPropertyCalls without retrieving entities.
+    /// </summary>
+    /// <param name="predicate">A function to test each element for a condition.</param>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
+    /// <returns>The number of rows affected.</returns>
+    Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null);
 
     #endregion Update
 }

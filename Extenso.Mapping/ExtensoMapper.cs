@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Extenso.Reflection;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Mapping;
 
@@ -179,6 +180,26 @@ public static class ExtensoMapper
         var mapping = new Dictionary<Type, Type> { { typeof(TSource), typeof(TDestination) } };
         var newUpdate = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(updateFactory, mapping);
         return (Expression<Func<TDestination, TDestination>>)newUpdate;
+    }
+
+    /// <summary>
+    /// Maps SetPropertyCalls from TSource to TDestination for use with ExecuteUpdate operations.
+    /// </summary>
+    /// <typeparam name="TSource">The source type</typeparam>
+    /// <typeparam name="TDestination">The destination type</typeparam>
+    /// <param name="setPropertyCalls">The SetPropertyCalls expression for TSource</param>
+    /// <returns>A SetPropertyCalls expression for TDestination</returns>
+    public static Expression<Func<SetPropertyCalls<TDestination>, SetPropertyCalls<TDestination>>> MapSetPropertyCalls<TSource, TDestination>(
+        Expression<Func<SetPropertyCalls<TSource>, SetPropertyCalls<TSource>>> setPropertyCalls)
+    {
+        ArgumentNullException.ThrowIfNull(setPropertyCalls);
+        var mapping = new Dictionary<Type, Type> 
+        { 
+            { typeof(TSource), typeof(TDestination) },
+            { typeof(SetPropertyCalls<TSource>), typeof(SetPropertyCalls<TDestination>) }
+        };
+        var newSetPropertyCalls = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(setPropertyCalls, mapping);
+        return (Expression<Func<SetPropertyCalls<TDestination>, SetPropertyCalls<TDestination>>>)newSetPropertyCalls;
     }
 
     #region Private Methods

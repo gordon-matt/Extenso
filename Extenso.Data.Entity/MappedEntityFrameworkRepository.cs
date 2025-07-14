@@ -4,7 +4,7 @@ using Extenso.Collections.Generic;
 using Extenso.Reflection;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using Z.EntityFramework.Plus;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
@@ -315,14 +315,14 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     public virtual int DeleteAll(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return context.Set<TEntity>().Delete();
+        return context.Set<TEntity>().ExecuteDelete();
     }
 
     /// <inheritdoc/>
     public virtual async Task<int> DeleteAllAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().DeleteAsync();
+        return await context.Set<TEntity>().ExecuteDeleteAsync();
     }
 
     /// <inheritdoc/>
@@ -519,23 +519,6 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
-    {
-        var mappedUpdateExpression = mapper.MapUpdate(updateFactory);
-        using var context = GetContext(options);
-        return context.Set<TEntity>().Update(mappedUpdateExpression);
-    }
-
-    /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
-    {
-        var mappedPredicate = mapper.MapPredicate(predicate);
-        var mappedUpdateExpression = mapper.MapUpdate(updateFactory);
-        using var context = GetContext(options);
-        return context.Set<TEntity>().Where(mappedPredicate).Update(mappedUpdateExpression);
-    }
-
-    /// <inheritdoc/>
     public virtual async Task<TModel> UpdateAsync(TModel model, ContextOptions options = null)
     {
         var entity = mapper.ToEntity(model);
@@ -611,20 +594,37 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
+    public virtual int Update(Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
     {
-        var mappedUpdateExpression = mapper.MapUpdate(updateFactory);
+        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
         using var context = GetContext(options);
-        return await context.Set<TEntity>().UpdateAsync(mappedUpdateExpression);
+        return context.Set<TEntity>().ExecuteUpdate(mappedSetPropertyCalls);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<TModel, TModel>> updateFactory, ContextOptions options = null)
+    public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
     {
         var mappedPredicate = mapper.MapPredicate(predicate);
-        var mappedUpdateExpression = mapper.MapUpdate(updateFactory);
+        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
         using var context = GetContext(options);
-        return await context.Set<TEntity>().Where(mappedPredicate).UpdateAsync(mappedUpdateExpression);
+        return context.Set<TEntity>().Where(mappedPredicate).ExecuteUpdate(mappedSetPropertyCalls);
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
+    {
+        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
+        using var context = GetContext(options);
+        return await context.Set<TEntity>().ExecuteUpdateAsync(mappedSetPropertyCalls);
+    }
+
+    /// <inheritdoc/>
+    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
+    {
+        var mappedPredicate = mapper.MapPredicate(predicate);
+        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
+        using var context = GetContext(options);
+        return await context.Set<TEntity>().Where(mappedPredicate).ExecuteUpdateAsync(mappedSetPropertyCalls);
     }
 
     #endregion Update
