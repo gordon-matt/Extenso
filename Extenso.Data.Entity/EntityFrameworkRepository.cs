@@ -4,6 +4,7 @@ using Extenso.Collections.Generic;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Options;
 
 namespace Extenso.Data.Entity;
 
@@ -84,13 +85,15 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<IPagedCollection<TEntity>> FindAsync(SearchOptions<TEntity> options)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
+
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        int totalCount = await query.CountAsync();
+        int totalCount = await query.CountAsync(cancellationToken);
         query = ApplyPaging(query, options);
 
         return new PagedList<TEntity>(
-            await query.ToListAsync(),
+            await query.ToListAsync(cancellationToken),
             options.PageNumber > 0 ? options.PageNumber - 1 : 1,
             options.PageSize,
             totalCount);
@@ -99,15 +102,17 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
+
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
 
-        int totalCount = await projectedQuery.CountAsync();
+        int totalCount = await projectedQuery.CountAsync(cancellationToken);
         projectedQuery = ApplyPaging(projectedQuery, options);
 
         return new PagedList<TResult>(
-            await projectedQuery.ToListAsync(),
+            await projectedQuery.ToListAsync(cancellationToken),
             options.PageNumber > 0 ? options.PageNumber - 1 : 1,
             options.PageSize,
             totalCount);
@@ -149,7 +154,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        return await query.FirstOrDefaultAsync();
+        return await query.FirstOrDefaultAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -158,7 +163,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
-        return await projectedQuery.FirstOrDefaultAsync();
+        return await projectedQuery.FirstOrDefaultAsync(options?.CancellationToken ?? default);
     }
 
     #endregion Find
@@ -183,14 +188,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     public virtual async Task<int> CountAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().CountAsync();
+        return await context.Set<TEntity>().AsNoTracking().CountAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
     public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().CountAsync(predicate);
+        return await context.Set<TEntity>().AsNoTracking().CountAsync(predicate, options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -211,14 +216,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     public virtual async Task<long> LongCountAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().LongCountAsync();
+        return await context.Set<TEntity>().AsNoTracking().LongCountAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
     public virtual async Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().LongCountAsync(predicate);
+        return await context.Set<TEntity>().AsNoTracking().LongCountAsync(predicate, options?.CancellationToken ?? default);
     }
 
     #endregion Count
@@ -300,7 +305,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     public virtual async Task<int> DeleteAllAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().ExecuteDeleteAsync();
+        return await context.Set<TEntity>().ExecuteDeleteAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -327,7 +332,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
         {
             set.Remove(entity);
         }
-        return await context.SaveChangesAsync();
+        return await context.SaveChangesAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -357,14 +362,14 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
                 set.Remove(entity);
             }
         }
-        return await context.SaveChangesAsync();
+        return await context.SaveChangesAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
     public virtual async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().Where(predicate).ExecuteDeleteAsync();
+        return await context.Set<TEntity>().Where(predicate).ExecuteDeleteAsync(options?.CancellationToken ?? default);
     }
 
     #endregion Delete
@@ -392,18 +397,20 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     /// <inheritdoc/>
     public virtual async Task<TEntity> InsertAsync(TEntity entity, ContextOptions options = null)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
         using var context = GetContext(options);
-        await context.Set<TEntity>().AddAsync(entity);
-        await context.SaveChangesAsync();
+        await context.Set<TEntity>().AddAsync(entity, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     /// <inheritdoc/>
     public virtual async Task<IEnumerable<TEntity>> InsertAsync(IEnumerable<TEntity> entities, ContextOptions options = null)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
         using var context = GetContext(options);
-        await context.Set<TEntity>().AddRangeAsync(entities);
-        await context.SaveChangesAsync();
+        await context.Set<TEntity>().AddRangeAsync(entities, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return entities;
     }
 
@@ -511,7 +518,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
             context.Entry(entity).State = EntityState.Modified;
         }
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(options?.CancellationToken ?? default);
         return entity;
     }
 
@@ -548,7 +555,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
             }
         }
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(options?.CancellationToken ?? default);
         return entities;
     }
 
@@ -574,19 +581,19 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     public virtual async Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().ExecuteUpdateAsync(setPropertyCalls);
+        return await context.Set<TEntity>().ExecuteUpdateAsync(setPropertyCalls, options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().Where(predicate).ExecuteUpdateAsync(setPropertyCalls);
+        return await context.Set<TEntity>().Where(predicate).ExecuteUpdateAsync(setPropertyCalls, options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls) =>
-        await query.ExecuteUpdateAsync(setPropertyCalls);
+    public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null) =>
+        await query.ExecuteUpdateAsync(setPropertyCalls, options?.CancellationToken ?? default);
 
     #endregion Update
 

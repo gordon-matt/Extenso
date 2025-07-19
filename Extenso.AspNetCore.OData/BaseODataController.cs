@@ -27,11 +27,11 @@ public abstract class BaseODataController<TEntity, TKey> : GenericODataControlle
     /// <param name="key">The primary key value of the existing record.</param>
     /// <returns>The record associated with the given key.</returns>
     [EnableQuery]
-    public override async Task<IActionResult> Get([FromODataUri] TKey key)
+    public override async Task<IActionResult> Get([FromODataUri] TKey key, CancellationToken cancellationToken)
     {
         var connection = GetDisposableConnection();
         var query = connection.Query(x => x.Id.Equals(key));
-        query = await ApplyMandatoryFilterAsync(query);
+        query = await ApplyMandatoryFilterAsync(query, cancellationToken);
         var result = SingleResult.Create(query);
 
         var entity = result.Queryable.FirstOrDefault();

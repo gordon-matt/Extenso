@@ -19,9 +19,11 @@ public class PersonController : Controller
 
     [HttpGet]
     [Route("")]
-    public IActionResult Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        if (personRepository.Count() == 0)
+        var contextOptions = ContextOptions.ForCancellationToken(cancellationToken);
+
+        if (await personRepository.CountAsync(contextOptions) == 0)
         {
             // Populate for testing purposes
 
@@ -32,7 +34,7 @@ public class PersonController : Controller
                 new() { FamilyName = "Froning", GivenNames = "Rich", DateOfBirth = new DateTime(1987, 7, 21) }
             };
 
-            personRepository.Insert(people);
+            await personRepository.InsertAsync(people, contextOptions);
         }
 
         return View();
@@ -59,7 +61,7 @@ public class PersonController : Controller
 
     [HttpDelete]
     [Route("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var person = await personRepository.FindOneAsync(id);
         if (person is null)
@@ -67,26 +69,26 @@ public class PersonController : Controller
             return NotFound();
         }
 
-        await personRepository.DeleteAsync(person);
+        await personRepository.DeleteAsync(person, ContextOptions.ForCancellationToken(cancellationToken));
         return Json(person);
     }
 
     [HttpPost]
     [Route("")]
-    public async Task<IActionResult> Post([FromBody] PersonModel model)
+    public async Task<IActionResult> Post([FromBody] PersonModel model, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        await personRepository.InsertAsync(model);
+        await personRepository.InsertAsync(model, ContextOptions.ForCancellationToken(cancellationToken));
         return Json(model);
     }
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] PersonModel model)
+    public async Task<IActionResult> Put(int id, [FromBody] PersonModel model, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -99,7 +101,7 @@ public class PersonController : Controller
             return NotFound();
         }
 
-        await personRepository.UpdateAsync(model);
+        await personRepository.UpdateAsync(model, ContextOptions.ForCancellationToken(cancellationToken));
         return Json(model);
     }
 }

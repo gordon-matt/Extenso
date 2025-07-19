@@ -93,13 +93,15 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     /// <inheritdoc/>
     public async Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TEntity> options)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
+
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        int totalCount = await query.CountAsync();
+        int totalCount = await query.CountAsync(cancellationToken);
         query = ApplyPaging(query, options);
 
         return new PagedList<TModel>(
-            (await query.ToListAsync()).Select(mapper.ToModel).ToList(),
+            (await query.ToListAsync(cancellationToken)).Select(mapper.ToModel).ToList(),
             options.PageNumber > 0 ? options.PageNumber - 1 : 1,
             options.PageSize,
             totalCount);
@@ -108,15 +110,17 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     /// <inheritdoc/>
     public async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
+
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
 
-        int totalCount = await projectedQuery.CountAsync();
+        int totalCount = await projectedQuery.CountAsync(cancellationToken);
         projectedQuery = ApplyPaging(projectedQuery, options);
 
         return new PagedList<TResult>(
-            await projectedQuery.ToListAsync(),
+            await projectedQuery.ToListAsync(cancellationToken),
             options.PageNumber > 0 ? options.PageNumber - 1 : 1,
             options.PageSize,
             totalCount);
@@ -161,7 +165,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var entity = await query.FirstOrDefaultAsync();
+        var entity = await query.FirstOrDefaultAsync(options?.CancellationToken ?? default);
         return mapper.ToModel(entity);
     }
 
@@ -171,7 +175,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
         var projectedQuery = query.Select(projection);
-        return await projectedQuery.FirstOrDefaultAsync();
+        return await projectedQuery.FirstOrDefaultAsync(options?.CancellationToken ?? default);
     }
 
     #endregion Find
@@ -197,7 +201,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     public virtual async Task<int> CountAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().CountAsync();
+        return await context.Set<TEntity>().AsNoTracking().CountAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -205,7 +209,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     {
         var mappedPredicate = mapper.MapPredicate(predicate);
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().CountAsync(mappedPredicate);
+        return await context.Set<TEntity>().AsNoTracking().CountAsync(mappedPredicate, options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -227,7 +231,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     public virtual async Task<long> LongCountAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().LongCountAsync();
+        return await context.Set<TEntity>().AsNoTracking().LongCountAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -235,7 +239,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     {
         var mappedPredicate = mapper.MapPredicate(predicate);
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().LongCountAsync(mappedPredicate);
+        return await context.Set<TEntity>().AsNoTracking().LongCountAsync(mappedPredicate, options?.CancellationToken ?? default);
     }
 
     #endregion Count
@@ -322,7 +326,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     public virtual async Task<int> DeleteAllAsync(ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().ExecuteDeleteAsync();
+        return await context.Set<TEntity>().ExecuteDeleteAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -351,7 +355,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
         {
             set.Remove(entity);
         }
-        return await context.SaveChangesAsync();
+        return await context.SaveChangesAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -383,7 +387,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
                 set.Remove(entity);
             }
         }
-        return await context.SaveChangesAsync();
+        return await context.SaveChangesAsync(options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -391,7 +395,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     {
         var mappedPredicate = mapper.MapPredicate(predicate);
         using var context = GetContext(options);
-        return await context.Set<TEntity>().Where(mappedPredicate).ExecuteDeleteAsync();
+        return await context.Set<TEntity>().Where(mappedPredicate).ExecuteDeleteAsync(options?.CancellationToken ?? default);
     }
 
     #endregion Delete
@@ -421,20 +425,22 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     /// <inheritdoc/>
     public virtual async Task<TModel> InsertAsync(TModel model, ContextOptions options = null)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
         var entity = mapper.ToEntity(model);
         using var context = GetContext(options);
-        await context.Set<TEntity>().AddAsync(entity);
-        await context.SaveChangesAsync();
+        await context.Set<TEntity>().AddAsync(entity, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return mapper.ToModel(entity);
     }
 
     /// <inheritdoc/>
     public virtual async Task<IEnumerable<TModel>> InsertAsync(IEnumerable<TModel> models, ContextOptions options = null)
     {
+        var cancellationToken = options?.CancellationToken ?? default;
         var entities = models.Select(mapper.ToEntity).ToList();
         using var context = GetContext(options);
-        await context.Set<TEntity>().AddRangeAsync(entities);
-        await context.SaveChangesAsync();
+        await context.Set<TEntity>().AddRangeAsync(entities, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return entities.Select(mapper.ToModel).ToList();
     }
 
@@ -551,7 +557,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
             context.Entry(entity).State = EntityState.Modified;
         }
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(options?.CancellationToken ?? default);
         return mapper.ToModel(entity);
     }
 
@@ -589,7 +595,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
             }
         }
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(options?.CancellationToken ?? default);
         return entities.Select(mapper.ToModel).ToList();
     }
 
@@ -615,7 +621,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     {
         var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
         using var context = GetContext(options);
-        return await context.Set<TEntity>().ExecuteUpdateAsync(mappedSetPropertyCalls);
+        return await context.Set<TEntity>().ExecuteUpdateAsync(mappedSetPropertyCalls, options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
@@ -624,7 +630,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
         var mappedPredicate = mapper.MapPredicate(predicate);
         var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
         using var context = GetContext(options);
-        return await context.Set<TEntity>().Where(mappedPredicate).ExecuteUpdateAsync(mappedSetPropertyCalls);
+        return await context.Set<TEntity>().Where(mappedPredicate).ExecuteUpdateAsync(mappedSetPropertyCalls, options?.CancellationToken ?? default);
     }
 
     #endregion Update

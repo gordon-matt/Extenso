@@ -16,11 +16,11 @@ public class ProductModelApiController : GenericODataController<ProductModel, in
     }
 
     [EnableQuery]
-    public override async Task<IActionResult> Get([FromODataUri] int key)
+    public override async Task<IActionResult> Get([FromODataUri] int key, CancellationToken cancellationToken)
     {
         var connection = GetDisposableConnection();
         var query = connection.Query(x => x.ProductModelId.Equals(key));
-        query = await ApplyMandatoryFilterAsync(query);
+        query = await ApplyMandatoryFilterAsync(query, cancellationToken);
         var result = SingleResult.Create(query);
 
         var entity = result.Queryable.FirstOrDefault();

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Radzen;
 
 namespace Demo.Extenso.AspNetCore.Blazor.OData;
@@ -63,6 +64,23 @@ public class Startup
         })
         .AddBootstrapProviders()
         .AddFontAwesomeIcons();
+
+        // Add HttpContextAccessor for getting current request info
+        services.AddHttpContextAccessor();
+        
+        // Add HttpClient with SSL certificate validation bypass for localhost development
+        services.AddHttpClient(Options.DefaultName, client =>
+        {
+            // The base address will be set dynamically based on the current request
+        })
+        .ConfigurePrimaryHttpMessageHandler(() =>
+        {
+            // TODO: This should not be used in production.. its just to bypass certificate validation for localhost..
+            return new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+        });
 
         services.AddEntityFrameworkRepository();
     }
@@ -125,7 +143,7 @@ public class Startup
         builder.RegisterType<NotificationService>().AsSelf().InstancePerLifetimeScope();
 
         // Services
-        builder.RegisterType<PersonODataService>().As<IGenericODataService<Person, int>>().SingleInstance();
+        builder.RegisterType<PersonODataService>().As<IGenericODataService<Person, int>>().InstancePerLifetimeScope();
         //builder.RegisterGeneric(typeof(GenericODataService<,>))
         //    .As(typeof(IGenericODataService<,>))
         //    .InstancePerLifetimeScope();

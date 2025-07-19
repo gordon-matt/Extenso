@@ -70,7 +70,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <param name="options">The OData query options that can be used to perform query composition.</param>
     /// <returns>A collection of TEntity.</returns>
     [HttpGet]
-    public virtual async Task<IActionResult> Get(ODataQueryOptions<TEntity> options)
+    public virtual async Task<IActionResult> Get(ODataQueryOptions<TEntity> options, CancellationToken cancellationToken)
     {
         if (!await AuthorizeAsync(ReadPermission))
         {
@@ -80,7 +80,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
         // NOTE: Change due to: https://github.com/OData/WebApi/issues/1235
         var connection = GetDisposableConnection();
         var query = connection.Query();
-        query = await ApplyMandatoryFilterAsync(query);
+        query = await ApplyMandatoryFilterAsync(query, cancellationToken);
         var results = options.ApplyTo(query, IgnoreQueryOptions);
         return Ok(results);
     }
@@ -94,11 +94,11 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <returns>The record associated with the given key.</returns>
     [EnableQuery]
     [HttpGet]
-    public virtual async Task<IActionResult> Get([FromODataUri] TKey key)
+    public virtual async Task<IActionResult> Get([FromODataUri] TKey key, CancellationToken cancellationToken)
     {
         var entity = await Repository.FindOneAsync(key);
 
-        return entity == null
+        return entity is null
             ? NotFound() :
             !await CanViewEntityAsync(entity)
                 ? Unauthorized()
@@ -112,9 +112,9 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <param name="entity">An instance of TEntity to use for updating the existing record.</param>
     /// <returns>A Microsoft.AspNet.OData.Results.UpdatedODataResult`1 with the specified values that is a response to the PUT operation.</returns>
     [HttpPut]
-    public virtual async Task<IActionResult> Put([FromODataUri] TKey key, [FromBody] TEntity entity)
+    public virtual async Task<IActionResult> Put([FromODataUri] TKey key, [FromBody] TEntity entity, CancellationToken cancellationToken)
     {
-        if (entity == null)
+        if (entity is null)
         {
             return BadRequest();
         }
@@ -137,7 +137,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
         try
         {
             OnBeforeSave(entity);
-            await Repository.UpdateAsync(entity);
+            await Repository.UpdateAsync(entity, ContextOptions.ForCancellationToken(cancellationToken));
             OnAfterSave(entity);
             return Updated(entity);
         }
@@ -157,9 +157,9 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <param name="entity">The instance of TEntity to use for creating the new record.</param>
     /// <returns>A Microsoft.AspNet.OData.Results.CreatedODataResult`1 with the specified values that is a response to the POST operation.</returns>
     [HttpPost]
-    public virtual async Task<IActionResult> Post([FromBody] TEntity entity)
+    public virtual async Task<IActionResult> Post([FromBody] TEntity entity, CancellationToken cancellationToken)
     {
-        if (entity == null)
+        if (entity is null)
         {
             return BadRequest();
         }
@@ -177,7 +177,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
         SetNewId(entity);
 
         OnBeforeSave(entity);
-        await Repository.InsertAsync(entity);
+        await Repository.InsertAsync(entity, ContextOptions.ForCancellationToken(cancellationToken));
         OnAfterSave(entity);
 
         return Created(entity);
@@ -190,7 +190,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <param name="patch">The changes to apply to the existing record.</param>
     /// <returns>A Microsoft.AspNet.OData.Results.UpdatedODataResult`1 with the specified values that is a response to the PATCH or MERGE operation.</returns>
     [AcceptVerbs("PATCH", "MERGE")]
-    public virtual async Task<IActionResult> Patch([FromODataUri] TKey key, Delta<TEntity> patch)
+    public virtual async Task<IActionResult> Patch([FromODataUri] TKey key, Delta<TEntity> patch, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -199,7 +199,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
 
         var entity = await Repository.FindOneAsync(key);
 
-        if (entity == null)
+        if (entity is null)
         {
             return NotFound();
         }
@@ -213,7 +213,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
 
         try
         {
-            await Repository.UpdateAsync(entity);
+            await Repository.UpdateAsync(entity, ContextOptions.ForCancellationToken(cancellationToken));
             //db.SaveChanges();
         }
         catch (DbUpdateConcurrencyException)
@@ -234,11 +234,11 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// <param name="key">The primary key value of the existing record.</param>
     /// <returns>A Microsoft.AspNetCore.Mvc.NoContentResult object that produces an empty response (HTTP Status 204).</returns>
     [HttpDelete]
-    public virtual async Task<IActionResult> Delete([FromODataUri] TKey key)
+    public virtual async Task<IActionResult> Delete([FromODataUri] TKey key, CancellationToken cancellationToken)
     {
         var entity = await Repository.FindOneAsync(key);
 
-        if (entity == null)
+        if (entity is null)
         {
             return NotFound();
         }
@@ -248,7 +248,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
             return Unauthorized();
         }
 
-        await Repository.DeleteAsync(entity);
+        await Repository.DeleteAsync(entity, ContextOptions.ForCancellationToken(cancellationToken));
 
         return NoContent();
     }
@@ -262,7 +262,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// </summary>
     /// <param name="key">The primary key value of the existing record.</param>
     /// <returns>true if a record with the given key exists; otherwise false.</returns>
-    protected virtual bool EntityExists(TKey key) => Repository.FindOne(key) != null;
+    protected virtual bool EntityExists(TKey key) => Repository.FindOne(key) is not null;
 
     /// <summary>
     /// Gets the primary key value for the given record.
@@ -284,7 +284,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     /// </summary>
     /// <param name="query">The System.Linq.IQueryable`1 upon which to apply the filter.</param>
     /// <returns>A System.Linq.IQueryable`1 that may have had filters applied.</returns>
-    protected virtual async Task<IQueryable<TEntity>> ApplyMandatoryFilterAsync(IQueryable<TEntity> query) =>
+    protected virtual async Task<IQueryable<TEntity>> ApplyMandatoryFilterAsync(IQueryable<TEntity> query, CancellationToken cancellationToken) =>
         // Do nothing, by default
         await Task.FromResult(query);
 
@@ -333,7 +333,7 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
             return true;
         }
 
-        if (AuthorizationService == null)
+        if (AuthorizationService is null)
         {
             return false;
         }

@@ -7,8 +7,8 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Services;
 public abstract class GenericODataService<TEntity> : GenericODataService<TEntity, int>
     where TEntity : class
 {
-    protected GenericODataService(string entitySetName)
-        : base(entitySetName)
+    protected GenericODataService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, string entitySetName)
+        : base(httpClient, httpContextAccessor, entitySetName)
     {
     }
 }
@@ -19,19 +19,25 @@ public abstract class GenericODataService<TEntity, TKey> : IGenericODataService<
     protected readonly Uri baseUri;
     protected readonly string entitySetName;
     protected readonly HttpClient httpClient;
-    private readonly HttpClientHandler httpClientHandler; // TODO: This should not be used in production.. its just to bypass certificate validation for localhost..
+    private readonly IHttpContextAccessor httpContextAccessor;
     private bool isDisposed;
 
-    public GenericODataService(string entitySetName)
+    public GenericODataService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, string entitySetName)
     {
-        httpClientHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-        };
-        httpClient = new HttpClient(httpClientHandler);
-
-        baseUri = new Uri(Program.ODataBaseUri);
+        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         this.entitySetName = entitySetName;
+
+        // Get the base URI from the current request
+        baseUri = GetBaseUri();
+    }
+
+    private Uri GetBaseUri()
+    {
+        var httpContext = httpContextAccessor.HttpContext;
+        var request = httpContext.Request;
+        string baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}/odata/";
+        return new Uri(baseUrl);
     }
 
     public virtual async Task<ApiResponse<ODataServiceResult<TEntity>>> FindAsync(
@@ -143,7 +149,6 @@ public abstract class GenericODataService<TEntity, TKey> : IGenericODataService<
             if (disposing)
             {
                 httpClient?.Dispose();
-                httpClientHandler?.Dispose();
             }
 
             // TODO: free unmanaged resources (unmanaged objects) and override finalizer

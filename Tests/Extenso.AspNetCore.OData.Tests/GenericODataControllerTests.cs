@@ -53,7 +53,7 @@ public class GenericODataControllerTests : IDisposable
     [Fact]
     public async Task GetAll_Returns_All()
     {
-        var actionResult = await odataController.Get(MockODataQueryOptions<ProductModel>());
+        var actionResult = await odataController.Get(MockODataQueryOptions<ProductModel>(), CancellationToken.None);
         actionResult.Should().BeOfType<OkObjectResult>();
 
         var okObjectResult = (OkObjectResult)actionResult;
@@ -72,7 +72,7 @@ public class GenericODataControllerTests : IDisposable
         var randomProductModel = new Random().NextFrom(productModels);
         int id = randomProductModel.ProductModelId;
 
-        var actionResult = await odataController.Get(id);
+        var actionResult = await odataController.Get(id, CancellationToken.None);
         actionResult.Should().BeOfType<OkObjectResult>();
 
         var okObjectResult = (OkObjectResult)actionResult;
@@ -90,7 +90,7 @@ public class GenericODataControllerTests : IDisposable
     {
         int id = productModels.Max(x => x.ProductModelId) + 1;
 
-        var actionResult = await odataController.Get(id);
+        var actionResult = await odataController.Get(id, CancellationToken.None);
         actionResult.Should().BeOfType<NotFoundResult>();
     }
 
@@ -98,7 +98,7 @@ public class GenericODataControllerTests : IDisposable
     public async Task Post_Returns_Created()
     {
         var entity = productModelFaker.Generate();
-        var actionResult = await odataController.Post(entity);
+        var actionResult = await odataController.Post(entity, CancellationToken.None);
         actionResult.Should().BeOfType<CreatedODataResult<ProductModel>>();
 
         var createdResult = (CreatedODataResult<ProductModel>)actionResult;
@@ -109,7 +109,7 @@ public class GenericODataControllerTests : IDisposable
     [Fact]
     public async Task Post_Returns_BadRequest()
     {
-        var actionResult = await odataController.Post(null);
+        var actionResult = await odataController.Post(null, CancellationToken.None);
         actionResult.Should().BeOfType<BadRequestResult>();
     }
 
@@ -123,7 +123,7 @@ public class GenericODataControllerTests : IDisposable
         var entity = new Random().NextFrom(entities);
         entity.Name = "Foo Bar Baz";
 
-        var actionResult = await odataController.Put(entity.ProductModelId, entity);
+        var actionResult = await odataController.Put(entity.ProductModelId, entity, CancellationToken.None);
         actionResult.Should().BeOfType<UpdatedODataResult<ProductModel>>();
 
         var updatedResult = (UpdatedODataResult<ProductModel>)actionResult;
@@ -134,7 +134,7 @@ public class GenericODataControllerTests : IDisposable
     [Fact]
     public async Task Put_Returns_BadRequest()
     {
-        var actionResult = await odataController.Put(1, null);
+        var actionResult = await odataController.Put(1, null, CancellationToken.None);
         actionResult.Should().BeOfType<BadRequestResult>();
     }
 
@@ -146,7 +146,7 @@ public class GenericODataControllerTests : IDisposable
             Query = x => true
         });
         var entity = new Random().NextFrom(entities);
-        var actionResult = await odataController.Put(entity.ProductModelId + 1, entity);
+        var actionResult = await odataController.Put(entity.ProductModelId + 1, entity, CancellationToken.None);
         actionResult.Should().BeOfType<BadRequestResult>();
     }
 
@@ -163,7 +163,7 @@ public class GenericODataControllerTests : IDisposable
         var patch = new Delta<ProductModel>();
         patch.TrySetPropertyValue("Name", "Foo Bar Baz");
 
-        var actionResult = await odataController.Patch(entity.ProductModelId, patch);
+        var actionResult = await odataController.Patch(entity.ProductModelId, patch, CancellationToken.None);
         actionResult.Should().BeOfType<UpdatedODataResult<ProductModel>>();
 
         var updatedResult = (UpdatedODataResult<ProductModel>)actionResult;
@@ -176,7 +176,7 @@ public class GenericODataControllerTests : IDisposable
     public async Task Patch_Returns_NotFound()
     {
         int id = productModels.Max(x => x.ProductModelId) + 1;
-        var actionResult = await odataController.Patch(id, null);
+        var actionResult = await odataController.Patch(id, null, CancellationToken.None);
         actionResult.Should().BeOfType<NotFoundResult>();
     }
 
@@ -184,7 +184,7 @@ public class GenericODataControllerTests : IDisposable
     public async Task Delete_Returns_NoContent()
     {
         int id = productModels.Max(x => x.ProductModelId);
-        var actionResult = await odataController.Delete(id);
+        var actionResult = await odataController.Delete(id, CancellationToken.None);
         actionResult.Should().BeOfType<NoContentResult>();
     }
 
@@ -192,7 +192,7 @@ public class GenericODataControllerTests : IDisposable
     public async Task Delete_Returns_NotFound()
     {
         int id = productModels.Max(x => x.ProductModelId) + 1;
-        var actionResult = await odataController.Delete(id);
+        var actionResult = await odataController.Delete(id, CancellationToken.None);
         actionResult.Should().BeOfType<NotFoundResult>();
     }
 
