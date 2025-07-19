@@ -13,13 +13,14 @@ public interface IGenericODataService<TEntity, TKey> : IDisposable
         string orderby = default,
         string expand = default,
         string select = default,
-        bool? count = default);
+        bool? count = default,
+        CancellationToken cancellationToken = default);
 
-    Task<ApiResponse<TEntity>> FindOneAsync(TKey key);
+    Task<ApiResponse<TEntity>> FindOneAsync(TKey key, CancellationToken cancellationToken = default);
 
-    Task<ApiResponse<TEntity>> InsertAsync(TEntity entity);
+    Task<ApiResponse<TEntity>> InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
 
-    Task<ApiResponse<TEntity>> UpdateAsync(TKey key, TEntity entity);
+    Task<ApiResponse<TEntity>> UpdateAsync(TKey key, TEntity entity, CancellationToken cancellationToken = default);
 
-    Task<ApiResponse> DeleteAsync(TKey key);
+    Task<ApiResponse> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
 }

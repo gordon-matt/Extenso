@@ -47,12 +47,13 @@ public abstract class GenericODataService<TEntity, TKey> : IGenericODataService<
         string orderby = default,
         string expand = default,
         string select = default,
-        bool? count = default)
+        bool? count = default,
+        CancellationToken cancellationToken = default)
     {
         var uri = new Uri(baseUri, entitySetName);
         uri = uri.GetODataUri(filter: filter, top: top, skip: skip, orderby: orderby, expand: expand, select: select, count: count);
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-        using var response = await httpClient.SendAsync(httpRequestMessage);
+        using var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -64,11 +65,11 @@ public abstract class GenericODataService<TEntity, TKey> : IGenericODataService<
         return ApiResponse<ODataServiceResult<TEntity>>.Success(data);
     }
 
-    public virtual async Task<ApiResponse<TEntity>> FindOneAsync(TKey key)
+    public virtual async Task<ApiResponse<TEntity>> FindOneAsync(TKey key, CancellationToken cancellationToken = default)
     {
         var uri = new Uri(baseUri, $"{entitySetName}({key})");
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-        using var response = await httpClient.SendAsync(httpRequestMessage);
+        using var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -80,14 +81,14 @@ public abstract class GenericODataService<TEntity, TKey> : IGenericODataService<
         return ApiResponse<TEntity>.Success(data);
     }
 
-    public virtual async Task<ApiResponse<TEntity>> InsertAsync(TEntity entity)
+    public virtual async Task<ApiResponse<TEntity>> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var uri = new Uri(baseUri, entitySetName);
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, uri)
         {
             Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json")
         };
-        using var response = await httpClient.SendAsync(httpRequestMessage);
+        using var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -99,14 +100,14 @@ public abstract class GenericODataService<TEntity, TKey> : IGenericODataService<
         return ApiResponse<TEntity>.Success(data);
     }
 
-    public virtual async Task<ApiResponse<TEntity>> UpdateAsync(TKey key, TEntity entity)
+    public virtual async Task<ApiResponse<TEntity>> UpdateAsync(TKey key, TEntity entity, CancellationToken cancellationToken = default)
     {
         var uri = new Uri(baseUri, $"{entitySetName}({key})");
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uri)
         {
             Content = new StringContent(ODataJsonSerializer.Serialize(entity), Encoding.UTF8, "application/json")
         };
-        using var response = await httpClient.SendAsync(httpRequestMessage);
+        using var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -118,11 +119,11 @@ public abstract class GenericODataService<TEntity, TKey> : IGenericODataService<
         return ApiResponse<TEntity>.Success(data);
     }
 
-    public virtual async Task<ApiResponse> DeleteAsync(TKey key)
+    public virtual async Task<ApiResponse> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
     {
         var uri = new Uri(baseUri, $"{entitySetName}({key})");
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
-        using var response = await httpClient.SendAsync(httpRequestMessage);
+        using var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
