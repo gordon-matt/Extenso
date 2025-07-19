@@ -57,7 +57,7 @@ public abstract class BaseDataPage<TEntity, TKey> : ComponentBase
         }
         else
         {
-            Records = Enumerable.Empty<TEntity>();
+            Records = [];
             RecordCount = 0;
             NotificationService.Notify(NotificationSeverity.Error, "Error", "Unable to retrieve records!");
             // TODO: Log Error

@@ -306,14 +306,6 @@ public interface IRepository<TEntity>
     int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
-    /// Updates all rows from the query using SetPropertyCalls without retrieving entities.
-    /// </summary>
-    /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
-    /// <returns>The number of rows affected.</returns>
-    int Update(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
-
-    /// <summary>
     /// Asynchronously updates all rows using SetPropertyCalls without retrieving entities.
     /// </summary>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
@@ -327,14 +319,6 @@ public interface IRepository<TEntity>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
     Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
-
-    /// <summary>
-    /// Asynchronously updates all rows from the query using SetPropertyCalls without retrieving entities.
-    /// </summary>
-    /// <param name="query">The query to update rows from without retrieving entities.</param>
-    /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
-    /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     #endregion Update
 }

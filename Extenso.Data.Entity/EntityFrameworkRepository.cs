@@ -574,10 +574,6 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual int Update(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null) =>
-        query.ExecuteUpdate(setPropertyCalls);
-
-    /// <inheritdoc/>
     public virtual async Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
@@ -590,10 +586,6 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
         using var context = GetContext(options);
         return await context.Set<TEntity>().Where(predicate).ExecuteUpdateAsync(setPropertyCalls, options?.CancellationToken ?? default);
     }
-
-    /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(IQueryable<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null) =>
-        await query.ExecuteUpdateAsync(setPropertyCalls, options?.CancellationToken ?? default);
 
     #endregion Update
 
