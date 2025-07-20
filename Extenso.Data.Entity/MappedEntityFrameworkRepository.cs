@@ -59,7 +59,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     #region Find
 
     /// <inheritdoc/>
-    public IPagedCollection<TModel> Find(SearchOptions<TEntity> options)
+    public IPagedCollection<TModel> Find(SearchOptions<TModel> options)
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
@@ -74,11 +74,12 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public IPagedCollection<TResult> Find<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
+    public IPagedCollection<TResult> Find<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var projectedQuery = query.Select(projection);
+        var mappedProjection = mapper.MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
 
         int totalCount = projectedQuery.Count();
         projectedQuery = ApplyPaging(projectedQuery, options);
@@ -91,7 +92,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public async Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TEntity> options)
+    public async Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TModel> options)
     {
         var cancellationToken = options?.CancellationToken ?? default;
 
@@ -108,13 +109,14 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
+    public async Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         var cancellationToken = options?.CancellationToken ?? default;
 
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var projectedQuery = query.Select(projection);
+        var mappedProjection = mapper.MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
 
         int totalCount = await projectedQuery.CountAsync(cancellationToken);
         projectedQuery = ApplyPaging(projectedQuery, options);
@@ -135,7 +137,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public TModel FindOne(SearchOptions<TEntity> options)
+    public TModel FindOne(SearchOptions<TModel> options)
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
@@ -144,11 +146,12 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public TResult FindOne<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
+    public TResult FindOne<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var projectedQuery = query.Select(projection);
+        var mappedProjection = mapper.MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
         return projectedQuery.FirstOrDefault();
     }
 
@@ -161,7 +164,7 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public async Task<TModel> FindOneAsync(SearchOptions<TEntity> options)
+    public async Task<TModel> FindOneAsync(SearchOptions<TModel> options)
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
@@ -170,11 +173,12 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public async Task<TResult> FindOneAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection)
+    public async Task<TResult> FindOneAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection)
     {
         using var context = GetContext(options);
         var query = BuildBaseQuery(context, options);
-        var projectedQuery = query.Select(projection);
+        var mappedProjection = mapper.MapProjection(projection);
+        var projectedQuery = query.Select(mappedProjection);
         return await projectedQuery.FirstOrDefaultAsync(options?.CancellationToken ?? default);
     }
 
@@ -662,54 +666,54 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
 
     #endregion IEntityFrameworkRepository<TEntity> Members
 
-    private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
-    {
-        var query = context.Set<TEntity>().AsNoTracking();
+    //private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
+    //{
+    //    var query = context.Set<TEntity>().AsNoTracking();
 
-        if (options.TagWithCallSite)
-        {
-            query = query.TagWith(options.CallSiteTag);
-        }
+    //    if (options.TagWithCallSite)
+    //    {
+    //        query = query.TagWith(options.CallSiteTag);
+    //    }
 
-        if (!options.Tags.IsNullOrEmpty())
-        {
-            foreach (string tag in options.Tags)
-            {
-                query = query.TagWith(tag);
-            }
-        }
+    //    if (!options.Tags.IsNullOrEmpty())
+    //    {
+    //        foreach (string tag in options.Tags)
+    //        {
+    //            query = query.TagWith(tag);
+    //        }
+    //    }
 
-        if (options.Include is not null)
-        {
-            query = options.Include.Compile()(query);
+    //    if (options.Include is not null)
+    //    {
+    //        query = options.Include.Compile()(query);
 
-            if (options.SplitQuery)
-            {
-                query = query.AsSplitQuery();
-            }
-        }
+    //        if (options.SplitQuery)
+    //        {
+    //            query = query.AsSplitQuery();
+    //        }
+    //    }
 
-        var predicate = PredicateBuilder.New<TEntity>(true);
+    //    var predicate = PredicateBuilder.New<TEntity>(true);
 
-        if (options.Query is not null)
-        {
-            predicate = predicate.And(options.Query);
-        }
+    //    if (options.Query is not null)
+    //    {
+    //        predicate = predicate.And(options.Query);
+    //    }
 
-        if (!options.IgnoreMandatoryFilters)
-        {
-            predicate = ApplyMandatoryFilters(predicate, options.MandatoryFilters);
-        }
+    //    if (!options.IgnoreMandatoryFilters)
+    //    {
+    //        predicate = ApplyMandatoryFilters(predicate, options.MandatoryFilters);
+    //    }
 
-        query = query.Where(predicate);
+    //    query = query.Where(predicate);
 
-        if (options.OrderBy is not null)
-        {
-            query = options.OrderBy.Compile()(query);
-        }
+    //    if (options.OrderBy is not null)
+    //    {
+    //        query = options.OrderBy.Compile()(query);
+    //    }
 
-        return query;
-    }
+    //    return query;
+    //}
 
     protected virtual Expression<Func<TEntity, bool>> ApplyMandatoryFilters(Expression<Func<TEntity, bool>> predicate, IDictionary<string, object> filters) => predicate;
 
@@ -730,60 +734,71 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     // Mostly works, but there are some issues mapping filtered includes.
     // As such, I've opted to use TEntity instead of TModel for the SearchOptions
 
-    //private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
-    //{
-    //    var query = context.Set<TEntity>().AsNoTracking();
+    private IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TModel> options)
+    {
+        var query = context.Set<TEntity>().AsNoTracking();
 
-    //    if (options.TagWithCallSite)
-    //    {
-    //        query = query.TagWith(options.CallSiteTag);
-    //    }
+        if (options.TagWithCallSite)
+        {
+            query = query.TagWith(options.CallSiteTag);
+        }
 
-    //    if (!options.Tags.IsNullOrEmpty())
-    //    {
-    //        foreach (string tag in options.Tags)
-    //        {
-    //            query = query.TagWith(tag);
-    //        }
-    //    }
+        if (!options.Tags.IsNullOrEmpty())
+        {
+            foreach (string tag in options.Tags)
+            {
+                query = query.TagWith(tag);
+            }
+        }
 
-    //    if (options.Include is not null)
-    //    {
-    //        var mappedInclude = MapInclude(options.Include);
-    //        query = mappedInclude(query);
+        if (options.Include is not null)
+        {
+            var mappedInclude = mapper.MapInclude(options.Include);
+            query = mappedInclude(query);
 
-    //        if (options.SplitQuery)
-    //        {
-    //            query = query.AsSplitQuery();
-    //        }
-    //    }
+            if (options.SplitQuery)
+            {
+                query = query.AsSplitQuery();
+            }
+        }
 
-    //    if (options.Query is not null)
-    //    {
-    //        var mappedPredicate = mapper.MapPredicate(options.Query);
-    //        query = query.Where(mappedPredicate);
-    //    }
+        var predicate = PredicateBuilder.New<TModel>(true);
 
-    //    if (options.OrderBy is not null)
-    //    {
-    //        var mappedOrderBy = MapOrderBy(options.OrderBy);
-    //        query = mappedOrderBy(query);
-    //    }
+        if (options.Query is not null)
+        {
+            predicate = predicate.And(options.Query);
+        }
 
-    //    return query;
-    //}
+        if (!options.IgnoreMandatoryFilters)
+        {
+            predicate = ApplyMandatoryFilters(predicate, options.MandatoryFilters);
+        }
 
-    //private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TModel> options)
-    //{
-    //    if (options.PageSize > 0 && options.PageNumber > 0)
-    //    {
-    //        query = query
-    //            .Skip((options.PageNumber - 1) * options.PageSize)
-    //            .Take(options.PageSize);
-    //    }
+        var mappedPredicate = mapper.MapPredicate(predicate);
+        query = query.Where(mappedPredicate);
 
-    //    return query;
-    //}
+        if (options.OrderBy is not null)
+        {
+            var mappedOrderBy = mapper.MapOrderBy(options.OrderBy);
+            query = mappedOrderBy(query);
+        }
+
+        return query;
+    }
+
+    protected virtual Expression<Func<TModel, bool>> ApplyMandatoryFilters(Expression<Func<TModel, bool>> predicate, IDictionary<string, object> filters) => predicate;
+
+    private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TModel> options)
+    {
+        if (options.PageSize > 0 && options.PageNumber > 0)
+        {
+            query = query
+                .Skip((options.PageNumber - 1) * options.PageSize)
+                .Take(options.PageSize);
+        }
+
+        return query;
+    }
 
     #endregion Experimental
 }

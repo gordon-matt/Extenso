@@ -55,7 +55,7 @@ public static class Extensions
         Class = entity.Class,
         Style = entity.Style,
         ProductSubcategoryId = entity.ProductSubcategoryId,
-        ProductModelId = entity.ProductModelId,
+        ProductModelId = (short)entity.ProductModelId,
         SellStartDate = entity.SellStartDate,
         SellEndDate = entity.SellEndDate,
         DiscontinuedDate = entity.DiscontinuedDate,

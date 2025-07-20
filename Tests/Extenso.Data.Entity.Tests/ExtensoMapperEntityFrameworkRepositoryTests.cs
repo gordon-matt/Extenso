@@ -6,11 +6,7 @@ using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Extenso.TestLib.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
-
 
 namespace Extenso.Data.Entity.Tests;
 
@@ -124,13 +120,33 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     #region Find
 
     [Fact]
+    public void Find_FilteredInclude()
+    {
+        var randomProduct = new Random().NextFrom(products);
+
+        int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
+
+        int actual = repository
+            .Find(new SearchOptions<ProductModelViewModel>
+            {
+                Include = query => query
+                    .Include(x => x.Products.Where(p => p.ProductModelId == 1))
+            })
+            .Where(x => x.ProductModelId == randomProduct.ProductModelId)
+            .SelectMany(x => x.Products)
+            .Count();
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
     public void Find_IncludePaths()
     {
         var randomProduct = new Random().NextFrom(products);
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var models = repository.Find(new SearchOptions<ProductModel>
+        var models = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             Include = query => query.Include(x => x.Products)
         });
@@ -153,7 +169,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
         int actual = repository
-            .Find(new SearchOptions<ProductModel>
+            .Find(new SearchOptions<ProductModelViewModel>
             {
                 Query = x => x.Name.StartsWith(firstLetter),
                 Include = query => query.Include(x => x.Products)
@@ -172,7 +188,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var query = await repository.FindAsync(new SearchOptions<ProductModel>
+        var query = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
             Include = query => query.Include(x => x.Products)
         });
@@ -193,7 +209,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         int expected = products.Count(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var query = await repository.FindAsync(new SearchOptions<ProductModel>
+        var query = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.Name.StartsWith(firstLetter),
             Include = query => query.Include(x => x.Products)
@@ -219,7 +235,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
-        var entity = repository.FindOne(new SearchOptions<ProductModel>
+        var entity = repository.FindOne(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.Name == productModel.Name,
             Include = query => query.Include(x => x.Products)
@@ -240,7 +256,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
-        var entity = await repository.FindOneAsync(new SearchOptions<ProductModel>
+        var entity = await repository.FindOneAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.Name == productModel.Name,
             Include = query => query.Include(x => x.Products)
@@ -255,7 +271,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = repository.Find(
-            new SearchOptions<ProductModel>
+            new SearchOptions<ProductModelViewModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -274,7 +290,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = (await repository.FindAsync(
-            new SearchOptions<ProductModel>
+            new SearchOptions<ProductModelViewModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -293,7 +309,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = repository.FindOne(
-            new SearchOptions<ProductModel>
+            new SearchOptions<ProductModelViewModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -312,7 +328,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
         var result = await repository.FindOneAsync(
-            new SearchOptions<ProductModel>
+            new SearchOptions<ProductModelViewModel>
             {
                 Query = x => x.ProductModelId == productModel.ProductModelId
             },
@@ -327,7 +343,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     [Fact]
     public void Find_With_OrderBy()
     {
-        var results = repository.Find(new SearchOptions<ProductModel>
+        var results = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             OrderBy = query => query.OrderBy(x => x.Name)
         }).ToList();
@@ -343,7 +359,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     [Fact]
     public void Find_With_OrderByDescending()
     {
-        var results = repository.Find(new SearchOptions<ProductModel>
+        var results = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             OrderBy = query => query.OrderByDescending(x => x.Name)
         }).ToList();
@@ -359,7 +375,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     [Fact]
     public void Find_With_MultiLevel_OrderBy()
     {
-        var results = repository.Find(new SearchOptions<ProductModel>
+        var results = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             OrderBy = query => query
                 .OrderBy(x => x.Name)
@@ -385,7 +401,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var result = repository.Find(new SearchOptions<ProductModel>
+        var result = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.ProductModelId == productModel.ProductModelId,
             Include = query => query
@@ -405,7 +421,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var randomProduct = new Random().NextFrom(products);
         var productModel = productModels.First(x => x.ProductModelId == randomProduct.ProductModelId);
 
-        var result = (await repository.FindAsync(new SearchOptions<ProductModel>
+        var result = (await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.ProductModelId == productModel.ProductModelId,
             Include = query => query
@@ -491,7 +507,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
     #region Delete
 
-                // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
+    // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
     //[Fact]
     //public void DeleteAll();
 
@@ -516,7 +532,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         int count = repository.Count();
 
-        var models = repository.Find(new SearchOptions<ProductModel>
+        var models = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             Query = x => true
         }).Take(5);
@@ -550,7 +566,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
     {
         int count = await repository.CountAsync();
 
-        var models = (await repository.FindAsync(new SearchOptions<ProductModel>
+        var models = (await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = x => true
         })).Take(5);
@@ -563,7 +579,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.Equal(count - 5, newCount);
     }
 
-                // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
+    // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
     //[Fact]
     //public async Task DeleteWhereAsync();
 
@@ -654,7 +670,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
 
-        var models = repository.Find(new SearchOptions<ProductModel>
+        var models = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             Query = x => randomProductIds.Contains(x.ProductModelId)
         });
@@ -667,7 +683,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var updatedModels = repository.Update(models);
         Assert.All(updatedModels, x => Assert.True(x.Name == newName));
 
-        var entitiesAgain = repository.Find(new SearchOptions<ProductModel>
+        var entitiesAgain = repository.Find(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.Name == newName
         });
@@ -701,7 +717,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
         string newName = "Foo Bar Baz";
 
-        var entities = await repository.FindAsync(new SearchOptions<ProductModel>
+        var entities = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = x => randomProductIds.Contains(x.ProductModelId)
         });
@@ -714,7 +730,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         var updatedEntities = await repository.UpdateAsync(entities);
         Assert.All(updatedEntities, x => Assert.True(x.Name == newName));
 
-        var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModel>
+        var entitiesAgain = await repository.FindAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = x => x.Name == newName
         });
@@ -736,7 +752,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         string newName = $"Test{DateTime.Now.Ticks % 1000000}";
 
         // First get a record to update
-        var existingEntity = realRepository.FindOne(new SearchOptions<ProductModel>
+        var existingEntity = realRepository.FindOne(new SearchOptions<ProductModelViewModel>
         {
             Query = p => p.ProductModelId == 3
         });
@@ -749,7 +765,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.True(affectedRows > 0);
 
         // Verify the update worked
-        var updatedEntity = realRepository.FindOne(new SearchOptions<ProductModel>
+        var updatedEntity = realRepository.FindOne(new SearchOptions<ProductModelViewModel>
         {
             Query = p => p.ProductModelId == 3
         });
@@ -772,7 +788,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         string newName = $"Test{DateTime.Now.Ticks % 1000000}";
 
         // First get a record to update
-        var existingEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModel>
+        var existingEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = p => p.ProductModelId == 4
         });
@@ -785,7 +801,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.True(affectedRows > 0);
 
         // Verify the update worked
-        var updatedEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModel>
+        var updatedEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = p => p.ProductModelId == 4
         });
@@ -814,7 +830,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.True(affectedRows > 0);
 
         // Verify the update worked
-        var updatedEntity = realRepository.FindOne(new SearchOptions<ProductModel>
+        var updatedEntity = realRepository.FindOne(new SearchOptions<ProductModelViewModel>
         {
             Query = p => p.Name == newName
         });
@@ -843,7 +859,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.True(affectedRows > 0);
 
         // Verify the update worked
-        var updatedEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModel>
+        var updatedEntity = await realRepository.FindOneAsync(new SearchOptions<ProductModelViewModel>
         {
             Query = p => p.Name == newName
         });

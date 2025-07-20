@@ -32,7 +32,7 @@ public interface IMappedRepository<TModel, TEntity>
     /// </summary>
     /// <param name="options"></param>
     /// <returns>A collection of all entities in the set.</returns>
-    IPagedCollection<TModel> Find(SearchOptions<TEntity> options);
+    IPagedCollection<TModel> Find(SearchOptions<TModel> options);
 
     /// <summary>
     ///  Finds all entities in the set.
@@ -40,14 +40,14 @@ public interface IMappedRepository<TModel, TEntity>
     /// <param name="options"></param>
     /// <param name="projection"></param>
     /// <returns>A collection of all entities in the set.</returns>
-    IPagedCollection<TResult> Find<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
+    IPagedCollection<TResult> Find<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection);
 
     /// <summary>
     ///  Finds all entities in the set.
     /// </summary>
     /// <param name="options"></param>
     /// <returns>A collection of all entities in the set.</returns>
-    Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TEntity> options);
+    Task<IPagedCollection<TModel>> FindAsync(SearchOptions<TModel> options);
 
     /// <summary>
     ///  Finds all entities in the set.
@@ -55,7 +55,7 @@ public interface IMappedRepository<TModel, TEntity>
     /// <param name="options"></param>
     /// <param name="projection"></param>
     /// <returns>A collection of all entities in the set.</returns>
-    Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
+    Task<IPagedCollection<TResult>> FindAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection);
 
     /// <summary>
     ///  Finds an entity with the given primary key values.
@@ -69,7 +69,7 @@ public interface IMappedRepository<TModel, TEntity>
     /// </summary>
     /// <param name="options"></param>
     /// <returns>The entity found, or null.</returns>
-    TModel FindOne(SearchOptions<TEntity> options);
+    TModel FindOne(SearchOptions<TModel> options);
 
     /// <summary>
     /// Finds an entity based on a predicate.
@@ -77,7 +77,7 @@ public interface IMappedRepository<TModel, TEntity>
     /// <param name="options"></param>
     /// <param name="projection"></param>
     /// <returns>The entity found, or null.</returns>
-    TResult FindOne<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
+    TResult FindOne<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection);
 
     /// <summary>
     ///  Asynchronously finds an entity with the given primary key values.
@@ -91,7 +91,7 @@ public interface IMappedRepository<TModel, TEntity>
     /// </summary>
     /// <param name="options"></param>
     /// <returns>The entity found, or null.</returns>
-    Task<TModel> FindOneAsync(SearchOptions<TEntity> options);
+    Task<TModel> FindOneAsync(SearchOptions<TModel> options);
 
     /// <summary>
     /// Finds an entity based on a predicate.
@@ -99,7 +99,7 @@ public interface IMappedRepository<TModel, TEntity>
     /// <param name="options"></param>
     /// <param name="projection"></param>
     /// <returns>The entity found, or null.</returns>
-    Task<TResult> FindOneAsync<TResult>(SearchOptions<TEntity> options, Expression<Func<TEntity, TResult>> projection);
+    Task<TResult> FindOneAsync<TResult>(SearchOptions<TModel> options, Expression<Func<TModel, TResult>> projection);
 
     #endregion Find
 
