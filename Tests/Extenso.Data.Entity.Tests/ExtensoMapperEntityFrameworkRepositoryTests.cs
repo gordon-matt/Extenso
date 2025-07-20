@@ -6,11 +6,7 @@ using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Extenso.TestLib.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
-
 
 namespace Extenso.Data.Entity.Tests;
 
@@ -491,7 +487,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
 
     #region Delete
 
-                // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
+    // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
     //[Fact]
     //public void DeleteAll();
 
@@ -563,7 +559,7 @@ public class ExtensoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.Equal(count - 5, newCount);
     }
 
-                // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
+    // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
     //[Fact]
     //public async Task DeleteWhereAsync();
 

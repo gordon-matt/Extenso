@@ -7,9 +7,6 @@ using Extenso.TestLib.Data.Entities;
 using Extenso.TestLib.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
-
 
 namespace Extenso.Data.Entity.Tests;
 
@@ -26,15 +23,8 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
     private readonly Faker<ProductModelViewModel> productModelFaker;
     private readonly Faker<ProductViewModel> productFaker;
 
-    private readonly ILoggerFactory loggerFactory;
-
     public AutoMapperEntityFrameworkRepositoryTests()
     {
-        loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-        });
-
         mapper = new MapperConfiguration(cfg =>
         {
             cfg.CreateMap<ProductViewModel, Product>();
@@ -49,7 +39,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
             // Configure anonymous type mapping
             cfg.CreateMap<ProductModel, object>()
                 .ConvertUsing((src, dest) => new { src.Name, src.CatalogDescription });
-        }, loggerFactory).CreateMapper();
+        }).CreateMapper();
 
         var optionsBuilder = new DbContextOptionsBuilder<AdventureWorks2019Context>();
         optionsBuilder.UseInMemoryDatabase("AdventureWorks2019");
@@ -493,7 +483,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
 
     #region Delete
 
-                // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
+    // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
     //[Fact]
     //public void DeleteAll();
 
@@ -565,7 +555,7 @@ public class AutoMapperEntityFrameworkRepositoryTests : IDisposable
         Assert.Equal(count - 5, newCount);
     }
 
-                // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
+    // repository.DeleteWhereAsync() uses ExecuteDeleteAsync which may not work with in-memory database.
     //[Fact]
     //public async Task DeleteWhereAsync();
 

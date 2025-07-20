@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="9.0.1" />
+	  <PackageReference Include="AutoMapper14.Extensions.ExpressionMapping" Version="8.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
