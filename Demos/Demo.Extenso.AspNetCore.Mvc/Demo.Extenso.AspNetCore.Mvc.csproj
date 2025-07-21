@@ -5,7 +5,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-		<PackageReference Include="KendoGridBinder.AspNetCore" Version="3.2.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.7" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.7">
 		  <TreatAsUsed>true</TreatAsUsed>
@@ -19,6 +18,7 @@
 		  <TreatAsUsed>true</TreatAsUsed>
 		</ProjectReference>
 		<ProjectReference Include="..\..\Extenso.Data.Entity\Extenso.Data.Entity.csproj" />
+		<ProjectReference Include="..\..\Extenso.KendoGridBinder\Extenso.KendoGridBinder.csproj" />
 		<ProjectReference Include="..\..\Extenso.WebAssets.KendoUI\Extenso.WebAssets.KendoUI.csproj" />
 	</ItemGroup>
 </Project>

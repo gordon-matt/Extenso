@@ -620,7 +620,7 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     {
         var query = context.Set<TEntity>().AsNoTracking();
 
-        if (options.TagWithCallSite)
+        if (GlobalRepositoryOptions.TagWithCallSite && options.TagWithCallSite)
         {
             query = query.TagWith(options.CallSiteTag);
         }

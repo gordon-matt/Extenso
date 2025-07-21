@@ -100,6 +100,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.WebAssets.KendoUI",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.Mapping.Abstractions", "Extenso.Mapping.Abstractions\Extenso.Mapping.Abstractions.csproj", "{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.KendoGridBinder", "Extenso.KendoGridBinder\Extenso.KendoGridBinder.csproj", "{CAB26DDC-6003-47F1-A38D-0503A8D7B8CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extenso.KendoGridBinder.Tests", "Tests\Extenso.KendoGridBinder.Tests\Extenso.KendoGridBinder.Tests.csproj", "{B2215A01-2ACE-43AC-841F-0BD5F851AABD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -262,6 +266,14 @@ Global
 		{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06B9E0BA-AD6A-48F6-8AA6-445CDF0E82AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAB26DDC-6003-47F1-A38D-0503A8D7B8CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAB26DDC-6003-47F1-A38D-0503A8D7B8CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAB26DDC-6003-47F1-A38D-0503A8D7B8CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAB26DDC-6003-47F1-A38D-0503A8D7B8CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2215A01-2ACE-43AC-841F-0BD5F851AABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2215A01-2ACE-43AC-841F-0BD5F851AABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2215A01-2ACE-43AC-841F-0BD5F851AABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2215A01-2ACE-43AC-841F-0BD5F851AABD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -288,6 +300,7 @@ Global
 		{457B52BD-78BD-437A-9FEE-98523E12AE69} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{D1DBD72C-F08F-46E4-8A5F-1B406A711CB0} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 		{54557E64-60D8-434A-9264-CC1BCAE62259} = {376F048F-9868-4FAF-A7C5-1F468DBBE3A0}
+		{B2215A01-2ACE-43AC-841F-0BD5F851AABD} = {FB3D4311-3B8D-493A-86A1-E5C3F55C1125}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8BEF57B5-2234-4CCE-876C-951A94822B8C}

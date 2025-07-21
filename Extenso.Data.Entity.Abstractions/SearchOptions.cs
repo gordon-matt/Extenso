@@ -30,7 +30,7 @@ public class SearchOptions<TEntity> : ContextOptions
     /// </summary>
     public bool SplitQuery { get; set; }
 
-    public bool TagWithCallSite { get; set; }
+    public bool TagWithCallSite { get; set; } = true;
 
     public bool IgnoreMandatoryFilters { get; set; }
 

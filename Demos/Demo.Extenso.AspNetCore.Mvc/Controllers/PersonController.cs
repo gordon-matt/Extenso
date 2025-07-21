@@ -1,8 +1,8 @@
 ﻿using Demo.Extenso.AspNetCore.Mvc.Data.Entities;
 using Demo.Extenso.AspNetCore.Mvc.Models;
 using Extenso.Data.Entity;
-using KendoGridBinder;
-using KendoGridBinder.ModelBinder.Mvc;
+using Extenso.KendoGridBinder;
+using Extenso.KendoGridBinder.ModelBinder.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Extenso.AspNetCore.Mvc.Controllers;
