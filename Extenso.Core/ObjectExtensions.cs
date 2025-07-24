@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Dynamic;
-using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
@@ -67,12 +66,11 @@ public static class ObjectExtensions
     /// <param name="hashAlgorithm">The algorithm to use for computing the hash.</param>
     /// <returns>The computed hash code.</returns>
     /// <example><code>byte[] hash = myObject.ComputeHash(new MD5CryptoServiceProvider());</code></example>
-    public static byte[] ComputeHash<T>(this object source, T hashAlgorithm) where T : HashAlgorithm, new()
+    public static byte[] ComputeHash(this object source, HashAlgorithm hashAlgorithm)
     {
-        var serializer = new DataContractSerializer(source.GetType());
-        using var memoryStream = new MemoryStream();
-        serializer.WriteObject(memoryStream, source);
-        hashAlgorithm.ComputeHash(memoryStream.ToArray());
+        string json = source.JsonSerialize();
+        byte[] bytes = Encoding.UTF8.GetBytes(json);
+        hashAlgorithm.ComputeHash(bytes);
         return hashAlgorithm.Hash;
     }
 
@@ -81,14 +79,44 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="source">The object to compute the hash for.</param>
     /// <returns>The computed hash code.</returns>
-    public static byte[] ComputeMD5Hash(this object source) => ComputeHash(source, new MD5CryptoServiceProvider());
+    public static byte[] ComputeMD5Hash(this object source)
+    {
+        using var md5 = MD5.Create();
+        return ComputeHash(source, md5);
+    }
 
     /// <summary>
     /// Computes the SHA1 hash value for the given object.
     /// </summary>
     /// <param name="source">The object to compute the hash for.</param>
     /// <returns>The computed hash code.</returns>
-    public static byte[] ComputeSHA1Hash(this object source) => ComputeHash(source, new SHA1CryptoServiceProvider());
+    public static byte[] ComputeSHA1Hash(this object source)
+    {
+        using var sha1 = SHA1.Create();
+        return ComputeHash(source, sha1);
+    }
+
+    /// <summary>
+    /// Computes the SHA256 hash value for the given object.
+    /// </summary>
+    /// <param name="source">The object to compute the hash for.</param>
+    /// <returns>The computed hash code.</returns>
+    public static byte[] ComputeSHA256Hash(this object source)
+    {
+        using var sha256 = SHA256.Create();
+        return ComputeHash(source, sha256);
+    }
+
+    /// <summary>
+    /// Computes the SHA512 hash value for the given object.
+    /// </summary>
+    /// <param name="source">The object to compute the hash for.</param>
+    /// <returns>The computed hash code.</returns>
+    public static byte[] ComputeSHA512Hash(this object source)
+    {
+        using var sha512 = SHA512.Create();
+        return ComputeHash(source, sha512);
+    }
 
     /// <summary>
     /// Returns an object of the specified type and whose value is equivalent to the specified object.

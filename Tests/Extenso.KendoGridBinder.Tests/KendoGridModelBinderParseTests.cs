@@ -47,21 +47,24 @@ public class KendoGridModelBinderParseTests : TestHelper
         CheckPage(gridRequest, 1);
         CheckPageSize(gridRequest, 5);
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper);
-        ClassicAssert.AreEqual("and", gridRequest.FilterObjectWrapper.Logic);
-        ClassicAssert.AreEqual("&&", gridRequest.FilterObjectWrapper.LogicToken);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.FilterObjectWrapper, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.Logic, Is.EqualTo("and"));
+            Assert.That(gridRequest.FilterObjectWrapper.LogicToken, Is.EqualTo("&&"));
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects.Count(), Is.EqualTo(1));
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper.FilterObjects);
-        ClassicAssert.AreEqual(1, gridRequest.FilterObjectWrapper.FilterObjects.Count());
+            var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
+            var filter1 = filterObjects[0];
 
-        var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
-        var filter1 = filterObjects[0];
-        ClassicAssert.AreEqual(false, filter1.IsConjugate);
-        ClassicAssert.AreEqual("CompanyName", filter1.Field1);
-        ClassicAssert.AreEqual("eq", filter1.Operator1);
-        ClassicAssert.AreEqual("A", filter1.Value1);
-        ClassicAssert.AreEqual(null, filter1.Logic);
-        ClassicAssert.AreEqual(null, filter1.LogicToken);
+            Assert.That(filter1.IsConjugate, Is.False);
+            Assert.That(filter1.Field1, Is.EqualTo("CompanyName"));
+            Assert.That(filter1.Operator1, Is.EqualTo("eq"));
+            Assert.That(filter1.Value1, Is.EqualTo("A"));
+            Assert.That(filter1.Logic, Is.Null);
+            Assert.That(filter1.LogicToken, Is.Null);
+        }
     }
 
     [Test]
@@ -86,21 +89,24 @@ public class KendoGridModelBinderParseTests : TestHelper
         CheckPage(gridRequest, 1);
         CheckPageSize(gridRequest, 5);
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper);
-        ClassicAssert.AreEqual("and", gridRequest.FilterObjectWrapper.Logic);
-        ClassicAssert.AreEqual("&&", gridRequest.FilterObjectWrapper.LogicToken);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.FilterObjectWrapper, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.Logic, Is.EqualTo("and"));
+            Assert.That(gridRequest.FilterObjectWrapper.LogicToken, Is.EqualTo("&&"));
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects.Count(), Is.EqualTo(1));
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper.FilterObjects);
-        ClassicAssert.AreEqual(1, gridRequest.FilterObjectWrapper.FilterObjects.Count());
+            var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
+            var filter1 = filterObjects[0];
 
-        var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
-        var filter1 = filterObjects[0];
-        ClassicAssert.AreEqual(false, filter1.IsConjugate);
-        ClassicAssert.AreEqual("CompanyName", filter1.Field1);
-        ClassicAssert.AreEqual("eq", filter1.Operator1);
-        ClassicAssert.AreEqual("A", filter1.Value1);
-        ClassicAssert.AreEqual(null, filter1.Logic);
-        ClassicAssert.AreEqual(null, filter1.LogicToken);
+            Assert.That(filter1.IsConjugate, Is.False);
+            Assert.That(filter1.Field1, Is.EqualTo("CompanyName"));
+            Assert.That(filter1.Operator1, Is.EqualTo("eq"));
+            Assert.That(filter1.Value1, Is.EqualTo("A"));
+            Assert.That(filter1.Logic, Is.Null);
+            Assert.That(filter1.LogicToken, Is.Null);
+        }
     }
 
     [Test]
@@ -138,42 +144,44 @@ public class KendoGridModelBinderParseTests : TestHelper
         CheckPage(gridRequest, 1);
         CheckPageSize(gridRequest, 5);
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper);
-        ClassicAssert.AreEqual("and", gridRequest.FilterObjectWrapper.Logic);
-        ClassicAssert.AreEqual("&&", gridRequest.FilterObjectWrapper.LogicToken);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.FilterObjectWrapper, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.Logic, Is.EqualTo("and"));
+            Assert.That(gridRequest.FilterObjectWrapper.LogicToken, Is.EqualTo("&&"));
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects.Count(), Is.EqualTo(2));
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper.FilterObjects);
-        ClassicAssert.AreEqual(2, gridRequest.FilterObjectWrapper.FilterObjects.Count());
+            var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
+            var filter1 = filterObjects[0];
+            Assert.That(filter1.IsConjugate, Is.True);
+            Assert.That(filter1.Field1, Is.EqualTo("CompanyName"));
+            Assert.That(filter1.Operator1, Is.EqualTo("eq"));
+            Assert.That(filter1.Value1, Is.EqualTo("A"));
+            Assert.That(filter1.Field2, Is.EqualTo("CompanyName"));
+            Assert.That(filter1.Operator2, Is.EqualTo("contains"));
+            Assert.That(filter1.Value2, Is.EqualTo("B"));
+            Assert.That(filter1.Logic, Is.EqualTo("or"));
+            Assert.That(filter1.LogicToken, Is.EqualTo("||"));
 
-        var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
-        var filter1 = filterObjects[0];
-        ClassicAssert.AreEqual(true, filter1.IsConjugate);
-        ClassicAssert.AreEqual("CompanyName", filter1.Field1);
-        ClassicAssert.AreEqual("eq", filter1.Operator1);
-        ClassicAssert.AreEqual("A", filter1.Value1);
-        ClassicAssert.AreEqual("CompanyName", filter1.Field2);
-        ClassicAssert.AreEqual("contains", filter1.Operator2);
-        ClassicAssert.AreEqual("B", filter1.Value2);
-        ClassicAssert.AreEqual("or", filter1.Logic);
-        ClassicAssert.AreEqual("||", filter1.LogicToken);
+            var filter2 = filterObjects[1];
+            Assert.That(filter2.IsConjugate, Is.False);
+            Assert.That(filter2.Field1, Is.EqualTo("Last"));
+            Assert.That(filter2.Operator1, Is.EqualTo("contains"));
+            Assert.That(filter2.Value1, Is.EqualTo("s"));
 
-        var filter2 = filterObjects[1];
-        ClassicAssert.AreEqual(false, filter2.IsConjugate);
-        ClassicAssert.AreEqual("Last", filter2.Field1);
-        ClassicAssert.AreEqual("contains", filter2.Operator1);
-        ClassicAssert.AreEqual("s", filter2.Value1);
+            Assert.That(gridRequest.SortObjects, Is.Not.Null);
+            Assert.That(gridRequest.SortObjects.Count(), Is.EqualTo(2));
+            var sortObjects = gridRequest.SortObjects.ToList();
 
-        ClassicAssert.IsNotNull(gridRequest.SortObjects);
-        ClassicAssert.AreEqual(2, gridRequest.SortObjects.Count());
-        var sortObjects = gridRequest.SortObjects.ToList();
+            var sort1 = sortObjects[0];
+            Assert.That(sort1.Field, Is.EqualTo("First"));
+            Assert.That(sort1.Direction, Is.EqualTo("asc"));
 
-        var sort1 = sortObjects[0];
-        ClassicAssert.AreEqual("First", sort1.Field);
-        ClassicAssert.AreEqual("asc", sort1.Direction);
-
-        var sort2 = sortObjects[1];
-        ClassicAssert.AreEqual("Email", sort2.Field);
-        ClassicAssert.AreEqual("desc", sort2.Direction);
+            var sort2 = sortObjects[1];
+            Assert.That(sort2.Field, Is.EqualTo("Email"));
+            Assert.That(sort2.Direction, Is.EqualTo("desc"));
+        }
     }
 
     //{"take":5,"skip":0,"page":1,"pageSize":5,"filter":{"logic":"and","filters":[{"field":"CompanyName","operator":"eq","value":"A"}]},"group":[]}
@@ -197,21 +205,24 @@ public class KendoGridModelBinderParseTests : TestHelper
         CheckPage(gridRequest, 1);
         CheckPageSize(gridRequest, 5);
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper);
-        ClassicAssert.AreEqual("and", gridRequest.FilterObjectWrapper.Logic);
-        ClassicAssert.AreEqual("&&", gridRequest.FilterObjectWrapper.LogicToken);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.FilterObjectWrapper, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.Logic, Is.EqualTo("and"));
+            Assert.That(gridRequest.FilterObjectWrapper.LogicToken, Is.EqualTo("&&"));
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects.Count(), Is.EqualTo(1));
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper.FilterObjects);
-        ClassicAssert.AreEqual(1, gridRequest.FilterObjectWrapper.FilterObjects.Count());
+            var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
+            var filter1 = filterObjects[0];
 
-        var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
-        var filter1 = filterObjects[0];
-        ClassicAssert.AreEqual(false, filter1.IsConjugate);
-        ClassicAssert.AreEqual("CompanyName", filter1.Field1);
-        ClassicAssert.AreEqual("eq", filter1.Operator1);
-        ClassicAssert.AreEqual("A", filter1.Value1);
-        ClassicAssert.AreEqual(null, filter1.Logic);
-        ClassicAssert.AreEqual(null, filter1.LogicToken);
+            Assert.That(filter1.IsConjugate, Is.False);
+            Assert.That(filter1.Field1, Is.EqualTo("CompanyName"));
+            Assert.That(filter1.Operator1, Is.EqualTo("eq"));
+            Assert.That(filter1.Value1, Is.EqualTo("A"));
+            Assert.That(filter1.Logic, Is.Null);
+            Assert.That(filter1.LogicToken, Is.Null);
+        }
     }
 
     //{"take":5,"skip":0,"page":1,"pageSize":5,"sort":[{"field":"FirstName","dir":"asc","compare":null}],"filter":{"logic":"and","filters":[{"field":"CompanyName","operator":"eq","value":"A"}]},"group":[]}
@@ -236,39 +247,47 @@ public class KendoGridModelBinderParseTests : TestHelper
         CheckPage(gridRequest, 1);
         CheckPageSize(gridRequest, 5);
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper);
-        ClassicAssert.AreEqual("and", gridRequest.FilterObjectWrapper.Logic);
-        ClassicAssert.AreEqual("&&", gridRequest.FilterObjectWrapper.LogicToken);
+        using (Assert.EnterMultipleScope())
+        {
+            // FilterObjectWrapper assertions
+            Assert.That(gridRequest.FilterObjectWrapper, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.Logic, Is.EqualTo("and"));
+            Assert.That(gridRequest.FilterObjectWrapper.LogicToken, Is.EqualTo("&&"));
 
-        ClassicAssert.IsNotNull(gridRequest.FilterObjectWrapper.FilterObjects);
-        ClassicAssert.AreEqual(2, gridRequest.FilterObjectWrapper.FilterObjects.Count());
+            // FilterObjects assertions
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects, Is.Not.Null);
+            Assert.That(gridRequest.FilterObjectWrapper.FilterObjects.Count(), Is.EqualTo(2));
+            var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
 
-        var filterObjects = gridRequest.FilterObjectWrapper.FilterObjects.ToList();
-        var filter1 = filterObjects[0];
-        ClassicAssert.AreEqual(true, filter1.IsConjugate);
-        ClassicAssert.AreEqual("LastName", filter1.Field1);
-        ClassicAssert.AreEqual("contains", filter1.Operator1);
-        ClassicAssert.AreEqual("s", filter1.Value1);
-        ClassicAssert.AreEqual("LastName", filter1.Field2);
-        ClassicAssert.AreEqual("endswith", filter1.Operator2);
-        ClassicAssert.AreEqual("ll", filter1.Value2);
+            // First filter assertions
+            var filter1 = filterObjects[0];
+            Assert.That(filter1.IsConjugate, Is.True);
+            Assert.That(filter1.Field1, Is.EqualTo("LastName"));
+            Assert.That(filter1.Operator1, Is.EqualTo("contains"));
+            Assert.That(filter1.Value1, Is.EqualTo("s"));
+            Assert.That(filter1.Field2, Is.EqualTo("LastName"));
+            Assert.That(filter1.Operator2, Is.EqualTo("endswith"));
+            Assert.That(filter1.Value2, Is.EqualTo("ll"));
 
-        var filter2 = filterObjects[1];
-        ClassicAssert.AreEqual(false, filter2.IsConjugate);
-        ClassicAssert.AreEqual("FirstName", filter2.Field1);
-        ClassicAssert.AreEqual("startswith", filter2.Operator1);
-        ClassicAssert.AreEqual("n", filter2.Value1);
-        ClassicAssert.AreEqual(null, filter2.Logic);
-        ClassicAssert.AreEqual(null, filter2.LogicToken);
+            // Second filter assertions
+            var filter2 = filterObjects[1];
+            Assert.That(filter2.IsConjugate, Is.False);
+            Assert.That(filter2.Field1, Is.EqualTo("FirstName"));
+            Assert.That(filter2.Operator1, Is.EqualTo("startswith"));
+            Assert.That(filter2.Value1, Is.EqualTo("n"));
+            Assert.That(filter2.Logic, Is.Null);
+            Assert.That(filter2.LogicToken, Is.Null);
 
-        var sortObjects = gridRequest.SortObjects;
-        ClassicAssert.IsNotNull(sortObjects);
+            // SortObjects assertions
+            var sortObjects = gridRequest.SortObjects;
+            Assert.That(sortObjects, Is.Not.Null);
 
-        var sortList = sortObjects.ToList();
-        ClassicAssert.AreEqual("FirstName", sortList.First().Field);
-        ClassicAssert.AreEqual("asc", sortList.First().Direction);
-        ClassicAssert.AreEqual("LastName", sortList.Last().Field);
-        ClassicAssert.AreEqual("desc", sortList.Last().Direction);
+            var sortList = sortObjects.ToList();
+            Assert.That(sortList.First().Field, Is.EqualTo("FirstName"));
+            Assert.That(sortList.First().Direction, Is.EqualTo("asc"));
+            Assert.That(sortList.Last().Field, Is.EqualTo("LastName"));
+            Assert.That(sortList.Last().Direction, Is.EqualTo("desc"));
+        }
     }
 
     [Test]
@@ -293,46 +312,55 @@ public class KendoGridModelBinderParseTests : TestHelper
         CheckPage(gridRequest, 1);
         CheckPageSize(gridRequest, 5);
 
-        ClassicAssert.IsNull(gridRequest.FilterObjectWrapper);
-        ClassicAssert.IsNull(gridRequest.SortObjects);
-        ClassicAssert.IsNull(gridRequest.GroupObjects);
+        using (Assert.EnterMultipleScope())
+        {
+            // Null checks
+            Assert.That(gridRequest.FilterObjectWrapper, Is.Null);
+            Assert.That(gridRequest.SortObjects, Is.Null);
+            Assert.That(gridRequest.GroupObjects, Is.Null);
 
-        var aggregateObjects = gridRequest.AggregateObjects.ToList();
-        ClassicAssert.AreEqual(2, aggregateObjects.Count);
+            // Aggregate objects assertions
+            var aggregateObjects = gridRequest.AggregateObjects.ToList();
+            Assert.That(aggregateObjects, Has.Count.EqualTo(2));
 
-        var aggregate0 = aggregateObjects[0];
-        ClassicAssert.AreEqual("id", aggregate0.Field);
-        ClassicAssert.AreEqual("count", aggregate0.Aggregate);
+            // First aggregate object
+            var aggregate0 = aggregateObjects[0];
 
-        var aggregate1 = aggregateObjects[1];
-        ClassicAssert.AreEqual("id", aggregate1.Field);
-        ClassicAssert.AreEqual("sum", aggregate1.Aggregate);
+            Assert.That(aggregate0.Field, Is.EqualTo("id"));
+            Assert.That(aggregate0.Aggregate, Is.EqualTo("count"));
+
+            // Second aggregate object
+            var aggregate1 = aggregateObjects[1];
+
+            Assert.That(aggregate1.Field, Is.EqualTo("id"));
+            Assert.That(aggregate1.Aggregate, Is.EqualTo("sum"));
+        }
     }
 
     #region Check helper methods
 
     private static void CheckTake(KendoGridBaseRequest gridRequest, int take)
     {
-        ClassicAssert.IsNotNull(gridRequest.Take);
-        ClassicAssert.AreEqual(take, gridRequest.Take.Value);
+        Assert.That(gridRequest.Take, Is.Not.Null);
+        Assert.That(gridRequest.Take.Value, Is.EqualTo(take));
     }
 
     private static void CheckSkip(KendoGridBaseRequest gridRequest, int skip)
     {
-        ClassicAssert.IsNotNull(gridRequest.Skip);
-        ClassicAssert.AreEqual(skip, gridRequest.Skip.Value);
+        Assert.That(gridRequest.Skip, Is.Not.Null);
+        Assert.That(gridRequest.Skip.Value, Is.EqualTo(skip));
     }
 
     private static void CheckPage(KendoGridBaseRequest gridRequest, int page)
     {
-        ClassicAssert.IsNotNull(gridRequest.Page);
-        ClassicAssert.AreEqual(page, gridRequest.Page.Value);
+        Assert.That(gridRequest.Page, Is.Not.Null);
+        Assert.That(gridRequest.Page.Value, Is.EqualTo(page));
     }
 
     private static void CheckPageSize(KendoGridBaseRequest gridRequest, int pagesize)
     {
-        ClassicAssert.IsNotNull(gridRequest.PageSize);
-        ClassicAssert.AreEqual(pagesize, gridRequest.PageSize.Value);
+        Assert.That(gridRequest.PageSize, Is.Not.Null);
+        Assert.That(gridRequest.PageSize.Value, Is.EqualTo(pagesize));
     }
 
     #endregion Check helper methods

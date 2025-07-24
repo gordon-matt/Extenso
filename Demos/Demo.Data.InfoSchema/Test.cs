@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace Demo.Data.InfoSchema;
 
@@ -20,7 +20,7 @@ public partial class Test : Form
 
     private void btnConnectionStringBuilder_Click(object sender, EventArgs e)
     {
-        var form = new SqlConnectionForm();
+        using var form = new SqlConnectionForm();
         if (form.ShowDialog() == DialogResult.OK)
         {
             ConnectionString = form.ConnectionString;

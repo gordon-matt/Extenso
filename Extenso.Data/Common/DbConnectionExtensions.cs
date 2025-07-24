@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Reflection;
 using Extenso.Collections;
+using Humanizer;
 using Microsoft.Data.SqlClient;
 
 namespace Extenso.Data.Common;
@@ -488,7 +489,7 @@ public static class DbConnectionExtensions
         {
             string parameterName = f;
             "¬`!\"£$%^&*()-=+{}[]:;@'~#|<>,.?/ ".ToCharArray().ForEach(c => parameterName = parameterName.Replace(c, '_'));
-            parameterNames.Add(f, parameterName.ToPascalCase().Prepend("@"));
+            parameterNames.Add(f, parameterName.Pascalize().Prepend("@"));
         });
         return parameterNames;
     }

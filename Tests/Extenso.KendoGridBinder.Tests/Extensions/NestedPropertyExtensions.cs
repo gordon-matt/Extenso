@@ -18,7 +18,7 @@ public static class NestedPropertyExtensions
     /// <returns></returns>
     public static TResult NullSafeGetValue<TSource, TResult>(this TSource source, Expression<Func<TSource, TResult>> expression, TResult defaultValue)
     {
-        object value = GetValue(expression, source);
+        var value = GetValue(expression, source);
         return value == null ? defaultValue : (TResult)value;
     }
 
@@ -32,8 +32,8 @@ public static class NestedPropertyExtensions
     /// <returns></returns>
     public static TResult NullSafeGetValue<TSource, TResult>(this TSource source, Expression<Func<TSource, TResult>> expression)
     {
-        object value = GetValue(expression, source);
-        return value == null ? default : (TResult)value;
+        var value = GetValue(expression, source);
+        return value == null ? default : value;
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public static class NestedPropertyExtensions
     /// <returns></returns>
     public static TCastResultType NullSafeGetValue<TSource, TResult, TCastResultType>(this TSource source, Expression<Func<TSource, TResult>> expression, TCastResultType defaultValue, Func<object, TCastResultType> convertToResultToAction)
     {
-        object value = GetValue(expression, source);
+        var value = GetValue(expression, source);
         return value == null ? defaultValue : convertToResultToAction.Invoke(value);
     }
 

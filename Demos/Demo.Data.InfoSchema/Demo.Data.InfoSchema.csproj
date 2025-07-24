@@ -1,34 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0-windows7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>Demo.Data.InfoSchema</RootNamespace>
-    <AssemblyName>Demo.Data.InfoSchema</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Update="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Update="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="9.0.7" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Extenso.Core\Extenso.Core.csproj" />
-    <ProjectReference Include="..\..\Extenso.Data.MySql\Extenso.Data.MySql.csproj" />
-    <ProjectReference Include="..\..\Extenso.Data.Npgsql\Extenso.Data.Npgsql.csproj" />
-    <ProjectReference Include="..\..\Extenso.Data.OleDb\Extenso.Data.OleDb.csproj" />
-    <ProjectReference Include="..\..\Extenso.Data\Extenso.Data.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<OutputType>WinExe</OutputType>
+		<RootNamespace>Demo.Data.InfoSchema</RootNamespace>
+		<AssemblyName>Demo.Data.InfoSchema</AssemblyName>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+		<PlatformTarget>x86</PlatformTarget>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Extenso.Core\Extenso.Core.csproj" />
+		<ProjectReference Include="..\..\Extenso.Data.MySql\Extenso.Data.MySql.csproj" />
+		<ProjectReference Include="..\..\Extenso.Data.Npgsql\Extenso.Data.Npgsql.csproj" />
+		<ProjectReference Include="..\..\Extenso.Data.OleDb\Extenso.Data.OleDb.csproj" />
+		<ProjectReference Include="..\..\Extenso.Data\Extenso.Data.csproj" />
+	</ItemGroup>
 </Project>

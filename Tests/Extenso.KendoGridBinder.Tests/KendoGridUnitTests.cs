@@ -5,7 +5,6 @@ using Extenso.KendoGridBinder.Tests.Extensions;
 using Extenso.KendoGridBinder.Tests.Helpers;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using NUnit.Framework.Legacy;
 
 namespace Extenso.KendoGridBinder.Tests;
 
@@ -27,8 +26,8 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var companyIds = employees.Select(mappings.First().Value.Expression).ToList();
-        ClassicAssert.AreEqual(12, companyIds.Count);
-        ClassicAssert.AreEqual(1, companyIds.First());
+        Assert.That(companyIds, Has.Count.EqualTo(12));
+        Assert.That(companyIds.First(), Is.EqualTo(1));
     }
 
     [Test]
@@ -62,17 +61,21 @@ public class KendoGridUnitTests : TestHelper
         // Act
         var kendoGrid = new KendoGrid<Employee, EmployeeVM>(request, employees, mappings);
 
-        // Assert
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+        using (Assert.EnterMultipleScope())
+        {
+            // Assert
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        ClassicAssert.AreEqual(5, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
+
+            Assert.That(groups.Count(), Is.EqualTo(5));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
+        }
     }
 
     [Test]
@@ -93,11 +96,14 @@ public class KendoGridUnitTests : TestHelper
 
         _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
         var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
-        ClassicAssert.IsNotNull(kendoGrid);
 
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
-        ClassicAssert.IsNotNull(kendoGrid.Data);
-        ClassicAssert.AreEqual(5, kendoGrid.Data.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(kendoGrid, Is.Not.Null);
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
+            Assert.That(kendoGrid.Data, Is.Not.Null);
+            Assert.That(kendoGrid.Data.Count(), Is.EqualTo(5));
+        }
     }
 
     [Test]
@@ -130,10 +136,12 @@ public class KendoGridUnitTests : TestHelper
 
         _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
         var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
-        ClassicAssert.IsNotNull(kendoGrid);
-
-        ClassicAssert.AreEqual(3, kendoGrid.Total);
-        ClassicAssert.IsNotNull(kendoGrid.Data);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(kendoGrid, Is.Not.Null);
+            Assert.That(kendoGrid.Total, Is.EqualTo(3));
+            Assert.That(kendoGrid.Data, Is.Not.Null);
+        }
     }
 
     [Test]
@@ -177,18 +185,22 @@ public class KendoGridUnitTests : TestHelper
 
         _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
         var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
-        ClassicAssert.IsNotNull(kendoGrid);
 
-        ClassicAssert.AreEqual(4, kendoGrid.Total);
-        ClassicAssert.IsNotNull(kendoGrid.Data);
-        ClassicAssert.AreEqual(4, kendoGrid.Data.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(kendoGrid, Is.Not.Null);
+            Assert.That(kendoGrid.Total, Is.EqualTo(4));
+            Assert.That(kendoGrid.Data, Is.Not.Null);
 
-        ClassicAssert.AreEqual("Bill Smith", kendoGrid.Data.First().Full);
-        ClassicAssert.AreEqual("Jack Smith", kendoGrid.Data.Last().Full);
+            Assert.That(kendoGrid.Data.Count(), Is.EqualTo(4));
+            Assert.That(kendoGrid.Data.First().Full, Is.EqualTo("Bill Smith"));
+            Assert.That(kendoGrid.Data.Last().Full, Is.EqualTo("Jack Smith"));
 
-        var query = kendoGrid.AsQueryable();
-        ClassicAssert.AreEqual("Bill Smith", query.First().FullName);
-        ClassicAssert.AreEqual("Jack Smith", query.Last().FullName);
+            var query = kendoGrid.AsQueryable();
+
+            Assert.That(query.First().FullName, Is.EqualTo("Bill Smith"));
+            Assert.That(query.Last().FullName, Is.EqualTo("Jack Smith"));
+        }
     }
 
     [Test]
@@ -206,8 +218,11 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(0, gridRequest.GroupObjects.First().AggregateObjects.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(0));
+        }
 
         InitAutoMapper();
         var employees = InitEmployeesWithData().AsQueryable();
@@ -217,29 +232,34 @@ public class KendoGridUnitTests : TestHelper
             { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } },
             { "CountryName", new MapExpression<Employee> { Path = "Country.Name", Expression = m => m.Country.Name } }
         };
+
         _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, new[] { "Company", "Company.MainCompany", "Country" }, mappings);
+        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, ["Company", "Company.MainCompany", "Country"], mappings);
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        ClassicAssert.AreEqual(2, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
 
-        var employeesFromFirstGroup = groups.First().items as IEnumerable<EmployeeVM>;
-        ClassicAssert.IsNotNull(employeesFromFirstGroup);
+            Assert.That(groups.Count(), Is.EqualTo(2));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
 
-        var employeesFromFirstGroupList = employeesFromFirstGroup.ToList();
-        ClassicAssert.AreEqual(4, employeesFromFirstGroupList.Count);
+            var employeesFromFirstGroup = groups.First().items as IEnumerable<EmployeeVM>;
+            Assert.That(employeesFromFirstGroup, Is.Not.Null);
 
-        var testEmployee = employeesFromFirstGroupList.First();
-        ClassicAssert.AreEqual("Belgium", testEmployee.CountryName);
-        ClassicAssert.AreEqual("B", testEmployee.CompanyName);
+            var employeesFromFirstGroupList = employeesFromFirstGroup.ToList();
+            Assert.That(employeesFromFirstGroupList.Count, Is.EqualTo(4));
+
+            var testEmployee = employeesFromFirstGroupList.First();
+            Assert.That(testEmployee.CountryName, Is.EqualTo("Belgium"));
+            Assert.That(testEmployee.CompanyName, Is.EqualTo("B"));
+        }
     }
 
     [Test]
@@ -265,8 +285,11 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.IsNull(gridRequest.GroupObjects);
-        ClassicAssert.AreEqual(5, gridRequest.AggregateObjects.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.GroupObjects, Is.Null);
+            Assert.That(gridRequest.AggregateObjects.Count(), Is.EqualTo(5));
+        }
 
         InitAutoMapper();
         var employees = InitEmployeesWithData().AsQueryable();
@@ -275,29 +298,34 @@ public class KendoGridUnitTests : TestHelper
             { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } },
             { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } }
         };
+
         _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
         var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, new[] { "Company", "Company.MainCompany", "Country" }, mappings);
 
-        ClassicAssert.IsNull(kendoGrid.Groups);
-        ClassicAssert.IsNotNull(kendoGrid.Data);
-        ClassicAssert.AreEqual(5, kendoGrid.Data.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(kendoGrid.Groups, Is.Null);
+            Assert.That(kendoGrid.Data, Is.Not.Null);
 
-        ClassicAssert.IsNotNull(kendoGrid.Aggregates);
-        string json = JsonConvert.SerializeObject(kendoGrid.Aggregates, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            Assert.That(kendoGrid.Data.Count(), Is.EqualTo(5));
 
-        var aggregatesAsDictionary = kendoGrid.Aggregates as Dictionary<string, Dictionary<string, object>>;
-        ClassicAssert.IsNotNull(aggregatesAsDictionary);
-        ClassicAssert.AreEqual(1, aggregatesAsDictionary.Keys.Count);
-        ClassicAssert.AreEqual("Id", aggregatesAsDictionary.Keys.First());
+            Assert.That(kendoGrid.Aggregates, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Aggregates, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        var aggregatesForId = aggregatesAsDictionary["Id"];
-        ClassicAssert.AreEqual(5, aggregatesForId.Keys.Count);
-        ClassicAssert.AreEqual(78, aggregatesForId["sum"]);
-        ClassicAssert.AreEqual(1, aggregatesForId["min"]);
-        ClassicAssert.AreEqual(12, aggregatesForId["max"]);
-        ClassicAssert.AreEqual(12, aggregatesForId["count"]);
-        ClassicAssert.AreEqual(6.5d, aggregatesForId["average"]);
+            var aggregatesAsDictionary = kendoGrid.Aggregates as Dictionary<string, Dictionary<string, object>>;
+            Assert.That(aggregatesAsDictionary, Is.Not.Null);
+            Assert.That(aggregatesAsDictionary.Keys.Count, Is.EqualTo(1));
+            Assert.That(aggregatesAsDictionary.Keys.First(), Is.EqualTo("Id"));
+
+            var aggregatesForId = aggregatesAsDictionary["Id"];
+            Assert.That(aggregatesForId.Keys.Count, Is.EqualTo(5));
+            Assert.That(aggregatesForId["sum"], Is.EqualTo(78));
+            Assert.That(aggregatesForId["min"], Is.EqualTo(1));
+            Assert.That(aggregatesForId["max"], Is.EqualTo(12));
+            Assert.That(aggregatesForId["count"], Is.EqualTo(12));
+            Assert.That(aggregatesForId["average"], Is.EqualTo(6.5d));
+        }
     }
 
     [Test]
@@ -331,30 +359,34 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.IsNull(gridRequest.GroupObjects);
-        ClassicAssert.AreEqual(5, gridRequest.AggregateObjects.Count());
-
-        InitAutoMapper();
-        var employees = InitEmployeesWithData().AsQueryable();
-        var mappings = new Dictionary<string, MapExpression<Employee>>
+        using (Assert.EnterMultipleScope())
         {
-            { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } },
-            { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } }
-        };
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, new[] { "Company", "Company.MainCompany", "Country" }, mappings);
+            Assert.That(gridRequest.GroupObjects, Is.Null);
+            Assert.That(gridRequest.AggregateObjects.Count(), Is.EqualTo(5));
 
-        ClassicAssert.IsNull(kendoGrid.Groups);
-        ClassicAssert.IsNotNull(kendoGrid.Data);
-        ClassicAssert.AreEqual(0, kendoGrid.Data.Count());
+            InitAutoMapper();
+            var employees = InitEmployeesWithData().AsQueryable();
+            var mappings = new Dictionary<string, MapExpression<Employee>>
+            {
+                { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } },
+                { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } }
+            };
 
-        ClassicAssert.IsNotNull(kendoGrid.Aggregates);
-        string json = JsonConvert.SerializeObject(kendoGrid.Aggregates, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, new[] { "Company", "Company.MainCompany", "Country" }, mappings);
 
-        var aggregatesAsDictionary = kendoGrid.Aggregates as Dictionary<string, Dictionary<string, object>>;
-        ClassicAssert.IsNotNull(aggregatesAsDictionary);
-        ClassicAssert.AreEqual(0, aggregatesAsDictionary.Keys.Count);
+            Assert.That(kendoGrid.Groups, Is.Null);
+            Assert.That(kendoGrid.Data, Is.Not.Null);
+            Assert.That(kendoGrid.Data.Count(), Is.Zero);
+
+            Assert.That(kendoGrid.Aggregates, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Aggregates, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
+
+            var aggregatesAsDictionary = kendoGrid.Aggregates as Dictionary<string, Dictionary<string, object>>;
+            Assert.That(aggregatesAsDictionary, Is.Not.Null);
+            Assert.That(aggregatesAsDictionary.Keys.Count, Is.Zero);
+        }
     }
 
     [Test]
@@ -372,41 +404,44 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(0, gridRequest.GroupObjects.First().AggregateObjects.Count());
-
-        InitAutoMapper();
-        var employees = InitEmployees().AsQueryable();
-        var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
-        ClassicAssert.IsNotNull(employeeVMs);
-
-        var mappings = new Dictionary<string, MapExpression<Employee>>
+        using (Assert.EnterMultipleScope())
         {
-            { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
-        };
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(0));
 
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+            InitAutoMapper();
+            var employees = InitEmployees().AsQueryable();
+            var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
+            Assert.That(employeeVMs, Is.Not.Null);
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            var mappings = new Dictionary<string, MapExpression<Employee>>
+            {
+                { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
+            };
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
 
-        ClassicAssert.AreEqual(5, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        var employeesFromFirstGroup = groups.First().items as IEnumerable<EmployeeVM>;
-        ClassicAssert.IsNotNull(employeesFromFirstGroup);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
 
-        var employeesFromFirstGroupList = employeesFromFirstGroup.ToList();
-        ClassicAssert.AreEqual(1, employeesFromFirstGroupList.Count);
+            Assert.That(groups.Count(), Is.EqualTo(5));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
 
-        var testEmployee = employeesFromFirstGroupList.First();
-        ClassicAssert.IsNull(testEmployee.CountryName);
+            var employeesFromFirstGroup = groups.First().items as IEnumerable<EmployeeVM>;
+            Assert.That(employeesFromFirstGroup, Is.Not.Null);
+
+            var employeesFromFirstGroupList = employeesFromFirstGroup.ToList();
+            Assert.That(employeesFromFirstGroupList.Count, Is.EqualTo(1));
+
+            var testEmployee = employeesFromFirstGroupList.First();
+            Assert.That(testEmployee.CountryName, Is.Null);
+        }
     }
 
     [Test]
@@ -429,25 +464,28 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.First().AggregateObjects.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(1));
 
-        InitAutoMapper();
-        var employees = InitEmployeesWithData().AsQueryable();
+            InitAutoMapper();
+            var employees = InitEmployeesWithData().AsQueryable();
 
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
 
-        ClassicAssert.AreEqual(5, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            Assert.That(groups.Count(), Is.EqualTo(5));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
+        }
     }
 
     [Test]
@@ -467,46 +505,55 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.First().AggregateObjects.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            // Group objects count assertions
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(1));
 
-        InitAutoMapper();
-        var employees = InitEmployeesWithData().AsQueryable();
+            // Setup
+            InitAutoMapper();
+            var employees = InitEmployeesWithData().AsQueryable();
 
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        ClassicAssert.AreEqual(9, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            // Groups assertions
+            var groups = kendoGrid.Groups as List<KendoGroup>;
 
-        var groupBySmith = groups.FirstOrDefault(g => g.value.ToString() == "Smith");
-        ClassicAssert.IsNotNull(groupBySmith);
+            Assert.That(groups, Is.Not.Null);
+            Assert.That(groups, Has.Count.EqualTo(9));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
 
-        var items = groupBySmith.items as List<EmployeeVM>;
-        ClassicAssert.IsNotNull(items);
-        ClassicAssert.AreEqual(2, items.Count);
-        ClassicAssert.AreEqual(2, items.Count(e => e.Last == "Smith"));
+            // Group by Smith assertions
+            var groupBySmith = groups.FirstOrDefault(g => g.value.ToString() == "Smith");
+            Assert.That(groupBySmith, Is.Not.Null);
 
-        var aggregates = groupBySmith.aggregates as Dictionary<string, Dictionary<string, object>>;
-        ClassicAssert.IsNotNull(aggregates);
+            var items = groupBySmith.items as List<EmployeeVM>;
 
-        ClassicAssert.IsTrue(aggregates.ContainsKey("Number"));
-        var aggregatesNumber = aggregates["Number"];
-        ClassicAssert.IsNotNull(aggregatesNumber);
-        ClassicAssert.AreEqual(1, aggregatesNumber.Count);
+            Assert.That(items, Is.Not.Null);
+            Assert.That(items, Has.Count.EqualTo(2));
+            Assert.That(items.Count(e => e.Last == "Smith"), Is.EqualTo(2));
 
-        var aggregateSum = aggregatesNumber.First();
-        ClassicAssert.IsNotNull(aggregateSum);
-        ClassicAssert.AreEqual("sum", aggregateSum.Key);
-        ClassicAssert.AreEqual(2003, aggregateSum.Value);
+            // Aggregates assertions
+            var aggregates = groupBySmith.aggregates as Dictionary<string, Dictionary<string, object>>;
+            Assert.That(aggregates, Is.Not.Null);
+
+            Assert.That(aggregates, Contains.Key("Number"));
+            var aggregatesNumber = aggregates["Number"];
+            Assert.That(aggregatesNumber, Is.Not.Null);
+            Assert.That(aggregatesNumber, Has.Count.EqualTo(1));
+
+            var aggregateSum = aggregatesNumber.First();
+            Assert.That(aggregateSum.Key, Is.EqualTo("sum"));
+            Assert.That(aggregateSum.Value, Is.EqualTo(2003));
+        }
     }
 
     /*
@@ -556,32 +603,35 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(2, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.First().AggregateObjects.Count());
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Last().AggregateObjects.Count());
-
-        InitAutoMapper();
-        var employees = InitEmployeesWithData().AsQueryable();
-        var mappings = new Dictionary<string, MapExpression<Employee>>
+        using (Assert.EnterMultipleScope())
         {
-            { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } },
-            { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } },
-            { "CountryName", new MapExpression<Employee> { Path = "Country.Name", Expression = m => m.Country.Name } }
-        };
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(2));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.Last().AggregateObjects.Count(), Is.EqualTo(1));
 
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+            InitAutoMapper();
+            var employees = InitEmployeesWithData().AsQueryable();
+            var mappings = new Dictionary<string, MapExpression<Employee>>
+            {
+                { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } },
+                { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } },
+                { "CountryName", new MapExpression<Employee> { Path = "Country.Name", Expression = m => m.Country.Name } }
+            };
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        ClassicAssert.AreEqual(10, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
+
+            Assert.That(groups.Count(), Is.EqualTo(10));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
+        }
 
         /*
         var groupBySmith = groups.FirstOrDefault(g => g.value.ToString() == "Smith");
@@ -632,32 +682,35 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.First().AggregateObjects.Count());
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Last().AggregateObjects.Count());
-
-        InitAutoMapper();
-        var employees = InitEmployeesWithData().AsQueryable();
-        var mappings = new Dictionary<string, MapExpression<Employee>>
+        using (Assert.EnterMultipleScope())
         {
-            { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } },
-            { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } },
-            { "CountryName", new MapExpression<Employee> { Path = "Country.Name", Expression = m => m.Country.Name } }
-        };
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.Last().AggregateObjects.Count(), Is.EqualTo(1));
 
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+            InitAutoMapper();
+            var employees = InitEmployeesWithData().AsQueryable();
+            var mappings = new Dictionary<string, MapExpression<Employee>>
+            {
+                { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } },
+                { "CompanyName", new MapExpression<Employee> { Path = "Company.Name", Expression = m => m.Company.Name } },
+                { "CountryName", new MapExpression<Employee> { Path = "Country.Name", Expression = m => m.Country.Name } }
+            };
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        ClassicAssert.AreEqual(10, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
+
+            Assert.That(groups.Count(), Is.EqualTo(10));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
+        }
     }
 
     [Test]
@@ -675,27 +728,33 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.IsNull(gridRequest.GroupObjects);
-
-        InitAutoMapper();
-        var employees = InitEmployees().AsQueryable();
-        var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
-        ClassicAssert.IsNotNull(employeeVMs);
-
-        var mappings = new Dictionary<string, MapExpression<Employee>>
+        using (Assert.EnterMultipleScope())
         {
-            { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
-        };
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+            Assert.That(gridRequest.GroupObjects, Is.Null);
 
-        ClassicAssert.IsNotNull(kendoGrid);
-        ClassicAssert.IsNull(kendoGrid.Groups);
-        ClassicAssert.NotNull(kendoGrid.Data);
+            InitAutoMapper();
+            var employees = InitEmployees().AsQueryable();
+            var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
+            Assert.That(employeeVMs, Is.Not.Null);
 
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
-        ClassicAssert.IsNotNull(kendoGrid.Data);
-        ClassicAssert.AreEqual(5, kendoGrid.Data.Count());
+            var mappings = new Dictionary<string, MapExpression<Employee>>
+            {
+                { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
+            };
+
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+
+            Assert.That(kendoGrid, Is.Not.Null);
+
+            Assert.That(kendoGrid.Groups, Is.Null);
+            Assert.That(kendoGrid.Data, Is.Not.Null);
+
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
+
+            Assert.That(kendoGrid.Data, Is.Not.Null);
+            Assert.That(kendoGrid.Data.Count(), Is.EqualTo(5));
+        }
     }
 
     [Test]
@@ -715,27 +774,31 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.IsNull(gridRequest.GroupObjects);
-
-        InitAutoMapper();
-        var employees = InitEmployees().AsQueryable();
-        var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
-        ClassicAssert.IsNotNull(employeeVMs);
-
-        var mappings = new Dictionary<string, MapExpression<Employee>>
+        using (Assert.EnterMultipleScope())
         {
-            { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
-        };
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+            Assert.That(gridRequest.GroupObjects, Is.Null);
 
-        ClassicAssert.IsNotNull(kendoGrid);
-        ClassicAssert.IsNull(kendoGrid.Groups);
-        ClassicAssert.NotNull(kendoGrid.Data);
+            InitAutoMapper();
+            var employees = InitEmployees().AsQueryable();
+            var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
+            Assert.That(employeeVMs, Is.Not.Null);
 
-        ClassicAssert.AreEqual(1, kendoGrid.Total);
-        ClassicAssert.IsNotNull(kendoGrid.Data);
-        ClassicAssert.AreEqual(1, kendoGrid.Data.Count());
+            var mappings = new Dictionary<string, MapExpression<Employee>>
+            {
+                { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
+            };
+
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+
+            Assert.That(kendoGrid, Is.Not.Null);
+            Assert.That(kendoGrid.Groups, Is.Null);
+            Assert.That(kendoGrid.Data, Is.Not.Null);
+
+            Assert.That(kendoGrid.Total, Is.EqualTo(1));
+            Assert.That(kendoGrid.Data, Is.Not.Null);
+            Assert.That(kendoGrid.Data.Count(), Is.EqualTo(1));
+        }
     }
 
     [Test]
@@ -753,40 +816,43 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(0, gridRequest.GroupObjects.First().AggregateObjects.Count());
-
-        InitAutoMapper();
-        var employees = InitEmployees().AsQueryable();
-        var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
-        ClassicAssert.IsNotNull(employeeVMs);
-
-        var mappings = new Dictionary<string, MapExpression<Employee>>
+        using (Assert.EnterMultipleScope())
         {
-            { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
-        };
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(0));
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            InitAutoMapper();
+            var employees = InitEmployees().AsQueryable();
+            var employeeVMs = _mapper.Map<List<EmployeeVM>>(employees.ToList());
+            Assert.That(employeeVMs, Is.Not.Null);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            var mappings = new Dictionary<string, MapExpression<Employee>>
+            {
+                { "CompanyId", new MapExpression<Employee> { Path = "Company.Id", Expression = m => m.Company.Id } }
+            };
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest, null, mappings);
 
-        ClassicAssert.AreEqual(5, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        var employeesFromFirstGroup = groups.First().items as IEnumerable<EmployeeVM>;
-        ClassicAssert.IsNotNull(employeesFromFirstGroup);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
 
-        var employeesFromFirstGroupList = employeesFromFirstGroup.ToList();
-        ClassicAssert.AreEqual(1, employeesFromFirstGroupList.Count);
+            Assert.That(groups.Count(), Is.EqualTo(5));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
 
-        var testEmployee = employeesFromFirstGroupList.First();
-        ClassicAssert.IsNull(testEmployee.CountryName);
+            var employeesFromFirstGroup = groups.First().items as IEnumerable<EmployeeVM>;
+            Assert.That(employeesFromFirstGroup, Is.Not.Null);
+
+            var employeesFromFirstGroupList = employeesFromFirstGroup.ToList();
+            Assert.That(employeesFromFirstGroupList.Count, Is.EqualTo(1));
+
+            var testEmployee = employeesFromFirstGroupList.First();
+            Assert.That(testEmployee.CountryName, Is.Null);
+        }
     }
 
     [Test]
@@ -804,45 +870,47 @@ public class KendoGridUnitTests : TestHelper
         };
 
         var gridRequest = SetupBinder(form, null);
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.Count());
-        ClassicAssert.AreEqual(1, gridRequest.GroupObjects.First().AggregateObjects.Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(gridRequest.GroupObjects.Count(), Is.EqualTo(1));
+            Assert.That(gridRequest.GroupObjects.First().AggregateObjects.Count(), Is.EqualTo(1));
 
-        InitAutoMapper();
-        var employees = InitEmployeesWithData().AsQueryable();
-        _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
-        var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
+            InitAutoMapper();
+            var employees = InitEmployeesWithData().AsQueryable();
+            _instanceUnderTest = new KendoGridQueryableHelper(_mapperConfiguration);
+            var kendoGrid = _instanceUnderTest.ToKendoGridEx<Employee, EmployeeVM>(employees, gridRequest);
 
-        ClassicAssert.IsNull(kendoGrid.Data);
-        ClassicAssert.IsNotNull(kendoGrid.Groups);
-        string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
-        ClassicAssert.IsNotNull(json);
+            Assert.That(kendoGrid.Data, Is.Null);
+            Assert.That(kendoGrid.Groups, Is.Not.Null);
+            string json = JsonConvert.SerializeObject(kendoGrid.Groups, Formatting.Indented);
+            Assert.That(json, Is.Not.Null);
 
-        var groups = kendoGrid.Groups as List<KendoGroup>;
-        ClassicAssert.IsNotNull(groups);
+            var groups = kendoGrid.Groups as List<KendoGroup>;
+            Assert.That(groups, Is.Not.Null);
 
-        ClassicAssert.AreEqual(9, groups.Count());
-        ClassicAssert.AreEqual(employees.Count(), kendoGrid.Total);
+            Assert.That(groups.Count(), Is.EqualTo(9));
+            Assert.That(kendoGrid.Total, Is.EqualTo(employees.Count()));
 
-        var groupBySmith = groups.FirstOrDefault(g => g.value.ToString() == "Smith");
-        ClassicAssert.IsNotNull(groupBySmith);
+            var groupBySmith = groups.FirstOrDefault(g => g.value.ToString() == "Smith");
+            Assert.That(groupBySmith, Is.Not.Null);
 
-        var items = groupBySmith.items as List<EmployeeVM>;
-        ClassicAssert.IsNotNull(items);
-        ClassicAssert.AreEqual(2, items.Count);
-        ClassicAssert.AreEqual(2, items.Count(e => e.Last == "Smith"));
+            var items = groupBySmith.items as List<EmployeeVM>;
+            Assert.That(items, Is.Not.Null);
+            Assert.That(items, Has.Count.EqualTo(2));
+            Assert.That(items.Count(e => e.Last == "Smith"), Is.EqualTo(2));
 
-        var aggregates = groupBySmith.aggregates as Dictionary<string, Dictionary<string, object>>;
-        ClassicAssert.IsNotNull(aggregates);
+            var aggregates = groupBySmith.aggregates as Dictionary<string, Dictionary<string, object>>;
+            Assert.That(aggregates, Is.Not.Null);
 
-        ClassicAssert.IsTrue(aggregates.ContainsKey("Number"));
-        var aggregatesNumber = aggregates["Number"];
-        ClassicAssert.IsNotNull(aggregatesNumber);
-        ClassicAssert.AreEqual(1, aggregatesNumber.Count);
+            Assert.That(aggregates.ContainsKey("Number"), Is.True);
+            var aggregatesNumber = aggregates["Number"];
+            Assert.That(aggregatesNumber, Is.Not.Null);
+            Assert.That(aggregatesNumber.Count, Is.EqualTo(1));
 
-        var aggregateSum = aggregatesNumber.First();
-        ClassicAssert.IsNotNull(aggregateSum);
-        ClassicAssert.AreEqual("sum", aggregateSum.Key);
-        ClassicAssert.AreEqual(2003, aggregateSum.Value);
+            var aggregateSum = aggregatesNumber.First();
+            Assert.That(aggregateSum.Key, Is.EqualTo("sum"));
+            Assert.That(aggregateSum.Value, Is.EqualTo(2003));
+        }
     }
 
     #region InitAutoMapper

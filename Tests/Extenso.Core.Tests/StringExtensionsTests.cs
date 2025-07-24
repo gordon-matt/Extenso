@@ -40,7 +40,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrEmpty_True_Null()
     {
-        string?[] values = ["one", "two", null, "four"];
+        string[] values = ["one", "two", null, "four"];
 
         bool expected = true;
         bool actual = StringExtensions.AreAnyNullOrEmpty(values);
@@ -73,7 +73,7 @@ public class StringExtensionsTests
     [Fact]
     public void AreAnyNullOrWhiteSpace_True_Null()
     {
-        string?[] values = ["one", "two", null, "four"];
+        string[] values = ["one", "two", null, "four"];
 
         bool expected = true;
         bool actual = StringExtensions.AreAnyNullOrWhiteSpace(values);
@@ -547,8 +547,8 @@ public class StringExtensionsTests
     [Fact]
     public void SafeTrim_Null()
     {
-        string? source = null;
-        string? expected = null;
+        string source = null;
+        string expected = null;
         string actual = source.SafeTrim();
 
         Assert.Equal(expected, actual);
@@ -557,8 +557,8 @@ public class StringExtensionsTests
     [Fact]
     public void SafeTrim_NotNull()
     {
-        string? source = " something ";
-        string? expected = "something";
+        string source = " something ";
+        string expected = "something";
         string actual = source.SafeTrim();
 
         Assert.Equal(expected, actual);

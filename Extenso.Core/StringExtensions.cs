@@ -130,17 +130,17 @@ public static class StringExtensions
         byte[] bytes = Encoding.UTF8.GetBytes(source);
 
         using var memoryStream = new MemoryStream();
-        using (var gZipStream = new BrotliStream(memoryStream, CompressionMode.Compress, true))
+        using (var brotliStream = new BrotliStream(memoryStream, CompressionMode.Compress, true))
         {
-            gZipStream.Write(bytes, 0, bytes.Length);
+            brotliStream.Write(bytes, 0, bytes.Length);
         }
         memoryStream.Position = 0;
         byte[] compressed = new byte[memoryStream.Length];
         memoryStream.Read(compressed, 0, compressed.Length);
-        byte[] gZipBuffer = new byte[compressed.Length + 4];
-        Buffer.BlockCopy(compressed, 0, gZipBuffer, 4, compressed.Length);
-        Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, gZipBuffer, 0, 4);
-        return Convert.ToBase64String(gZipBuffer);
+        byte[] brotliBuffer = new byte[compressed.Length + 4];
+        Buffer.BlockCopy(compressed, 0, brotliBuffer, 4, compressed.Length);
+        Buffer.BlockCopy(BitConverter.GetBytes(bytes.Length), 0, brotliBuffer, 0, 4);
+        return Convert.ToBase64String(brotliBuffer);
     }
 
     /// <summary>
@@ -150,15 +150,15 @@ public static class StringExtensions
     /// <returns>A string of decompressed data.</returns>
     public static string BrotliDecompress(this string source)
     {
-        byte[] gZipBuffer = Convert.FromBase64String(source);
+        byte[] brotliBuffer = Convert.FromBase64String(source);
         using var memoryStream = new MemoryStream();
-        int dataLength = BitConverter.ToInt32(gZipBuffer, 0);
-        memoryStream.Write(gZipBuffer, 4, gZipBuffer.Length - 4);
+        int dataLength = BitConverter.ToInt32(brotliBuffer, 0);
+        memoryStream.Write(brotliBuffer, 4, brotliBuffer.Length - 4);
         byte[] buffer = new byte[dataLength];
         memoryStream.Position = 0;
-        using (var gZipStream = new BrotliStream(memoryStream, CompressionMode.Decompress))
+        using (var brotliStream = new BrotliStream(memoryStream, CompressionMode.Decompress))
         {
-            gZipStream.Read(buffer, 0, buffer.Length);
+            brotliStream.ReadExactly(buffer);
         }
         return Encoding.UTF8.GetString(buffer);
     }
@@ -357,7 +357,7 @@ public static class StringExtensions
         memoryStream.Position = 0;
         using (var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress))
         {
-            deflateStream.Read(buffer, 0, buffer.Length);
+            deflateStream.ReadExactly(buffer);
         }
         return Encoding.UTF8.GetString(buffer);
     }
@@ -470,7 +470,7 @@ public static class StringExtensions
         memoryStream.Position = 0;
         using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
         {
-            gZipStream.Read(buffer, 0, buffer.Length);
+            gZipStream.ReadExactly(buffer);
         }
         return Encoding.UTF8.GetString(buffer);
     }
@@ -894,18 +894,6 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Converts the specified string to camel case.
-    /// </summary>
-    /// <param name="source">The string to convert to camel case.</param>
-    /// <returns>The specified string converted to camel case.</returns>
-    [Obsolete("Use Humanizer instead. https://github.com/Humanizr/Humanizer")]
-    public static string ToCamelCase(this string source)
-    {
-        string pascal = source.ToPascalCase();
-        return string.Concat(pascal[0].ToString().ToLower(), pascal[1..]);
-    }
-
-    /// <summary>
     /// Creates a new file, writes the given string to the file, and then closes
     /// the file. If the target file already exists, it is overwritten.
     /// </summary>
@@ -946,14 +934,6 @@ public static class StringExtensions
     public static IEnumerable<string> ToLines(this string source) => !string.IsNullOrEmpty(source)
         ? source.Split(["\r\n", Environment.NewLine, "\n"], StringSplitOptions.None)
         : [];
-
-    /// <summary>
-    /// Converts the specified string to pascal case.
-    /// </summary>
-    /// <param name="source">The string to convert to pascal case.</param>
-    /// <returns>The specified string converted to pascal case.</returns>
-    [Obsolete("Use Humanizer instead. https://github.com/Humanizr/Humanizer")]
-    public static string ToPascalCase(this string source) => source.ToTitleCase().Replace(" ", string.Empty);
 
     /// <summary>
     ///  Initializes a new non-resizable instance of the System.IO.MemoryStream class

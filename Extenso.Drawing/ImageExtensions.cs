@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Runtime.Versioning;
 
 namespace Extenso.Drawing;
 
@@ -43,9 +44,11 @@ public static class ImageExtensions
     /// </summary>
     /// <param name="mimeType">Mime type</param>
     /// <returns>ImageCodecInfo</returns>
+    [SupportedOSPlatform("windows")]
     private static ImageCodecInfo GetImageCodecInfoFromMimeType(string mimeType) => ImageCodecInfo.GetImageEncoders()
-            .FirstOrDefault(ici => ici.MimeType.Equals(mimeType, StringComparison.OrdinalIgnoreCase));
+        .FirstOrDefault(ici => ici.MimeType.Equals(mimeType, StringComparison.OrdinalIgnoreCase));
 
+    [SupportedOSPlatform("windows")]
     public static MemoryStream ResizeToStream(this Image image, int targetSize, byte qualityPercent = 80, string mimeType = "image/jpeg")
     {
         var newSize = CalculateDimensions(image.Size, targetSize);
@@ -69,6 +72,7 @@ public static class ImageExtensions
         return stream;
     }
 
+    [SupportedOSPlatform("windows")]
     public static void ResizeToFile(this Image image, int targetSize, string fileName, byte qualityPercent = 80, string mimeType = "image/jpeg")
     {
         var newSize = CalculateDimensions(image.Size, targetSize);

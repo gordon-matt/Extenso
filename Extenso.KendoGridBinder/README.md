@@ -80,4 +80,4 @@ public JsonResult Grid(KendoGridMvcRequest request)
 
 ## Credits
 
-The code was originally written by [Stef Heyenrath](https://github.com/StefH/KendoGridBinderEx) and licensed under the MIT License
+The code was originally written by [Stef Heyenrath](https://github.com/StefH/KendoGridBinderEx) and licensed under the MIT License.
