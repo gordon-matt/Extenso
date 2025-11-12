@@ -61,12 +61,13 @@ public static class TypeExtensions
     /// <param name="type">The type to find extension methods for.</param>
     /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for extension methods for the given type.</param>
     /// <returns>A collection of System.Reflection.MethodInfo for all extension methods for type in extensionsAssembly.</returns>
-    public static IEnumerable<MethodInfo> GetExtensionMethods(this Type type, Assembly extensionsAssembly) => from t in extensionsAssembly.GetTypes()
-                                                                                                              where !t.GetTypeInfo().IsGenericType && !t.IsNested
-                                                                                                              from m in t.GetTypeInfo().GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                                                                                                              where m.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false)
-                                                                                                              where m.GetParameters()[0].ParameterType == type
-                                                                                                              select m;
+    public static IEnumerable<MethodInfo> GetExtensionMethods(this Type type, Assembly extensionsAssembly) =>
+        from t in extensionsAssembly.GetTypes()
+        where !t.GetTypeInfo().IsGenericType && !t.IsNested
+        from m in t.GetTypeInfo().GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+        where m.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false)
+        where m.GetParameters()[0].ParameterType == type
+        select m;
 
     /// <summary>
     /// A System.Reflection.MethodInfo for the specified extension method for the given type in the specified assembly.
@@ -75,7 +76,8 @@ public static class TypeExtensions
     /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for the extension method for the given type.</param>
     /// <param name="name">The name of the specific extension method to find.</param>
     /// <returns>A System.Reflection.MethodInfo for the specified extension method, if found; otherwise null.</returns>
-    public static MethodInfo GetExtensionMethod(this Type type, Assembly extensionsAssembly, string name) => type.GetExtensionMethods(extensionsAssembly).FirstOrDefault(m => m.Name == name);
+    public static MethodInfo GetExtensionMethod(this Type type, Assembly extensionsAssembly, string name) =>
+        type.GetExtensionMethods(extensionsAssembly).FirstOrDefault(m => m.Name == name);
 
     /// <summary>
     /// A System.Reflection.MethodInfo for the specified extension method for the given type in the specified

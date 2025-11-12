@@ -15,7 +15,7 @@ public static class StringExtensions
     /// <returns>The result, if the given type has a Parse(string) method; otherwise null.</returns>
     public static object ParseOrDefault(this string input, Type type)
     {
-        var parseMethod = type.GetTypeInfo().GetMethod("Parse", new Type[] { typeof(string) });
+        var parseMethod = type.GetTypeInfo().GetMethod("Parse", [typeof(string)]);
 
         return parseMethod?.Invoke(null, [input]);
     }
@@ -38,7 +38,7 @@ public static class StringExtensions
     public static T ParseOrDefault<T>(this string input, T defaultValue)
     {
         var type = typeof(T);
-        var parseMethod = type.GetTypeInfo().GetMethod("Parse", new Type[] { typeof(string) });
+        var parseMethod = type.GetTypeInfo().GetMethod("Parse", [typeof(string)]);
 
         if (parseMethod is not null)
         {
@@ -84,7 +84,7 @@ public static class StringExtensions
         var type = typeof(T);
         var parseMethod = type.GetTypeInfo().GetMethod(
             "TryParse",
-            new Type[] { typeof(string), typeof(T).MakeByRefType() });
+            [typeof(string), typeof(T).MakeByRefType()]);
 
         if (parseMethod is not null)
         {
