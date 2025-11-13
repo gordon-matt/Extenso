@@ -4,7 +4,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Authors>Matt Gordon</Authors>
 		<Company>Matt Gordon</Company>
-		<PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<Description>HTML Helpers for creating common UI components (Accordions, Tabs, Panels, Modal Dialogs, etc). This package includes default providers for Bootstrap 3, 4 and 5.</Description>

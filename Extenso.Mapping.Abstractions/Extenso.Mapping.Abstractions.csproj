@@ -5,6 +5,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Version>10.0.0</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
+		<Authors>Matt Gordon</Authors>
+		<Company>Matt Gordon</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<RootNamespace>Extenso.Mapping</RootNamespace>
 	</PropertyGroup>

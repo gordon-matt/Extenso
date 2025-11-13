@@ -3,7 +3,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Authors>Matt Gordon</Authors>
-		<PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<Description>Data-related extension methods and other helper classes for Npgsql</Description>
