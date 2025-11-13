@@ -206,18 +206,6 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Returns a value indicating whether a specified substring occurs within the given string.
-    /// A parameter specifies the type of search to use for the specified substring.
-    /// </summary>
-    /// <param name="source">The string to examine.</param>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
-    /// <returns>
-    /// true if the value parameter occurs within the given string; otherwise, false.
-    /// </returns>
-    public static bool Contains(this string source, string value, StringComparison comparisonType) => source.IndexOf(value, comparisonType) != -1;
-
-    /// <summary>
     /// Gets a value indicating whether all of the specified strings occur within the given string.
     /// </summary>
     /// <param name="source">The string to examine.</param>
@@ -989,7 +977,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="source">The string to get a word count from.</param>
     /// <returns>A System.Int32 specifying the number of words in the given string.</returns>
-    public static int WordCount(this string source) => source.Split(' ').Count();
+    public static int WordCount(this string source) => source.Split(' ').Length;
 
     /// <summary>
     /// Gets a value indicating the number of times that the specified word appears in the given string.
