@@ -7,7 +7,7 @@
 		<Description>Data-related extension methods and other helper classes.</Description>
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<PackageLicenseUrl>https://raw.githubusercontent.com/gordon-matt/Extenso/master/LICENSE.txt</PackageLicenseUrl>
-		<Version>9.4.0</Version>
+		<Version>9.5.0</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryType>https://github.com/gordon-matt/Extenso</RepositoryType>
 	</PropertyGroup>

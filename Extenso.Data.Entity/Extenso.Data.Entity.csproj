@@ -8,7 +8,7 @@
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<Description>This library provides a generic repository interface and base class, as well as other data-related extension methods and helper classes.</Description>
-		<Version>9.4.0</Version>
+		<Version>9.5.0</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
