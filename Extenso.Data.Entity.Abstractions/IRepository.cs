@@ -295,7 +295,7 @@ public interface IRepository<TEntity>
     /// </summary>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
+    int Update(Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
     /// Updates all rows that match the given predicate using SetPropertyCalls without retrieving entities.
@@ -303,14 +303,14 @@ public interface IRepository<TEntity>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
+    int Update(Expression<Func<TEntity, bool>> predicate, Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously updates all rows using SetPropertyCalls without retrieving entities.
     /// </summary>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
+    Task<int> UpdateAsync(Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     /// <summary>
     /// Asynchronously updates all rows that match the given predicate using SetPropertyCalls without retrieving entities.
@@ -318,7 +318,7 @@ public interface IRepository<TEntity>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression.</param>
     /// <returns>The number of rows affected.</returns>
-    Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null);
+    Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null);
 
     #endregion Update
 }

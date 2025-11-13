@@ -97,7 +97,9 @@ public static class ExpressionTypeMapper
                 return node;
             }
 
-            return Expression.Lambda(newBody, replacements.Select(pair => pair.Value));
+            var newParameters = replacements.Select(pair => pair.Value);
+            var lambdaType = MapType(node.Type);
+            return Expression.Lambda(lambdaType, newBody, node.Name, node.TailCall, newParameters);
         }
 
         protected override Expression VisitParameter(ParameterExpression node)

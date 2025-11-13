@@ -600,35 +600,35 @@ public class MappedEntityFrameworkRepository<TModel, TEntity> : IMappedRepositor
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
+    public virtual int Update(Expression<Action<UpdateSettersBuilder<TModel>>> setPropertyCalls, ContextOptions options = null)
     {
         var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
         using var context = GetContext(options);
-        return context.Set<TEntity>().ExecuteUpdate(mappedSetPropertyCalls);
+        return context.Set<TEntity>().ExecuteUpdate(mappedSetPropertyCalls.Compile());
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
+    public virtual int Update(Expression<Func<TModel, bool>> predicate, Expression<Action<UpdateSettersBuilder<TModel>>> setPropertyCalls, ContextOptions options = null)
     {
         var mappedPredicate = mapper.MapPredicate(predicate);
-        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
+        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls).Compile();
         using var context = GetContext(options);
         return context.Set<TEntity>().Where(mappedPredicate).ExecuteUpdate(mappedSetPropertyCalls);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
+    public virtual async Task<int> UpdateAsync(Expression<Action<UpdateSettersBuilder<TModel>>> setPropertyCalls, ContextOptions options = null)
     {
-        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
+        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls).Compile();
         using var context = GetContext(options);
         return await context.Set<TEntity>().ExecuteUpdateAsync(mappedSetPropertyCalls, options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls, ContextOptions options = null)
+    public virtual async Task<int> UpdateAsync(Expression<Func<TModel, bool>> predicate, Expression<Action<UpdateSettersBuilder<TModel>>> setPropertyCalls, ContextOptions options = null)
     {
         var mappedPredicate = mapper.MapPredicate(predicate);
-        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls);
+        var mappedSetPropertyCalls = mapper.MapSetPropertyCalls(setPropertyCalls).Compile();
         using var context = GetContext(options);
         return await context.Set<TEntity>().Where(mappedPredicate).ExecuteUpdateAsync(mappedSetPropertyCalls, options?.CancellationToken ?? default);
     }

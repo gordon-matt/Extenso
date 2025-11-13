@@ -24,8 +24,8 @@ public interface IEntityModelMapper<TEntity, TModel>
     /// </summary>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression for TModel</param>
     /// <returns>A SetPropertyCalls expression for TEntity</returns>
-    Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> MapSetPropertyCalls(
-        Expression<Func<SetPropertyCalls<TModel>, SetPropertyCalls<TModel>>> setPropertyCalls);
+    Expression<Action<UpdateSettersBuilder<TEntity>>> MapSetPropertyCalls(
+        Expression<Action<UpdateSettersBuilder<TModel>>> setPropertyCalls);
 
     TEntity ToEntity(TModel model);
 

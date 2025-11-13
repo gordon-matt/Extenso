@@ -560,31 +560,31 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
+    public virtual int Update(Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return context.Set<TEntity>().ExecuteUpdate(setPropertyCalls);
+        return context.Set<TEntity>().ExecuteUpdate(setPropertyCalls.Compile());
     }
 
     /// <inheritdoc/>
-    public virtual int Update(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
+    public virtual int Update(Expression<Func<TEntity, bool>> predicate, Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return context.Set<TEntity>().Where(predicate).ExecuteUpdate(setPropertyCalls);
+        return context.Set<TEntity>().Where(predicate).ExecuteUpdate(setPropertyCalls.Compile());
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
+    public virtual async Task<int> UpdateAsync(Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().ExecuteUpdateAsync(setPropertyCalls, options?.CancellationToken ?? default);
+        return await context.Set<TEntity>().ExecuteUpdateAsync(setPropertyCalls.Compile(), options?.CancellationToken ?? default);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, ContextOptions options = null)
+    public virtual async Task<int> UpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Action<UpdateSettersBuilder<TEntity>>> setPropertyCalls, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().Where(predicate).ExecuteUpdateAsync(setPropertyCalls, options?.CancellationToken ?? default);
+        return await context.Set<TEntity>().Where(predicate).ExecuteUpdateAsync(setPropertyCalls.Compile(), options?.CancellationToken ?? default);
     }
 
     #endregion Update

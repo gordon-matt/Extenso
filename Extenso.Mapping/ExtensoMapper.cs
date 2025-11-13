@@ -189,17 +189,17 @@ public static class ExtensoMapper
     /// <typeparam name="TDestination">The destination type</typeparam>
     /// <param name="setPropertyCalls">The SetPropertyCalls expression for TSource</param>
     /// <returns>A SetPropertyCalls expression for TDestination</returns>
-    public static Expression<Func<SetPropertyCalls<TDestination>, SetPropertyCalls<TDestination>>> MapSetPropertyCalls<TSource, TDestination>(
-        Expression<Func<SetPropertyCalls<TSource>, SetPropertyCalls<TSource>>> setPropertyCalls)
+    public static Expression<Action<UpdateSettersBuilder<TDestination>>> MapSetPropertyCalls<TSource, TDestination>(
+        Expression<Action<UpdateSettersBuilder<TSource>>> setPropertyCalls)
     {
         ArgumentNullException.ThrowIfNull(setPropertyCalls);
-        var mapping = new Dictionary<Type, Type> 
-        { 
+        var mapping = new Dictionary<Type, Type>
+        {
             { typeof(TSource), typeof(TDestination) },
-            { typeof(SetPropertyCalls<TSource>), typeof(SetPropertyCalls<TDestination>) }
+            { typeof(UpdateSettersBuilder<TSource>), typeof(UpdateSettersBuilder<TDestination>) }
         };
         var newSetPropertyCalls = (LambdaExpression)ExpressionTypeMapper.ReplaceTypes(setPropertyCalls, mapping);
-        return (Expression<Func<SetPropertyCalls<TDestination>, SetPropertyCalls<TDestination>>>)newSetPropertyCalls;
+        return (Expression<Action<UpdateSettersBuilder<TDestination>>>)newSetPropertyCalls;
     }
 
     #region Private Methods
