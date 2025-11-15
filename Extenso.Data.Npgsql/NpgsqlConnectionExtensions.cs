@@ -6,204 +6,252 @@ namespace Extenso.Data.Npgsql;
 
 public static class NpgsqlConnectionExtensions
 {
-    public static ColumnInfoCollection GetColumnData(this NpgsqlConnection connection, string tableName, string schema = "public")
+    extension(NpgsqlConnection connection)
     {
-        const string CMD_COLUMN_INFO_FORMAT =
-@"SELECT ""column_name"", ""column_default"", ""data_type"", ""character_maximum_length"", ""is_nullable"", ""ordinal_position"", ""numeric_precision"", ""numeric_scale""
+        public ColumnInfoCollection GetColumnData(string tableName, string schema = "public")
+        {
+            const string CMD_COLUMN_INFO_FORMAT =
+    @"SELECT ""column_name"", ""column_default"", ""data_type"", ""character_maximum_length"", ""is_nullable"", ""ordinal_position"", ""numeric_precision"", ""numeric_scale""
 FROM information_schema.""columns""
 WHERE TABLE_NAME = @TableName
 AND ""table_schema"" = @SchemaName;";
 
-        const string CMD_IS_PRIMARY_KEY_FORMAT =
-@"SELECT ""column_name""
+            const string CMD_IS_PRIMARY_KEY_FORMAT =
+    @"SELECT ""column_name""
 FROM information_schema.""key_column_usage"" kcu
 INNER JOIN information_schema.""table_constraints"" tc ON kcu.""constraint_name"" = tc.""constraint_name""
 WHERE kcu.""table_name"" = @TableName
 AND tc.""constraint_type"" = 'PRIMARY KEY'
 AND kcu.""table_schema"" = @SchemaName";
 
-        var list = new ColumnInfoCollection();
+            var list = new ColumnInfoCollection();
 
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
 
-        try
-        {
-            var foreignKeyColumns = connection.GetForeignKeyData(tableName, schema);
-
-            if (!alreadyOpen)
+            try
             {
-                connection.Open();
-            }
+                var foreignKeyColumns = connection.GetForeignKeyData(tableName, schema);
 
-            using var command = new NpgsqlCommand(CMD_COLUMN_INFO_FORMAT, connection);
-            command.CommandType = CommandType.Text;
-
-            command.Parameters.Add(new NpgsqlParameter
-            {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@TableName",
-                Value = tableName
-            });
-
-            command.Parameters.Add(new NpgsqlParameter
-            {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@SchemaName",
-                Value = schema
-            });
-
-            using var reader = command.ExecuteReader();
-            ColumnInfo columnInfo = null;
-
-            while (reader.Read())
-            {
-                columnInfo = new ColumnInfo();
-
-                if (!reader.IsDBNull(0)) { columnInfo.ColumnName = reader.GetString(0); }
-
-                columnInfo.DefaultValue = !reader.IsDBNull(1) ? reader.GetString(1) : string.Empty;
-
-                if (!reader.IsDBNull(3)) { columnInfo.MaximumLength = reader.GetInt64(3); }
-
-                if (foreignKeyColumns.Contains(columnInfo.ColumnName))
+                if (!alreadyOpen)
                 {
-                    columnInfo.KeyType = KeyType.ForeignKey;
+                    connection.Open();
                 }
 
-                try
+                using var command = new NpgsqlCommand(CMD_COLUMN_INFO_FORMAT, connection);
+                command.CommandType = CommandType.Text;
+
+                command.Parameters.Add(new NpgsqlParameter
                 {
-                    string nativeType = reader.GetString(2).ToLowerInvariant();
-                    columnInfo.DataTypeNative = nativeType;
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
 
-                    // https://www.npgsql.org/doc/types/basic.html
-                    columnInfo.DataType = nativeType == "bit"
-                        ? columnInfo.MaximumLength == 1 ? DbType.Boolean : DbType.Binary
-                        : nativeType switch
-                        {
-                            "bigint" => DbType.Int64,
-                            "bigserial" => DbType.Int64,
-                            "bit varying" => DbType.Binary,
-                            "boolean" => DbType.Boolean,
-                            "box" => DbType.Object,
-                            "bytea" => DbType.Binary,
-                            "char" => DbType.String,
-                            "character" => DbType.String,
-                            "character varying" => DbType.String,
-                            "cid" => DbType.UInt32,
-                            "cidr" => DbType.Object,
-                            "circle" => DbType.Object,
-                            "citext" => DbType.String,
-                            "date" => DbType.Date,
-                            "double precision" => DbType.Double,
-                            "geometry" => DbType.Object,
-                            "hstore" => DbType.Object,
-                            "inet" => DbType.Object,
-                            "integer" => DbType.Int32,
-                            "interval" => DbType.Time,
-                            "json" => DbType.String,
-                            "jsonb" => DbType.String,
-                            "line" => DbType.Object,
-                            "lseg" => DbType.Object,
-                            "macaddr" => DbType.Object,
-                            "money" => DbType.Decimal,
-                            "name" => DbType.String,
-                            "numeric" => DbType.Decimal,
-                            "oid" => DbType.UInt32,
-                            "oidvector" => DbType.Binary,
-                            "path" => DbType.Object,
-                            "point" => DbType.Object,
-                            "polygon" => DbType.Object,
-                            "real" => DbType.Single,
-                            "record" => DbType.Binary,
-                            "smallint" => DbType.Int16,
-                            "smallserial" => DbType.Int16,
-                            "serial" => DbType.Int32,
-                            "text" => DbType.String,
-                            "time without time zone" => DbType.Time,
-                            "time with time zone" => DbType.DateTimeOffset,
-                            "timestamp without time zone" => DbType.DateTime,
-                            "timestamp with time zone" => DbType.DateTimeOffset,
-                            "tsquery" => DbType.Object,
-                            "tsvector" => DbType.Object,
-                            "txid_snapshot" => DbType.Object,
-                            "uuid" => DbType.Guid,
-                            "xid" => DbType.UInt32,
-                            "xml" => DbType.Xml,
-                            _ => DbType.Object,
-                        };
-                }
-                catch
+                command.Parameters.Add(new NpgsqlParameter
                 {
-                    columnInfo.DataType = DbType.Object;
-                }
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
 
-                if (columnInfo.DefaultValue != null &&
-                    columnInfo.DefaultValue.Contains("nextval"))
-                {
-                    columnInfo.IsAutoIncremented = true;
-                    columnInfo.DefaultValue = string.Empty;
-                }
+                using var reader = command.ExecuteReader();
+                ColumnInfo columnInfo = null;
 
-                if (!reader.IsDBNull(4))
-                {
-                    columnInfo.IsNullable = !reader.GetString(4).ToUpperInvariant().Equals("NO");
-                }
-
-                if (!reader.IsDBNull(5)) { columnInfo.OrdinalPosition = reader.GetInt32(5); }
-                if (!reader.IsDBNull(6)) { columnInfo.Precision = reader.GetInt32(6); }
-                if (!reader.IsDBNull(7)) { columnInfo.Scale = reader.GetInt32(7); }
-
-                list.Add(columnInfo);
-            }
-        }
-        finally
-        {
-            if (!alreadyOpen && connection.State != ConnectionState.Closed)
-            { connection.Close(); }
-        }
-
-        #region Primary Keys
-
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandType = CommandType.Text;
-            command.CommandText = CMD_IS_PRIMARY_KEY_FORMAT;
-
-            command.Parameters.Add(new NpgsqlParameter
-            {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@TableName",
-                Value = tableName
-            });
-
-            command.Parameters.Add(new NpgsqlParameter
-            {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@SchemaName",
-                Value = schema
-            });
-
-            alreadyOpen = connection.State != ConnectionState.Closed;
-
-            if (!alreadyOpen)
-            {
-                connection.Open();
-            }
-
-            using (var reader = command.ExecuteReader())
-            {
                 while (reader.Read())
                 {
-                    string pkColumn = reader.GetString(0);
-                    var match = list[pkColumn];
-                    if (match != null)
+                    columnInfo = new ColumnInfo();
+
+                    if (!reader.IsDBNull(0)) { columnInfo.ColumnName = reader.GetString(0); }
+
+                    columnInfo.DefaultValue = !reader.IsDBNull(1) ? reader.GetString(1) : string.Empty;
+
+                    if (!reader.IsDBNull(3)) { columnInfo.MaximumLength = reader.GetInt64(3); }
+
+                    if (foreignKeyColumns.Contains(columnInfo.ColumnName))
                     {
-                        match.KeyType = KeyType.PrimaryKey;
+                        columnInfo.KeyType = KeyType.ForeignKey;
                     }
+
+                    try
+                    {
+                        string nativeType = reader.GetString(2).ToLowerInvariant();
+                        columnInfo.DataTypeNative = nativeType;
+
+                        // https://www.npgsql.org/doc/types/basic.html
+                        columnInfo.DataType = nativeType == "bit"
+                            ? columnInfo.MaximumLength == 1 ? DbType.Boolean : DbType.Binary
+                            : nativeType switch
+                            {
+                                "bigint" => DbType.Int64,
+                                "bigserial" => DbType.Int64,
+                                "bit varying" => DbType.Binary,
+                                "boolean" => DbType.Boolean,
+                                "box" => DbType.Object,
+                                "bytea" => DbType.Binary,
+                                "char" => DbType.String,
+                                "character" => DbType.String,
+                                "character varying" => DbType.String,
+                                "cid" => DbType.UInt32,
+                                "cidr" => DbType.Object,
+                                "circle" => DbType.Object,
+                                "citext" => DbType.String,
+                                "date" => DbType.Date,
+                                "double precision" => DbType.Double,
+                                "geometry" => DbType.Object,
+                                "hstore" => DbType.Object,
+                                "inet" => DbType.Object,
+                                "integer" => DbType.Int32,
+                                "interval" => DbType.Time,
+                                "json" => DbType.String,
+                                "jsonb" => DbType.String,
+                                "line" => DbType.Object,
+                                "lseg" => DbType.Object,
+                                "macaddr" => DbType.Object,
+                                "money" => DbType.Decimal,
+                                "name" => DbType.String,
+                                "numeric" => DbType.Decimal,
+                                "oid" => DbType.UInt32,
+                                "oidvector" => DbType.Binary,
+                                "path" => DbType.Object,
+                                "point" => DbType.Object,
+                                "polygon" => DbType.Object,
+                                "real" => DbType.Single,
+                                "record" => DbType.Binary,
+                                "smallint" => DbType.Int16,
+                                "smallserial" => DbType.Int16,
+                                "serial" => DbType.Int32,
+                                "text" => DbType.String,
+                                "time without time zone" => DbType.Time,
+                                "time with time zone" => DbType.DateTimeOffset,
+                                "timestamp without time zone" => DbType.DateTime,
+                                "timestamp with time zone" => DbType.DateTimeOffset,
+                                "tsquery" => DbType.Object,
+                                "tsvector" => DbType.Object,
+                                "txid_snapshot" => DbType.Object,
+                                "uuid" => DbType.Guid,
+                                "xid" => DbType.UInt32,
+                                "xml" => DbType.Xml,
+                                _ => DbType.Object,
+                            };
+                    }
+                    catch
+                    {
+                        columnInfo.DataType = DbType.Object;
+                    }
+
+                    if (columnInfo.DefaultValue != null &&
+                        columnInfo.DefaultValue.Contains("nextval"))
+                    {
+                        columnInfo.IsAutoIncremented = true;
+                        columnInfo.DefaultValue = string.Empty;
+                    }
+
+                    if (!reader.IsDBNull(4))
+                    {
+                        columnInfo.IsNullable = !reader.GetString(4).ToUpperInvariant().Equals("NO");
+                    }
+
+                    if (!reader.IsDBNull(5)) { columnInfo.OrdinalPosition = reader.GetInt32(5); }
+                    if (!reader.IsDBNull(6)) { columnInfo.Precision = reader.GetInt32(6); }
+                    if (!reader.IsDBNull(7)) { columnInfo.Scale = reader.GetInt32(7); }
+
+                    list.Add(columnInfo);
+                }
+            }
+            finally
+            {
+                if (!alreadyOpen && connection.State != ConnectionState.Closed)
+                { connection.Close(); }
+            }
+
+            #region Primary Keys
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_IS_PRIMARY_KEY_FORMAT;
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
+
+                alreadyOpen = connection.State != ConnectionState.Closed;
+
+                if (!alreadyOpen)
+                {
+                    connection.Open();
+                }
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string pkColumn = reader.GetString(0);
+                        var match = list[pkColumn];
+                        if (match != null)
+                        {
+                            match.KeyType = KeyType.PrimaryKey;
+                        }
+                    }
+                }
+
+                if (!alreadyOpen)
+                {
+                    connection.Close();
+                }
+            }
+
+            #endregion Primary Keys
+
+            return list;
+        }
+
+        public ColumnInfoCollection GetColumnData(string tableName, IEnumerable<string> columnNames, string schema = "public")
+        {
+            var filteredColumns = connection
+                .GetColumnData(tableName, schema: schema)
+                .Where(x => columnNames.Contains(x.ColumnName));
+
+            var collection = new ColumnInfoCollection();
+            collection.AddRange(filteredColumns);
+            return collection;
+        }
+
+        public IEnumerable<string> GetSchemaNames()
+        {
+            const string CMD_SELECT_SCHEMA_NAMES = "SELECT nspname FROM pg_catalog.pg_namespace ORDER BY nspname;";
+            var schemaNames = new List<string>();
+
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
+
+            if (!alreadyOpen)
+            {
+                connection.Open();
+            }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_SELECT_SCHEMA_NAMES;
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    schemaNames.Add(reader.GetString(0));
                 }
             }
 
@@ -211,92 +259,46 @@ AND kcu.""table_schema"" = @SchemaName";
             {
                 connection.Close();
             }
+
+            return schemaNames;
         }
 
-        #endregion Primary Keys
-
-        return list;
-    }
-
-    public static ColumnInfoCollection GetColumnData(this NpgsqlConnection connection, string tableName, IEnumerable<string> columnNames, string schema = "public")
-    {
-        var filteredColumns = connection
-            .GetColumnData(tableName, schema: schema)
-            .Where(x => columnNames.Contains(x.ColumnName));
-
-        var collection = new ColumnInfoCollection();
-        collection.AddRange(filteredColumns);
-        return collection;
-    }
-
-    public static IEnumerable<string> GetSchemaNames(this NpgsqlConnection connection)
-    {
-        const string CMD_SELECT_SCHEMA_NAMES = "SELECT nspname FROM pg_catalog.pg_namespace ORDER BY nspname;";
-        var schemaNames = new List<string>();
-
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
-
-        if (!alreadyOpen)
+        public IEnumerable<string> GetDatabaseNames()
         {
-            connection.Open();
-        }
+            const string CMD_SELECT_DATABASE_NAMES = "SELECT datname FROM pg_database ORDER BY datname;";
+            var databaseNames = new List<string>();
 
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandType = CommandType.Text;
-            command.CommandText = CMD_SELECT_SCHEMA_NAMES;
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
 
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
+            if (!alreadyOpen)
             {
-                schemaNames.Add(reader.GetString(0));
+                connection.Open();
             }
-        }
 
-        if (!alreadyOpen)
-        {
-            connection.Close();
-        }
-
-        return schemaNames;
-    }
-
-    public static IEnumerable<string> GetDatabaseNames(this NpgsqlConnection connection)
-    {
-        const string CMD_SELECT_DATABASE_NAMES = "SELECT datname FROM pg_database ORDER BY datname;";
-        var databaseNames = new List<string>();
-
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
-
-        if (!alreadyOpen)
-        {
-            connection.Open();
-        }
-
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandType = CommandType.Text;
-            command.CommandText = CMD_SELECT_DATABASE_NAMES;
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (var command = connection.CreateCommand())
             {
-                databaseNames.Add(reader.GetString(0));
+                command.CommandType = CommandType.Text;
+                command.CommandText = CMD_SELECT_DATABASE_NAMES;
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    databaseNames.Add(reader.GetString(0));
+                }
             }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return databaseNames;
         }
 
-        if (!alreadyOpen)
+        public ForeignKeyInfoCollection GetForeignKeyData(string tableName, string schema = "public")
         {
-            connection.Close();
-        }
-
-        return databaseNames;
-    }
-
-    public static ForeignKeyInfoCollection GetForeignKeyData(this NpgsqlConnection connection, string tableName, string schema = "public")
-    {
-        const string CMD_FOREIGN_KEYS_FORMAT =
-@"SELECT
+            const string CMD_FOREIGN_KEYS_FORMAT =
+    @"SELECT
 	FK.""table_name"" AS FK_Table,
     CU.""column_name"" AS FK_Column,
     PK.""table_name"" AS PK_Table,
@@ -317,264 +319,265 @@ WHERE FK.""table_name"" = @TableName
 AND FK.""table_schema"" = @SchemaName
 ORDER BY 1,2,3,4";
 
-        var foreignKeyData = new ForeignKeyInfoCollection();
+            var foreignKeyData = new ForeignKeyInfoCollection();
 
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
 
-        if (!alreadyOpen)
-        {
-            connection.Open();
-        }
-
-        using (var command = new NpgsqlCommand(CMD_FOREIGN_KEYS_FORMAT, connection))
-        {
-            command.CommandType = CommandType.Text;
-
-            command.Parameters.Add(new NpgsqlParameter
+            if (!alreadyOpen)
             {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@TableName",
-                Value = tableName
-            });
-
-            command.Parameters.Add(new NpgsqlParameter
-            {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@SchemaName",
-                Value = schema
-            });
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                foreignKeyData.Add(new ForeignKeyInfo(
-                    reader.IsDBNull(0) ? null : reader.GetString(0),
-                    reader.IsDBNull(1) ? null : reader.GetString(1),
-                    reader.IsDBNull(2) ? null : reader.GetString(2),
-                    reader.IsDBNull(3) ? null : reader.GetString(3),
-                    string.Empty,
-                    reader.IsDBNull(4) ? null : reader.GetString(4)));
+                connection.Open();
             }
+
+            using (var command = new NpgsqlCommand(CMD_FOREIGN_KEYS_FORMAT, connection))
+            {
+                command.CommandType = CommandType.Text;
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@TableName",
+                    Value = tableName
+                });
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    foreignKeyData.Add(new ForeignKeyInfo(
+                        reader.IsDBNull(0) ? null : reader.GetString(0),
+                        reader.IsDBNull(1) ? null : reader.GetString(1),
+                        reader.IsDBNull(2) ? null : reader.GetString(2),
+                        reader.IsDBNull(3) ? null : reader.GetString(3),
+                        string.Empty,
+                        reader.IsDBNull(4) ? null : reader.GetString(4)));
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return foreignKeyData;
         }
 
-        if (!alreadyOpen)
+        public int GetRowCount(string schema, string tableName)
         {
-            connection.Close();
+            using var commandBuilder = new NpgsqlCommandBuilder();
+            return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
         }
 
-        return foreignKeyData;
-    }
-
-    public static int GetRowCount(this NpgsqlConnection connection, string schema, string tableName)
-    {
-        using var commandBuilder = new NpgsqlCommandBuilder();
-        return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(schema)}.{commandBuilder.QuoteIdentifier(tableName)}");
-    }
-
-    /// <summary>
-    /// Get table names for all schemas in the specified database.
-    /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="includeViews"></param>
-    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
-    /// <returns></returns>
-    public static IEnumerable<string> GetTableNames(this NpgsqlConnection connection, bool includeViews = false, bool excludeSystemSchemas = true)
-    {
-        string query = includeViews
-            ? $@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
+        /// <summary>
+        /// Get table names for all schemas in the specified database.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="includeViews"></param>
+        /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetTableNames(bool includeViews = false, bool excludeSystemSchemas = true)
+        {
+            string query = includeViews
+                ? $@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
 FROM information_schema.tables
 {(excludeSystemSchemas ? "WHERE table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name"
-            : $@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
+                : $@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
 FROM information_schema.tables
 WHERE table_type = 'BASE TABLE'
 {(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name";
-        var tables = new List<string>();
+            var tables = new List<string>();
 
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
 
-        if (!alreadyOpen)
-        {
-            connection.Open();
-        }
-
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandType = CommandType.Text;
-            command.CommandText = query;
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
+            if (!alreadyOpen)
             {
-                tables.Add(reader.GetString(0));
+                connection.Open();
             }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = query;
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    tables.Add(reader.GetString(0));
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return tables;
         }
 
-        if (!alreadyOpen)
+        /// <summary>
+        /// Get table names for a specific schema in the database.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="schema"></param>
+        /// <param name="includeViews"></param>
+        /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetTableNamesForSchema(string schema, bool includeViews = false, bool excludeSystemSchemas = true)
         {
-            connection.Close();
-        }
-
-        return tables;
-    }
-
-    /// <summary>
-    /// Get table names for a specific schema in the database.
-    /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="schema"></param>
-    /// <param name="includeViews"></param>
-    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
-    /// <returns></returns>
-    public static IEnumerable<string> GetTableNamesForSchema(this NpgsqlConnection connection, string schema, bool includeViews = false, bool excludeSystemSchemas = true)
-    {
-        string query = includeViews
-            ? $@"SELECT table_name
+            string query = includeViews
+                ? $@"SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = @SchemaName
 {(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name"
-            : $@"SELECT table_name
+                : $@"SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = @SchemaName
 AND table_type = 'BASE TABLE'
 {(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name";
-        var tables = new List<string>();
+            var tables = new List<string>();
 
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
 
-        if (!alreadyOpen)
-        {
-            connection.Open();
-        }
-
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandType = CommandType.Text;
-            command.CommandText = query;
-
-            command.Parameters.Add(new NpgsqlParameter
+            if (!alreadyOpen)
             {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@SchemaName",
-                Value = schema
-            });
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                tables.Add(reader.GetString(0));
+                connection.Open();
             }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = query;
+
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    tables.Add(reader.GetString(0));
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return tables;
         }
 
-        if (!alreadyOpen)
+        /// <summary>
+        /// Get view names for all schemas in the specified database.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetViewNames(bool excludeSystemSchemas = true)
         {
-            connection.Close();
-        }
-
-        return tables;
-    }
-
-    /// <summary>
-    /// Get view names for all schemas in the specified database.
-    /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
-    /// <returns></returns>
-    public static IEnumerable<string> GetViewNames(this NpgsqlConnection connection, bool excludeSystemSchemas = true)
-    {
-        string query =
-$@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
+            string query =
+    $@"SELECT CONCAT(table_schema, '.', table_name) AS ""name""
 FROM information_schema.tables
 WHERE table_type = 'VIEW'
 {(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name";
 
-        var views = new List<string>();
+            var views = new List<string>();
 
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
 
-        if (!alreadyOpen)
-        {
-            connection.Open();
-        }
-
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandType = CommandType.Text;
-            command.CommandText = query;
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
+            if (!alreadyOpen)
             {
-                views.Add(reader.GetString(0));
+                connection.Open();
             }
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = query;
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    views.Add(reader.GetString(0));
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return views;
         }
 
-        if (!alreadyOpen)
+        /// <summary>
+        /// Get view names for a specific schema in the database.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="schema"></param>
+        /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetViewNamesForSchema(string schema, bool excludeSystemSchemas = true)
         {
-            connection.Close();
-        }
-
-        return views;
-    }
-
-    /// <summary>
-    /// Get view names for a specific schema in the database.
-    /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="schema"></param>
-    /// <param name="excludeSystemSchemas">Whether to exclude 'information_schema' and 'pg_catalog' schemas</param>
-    /// <returns></returns>
-    public static IEnumerable<string> GetViewNamesForSchema(this NpgsqlConnection connection, string schema, bool excludeSystemSchemas = true)
-    {
-        string query =
-$@"SELECT table_name
+            string query =
+    $@"SELECT table_name
 FROM information_schema.tables
 WHERE table_schema = @SchemaName
 AND table_type = 'VIEW'
 {(excludeSystemSchemas ? "AND table_schema NOT IN ('information_schema', 'pg_catalog')" : string.Empty)}
 ORDER BY table_name";
 
-        var views = new List<string>();
+            var views = new List<string>();
 
-        bool alreadyOpen = connection.State != ConnectionState.Closed;
+            bool alreadyOpen = connection.State != ConnectionState.Closed;
 
-        if (!alreadyOpen)
-        {
-            connection.Open();
-        }
-
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandType = CommandType.Text;
-            command.CommandText = query;
-
-            command.Parameters.Add(new NpgsqlParameter
+            if (!alreadyOpen)
             {
-                Direction = ParameterDirection.Input,
-                DbType = DbType.String,
-                ParameterName = "@SchemaName",
-                Value = schema
-            });
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                views.Add(reader.GetString(0));
+                connection.Open();
             }
-        }
 
-        if (!alreadyOpen)
-        {
-            connection.Close();
-        }
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = query;
 
-        return views;
+                command.Parameters.Add(new NpgsqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    DbType = DbType.String,
+                    ParameterName = "@SchemaName",
+                    Value = schema
+                });
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    views.Add(reader.GetString(0));
+                }
+            }
+
+            if (!alreadyOpen)
+            {
+                connection.Close();
+            }
+
+            return views;
+        }
     }
 }

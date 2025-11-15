@@ -4,19 +4,24 @@ namespace Extenso.Data.Common;
 
 public static class DbParameterCollectionExtensions
 {
-    public static void EnsureDbNulls(this IEnumerable<DbParameter> parameters)
+    extension(DbParameterCollection parameters)
     {
-        foreach (var p in parameters)
+        public void EnsureDbNulls()
         {
-            p.Value ??= DBNull.Value;
+            foreach (DbParameter p in parameters)
+            {
+                p.Value ??= DBNull.Value;
+            }
         }
     }
-
-    public static void EnsureDbNulls(this DbParameterCollection parameters)
+    extension(IEnumerable<DbParameter> parameters)
     {
-        foreach (DbParameter p in parameters)
+        public void EnsureDbNulls()
         {
-            p.Value ??= DBNull.Value;
+            foreach (var p in parameters)
+            {
+                p.Value ??= DBNull.Value;
+            }
         }
     }
 }

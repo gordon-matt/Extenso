@@ -4,11 +4,14 @@ namespace Extenso.Data;
 
 public static class DbTypeExtensions
 {
-    public static SqlDbType ToSqlDbType(this DbType dbType) => DataTypeConvertor.GetSqlDbType(dbType);
-
-    public static Type ToSystemType(this DbType dbType)
+    extension(DbType dbType)
     {
-        var type = DataTypeConvertor.GetSystemType(dbType);
-        return type ?? typeof(object);
+        public SqlDbType ToSqlDbType() => DataTypeConvertor.GetSqlDbType(dbType);
+
+        public Type ToSystemType()
+        {
+            var type = DataTypeConvertor.GetSystemType(dbType);
+            return type ?? typeof(object);
+        }
     }
 }

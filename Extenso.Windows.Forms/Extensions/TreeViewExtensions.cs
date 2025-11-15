@@ -2,23 +2,21 @@
 
 public static class TreeViewExtensions
 {
-    #region TreeView
+    extension(TreeView treeView)
+    {
+        public TreeNode GetNodeByFullPath(string path) =>
+            treeView.Nodes.OfType<TreeNode>().Where(x => x.FullPath == path).SingleOrDefault();
 
-    public static TreeNode GetNodeByFullPath(this TreeView treeView, string path) =>
-        treeView.Nodes.Cast<TreeNode>().Where(x => x.FullPath == path).SingleOrDefault();
+        public TreeNode GetNodeByName(string nodeName) =>
+            treeView.Nodes.OfType<TreeNode>().Where(x => x.Name == nodeName).SingleOrDefault();
 
-    public static TreeNode GetNodeByName(this TreeView treeView, string nodeName) =>
-        treeView.Nodes.Cast<TreeNode>().Where(x => x.Name == nodeName).SingleOrDefault();
+        public TreeNode GetNodeByText(string nodeText) =>
+            treeView.Nodes.OfType<TreeNode>().Where(x => x.Text == nodeText).SingleOrDefault();
+    }
 
-    public static TreeNode GetNodeByText(this TreeView treeView, string nodeText) =>
-        treeView.Nodes.Cast<TreeNode>().Where(x => x.Text == nodeText).SingleOrDefault();
-
-    #endregion TreeView
-
-    #region TreeNode
-
-    public static TreeNode GetNodeByText(this TreeNode treeNode, string nodeText) =>
-        treeNode.Nodes.Cast<TreeNode>().Where(x => x.Text == nodeText).SingleOrDefault();
-
-    #endregion TreeNode
+    extension(TreeNode treeNode)
+    {
+        public TreeNode GetNodeByText(string nodeText) =>
+            treeNode.Nodes.OfType<TreeNode>().Where(x => x.Text == nodeText).SingleOrDefault();
+    }
 }

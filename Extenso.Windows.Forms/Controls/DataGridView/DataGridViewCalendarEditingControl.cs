@@ -26,8 +26,8 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
     public DataGridViewCalendarEditingControl()
     {
-        this.Format = DataGridViewCalendarColumnDateFormat.DateTimePickerFormat;
-        this.CustomFormat = DataGridViewCalendarColumnDateFormat.CustomFormat;
+        Format = DataGridViewCalendarColumnDateFormat.DateTimePickerFormat;
+        CustomFormat = DataGridViewCalendarColumnDateFormat.CustomFormat;
     }
 
     // Implements the IDataGridViewEditingControl.EditingControlFormattedValue
@@ -35,11 +35,13 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public object EditingControlFormattedValue
     {
-        get => this.Value.ToString("O");
+        get => Value.ToString("O");
         set
         {
-            if (value is string)
-            { this.Value = DateTime.Parse((string)value); }
+            if (value is string val)
+            {
+                Value = DateTime.Parse(val);
+            }
         }
     }
 
@@ -55,9 +57,9 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
     // IDataGridViewEditingControl.ApplyCellStyleToEditingControl method.
     public void ApplyCellStyleToEditingControl(DataGridViewCellStyle dataGridViewCellStyle)
     {
-        this.Font = dataGridViewCellStyle.Font;
-        this.CalendarForeColor = dataGridViewCellStyle.ForeColor;
-        this.CalendarMonthBackground = dataGridViewCellStyle.BackColor;
+        Font = dataGridViewCellStyle.Font;
+        CalendarForeColor = dataGridViewCellStyle.ForeColor;
+        CalendarMonthBackground = dataGridViewCellStyle.BackColor;
     }
 
     // Implements the IDataGridViewEditingControl.EditingControlWantsInputKey method.
@@ -78,12 +80,12 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
             case Keys.Delete:
             case Keys.Back:
-                var CurCell = this.EditingControlDataGridView.CurrentCell;
+                var CurCell = EditingControlDataGridView.CurrentCell;
                 if (CurCell != null)
                 { CurCell.Value = DBNull.Value; }
                 if (DataGridViewCalendarColumnDateFormat.DateTimePickerFormat != DateTimePickerFormat.Custom)
-                { this.Format = DateTimePickerFormat.Custom; }
-                this.CustomFormat = " ";
+                { Format = DateTimePickerFormat.Custom; }
+                CustomFormat = " ";
                 return false;
 
             default: return false;
@@ -105,25 +107,25 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
 
     protected override void OnValueChanged(EventArgs eventargs)
     {
-        if (this.CustomFormat == " ")
+        if (CustomFormat == " ")
         {
             switch (DataGridViewCalendarColumnDateFormat.DateTimePickerFormat)
             {
                 case DateTimePickerFormat.Long:
-                    this.Format = DateTimePickerFormat.Long;
+                    Format = DateTimePickerFormat.Long;
                     break;
 
                 case DateTimePickerFormat.Short:
-                    this.Format = DateTimePickerFormat.Short;
+                    Format = DateTimePickerFormat.Short;
                     break;
 
                 case DateTimePickerFormat.Time:
-                    this.Format = DateTimePickerFormat.Time;
+                    Format = DateTimePickerFormat.Time;
                     break;
 
                 case DateTimePickerFormat.Custom:
-                    this.Format = DateTimePickerFormat.Custom;
-                    this.CustomFormat = DataGridViewCalendarColumnDateFormat.CustomFormat;
+                    Format = DateTimePickerFormat.Custom;
+                    CustomFormat = DataGridViewCalendarColumnDateFormat.CustomFormat;
                     break;
 
                 default:
@@ -134,7 +136,7 @@ internal class DataGridViewCalendarEditingControl : DateTimePicker, IDataGridVie
         // Notify the DataGridView that the contents of the cell
         // have changed.
         EditingControlValueChanged = true;
-        this.EditingControlDataGridView.NotifyCurrentCellDirty(true);
+        EditingControlDataGridView.NotifyCurrentCellDirty(true);
         base.OnValueChanged(eventargs);
     }
 }

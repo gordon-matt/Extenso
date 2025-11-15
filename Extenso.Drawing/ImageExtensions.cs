@@ -7,6 +7,54 @@ namespace Extenso.Drawing;
 
 public static class ImageExtensions
 {
+    extension(Image image)
+    {
+        [SupportedOSPlatform("windows")]
+        public void ResizeToFile(int targetSize, string fileName, byte qualityPercent = 80, string mimeType = "image/jpeg")
+        {
+            var newSize = CalculateDimensions(image.Size, targetSize);
+
+            using var stream = new MemoryStream();
+            using var newBitmap = new Bitmap(newSize.Width, newSize.Height);
+            using var g = Graphics.FromImage(newBitmap);
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            g.DrawImage(image, 0, 0, newSize.Width, newSize.Height);
+
+            var parameters = new EncoderParameters();
+            parameters.Param[0] = new EncoderParameter(Encoder.Quality, (long)qualityPercent);
+
+            var encoder = GetImageCodecInfoFromMimeType(mimeType);
+            newBitmap.Save(fileName, encoder, parameters);
+        }
+
+        [SupportedOSPlatform("windows")]
+        public MemoryStream ResizeToStream(int targetSize, byte qualityPercent = 80, string mimeType = "image/jpeg")
+        {
+            var newSize = CalculateDimensions(image.Size, targetSize);
+
+            using var stream = new MemoryStream();
+            using var newBitmap = new Bitmap(newSize.Width, newSize.Height);
+            using (var g = Graphics.FromImage(newBitmap))
+            {
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.DrawImage(image, 0, 0, newSize.Width, newSize.Height);
+
+                var parameters = new EncoderParameters();
+                parameters.Param[0] = new EncoderParameter(Encoder.Quality, (long)qualityPercent);
+
+                var encoder = GetImageCodecInfoFromMimeType(mimeType);
+                newBitmap.Save(stream, encoder, parameters);
+            }
+            return stream;
+        }
+    }
+
     /// <summary>
     /// Calculates picture dimensions whilst maintaining aspect
     /// </summary>
@@ -47,49 +95,4 @@ public static class ImageExtensions
     [SupportedOSPlatform("windows")]
     private static ImageCodecInfo GetImageCodecInfoFromMimeType(string mimeType) => ImageCodecInfo.GetImageEncoders()
         .FirstOrDefault(ici => ici.MimeType.Equals(mimeType, StringComparison.OrdinalIgnoreCase));
-
-    [SupportedOSPlatform("windows")]
-    public static MemoryStream ResizeToStream(this Image image, int targetSize, byte qualityPercent = 80, string mimeType = "image/jpeg")
-    {
-        var newSize = CalculateDimensions(image.Size, targetSize);
-
-        using var stream = new MemoryStream();
-        using var newBitmap = new Bitmap(newSize.Width, newSize.Height);
-        using (var g = Graphics.FromImage(newBitmap))
-        {
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.DrawImage(image, 0, 0, newSize.Width, newSize.Height);
-
-            var parameters = new EncoderParameters();
-            parameters.Param[0] = new EncoderParameter(Encoder.Quality, (long)qualityPercent);
-
-            var encoder = GetImageCodecInfoFromMimeType(mimeType);
-            newBitmap.Save(stream, encoder, parameters);
-        }
-        return stream;
-    }
-
-    [SupportedOSPlatform("windows")]
-    public static void ResizeToFile(this Image image, int targetSize, string fileName, byte qualityPercent = 80, string mimeType = "image/jpeg")
-    {
-        var newSize = CalculateDimensions(image.Size, targetSize);
-
-        using var stream = new MemoryStream();
-        using var newBitmap = new Bitmap(newSize.Width, newSize.Height);
-        using var g = Graphics.FromImage(newBitmap);
-        g.SmoothingMode = SmoothingMode.HighQuality;
-        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-        g.DrawImage(image, 0, 0, newSize.Width, newSize.Height);
-
-        var parameters = new EncoderParameters();
-        parameters.Param[0] = new EncoderParameter(Encoder.Quality, (long)qualityPercent);
-
-        var encoder = GetImageCodecInfoFromMimeType(mimeType);
-        newBitmap.Save(fileName, encoder, parameters);
-    }
 }

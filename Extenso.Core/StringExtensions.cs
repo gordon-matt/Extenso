@@ -402,6 +402,15 @@ public static partial class StringExtensions
         public string HtmlEncode() => HttpUtility.HtmlEncode(source);
 
         /// <summary>
+        /// Returns <see langword="true"/> if every character is an ASCII
+        /// character ([ U+0000..U+007F ]).
+        /// </summary>
+        /// <remarks>
+        /// Per http://www.unicode.org/glossary/#ASCII, ASCII is only U+0000..U+007F.
+        /// </remarks>
+        public bool IsAscii => source.All(char.IsAscii);
+
+        /// <summary>
         /// Gets a value indicating whether the given string consists of any right-to-left text.
         /// Note: Only Hebrew and Arabic are supported
         /// </summary>

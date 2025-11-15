@@ -5,27 +5,28 @@ namespace Extenso.KendoGridBinder.Extensions;
 
 public static class LambdaExpressionExtensions
 {
-    /// <summary>
-    /// http://blog.cincura.net/232247-casting-expression-func-tentity-tproperty-to-expression-func-tentity-object/
-    /// </summary>
-    /// <typeparam name="T">The type of the entity.</typeparam>
-    /// <typeparam name="TProperty">The type of the property.</typeparam>
-    /// <param name="expression">The LambdaExpression.</param>
-    /// <returns>Expression{Func{T, TProperty}}</returns>
-    public static Expression<Func<T, TProperty>> ToTypedExpression<T, TProperty>(this LambdaExpression expression)
+    extension(LambdaExpression expression)
     {
-        var propertyType = expression.Body.Type;
+        /// <summary>
+        /// http://blog.cincura.net/232247-casting-expression-func-tentity-tproperty-to-expression-func-tentity-object/
+        /// </summary>
+        /// <typeparam name="T">The type of the entity.</typeparam>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <returns>Expression{Func{T, TProperty}}</returns>
+        public Expression<Func<T, TProperty>> ToTypedExpression<T, TProperty>()
+        {
+            var propertyType = expression.Body.Type;
 
-        return !propertyType.GetTypeInfo().IsValueType
-            ? Expression.Lambda<Func<T, TProperty>>(expression.Body, expression.Parameters)
-            : Expression.Lambda<Func<T, TProperty>>(Expression.Convert(expression.Body, typeof(TProperty)), expression.Parameters);
+            return !propertyType.GetTypeInfo().IsValueType
+                ? Expression.Lambda<Func<T, TProperty>>(expression.Body, expression.Parameters)
+                : Expression.Lambda<Func<T, TProperty>>(Expression.Convert(expression.Body, typeof(TProperty)), expression.Parameters);
+        }
+
+        /// <summary>
+        /// Converts LambdaExpression to a typed expression (Expression{Func{T, object}}).
+        /// </summary>
+        /// <typeparam name="T">The type of the entity.</typeparam>
+        /// <returns>Expression{Func{T, object}}</returns>
+        public Expression<Func<T, object>> ToTypedExpression<T>() => expression.ToTypedExpression<T, object>();
     }
-
-    /// <summary>
-    /// Converts LambdaExpression to a typed expression (Expression{Func{T, object}}).
-    /// </summary>
-    /// <typeparam name="T">The type of the entity.</typeparam>
-    /// <param name="expression">The expression.</param>
-    /// <returns>Expression{Func{T, object}}</returns>
-    public static Expression<Func<T, object>> ToTypedExpression<T>(this LambdaExpression expression) => expression.ToTypedExpression<T, object>();
 }

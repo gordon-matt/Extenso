@@ -12,19 +12,17 @@ public class AdventureWorks2019ContextFactory : IDbContextFactory
         this.configuration = configuration;
     }
 
-    private DbContextOptions<AdventureWorks2019Context> options;
-
     private DbContextOptions<AdventureWorks2019Context> Options
     {
         get
         {
-            if (options == null)
+            if (field is null)
             {
                 var optionsBuilder = new DbContextOptionsBuilder<AdventureWorks2019Context>();
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-                options = optionsBuilder.Options;
+                field = optionsBuilder.Options;
             }
-            return options;
+            return field;
         }
     }
 
@@ -40,19 +38,17 @@ public class AdventureWorks2019ContextFactory : IDbContextFactory
 
 public class InMemoryAdventureWorks2019ContextFactory : IDbContextFactory
 {
-    private DbContextOptions<AdventureWorks2019Context> options;
-
     private DbContextOptions<AdventureWorks2019Context> Options
     {
         get
         {
-            if (options == null)
+            if (field is null)
             {
                 var optionsBuilder = new DbContextOptionsBuilder<AdventureWorks2019Context>();
                 optionsBuilder.UseInMemoryDatabase("AdventureWorks2019");
-                options = optionsBuilder.Options;
+                field = optionsBuilder.Options;
             }
-            return options;
+            return field;
         }
     }
 

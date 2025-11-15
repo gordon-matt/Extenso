@@ -6,9 +6,16 @@ namespace Extenso.KendoGridBinder.Extensions;
 [EditorBrowsable(EditorBrowsableState.Never)]
 internal static class QueryProviderExtensions
 {
-    public static bool IsQueryTranslatorProvider(this IQueryProvider provider) => provider.GetType().FullName.Contains("QueryInterceptor.QueryTranslatorProvider");
+    extension(IQueryProvider provider)
+    {
+        public bool IsQueryTranslatorProvider() =>
+            provider.GetType().FullName.Contains("QueryInterceptor.QueryTranslatorProvider");
 
-    public static bool IsEntityFrameworkProvider(this IQueryProvider provider) => provider.GetType().FullName == "System.Data.Objects.ELinq.ObjectQueryProvider" || provider.GetType().FullName.StartsWith("System.Data.Entity.Internal.Linq");
+        public bool IsEntityFrameworkProvider() =>
+            provider.GetType().FullName == "System.Data.Objects.ELinq.ObjectQueryProvider" ||
+            provider.GetType().FullName.StartsWith("System.Data.Entity.Internal.Linq");
 
-    public static bool IsLinqToObjectsProvider(this IQueryProvider provider) => provider.GetType().FullName.Contains("EnumerableQuery");
+        public bool IsLinqToObjectsProvider() =>
+            provider.GetType().FullName.Contains("EnumerableQuery");
+    }
 }

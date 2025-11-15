@@ -8,12 +8,10 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 
 public abstract class BaseUIProvider : IExtensoUIProvider
 {
-    private ICollection<string> scripts;
-
     public ICollection<string> Scripts
     {
-        get => scripts ??= [];
-        set => scripts = value;
+        get => field ??= [];
+        set => field = value;
     }
 
     #region IExtensoUIProvider Members

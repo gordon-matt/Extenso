@@ -19,18 +19,12 @@ public class FilterObject
 
     public bool IsConjugate => Field2 != null;
 
-    public string LogicToken
+    public string LogicToken => Logic switch
     {
-        get
-        {
-            return Logic switch
-            {
-                "and" => "&&",
-                "or" => "||",
-                _ => null,
-            };
-        }
-    }
+        "and" => "&&",
+        "or" => "||",
+        _ => null,
+    };
 
     private string GetPropertyType(Type type, string field)
     {

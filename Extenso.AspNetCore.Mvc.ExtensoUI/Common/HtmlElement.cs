@@ -20,5 +20,6 @@ public abstract class HtmlElement
 
     public void EnsureClass(string className) => HtmlAttributes.EnsureCssClass(className);
 
-    public void EnsureHtmlAttribute(string key, string value, bool replaceExisting = true) => HtmlAttributes.EnsureHtmlAttribute(key, value, replaceExisting);
+    public void EnsureHtmlAttribute(string key, string value, bool replaceExisting = true) =>
+        HtmlAttributes.EnsureHtmlAttribute(key, value, replaceExisting);
 }

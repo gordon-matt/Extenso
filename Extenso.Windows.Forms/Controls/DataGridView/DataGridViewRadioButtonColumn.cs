@@ -52,8 +52,8 @@ public class DataGridViewRadioButtonColumn : DataGridViewColumn
     public object DataSource
     {
         get => this.RadioButtonCellTemplate == null
-                ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
-                : RadioButtonCellTemplate.DataSource;
+            ? throw new InvalidOperationException("Operation cannot be completed because this DataGridViewColumn does not have a CellTemplate.")
+            : RadioButtonCellTemplate.DataSource;
         set
         {
             if (this.RadioButtonCellTemplate == null)

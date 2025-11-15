@@ -4,19 +4,22 @@ namespace Extenso.Data;
 
 public static class DataColumnCollectionExtensions
 {
-    public static void AddRange(this DataColumnCollection dataColumns, params ReadOnlySpan<string> columnNames)
+    extension(DataColumnCollection dataColumns)
     {
-        foreach (string columnName in columnNames)
+        public void AddRange(params ReadOnlySpan<string> columnNames)
         {
-            dataColumns.Add(columnName);
+            foreach (string columnName in columnNames)
+            {
+                dataColumns.Add(columnName);
+            }
         }
-    }
 
-    public static void AddRange(this DataColumnCollection dataColumns, params ReadOnlySpan<DataColumn> columns)
-    {
-        foreach (var column in columns)
+        public void AddRange(params ReadOnlySpan<DataColumn> columns)
         {
-            dataColumns.Add(column);
+            foreach (var column in columns)
+            {
+                dataColumns.Add(column);
+            }
         }
     }
 }

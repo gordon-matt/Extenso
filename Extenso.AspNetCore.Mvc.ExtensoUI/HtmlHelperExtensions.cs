@@ -5,37 +5,43 @@ namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
 public static class HtmlHelperExtensions
 {
-    public static ExtensoUI<TModel> ExtensoUI<TModel>(this IHtmlHelper<TModel> htmlHelper, IExtensoUIProvider provider = null)
+    extension<TModel>(IHtmlHelper<TModel> html)
     {
-        if (provider != null)
+        public ExtensoUI<TModel> ExtensoUI(IExtensoUIProvider provider = null)
         {
-            return new ExtensoUI<TModel>(htmlHelper, provider);
-        }
+            if (provider != null)
+            {
+                return new ExtensoUI<TModel>(html, provider);
+            }
 
-        string areaName = (string)htmlHelper.ViewContext.RouteData.DataTokens["area"];
-        return !string.IsNullOrEmpty(areaName) && ExtensoUISettings.AreaUIProviders.ContainsKey(areaName)
-            ? new ExtensoUI<TModel>(htmlHelper, ExtensoUISettings.AreaUIProviders[areaName])
-            : new ExtensoUI<TModel>(htmlHelper);
+            string areaName = (string)html.ViewContext.RouteData.DataTokens["area"];
+            return !string.IsNullOrEmpty(areaName) && ExtensoUISettings.AreaUIProviders.ContainsKey(areaName)
+                ? new ExtensoUI<TModel>(html, ExtensoUISettings.AreaUIProviders[areaName])
+                : new ExtensoUI<TModel>(html);
+        }
     }
 
-    internal static void EnsureCssClass(this IDictionary<string, object> htmlAttributes, string className) => htmlAttributes.EnsureHtmlAttribute("class", className, false);
-
-    internal static void EnsureHtmlAttribute(this IDictionary<string, object> htmlAttributes, string key, string value, bool replaceExisting = true)
+    extension(IDictionary<string, object> htmlAttributes)
     {
-        if (htmlAttributes.ContainsKey(key))
+        internal void EnsureCssClass(string className) => htmlAttributes.EnsureHtmlAttribute("class", className, false);
+
+        internal void EnsureHtmlAttribute(string key, string value, bool replaceExisting = true)
         {
-            if (replaceExisting)
+            if (htmlAttributes.ContainsKey(key))
             {
-                htmlAttributes[key] = value;
+                if (replaceExisting)
+                {
+                    htmlAttributes[key] = value;
+                }
+                else
+                {
+                    htmlAttributes[key] += $" {value}";
+                }
             }
             else
             {
-                htmlAttributes[key] += $" {value}";
+                htmlAttributes.Add(key, value);
             }
-        }
-        else
-        {
-            htmlAttributes.Add(key, value);
         }
     }
 }

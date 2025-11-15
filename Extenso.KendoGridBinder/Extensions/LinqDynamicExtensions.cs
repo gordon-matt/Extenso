@@ -7,9 +7,13 @@ namespace Extenso.KendoGridBinder.Extensions;
 [EditorBrowsable(EditorBrowsableState.Never)]
 internal static class DynamicQueryableExtensions
 {
-    public static IEnumerable<TEntity> Select<TEntity>(this IEnumerable<object> source, string propertyName) => source.Select(x => GetPropertyValue<TEntity>(x, propertyName));
+    extension(IEnumerable<object> source)
+    {
+        public IEnumerable<TEntity> Select<TEntity>(string propertyName) =>
+            source.Select(x => GetPropertyValue<TEntity>(x, propertyName));
+    }
 
-    private static T GetPropertyValue<T>(object self, string propertyName)
+    private static T GetPropertyValue<T>(this object self, string propertyName)
     {
         var type = self.GetType();
         var propInfo = type.GetTypeInfo().GetProperty(propertyName);

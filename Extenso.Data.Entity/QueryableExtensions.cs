@@ -5,9 +5,12 @@ namespace Extenso.Data.Entity;
 
 public static class QueryableExtensions
 {
-    public static IQueryable<T> Include<T, TProperty>(this IQueryable<T> source, Expression<Func<T, TProperty>> path, bool condition) where T : class =>
-        condition ? source.Include(path) : source;
+    extension<T>(IQueryable<T> query) where T : class
+    {
+        public IQueryable<T> Include<TProperty>(Expression<Func<T, TProperty>> path, bool condition) =>
+            condition ? query.Include(path) : query;
 
-    public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, bool condition) =>
-        condition ? source.Where(predicate) : source;
+        public IQueryable<T> WhereIf(Expression<Func<T, bool>> predicate, bool condition) =>
+            condition ? query.Where(predicate) : query;
+    }
 }

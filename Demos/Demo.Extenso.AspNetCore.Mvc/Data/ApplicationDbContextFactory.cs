@@ -12,19 +12,17 @@ public class ApplicationDbContextFactory : IDbContextFactory
         this.configuration = configuration;
     }
 
-    private DbContextOptions<ApplicationDbContext> options;
-
     private DbContextOptions<ApplicationDbContext> Options
     {
         get
         {
-            if (options == null)
+            if (field is null)
             {
                 var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
                 optionsBuilder.UseInMemoryDatabase("DemoDb");
-                options = optionsBuilder.Options;
+                field = optionsBuilder.Options;
             }
-            return options;
+            return field;
         }
     }
 

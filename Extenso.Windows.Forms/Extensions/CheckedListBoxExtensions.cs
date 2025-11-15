@@ -2,19 +2,22 @@
 
 public static class CheckedListBoxExtensions
 {
-    public static void SetItemsChecked(this CheckedListBox checkedListBox, bool value)
+    extension(CheckedListBox checkedListBox)
     {
-        for (int i = 0; i < checkedListBox.Items.Count; i++)
+        public void SetItemsChecked(bool value)
         {
-            checkedListBox.SetItemChecked(i, value);
+            for (int i = 0; i < checkedListBox.Items.Count; i++)
+            {
+                checkedListBox.SetItemChecked(i, value);
+            }
         }
-    }
 
-    public static void SetItemsCheckState(this CheckedListBox checkedListBox, CheckState value)
-    {
-        for (int i = 0; i < checkedListBox.Items.Count; i++)
+        public void SetItemsCheckState(CheckState value)
         {
-            checkedListBox.SetItemCheckState(i, value);
+            for (int i = 0; i < checkedListBox.Items.Count; i++)
+            {
+                checkedListBox.SetItemCheckState(i, value);
+            }
         }
     }
 }

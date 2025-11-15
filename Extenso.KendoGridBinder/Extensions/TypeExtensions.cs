@@ -8,7 +8,7 @@ namespace Extenso.KendoGridBinder.Extensions;
 internal static class TypeExtensions
 {
     internal static readonly Type[] PredefinedTypes =
-    {
+    [
         typeof(object),
         typeof(bool),
         typeof(char),
@@ -29,15 +29,20 @@ internal static class TypeExtensions
         typeof(Guid),
         typeof(Math),
         typeof(Convert)
-    };
+    ];
 
-    public static bool IsPredefinedType(this Type type) => PredefinedTypes.Any(left => left == type);
-
-    public static string FirstSortableProperty(this Type type)
+    extension(Type type)
     {
-        var propertyInfo = type.GetTypeInfo().GetProperties().FirstOrDefault(property => property.PropertyType.IsPredefinedType());
+        public string FirstSortableProperty()
+        {
+            var propertyInfo = type.GetTypeInfo().GetProperties().FirstOrDefault(property => property.PropertyType.IsPredefinedType());
 
-        return propertyInfo == null ? throw new NotSupportedException("CannotFindPropertyToSortBy") : propertyInfo.Name;
+            return propertyInfo == null
+                ? throw new NotSupportedException("CannotFindPropertyToSortBy")
+                : propertyInfo.Name;
+        }
+
+        public bool IsPredefinedType() => PredefinedTypes.Any(left => left == type);
     }
 
     public static object ChangeType(object value, Type conversionType)

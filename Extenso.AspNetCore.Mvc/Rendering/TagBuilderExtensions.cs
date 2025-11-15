@@ -5,10 +5,13 @@ namespace Extenso.AspNetCore.Mvc.Rendering;
 
 public static class TagBuilderExtensions
 {
-    public static string Build(this TagBuilder tagBuilder)
+    extension(TagBuilder tagBuilder)
     {
-        using var stringWriter = new StringWriter();
-        tagBuilder.WriteTo(stringWriter, HtmlEncoder.Default);
-        return stringWriter.ToString();
+        public string Build()
+        {
+            using var stringWriter = new StringWriter();
+            tagBuilder.WriteTo(stringWriter, HtmlEncoder.Default);
+            return stringWriter.ToString();
+        }
     }
 }

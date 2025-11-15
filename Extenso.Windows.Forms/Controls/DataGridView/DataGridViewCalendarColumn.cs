@@ -4,10 +4,6 @@ namespace Extenso.Windows.Forms.Controls;
 
 public class DataGridViewCalendarColumn : DataGridViewColumn
 {
-    private string customFormat;
-
-    private DateTimePickerFormat dateTimePickerFormat;
-
     public DataGridViewCalendarColumn() : base(new DataGridViewCalendarCell())
     {
     }
@@ -28,22 +24,22 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string CustomFormat
     {
-        get => customFormat;
+        get => field;
         set
         {
-            customFormat = value;
-            DataGridViewCalendarColumnDateFormat.CustomFormat = customFormat;
+            field = value;
+            DataGridViewCalendarColumnDateFormat.CustomFormat = field;
         }
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DateTimePickerFormat DateTimePickerFormat
     {
-        get => dateTimePickerFormat;
+        get => field;
         set
         {
-            dateTimePickerFormat = value;
-            DataGridViewCalendarColumnDateFormat.DateTimePickerFormat = dateTimePickerFormat;
+            field = value;
+            DataGridViewCalendarColumnDateFormat.DateTimePickerFormat = field;
         }
     }
 
@@ -56,10 +52,10 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
     public override object Clone()
     {
         var dataGridViewCalendarColumn = (DataGridViewCalendarColumn)base.Clone();
-        dataGridViewCalendarColumn.ShowCheckBox = this.ShowCheckBox;
-        dataGridViewCalendarColumn.ShowUpDown = this.ShowUpDown;
-        dataGridViewCalendarColumn.dateTimePickerFormat = this.dateTimePickerFormat;
-        dataGridViewCalendarColumn.customFormat = this.customFormat;
+        dataGridViewCalendarColumn.ShowCheckBox = ShowCheckBox;
+        dataGridViewCalendarColumn.ShowUpDown = ShowUpDown;
+        dataGridViewCalendarColumn.DateTimePickerFormat = DateTimePickerFormat;
+        dataGridViewCalendarColumn.CustomFormat = CustomFormat;
         return dataGridViewCalendarColumn;
     }
 }

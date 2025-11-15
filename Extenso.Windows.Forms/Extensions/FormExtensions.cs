@@ -2,27 +2,31 @@
 
 public static class FormExtensions
 {
-    public static void CenterToParent(this Form form, Form parentForm)
+    extension(Form form)
     {
-        if (parentForm is not null)
+        public void CenterToParent(Form parentForm)
         {
-            CenterToParent(form, parentForm.Location, parentForm.Size);
+            if (parentForm is not null)
+            {
+                CenterToParent(form, parentForm.Location, parentForm.Size);
+            }
         }
-    }
 
-    public static void CenterToParent(this Form form, Point parentLocation, Size parentSize) => CenterToParent(form, parentLocation, new Point(parentSize));
+        public void CenterToParent(Point parentLocation, Size parentSize) =>
+            CenterToParent(form, parentLocation, new Point(parentSize));
 
-    public static void CenterToParent(this Form form, Point parentLocation, Point parentSize)
-    {
-        if (parentLocation != default && parentSize != default)
+        public void CenterToParent(Point parentLocation, Point parentSize)
         {
-            int centerX = parentLocation.X + (parentSize.X / 2);
-            int centerY = parentLocation.Y + (parentSize.Y / 2);
+            if (parentLocation != default && parentSize != default)
+            {
+                int centerX = parentLocation.X + (parentSize.X / 2);
+                int centerY = parentLocation.Y + (parentSize.Y / 2);
 
-            int x = centerX - (form.Size.Width / 2);
-            int y = centerY - (form.Size.Height / 2);
+                int x = centerX - (form.Size.Width / 2);
+                int y = centerY - (form.Size.Height / 2);
 
-            form.Location = new Point(x, y);
+                form.Location = new Point(x, y);
+            }
         }
     }
 }
