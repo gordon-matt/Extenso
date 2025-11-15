@@ -271,27 +271,33 @@ public static class EnumerableExtensions
         /// <returns>All the elements of source split into chunks of the given size.</returns>
         public IEnumerable<IEnumerable<T>> ToChunks(int size)
         {
-            if (source.IsNullOrEmpty())
-                return []; // Return empty if source is empty
-
-            var chunks = new HashSet<HashSet<T>>();
-            var chunk = new HashSet<T>();
-
-            int count = 0;
-            foreach (var element in source)
+            if (size <= 0)
             {
-                if (count++ == size)
-                {
-                    chunks.Add(chunk);
-                    chunk = [];
-                    count = 1;
-                }
-                chunk.Add(element);
+                throw new ArgumentOutOfRangeException(nameof(size), "Chunk size must be greater than zero.");
             }
 
-            chunks.Add(chunk);
+            if (source is null)
+            {
+                yield break;
+            }
 
-            return chunks;
+            var chunk = new List<T>(size);
+
+            foreach (var element in source)
+            {
+                chunk.Add(element);
+
+                if (chunk.Count == size)
+                {
+                    yield return chunk;
+                    chunk = new List<T>(size);
+                }
+            }
+
+            if (chunk.Count > 0)
+            {
+                yield return chunk;
+            }
         }
 
         /// <summary>

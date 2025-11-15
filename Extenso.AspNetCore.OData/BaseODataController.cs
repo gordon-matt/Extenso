@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
+using Microsoft.EntityFrameworkCore;
 
 namespace Extenso.AspNetCore.OData;
 
@@ -34,7 +35,7 @@ public abstract class BaseODataController<TEntity, TKey> : GenericODataControlle
         query = await ApplyMandatoryFilterAsync(query, cancellationToken);
         var result = SingleResult.Create(query);
 
-        var entity = result.Queryable.FirstOrDefault();
+        var entity = await result.Queryable.FirstOrDefaultAsync(cancellationToken);
         return entity == null ? NotFound() : !await CanViewEntityAsync(entity) ? Unauthorized() : Ok(result);
     }
 

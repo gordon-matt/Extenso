@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using Extenso.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -24,6 +25,10 @@ public interface IMappedRepository<TModel, TEntity>
     /// <returns>An instance of IRepositoryConnectionlt;TEntity&gt;</returns>
     IRepositoryConnection<TModel> UseConnection<TOther>(IRepositoryConnection<TOther> connection)
         where TOther : class;
+
+    IAsyncEnumerable<TModel> StreamAsync(
+        SearchOptions<TEntity> options,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default);
 
     #region Find
 

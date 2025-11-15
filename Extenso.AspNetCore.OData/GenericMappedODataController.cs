@@ -1,5 +1,6 @@
 ﻿using Extenso.Data.Entity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
@@ -85,6 +86,19 @@ public abstract class GenericMappedODataController<TModel, TEntity, TKey> : ODat
         query = await ApplyMandatoryFilterAsync(query, cancellationToken);
         var results = options.ApplyTo(query, IgnoreQueryOptions);
         return Ok(results);
+    }
+
+    [HttpGet("stream")]
+    [Route("~/odata/[controller]/stream")]
+    public virtual async Task Stream(CancellationToken cancellationToken)
+    {
+        Response.ContentType = "application/x-ndjson";
+        await foreach (var entity in Repository.StreamAsync(new SearchOptions<TEntity>(), cancellationToken))
+        {
+            await Response.WriteAsync(entity.JsonSerialize(), cancellationToken);
+            await Response.WriteAsync("\n", cancellationToken);
+            await Response.Body.FlushAsync(cancellationToken);
+        }
     }
 
     // TODO: Can't do $expand, because entity is not from an IQueryable.. and also we don't have an ODataQueryOptions here..

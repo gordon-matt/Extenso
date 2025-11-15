@@ -1,0 +1,68 @@
+@using Extenso.AspNetCore.Mvc.ExtensoUI
+
+@{
+    bool useMapped = ViewBag.UseMapped is bool mapped && mapped;
+    string streamUrl = useMapped ? "/odata/MappedPersonApi/stream" : "/odata/PersonApi/stream";
+    string heading = useMapped ? "Mapped OData Streaming Demo" : "OData Streaming Demo";
+}
+
+<div class="row" id="stream-section">
+    @using (var panel = Html.ExtensoUI().Begin(new Panel(state: State.Primary)))
+    {
+        using (panel.BeginHeader(heading)) { }
+        using (var body = panel.BeginBody())
+        {
+            <p>
+                This page demonstrates how to consume the <code>stream</code> endpoint that the generic
+                OData controller exposes. The endpoint emits newline-delimited JSON (NDJSON), allowing
+                the UI to render rows as soon as they arrive instead of waiting for the full payload.
+            </p>
+            if (useMapped)
+            {
+                <p>
+                    The mapped controller example maps between <code>Person</code> entities and a separate model,
+                    but the streaming behavior is identical to the non-mapped scenario.
+                </p>
+            }
+        }
+    }
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="btn-toolbar mb-3" role="toolbar">
+            <div class="btn-group">
+                <button id="start-stream" class="btn btn-success">
+                    <i class="fa fa-play"></i> Start Streaming
+                </button>
+                <button id="stop-stream" class="btn btn-warning" disabled>
+                    <i class="fa fa-stop"></i> Stop
+                </button>
+                <button id="reset-stream" class="btn btn-default">
+                    <i class="fa fa-refresh"></i> Reset
+                </button>
+            </div>
+        </div>
+        <div id="stream-status" class="alert alert-info" role="alert">
+            Click <strong>Start Streaming</strong> to begin reading from the endpoint.
+        </div>
+        <p>
+            <strong>Records received:</strong>
+            <span id="record-count" class="label label-primary">0</span>
+        </p>
+    </div>
+
+    <div class="clearfix"></div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div id="stream-grid" data-stream-url="@streamUrl"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/app/people-stream.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        $(function () {
+            const viewModel = new PeopleStreamViewModel('@streamUrl');
+            viewModel.init();
+        });
+    </script>
+}
+

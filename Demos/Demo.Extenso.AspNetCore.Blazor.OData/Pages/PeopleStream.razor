@@ -1,0 +1,45 @@
+@page "/people/stream"
+@using Demo.Extenso.AspNetCore.Blazor.OData.Data.Entities
+
+<PageTitle>People (Streaming)</PageTitle>
+
+<h1>People (Streaming)</h1>
+
+<p class="lead">
+    This page calls the <code>/odata/PersonApi/stream</code> endpoint and renders each record as soon as it
+    arrives over the wire. Use it to verify that the asynchronous streaming pipeline is behaving as expected.
+</p>
+
+<div class="mb-3">
+    <RadzenButton Icon="play_arrow" Disabled="@IsStreaming" ButtonStyle="ButtonStyle.Success" Click="StartStreaming">
+        Start Streaming
+    </RadzenButton>
+    <RadzenButton Icon="stop" Disabled="@(IsStreaming == false)" ButtonStyle="ButtonStyle.Warning" Class="ml-2" Click="CancelStreaming">
+        Cancel
+    </RadzenButton>
+    <RadzenButton Icon="refresh" Disabled="@IsStreaming" ButtonStyle="ButtonStyle.Secondary" Class="ml-2" Click="ResetRecords">
+        Reset
+    </RadzenButton>
+</div>
+
+<div class="alert @StatusCssClass" role="alert">
+    @StatusMessage
+</div>
+
+<p><strong>Records received:</strong> @Records.Count</p>
+
+<RadzenDataGrid @ref="DataGrid"
+                TItem="Person"
+                Data="@Records"
+                AllowFiltering="false"
+                AllowSorting="true"
+                AllowPaging="false"
+                ReadOnly="true"
+                LoadData="@(args => Task.CompletedTask)">
+    <Columns>
+        <RadzenDataGridColumn TItem="Person" Property="FamilyName" Title="Family Name" Width="200px" />
+        <RadzenDataGridColumn TItem="Person" Property="GivenNames" Title="Given Name/s" Width="200px" />
+        <RadzenDataGridColumn TItem="Person" Property="DateOfBirth" Title="Date of Birth" FormatString="{0:yyyy-MM-dd}" Width="170px" />
+    </Columns>
+</RadzenDataGrid>
+

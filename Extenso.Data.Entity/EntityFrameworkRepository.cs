@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using Extenso.Collections;
 using Extenso.Collections.Generic;
 using LinqKit;
@@ -46,6 +47,21 @@ public class EntityFrameworkRepository<TEntity> : IRepository<TEntity>, IEntityF
 
         var otherConnection = connection as EntityFrameworkRepositoryConnection<TOther>;
         return new EntityFrameworkRepositoryConnection<TEntity>(otherConnection.Context, false);
+    }
+
+    public virtual async IAsyncEnumerable<TEntity> StreamAsync(
+        SearchOptions<TEntity> options,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        using var context = GetContext(options);
+        var query = ApplyPaging(
+            BuildBaseQuery(context, options),
+            options);
+
+        await foreach (var entity in query.AsAsyncEnumerable().WithCancellation(cancellationToken))
+        {
+            yield return entity;
+        }
     }
 
     #region Find
