@@ -8,137 +8,126 @@ namespace Extenso.IO;
 /// </summary>
 public static class StreamExtensions
 {
-    /// <summary>
-    /// Deserializes the binary data contained in the given stream to an object of the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
-    /// <param name="stream">The stream to deserialize.</param>
-    /// <returns>The deserialized object from the stream.</returns>
-    public static T BinaryDeserialize<T>(this Stream stream)
+    extension(Stream stream)
     {
-        byte[] bytes = stream.ToArray();
-        return Encoding.UTF8.GetString(bytes).JsonDeserialize<T>();
-    }
+        /// <summary>
+        /// Deserializes the binary data contained in the given stream to an object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
+        /// <returns>The deserialized object from the stream.</returns>
+        public T BinaryDeserialize<T>()
+        {
+            byte[] bytes = stream.ToArray();
+            return Encoding.UTF8.GetString(bytes).JsonDeserialize<T>();
+        }
 
-    /// <summary>
-    /// Serializes the given object to the given stream
-    /// </summary>
-    /// <typeparam name="T">The type of obj</typeparam>
-    /// <param name="stream">The stream to write to.</param>
-    /// <param name="obj">The object to serialize.</param>
-    public static void BinarySerialize<T>(this Stream stream, T obj)
-    {
-        byte[] bytes = Encoding.UTF8.GetBytes(obj.JsonSerialize());
-        stream.Write(bytes);
-        stream.Position = 0;
-    }
+        /// <summary>
+        /// Serializes the given object to the given stream
+        /// </summary>
+        /// <typeparam name="T">The type of obj</typeparam>
+        /// <param name="obj">The object to serialize.</param>
+        public void BinarySerialize<T>(T obj)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(obj.JsonSerialize());
+            stream.Write(bytes);
+            stream.Position = 0;
+        }
 
-    /// <summary>
-    /// Compresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of compressed data.
-    /// </summary>
-    /// <param name="stream">The stream to compress.</param>
-    /// <returns>A System.IO.MemoryStream of compressed data.</returns>
-    public static MemoryStream BrotliCompress(this Stream stream, CompressionLevel compressionLevel = CompressionLevel.Optimal) =>
-        ProcessCompression(stream, dest => new BrotliStream(dest, compressionLevel, leaveOpen: true));
+        /// <summary>
+        /// Compresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of compressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of compressed data.</returns>
+        public MemoryStream BrotliCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal) =>
+            ProcessCompression(stream, dest => new BrotliStream(dest, compressionLevel, leaveOpen: true));
 
-    /// <summary>
-    /// Compresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of compressed data.
-    /// </summary>
-    /// <param name="stream">The stream to compress.</param>
-    /// <returns>A System.IO.MemoryStream of compressed data.</returns>
-    public static Task<MemoryStream> BrotliCompressAsync(this Stream stream, CompressionLevel compressionLevel = CompressionLevel.Optimal, CancellationToken cancellationToken = default) =>
-        ProcessCompressionAsync(stream, dest => new BrotliStream(dest, compressionLevel, leaveOpen: true), cancellationToken);
+        /// <summary>
+        /// Compresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of compressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of compressed data.</returns>
+        public Task<MemoryStream> BrotliCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal, CancellationToken cancellationToken = default) =>
+            ProcessCompressionAsync(stream, dest => new BrotliStream(dest, compressionLevel, leaveOpen: true), cancellationToken);
 
-    /// <summary>
-    /// Decompresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of decompressed data.
-    /// </summary>
-    /// <param name="stream">The stream to decompress.</param>
-    /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
-    public static MemoryStream BrotliDecompress(this Stream stream) =>
-        ProcessDecompression(stream, src => new BrotliStream(src, CompressionMode.Decompress, leaveOpen: true));
+        /// <summary>
+        /// Decompresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of decompressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
+        public MemoryStream BrotliDecompress() =>
+            ProcessDecompression(stream, src => new BrotliStream(src, CompressionMode.Decompress, leaveOpen: true));
 
-    /// <summary>
-    /// Decompresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of decompressed data.
-    /// </summary>
-    /// <param name="stream">The stream to decompress.</param>
-    /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
-    public static Task<MemoryStream> BrotliDecompressAsync(this Stream stream, CancellationToken cancellationToken = default) =>
-        ProcessDecompressionAsync(stream, src => new BrotliStream(src, CompressionMode.Decompress, leaveOpen: true), cancellationToken);
+        /// <summary>
+        /// Decompresses the given stream using the Brotli algorithm and returns a System.IO.MemoryStream of decompressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
+        public Task<MemoryStream> BrotliDecompressAsync(CancellationToken cancellationToken = default) =>
+            ProcessDecompressionAsync(stream, src => new BrotliStream(src, CompressionMode.Decompress, leaveOpen: true), cancellationToken);
 
-    /// <summary>
-    /// Compresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of compressed data.
-    /// </summary>
-    /// <param name="stream">The stream to compress.</param>
-    /// <returns>A System.IO.MemoryStream of compressed data.</returns>
-    public static MemoryStream DeflateCompress(this Stream stream, CompressionLevel compressionLevel = CompressionLevel.Optimal) =>
-        ProcessCompression(stream, dest => new DeflateStream(dest, compressionLevel, leaveOpen: true));
+        /// <summary>
+        /// Compresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of compressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of compressed data.</returns>
+        public MemoryStream DeflateCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal) =>
+            ProcessCompression(stream, dest => new DeflateStream(dest, compressionLevel, leaveOpen: true));
 
-    /// <summary>
-    /// Compresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of compressed data.
-    /// </summary>
-    /// <param name="stream">The stream to compress.</param>
-    /// <returns>A System.IO.MemoryStream of compressed data.</returns>
-    public static Task<MemoryStream> DeflateCompressAsync(this Stream stream, CompressionLevel compressionLevel = CompressionLevel.Optimal, CancellationToken cancellationToken = default) =>
-        ProcessCompressionAsync(stream, dest => new DeflateStream(dest, compressionLevel, leaveOpen: true), cancellationToken);
+        /// <summary>
+        /// Compresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of compressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of compressed data.</returns>
+        public Task<MemoryStream> DeflateCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal, CancellationToken cancellationToken = default) =>
+            ProcessCompressionAsync(stream, dest => new DeflateStream(dest, compressionLevel, leaveOpen: true), cancellationToken);
 
-    /// <summary>
-    /// Decompresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of decompressed data.
-    /// </summary>
-    /// <param name="stream">The stream to decompress.</param>
-    /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
-    public static MemoryStream DeflateDecompress(this Stream stream) =>
-        ProcessDecompression(stream, src => new DeflateStream(src, CompressionMode.Decompress, leaveOpen: true));
+        /// <summary>
+        /// Decompresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of decompressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
+        public MemoryStream DeflateDecompress() =>
+            ProcessDecompression(stream, src => new DeflateStream(src, CompressionMode.Decompress, leaveOpen: true));
 
-    /// <summary>
-    /// Decompresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of decompressed data.
-    /// </summary>
-    /// <param name="stream">The stream to decompress.</param>
-    /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
-    public static Task<MemoryStream> DeflateDecompressAsync(this Stream stream, CancellationToken cancellationToken = default) =>
-        ProcessDecompressionAsync(stream, src => new DeflateStream(src, CompressionMode.Decompress, leaveOpen: true), cancellationToken);
+        /// <summary>
+        /// Decompresses the given stream using the Deflate algorithm and returns a System.IO.MemoryStream of decompressed data.
+        /// </summary>
+        /// <param name="stream">The stream to decompress.</param>
+        /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
+        public Task<MemoryStream> DeflateDecompressAsync(CancellationToken cancellationToken = default) =>
+            ProcessDecompressionAsync(stream, src => new DeflateStream(src, CompressionMode.Decompress, leaveOpen: true), cancellationToken);
 
-    /// <summary>
-    /// Compresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of compressed data.
-    /// </summary>
-    /// <param name="stream">The stream to compress.</param>
-    /// <returns>A System.IO.MemoryStream of compressed data.</returns>
-    public static MemoryStream GZipCompress(this Stream stream, CompressionLevel compressionLevel = CompressionLevel.Optimal) =>
-        ProcessCompression(stream, dest => new GZipStream(dest, compressionLevel, leaveOpen: true));
+        /// <summary>
+        /// Compresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of compressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of compressed data.</returns>
+        public MemoryStream GZipCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal) =>
+            ProcessCompression(stream, dest => new GZipStream(dest, compressionLevel, leaveOpen: true));
 
-    /// <summary>
-    /// Compresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of compressed data.
-    /// </summary>
-    /// <param name="stream">The stream to compress.</param>
-    /// <returns>A System.IO.MemoryStream of compressed data.</returns>
-    public static Task<MemoryStream> GZipCompressAsync(this Stream stream, CompressionLevel compressionLevel = CompressionLevel.Optimal, CancellationToken cancellationToken = default) =>
-        ProcessCompressionAsync(stream, dest => new GZipStream(dest, compressionLevel, leaveOpen: true));
+        /// <summary>
+        /// Compresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of compressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of compressed data.</returns>
+        public Task<MemoryStream> GZipCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal, CancellationToken cancellationToken = default) =>
+            ProcessCompressionAsync(stream, dest => new GZipStream(dest, compressionLevel, leaveOpen: true));
 
-    /// <summary>
-    /// Decompresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of decompressed data.
-    /// </summary>
-    /// <param name="stream">The stream to decompress.</param>
-    /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
-    public static MemoryStream GZipDecompress(this Stream stream) =>
-        ProcessDecompression(stream, src => new GZipStream(src, CompressionMode.Decompress, leaveOpen: true));
+        /// <summary>
+        /// Decompresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of decompressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
+        public MemoryStream GZipDecompress() =>
+            ProcessDecompression(stream, src => new GZipStream(src, CompressionMode.Decompress, leaveOpen: true));
 
-    /// <summary>
-    /// Decompresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of decompressed data.
-    /// </summary>
-    /// <param name="stream">The stream to decompress.</param>
-    /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
-    public static Task<MemoryStream> GZipDecompressAsync(this Stream stream, CancellationToken cancellationToken = default) =>
-        ProcessDecompressionAsync(stream, src => new GZipStream(src, CompressionMode.Decompress, leaveOpen: true));
+        /// <summary>
+        /// Decompresses the given stream using the GZip algorithm and returns a System.IO.MemoryStream of decompressed data.
+        /// </summary>
+        /// <returns>A System.IO.MemoryStream of decompressed data.</returns>
+        public Task<MemoryStream> GZipDecompressAsync(CancellationToken cancellationToken = default) =>
+            ProcessDecompressionAsync(stream, src => new GZipStream(src, CompressionMode.Decompress, leaveOpen: true));
 
-    /// <summary>
-    /// Writes the stream content to a byte array.
-    /// </summary>
-    /// <param name="stream">The stream to convert to a byte array.</param>
-    /// <returns>A new byte array.</returns>
-    public static byte[] ToArray(this Stream stream)
-    {
-        using var memoryStream = new MemoryStream();
-        stream.CopyTo(memoryStream);
-        return memoryStream.ToArray();
+        /// <summary>
+        /// Writes the stream content to a byte array.
+        /// </summary>
+        /// <returns>A new byte array.</returns>
+        public byte[] ToArray()
+        {
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            return memoryStream.ToArray();
+        }
     }
 
     private static MemoryStream ProcessCompression(

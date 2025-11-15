@@ -8,172 +8,159 @@ namespace Extenso.IO;
 /// </summary>
 public static class FileInfoExtensions
 {
-    /// <summary>
-    /// Deserializes the binary data contained in the given file to an object of the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
-    /// <param name="fileInfo">The binary file to deserialize.</param>
-    /// <returns>The deserialized object from the binary data.</returns>
-    public static T BinaryDeserialize<T>(this FileInfo fileInfo)
+    extension(FileInfo source)
     {
-        using var fileStream = File.Open(fileInfo.FullName, FileMode.Open);
-        return fileStream.BinaryDeserialize<T>();
-    }
-
-    /// <summary>
-    /// Compresses the given file using the Brotli algorithm and returns the name of the compressed file.
-    /// </summary>
-    /// <param name="fileInfo">The file to be compressed.</param>
-    /// <returns>The name of the new compressed file.</returns>
-    public static string BrotliCompress(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
-        => fileInfo.Compress(CompressionAlgorithm.Brotli, compressionLevel);
-
-    public static async Task<string> BrotliCompressAsync(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
-        => await fileInfo.CompressAsync(CompressionAlgorithm.Brotli, compressionLevel);
-
-    /// <summary>
-    /// Decompresses the given file using the Brotli algorithm and returns the name of the decompressed file.
-    /// </summary>
-    /// <param name="fileInfo">The file to be decompressed.</param>
-    /// <returns>The name of the new decompressed file.</returns>
-    public static string BrotliDecompress(this FileInfo fileInfo)
-        => fileInfo.Decompress(CompressionAlgorithm.Brotli);
-
-    public static async Task<string> BrotliDecompressAsync(this FileInfo fileInfo)
-        => await fileInfo.DecompressAsync(CompressionAlgorithm.Brotli);
-
-    /// <summary>
-    /// Compresses the given file using the Deflate algorithm and returns the name of the compressed file.
-    /// </summary>
-    /// <param name="fileInfo">The file to be compressed.</param>
-    /// <returns>The name of the new compressed file.</returns>
-    public static string DeflateCompress(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
-        => fileInfo.Compress(CompressionAlgorithm.Deflate, compressionLevel);
-
-    public static async Task<string> DeflateCompressAsync(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
-        => await fileInfo.CompressAsync(CompressionAlgorithm.Deflate, compressionLevel);
-
-    /// <summary>
-    /// Decompresses the given file using the Deflate algorithm and returns the name of the decompressed file.
-    /// </summary>
-    /// <param name="fileInfo">The file to be decompressed.</param>
-    /// <returns>The name of the new decompressed file.</returns>
-    public static string DeflateDecompress(this FileInfo fileInfo)
-        => fileInfo.Decompress(CompressionAlgorithm.Deflate);
-
-    public static async Task<string> DeflateDecompressAsync(this FileInfo fileInfo)
-        => await fileInfo.DecompressAsync(CompressionAlgorithm.Deflate);
-
-    /// <summary>
-    /// Gets the file size and includes the unit of measurement suffix.
-    /// </summary>
-    /// <param name="fileInfo">The file which is to be measured.</param>
-    /// <returns>A System.String representing the size of the file.</returns>
-    /// <example><code>string size = new FileInfo(path).FileSize();</code></example>
-    public static string FileSize(this FileInfo fileInfo)
-    {
-        long length = fileInfo.Length;
-        string[] suffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
-
-        if (length == 0)
+        /// <summary>
+        /// Deserializes the binary data contained in the given file to an object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of object to deserialize the binary data to.</typeparam>
+        /// <returns>The deserialized object from the binary data.</returns>
+        public T BinaryDeserialize<T>()
         {
-            return "0B";
+            using var fileStream = File.Open(source.FullName, FileMode.Open);
+            return fileStream.BinaryDeserialize<T>();
         }
 
-        long bytes = Math.Abs(length);
-        int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-        double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+        /// <summary>
+        /// Compresses the given file using the Brotli algorithm and returns the name of the compressed file.
+        /// </summary>
+        /// <returns>The name of the new compressed file.</returns>
+        public string BrotliCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal)
+            => source.Compress(CompressionAlgorithm.Brotli, compressionLevel);
 
-        return (Math.Sign(length) * num).ToString(CultureInfo.InvariantCulture) + suffixes[place];
-    }
+        public async Task<string> BrotliCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal)
+            => await source.CompressAsync(CompressionAlgorithm.Brotli, compressionLevel);
 
-    /// <summary>
-    /// Gets the file size in GigaBytes
-    /// </summary>
-    /// <param name="fileInfo">The file which is to be measured in GB.</param>
-    /// <returns>A System.Double representing the size of the file in GB.</returns>
-    public static long FileSizeInGigaBytes(this FileInfo fileInfo) => fileInfo.FileSizeInMegaBytes() / 1024;
+        /// <summary>
+        /// Decompresses the given file using the Brotli algorithm and returns the name of the decompressed file.
+        /// </summary>
+        /// <returns>The name of the new decompressed file.</returns>
+        public string BrotliDecompress()
+            => source.Decompress(CompressionAlgorithm.Brotli);
 
-    /// <summary>
-    /// Gets the file size in KiloBytes
-    /// </summary>
-    /// <param name="fileInfo">The file which is to be measured in KB.</param>
-    /// <returns>A System.Double representing the size of the file in KB.</returns>
-    public static long FileSizeInKiloBytes(this FileInfo fileInfo) => fileInfo.Length / 1024;
+        public async Task<string> BrotliDecompressAsync()
+            => await source.DecompressAsync(CompressionAlgorithm.Brotli);
 
-    /// <summary>
-    /// Gets the file size in MegaBytes
-    /// </summary>
-    /// <param name="fileInfo">The file which is to be measured in MB.</param>
-    /// <returns>A System.Double representing the size of the file in MB.</returns>
-    public static long FileSizeInMegaBytes(this FileInfo fileInfo) => fileInfo.FileSizeInKiloBytes() / 1024;
+        /// <summary>
+        /// Compresses the given file using the Deflate algorithm and returns the name of the compressed file.
+        /// </summary>
+        /// <returns>The name of the new compressed file.</returns>
+        public string DeflateCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal)
+            => source.Compress(CompressionAlgorithm.Deflate, compressionLevel);
 
-    /// <summary>
-    /// Compresses the file using the GZip algorithm and returns the name of the compressed file.
-    /// </summary>
-    /// <param name="fileInfo">The file to be compressed.</param>
-    /// <returns>The name of the new compressed file.</returns>
-    public static string GZipCompress(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
-        => fileInfo.Compress(CompressionAlgorithm.GZip, compressionLevel);
+        public async Task<string> DeflateCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal)
+            => await source.CompressAsync(CompressionAlgorithm.Deflate, compressionLevel);
 
-    public static async Task<string> GZipCompressAsync(this FileInfo fileInfo, CompressionLevel compressionLevel = CompressionLevel.Optimal)
-        => await fileInfo.CompressAsync(CompressionAlgorithm.GZip, compressionLevel);
+        /// <summary>
+        /// Decompresses the given file using the Deflate algorithm and returns the name of the decompressed file.
+        /// </summary>
+        /// <returns>The name of the new decompressed file.</returns>
+        public string DeflateDecompress()
+            => source.Decompress(CompressionAlgorithm.Deflate);
 
-    /// <summary>
-    /// Decompresses the file using the GZip algorithm and returns the name of the decompressed file.
-    /// </summary>
-    /// <param name="fileInfo">This System.IO.FileInfo instance.</param>
-    /// <returns>The name of the new decompressed file.</returns>
-    public static string GZipDecompress(this FileInfo fileInfo)
-        => fileInfo.Decompress(CompressionAlgorithm.GZip);
+        public async Task<string> DeflateDecompressAsync()
+            => await source.DecompressAsync(CompressionAlgorithm.Deflate);
 
-    public static async Task<string> GZipDecompressAsync(this FileInfo fileInfo)
-        => await fileInfo.DecompressAsync(CompressionAlgorithm.GZip);
-
-    /// <summary>
-    /// Opens a binary file, reads the contents of the file into a byte array, and then closes the file.
-    /// </summary>
-    /// <param name="fileInfo">The file to open for reading.</param>
-    /// <returns> A byte array containing the contents of the file.</returns>
-    public static byte[] ReadAllBytes(this FileInfo fileInfo) => File.ReadAllBytes(fileInfo.FullName);
-
-    /// <summary>
-    /// Opens the text file, reads all lines of the file, and then closes the file.
-    /// </summary>
-    /// <param name="fileInfo">The file to read all text from.</param>
-    /// <returns>A string containing all lines of the file.</returns>
-    public static string ReadAllText(this FileInfo fileInfo) => File.ReadAllText(fileInfo.FullName);//using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))//using (var streamReader = new StreamReader(fileStream))//{//    return streamReader.ReadToEnd();//}
-
-    /// <summary>
-    /// Opens a binary file, reads the specified amount of contents of the file into a byte array, and then closes the file.
-    /// </summary>
-    /// <param name="fileInfo">The file to open for reading.</param>
-    /// <param name="maxBufferSize">A maximum number of bytes to read.</param>
-    /// <returns> A byte array containing the contents of the file. If maxBufferSize is less than the file size, not all data will be returned.</returns>
-    public static byte[] ReadBytes(this FileInfo fileInfo, long maxBufferSize = 0x1000)
-    {
-        int bufferSize = (int)Math.Min(fileInfo.Length, maxBufferSize);
-        byte[] buffer = new byte[bufferSize];
-
-        using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize))
+        /// <summary>
+        /// Gets the file size and includes the unit of measurement suffix.
+        /// </summary>
+        /// <returns>A System.String representing the size of the file.</returns>
+        /// <example><code>string size = new FileInfo(path).FileSize();</code></example>
+        public string FileSize()
         {
-            fileStream.ReadExactly(buffer);
+            long length = source.Length;
+            string[] suffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+
+            if (length == 0)
+            {
+                return "0B";
+            }
+
+            long bytes = Math.Abs(length);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+
+            return (Math.Sign(length) * num).ToString(CultureInfo.InvariantCulture) + suffixes[place];
         }
 
-        return buffer;
-    }
+        /// <summary>
+        /// Gets the file size in GigaBytes
+        /// </summary>
+        /// <returns>A System.Double representing the size of the file in GB.</returns>
+        public long FileSizeInGigaBytes() => source.FileSizeInMegaBytes() / 1024;
 
-    /// <summary>
-    /// Deserializes the XML data contained in the given file to an object of the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type of object to deserialize the XML data to.</typeparam>
-    /// <param name="fileInfo">The XML file to deserialize.</param>
-    /// <returns>The deserialized object from the XML data.</returns>
-    public static T XmlDeserialize<T>(this FileInfo fileInfo)
-    {
-        using var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read);
-        using var streamReader = new StreamReader(fileStream);
-        return streamReader.ReadToEnd().XmlDeserialize<T>();
+        /// <summary>
+        /// Gets the file size in KiloBytes
+        /// </summary>
+        /// <returns>A System.Double representing the size of the file in KB.</returns>
+        public long FileSizeInKiloBytes() => source.Length / 1024;
+
+        /// <summary>
+        /// Gets the file size in MegaBytes
+        /// </summary>
+        /// <returns>A System.Double representing the size of the file in MB.</returns>
+        public long FileSizeInMegaBytes() => source.FileSizeInKiloBytes() / 1024;
+
+        /// <summary>
+        /// Compresses the file using the GZip algorithm and returns the name of the compressed file.
+        /// </summary>
+        /// <returns>The name of the new compressed file.</returns>
+        public string GZipCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal)
+            => source.Compress(CompressionAlgorithm.GZip, compressionLevel);
+
+        public async Task<string> GZipCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal)
+            => await source.CompressAsync(CompressionAlgorithm.GZip, compressionLevel);
+
+        /// <summary>
+        /// Decompresses the file using the GZip algorithm and returns the name of the decompressed file.
+        /// </summary>
+        /// <returns>The name of the new decompressed file.</returns>
+        public string GZipDecompress()
+            => source.Decompress(CompressionAlgorithm.GZip);
+
+        public async Task<string> GZipDecompressAsync()
+            => await source.DecompressAsync(CompressionAlgorithm.GZip);
+
+        /// <summary>
+        /// Opens a binary file, reads the contents of the file into a byte array, and then closes the file.
+        /// </summary>
+        /// <returns> A byte array containing the contents of the file.</returns>
+        public byte[] ReadAllBytes() => File.ReadAllBytes(source.FullName);
+
+        /// <summary>
+        /// Opens the text file, reads all lines of the file, and then closes the file.
+        /// </summary>
+        /// <returns>A string containing all lines of the file.</returns>
+        public string ReadAllText() => File.ReadAllText(source.FullName);//using (var fileStream = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read))//using (var streamReader = new StreamReader(fileStream))//{//    return streamReader.ReadToEnd();//}
+        /// <summary>
+        /// Opens a binary file, reads the specified amount of contents of the file into a byte array, and then closes the file.
+        /// </summary>
+        /// <param name="maxBufferSize">A maximum number of bytes to read.</param>
+        /// <returns> A byte array containing the contents of the file. If maxBufferSize is less than the file size, not all data will be returned.</returns>
+        public byte[] ReadBytes(long maxBufferSize = 0x1000)
+        {
+            int bufferSize = (int)Math.Min(source.Length, maxBufferSize);
+            byte[] buffer = new byte[bufferSize];
+
+            using (var fileStream = new FileStream(source.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize))
+            {
+                fileStream.ReadExactly(buffer);
+            }
+
+            return buffer;
+        }
+
+        /// <summary>
+        /// Deserializes the XML data contained in the given file to an object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of object to deserialize the XML data to.</typeparam>
+        /// <returns>The deserialized object from the XML data.</returns>
+        public T XmlDeserialize<T>()
+        {
+            using var fileStream = new FileStream(source.FullName, FileMode.Open, FileAccess.Read);
+            using var streamReader = new StreamReader(fileStream);
+            return streamReader.ReadToEnd().XmlDeserialize<T>();
+        }
     }
 
     private static string Compress(this FileInfo fileInfo, CompressionAlgorithm algorithm, CompressionLevel compressionLevel)

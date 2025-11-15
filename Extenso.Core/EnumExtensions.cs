@@ -7,6 +7,60 @@ namespace Extenso;
 /// </summary>
 public static class EnumExtensions
 {
+    extension(Enum source)
+    {
+        // https://stackoverflow.com/questions/4171140/iterate-over-values-in-flags-enum
+        /// <summary>
+        /// Gets a collection of individual values represented by the given bit field (set of flags).
+        /// </summary>
+        /// <typeparam name="T">The type of the enumeration. This should match the type of source.</typeparam>
+        /// <returns>A collection of individual values extracted from source.</returns>
+        public IEnumerable<T> GetFlags<T>()
+        {
+            if (!typeof(T).IsEnum)
+            {
+                throw new ArgumentException("The generic type parameter must be an Enum.");
+            }
+
+            if (source.GetType() != typeof(T))
+            {
+                throw new ArgumentException("The generic type parameter does not match the target type.");
+            }
+
+            ulong flag = 1;
+            foreach (var value in Enum.GetValues(source.GetType()).Cast<T>())
+            {
+                ulong bits = Convert.ToUInt64(value);
+                while (flag < bits)
+                {
+                    flag <<= 1;
+                }
+
+                if (flag == bits && source.HasFlag(value as Enum))
+                {
+                    yield return value;
+                }
+            }
+        }
+    }
+
+    extension(string source)
+    {
+        /// <summary>
+        /// Converts the string representation of the name or numeric value of one or more
+        /// enumerated constants to an equivalent enumerated object. A parameter specifies
+        /// whether the operation is case-sensitive. Another parameter specifies the
+        /// value to use in case the operation fails.
+        /// </summary>
+        /// <typeparam name="T">The type of the enumeration.</typeparam>
+        /// <param name="ignoreCase">true to ignore case; false to regard case.</param>
+        /// <param name="fallback">The value to use in case the operation fails.</param>
+        /// <returns>An object of type T whose value is represented by source.</returns>
+        public T ToEnum<T>(bool ignoreCase = true, T fallback = default) where T : struct => string.IsNullOrWhiteSpace(source)
+            ? fallback
+            : TryParse(source, out T result, ignoreCase) ? result : fallback;
+    }
+
     /// <summary>
     /// Gets a value that is used for display in the UI. If the given enum value is decorated with a
     /// System.ComponentModel.DataAnnotations.DisplayAttribute, the Name property of that is used.
@@ -90,41 +144,6 @@ public static class EnumExtensions
     /// <returns>A collection of strings that are used for display in the UI.</returns>
     public static IEnumerable<string> GetDisplayNames<T>() => GetValues<T>().Select(x => GetDisplayName(x));
 
-    // https://stackoverflow.com/questions/4171140/iterate-over-values-in-flags-enum
-    /// <summary>
-    /// Gets a collection of individual values represented by the given bit field (set of flags).
-    /// </summary>
-    /// <typeparam name="T">The type of the enumeration. This should match the type of source.</typeparam>
-    /// <param name="source">The enum value which is a set of flags from which individual values are to be extracted.</param>
-    /// <returns>A collection of individual values extracted from source.</returns>
-    public static IEnumerable<T> GetFlags<T>(this Enum source)
-    {
-        if (!typeof(T).IsEnum)
-        {
-            throw new ArgumentException("The generic type parameter must be an Enum.");
-        }
-
-        if (source.GetType() != typeof(T))
-        {
-            throw new ArgumentException("The generic type parameter does not match the target type.");
-        }
-
-        ulong flag = 1;
-        foreach (var value in Enum.GetValues(source.GetType()).Cast<T>())
-        {
-            ulong bits = Convert.ToUInt64(value);
-            while (flag < bits)
-            {
-                flag <<= 1;
-            }
-
-            if (flag == bits && source.HasFlag(value as Enum))
-            {
-                yield return value;
-            }
-        }
-    }
-
     /// <summary>
     /// Retrieves a collection of the values of the constants in a specified enumeration.
     /// </summary>
@@ -142,19 +161,6 @@ public static class EnumExtensions
     /// <param name="ignoreCase">true to ignore case; false to regard case.</param>
     /// <returns>An object of the specified type whose value is represented by source.</returns>
     public static T Parse<T>(string source, bool ignoreCase = true) where T : struct => (T)Enum.Parse(typeof(T), source, ignoreCase);
-
-    /// <summary>
-    /// Converts the string representation of the name or numeric value of one or more
-    /// enumerated constants to an equivalent enumerated object. A parameter specifies
-    /// whether the operation is case-sensitive. Another parameter specifies the
-    /// value to use in case the operation fails.
-    /// </summary>
-    /// <typeparam name="T">The type of the enumeration.</typeparam>
-    /// <param name="source">The string containing the name or value to convert.</param>
-    /// <param name="ignoreCase">true to ignore case; false to regard case.</param>
-    /// <param name="fallback">The value to use in case the operation fails.</param>
-    /// <returns>An object of type T whose value is represented by source.</returns>
-    public static T ToEnum<T>(this string source, bool ignoreCase = true, T fallback = default) where T : struct => string.IsNullOrWhiteSpace(source) ? fallback : TryParse(source, out T result, ignoreCase) ? result : fallback;
 
     /// <summary>
     /// Converts the string representation of the name or numeric value of one or more

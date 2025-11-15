@@ -7,28 +7,30 @@ namespace Extenso;
 /// </summary>
 public static class ExceptionExtensions
 {
-    /// <summary>
-    /// Gets the messages from the given System.Exception and every inner exception thereof.
-    /// </summary>
-    /// <param name="exception">The System.Exception from which to extract the error messages.</param>
-    /// <returns>A System.String with the given exception's message and the messages of all inner exceptions on separate lines.</returns>
-    public static string GetMessageStack(this Exception exception)
+    extension(Exception source)
     {
-        if (exception is null)
+        /// <summary>
+        /// Gets the messages from the given System.Exception and every inner exception thereof.
+        /// </summary>
+        /// <returns>A System.String with the given exception's message and the messages of all inner exceptions on separate lines.</returns>
+        public string GetMessageStack()
         {
-            return null;
+            if (source is null)
+            {
+                return null;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine(source.Message);
+
+            while (source.InnerException is not null)
+            {
+                source = source.InnerException;
+                sb.Append("--> ");
+                sb.AppendLine(source.Message);
+            }
+
+            return sb.ToString();
         }
-
-        var sb = new StringBuilder();
-        sb.AppendLine(exception.Message);
-
-        while (exception.InnerException is not null)
-        {
-            exception = exception.InnerException;
-            sb.Append("--> ");
-            sb.AppendLine(exception.Message);
-        }
-
-        return sb.ToString();
     }
 }

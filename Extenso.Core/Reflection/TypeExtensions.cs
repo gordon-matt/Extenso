@@ -8,6 +8,214 @@ namespace Extenso.Reflection;
 /// </summary>
 public static class TypeExtensions
 {
+    extension(Type source)
+    {
+        /// <summary>
+        /// Returns the default value for the given type.
+        /// </summary>
+        /// <returns>The default value of the given type, if it is a value type; otherwise false.</returns>
+        public object GetDefaultValue() => source.IsValueType ? Activator.CreateInstance(source) : null;
+
+        /// <summary>
+        /// Returns a collection of System.Reflection.MethodInfo for all extension methods for the given type in the specified assembly.
+        /// </summary>
+        /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for extension methods for the given type.</param>
+        /// <returns>A collection of System.Reflection.MethodInfo for all extension methods for type in extensionsAssembly.</returns>
+        public IEnumerable<MethodInfo> GetExtensionMethods(Assembly extensionsAssembly) =>
+            from t in extensionsAssembly.GetTypes()
+            where !t.GetTypeInfo().IsGenericType && !t.IsNested
+            from m in t.GetTypeInfo().GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+            where m.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false)
+            where m.GetParameters()[0].ParameterType == source
+            select m;
+
+        /// <summary>
+        /// A System.Reflection.MethodInfo for the specified extension method for the given type in the specified assembly.
+        /// </summary>
+        /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for the extension method for the given type.</param>
+        /// <param name="name">The name of the specific extension method to find.</param>
+        /// <returns>A System.Reflection.MethodInfo for the specified extension method, if found; otherwise null.</returns>
+        public MethodInfo GetExtensionMethod(Assembly extensionsAssembly, string name) =>
+            source.GetExtensionMethods(extensionsAssembly).FirstOrDefault(m => m.Name == name);
+
+        /// <summary>
+        /// A System.Reflection.MethodInfo for the specified extension method for the given type in the specified
+        /// assembly that has parameters whose types match those of parameterTypes.
+        /// </summary>
+        /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for the extension method for the given type.</param>
+        /// <param name="name">The name of the specific extension method to find.</param>
+        /// <param name="parameterTypes">
+        /// An argument list for the extension method. These must be in the same order and of the same types as the paremeters of the
+        /// extension method being searched for.
+        /// </param>
+        /// <returns>A System.Reflection.MethodInfo for the specified extension method, if found; otherwise null.</returns>
+        public MethodInfo GetExtensionMethod(Assembly extensionsAssembly, string name, Type[] parameterTypes)
+        {
+            var methods = (from m in source.GetExtensionMethods(extensionsAssembly)
+                           where m.Name == name
+                           && m.GetParameters().Length == parameterTypes.Length + 1 // + 1 because extension method parameter (this)
+                           select m).ToList();
+
+            if (!methods.Any())
+            {
+                return default;
+            }
+
+            if (methods.Count == 1)
+            {
+                return methods.First();
+            }
+
+            foreach (var methodInfo in methods)
+            {
+                var parameters = methodInfo.GetParameters();
+
+                bool found = true;
+                for (byte b = 0; b < parameterTypes.Length; b++)
+                {
+                    found = true;
+                    if (parameters[b].GetType() != parameterTypes[b])
+                    {
+                        found = false;
+                    }
+                }
+
+                if (found)
+                {
+                    return methodInfo;
+                }
+            }
+
+            return default;
+        }
+
+        public bool IsAssignableToGenericType(Type genericType)
+        {
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentNullException.ThrowIfNull(genericType);
+            if (!genericType.IsGenericTypeDefinition) throw new ArgumentException("Type must be a generic type definition.", nameof(genericType));
+
+            // Check interfaces
+            foreach (var interfaceType in source.GetInterfaces())
+            {
+                if (interfaceType.IsGenericType &&
+                    interfaceType.GetGenericTypeDefinition() == genericType)
+                {
+                    return true;
+                }
+            }
+
+            // Check the type itself
+            if (source.IsGenericType &&
+                source.GetGenericTypeDefinition() == genericType)
+            {
+                return true;
+            }
+
+            // Check base types recursively
+            var baseType = source.BaseType;
+            return baseType is not null && IsAssignableToGenericType(baseType, genericType);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether type is a collection.
+        /// </summary>
+        /// <returns>true if type is a collection; otherwise false.</returns>
+        public bool IsCollection()
+        {
+            // string implements IEnumerable (it's a collection of System.Char), but for our purposes we don't consider it a collection.
+            if (source == typeof(string))
+            {
+                return false;
+            }
+
+            var interfaces = from @interface in source.GetTypeInfo().GetInterfaces()
+                             where @interface == typeof(IEnumerable) ||
+                                 (@interface.GetTypeInfo().IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                             select @interface;
+            return interfaces.Any();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether type is a generic collection.
+        /// </summary>
+        /// <returns>true if type is a generic collection; otherwise false.</returns>
+        public bool IsGenericCollection()
+        {
+            var collectionType = typeof(ICollection<>);
+            var typeInfo = source.GetTypeInfo();
+            var collectionTypeInfo = collectionType.GetTypeInfo();
+
+            if (typeInfo.IsGenericType && collectionTypeInfo.IsAssignableFrom(source.GetGenericTypeDefinition()))
+            {
+                return true;
+            }
+
+            var interfaces = typeInfo.GetInterfaces();
+            return interfaces.Any(@interface => @interface.GetTypeInfo().IsGenericType && collectionTypeInfo.IsAssignableFrom(@interface.GetGenericTypeDefinition()));
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether type is nullable
+        /// </summary>
+        /// <returns>true if type is nullable; otherwise false.</returns>
+        public bool IsNullable()
+        {
+            if (source is null)
+            {
+                return false;
+            }
+
+            var typeInfo = source.GetTypeInfo();
+            return !typeInfo.IsValueType || typeInfo.IsGenericType && source.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+            //return Nullable.GetUnderlyingType(type) is not null; //faster than above version? Needs testing
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether type is numeric (int, long, byte, float, double, etc).
+        /// </summary>
+        /// <param name="includeNullable">if true, will consider type as numeric even if it is nullable (int?, long?, byte?, float?, double?, etc).</param>
+        /// <returns>true if type is numeric; otherwise false.</returns>
+        public bool IsNumeric(bool includeNullable = true)
+        {
+            if (source.IsNullable())
+            {
+                if (includeNullable)
+                {
+                    source = Nullable.GetUnderlyingType(source);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return source.In(typeof(byte),
+                typeof(decimal),
+                typeof(double),
+                typeof(short),
+                typeof(int),
+                typeof(long),
+                typeof(sbyte),
+                typeof(float),
+                typeof(ushort),
+                typeof(uint),
+                typeof(ulong));
+        }
+
+        /// <summary>
+        /// Converts a value type to its nullable equivalent.
+        /// </summary>
+        /// <param name="type">The type to convert.</param>
+        /// <returns>The nullable equivalent of type.</returns>
+        public Type ToNullable() => source is null
+            ? null
+            : source.IsNullable()
+                ? source
+                : source.GetTypeInfo().IsValueType && source != typeof(void) ? typeof(Nullable<>).MakeGenericType(source) : null;
+    }
+
     //private static readonly Lazy<Type[]> simpleTypes;
 
     //static TypeExtensions()
@@ -48,208 +256,6 @@ public static class TypeExtensions
     //    });
     //}
 
-    /// <summary>
-    /// Returns the default value for the given type.
-    /// </summary>
-    /// <param name="type">The type of which to return the default value for.</param>
-    /// <returns>The default value of the given type, if it is a value type; otherwise false.</returns>
-    public static object GetDefaultValue(this Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
-
-    /// <summary>
-    /// Returns a collection of System.Reflection.MethodInfo for all extension methods for the given type in the specified assembly.
-    /// </summary>
-    /// <param name="type">The type to find extension methods for.</param>
-    /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for extension methods for the given type.</param>
-    /// <returns>A collection of System.Reflection.MethodInfo for all extension methods for type in extensionsAssembly.</returns>
-    public static IEnumerable<MethodInfo> GetExtensionMethods(this Type type, Assembly extensionsAssembly) =>
-        from t in extensionsAssembly.GetTypes()
-        where !t.GetTypeInfo().IsGenericType && !t.IsNested
-        from m in t.GetTypeInfo().GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-        where m.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false)
-        where m.GetParameters()[0].ParameterType == type
-        select m;
-
-    /// <summary>
-    /// A System.Reflection.MethodInfo for the specified extension method for the given type in the specified assembly.
-    /// </summary>
-    /// <param name="type">The type to find the extension method for.</param>
-    /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for the extension method for the given type.</param>
-    /// <param name="name">The name of the specific extension method to find.</param>
-    /// <returns>A System.Reflection.MethodInfo for the specified extension method, if found; otherwise null.</returns>
-    public static MethodInfo GetExtensionMethod(this Type type, Assembly extensionsAssembly, string name) =>
-        type.GetExtensionMethods(extensionsAssembly).FirstOrDefault(m => m.Name == name);
-
-    /// <summary>
-    /// A System.Reflection.MethodInfo for the specified extension method for the given type in the specified
-    /// assembly that has parameters whose types match those of parameterTypes.
-    /// </summary>
-    /// <param name="type">The type to find the extension method for.</param>
-    /// <param name="extensionsAssembly">The System.Reflection.Assembly in which to search for the extension method for the given type.</param>
-    /// <param name="name">The name of the specific extension method to find.</param>
-    /// <param name="parameterTypes">
-    /// An argument list for the extension method. These must be in the same order and of the same types as the paremeters of the
-    /// extension method being searched for.
-    /// </param>
-    /// <returns>A System.Reflection.MethodInfo for the specified extension method, if found; otherwise null.</returns>
-    public static MethodInfo GetExtensionMethod(this Type type, Assembly extensionsAssembly, string name, Type[] parameterTypes)
-    {
-        var methods = (from m in type.GetExtensionMethods(extensionsAssembly)
-                       where m.Name == name
-                       && m.GetParameters().Length == parameterTypes.Length + 1 // + 1 because extension method parameter (this)
-                       select m).ToList();
-
-        if (!methods.Any())
-        {
-            return default;
-        }
-
-        if (methods.Count == 1)
-        {
-            return methods.First();
-        }
-
-        foreach (var methodInfo in methods)
-        {
-            var parameters = methodInfo.GetParameters();
-
-            bool found = true;
-            for (byte b = 0; b < parameterTypes.Length; b++)
-            {
-                found = true;
-                if (parameters[b].GetType() != parameterTypes[b])
-                {
-                    found = false;
-                }
-            }
-
-            if (found)
-            {
-                return methodInfo;
-            }
-        }
-
-        return default;
-    }
-
-    public static bool IsAssignableToGenericType(this Type givenType, Type genericType)
-    {
-        ArgumentNullException.ThrowIfNull(givenType);
-        ArgumentNullException.ThrowIfNull(genericType);
-        if (!genericType.IsGenericTypeDefinition) throw new ArgumentException("Type must be a generic type definition.", nameof(genericType));
-
-        // Check interfaces
-        foreach (var interfaceType in givenType.GetInterfaces())
-        {
-            if (interfaceType.IsGenericType &&
-                interfaceType.GetGenericTypeDefinition() == genericType)
-            {
-                return true;
-            }
-        }
-
-        // Check the type itself
-        if (givenType.IsGenericType &&
-            givenType.GetGenericTypeDefinition() == genericType)
-        {
-            return true;
-        }
-
-        // Check base types recursively
-        var baseType = givenType.BaseType;
-        return baseType is not null && IsAssignableToGenericType(baseType, genericType);
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether type is a collection.
-    /// </summary>
-    /// <param name="type">The type to examine.</param>
-    /// <returns>true if type is a collection; otherwise false.</returns>
-    public static bool IsCollection(this Type type)
-    {
-        // string implements IEnumerable (it's a collection of System.Char), but for our purposes we don't consider it a collection.
-        if (type == typeof(string))
-        {
-            return false;
-        }
-
-        var interfaces = from @interface in type.GetTypeInfo().GetInterfaces()
-                         where @interface == typeof(IEnumerable) ||
-                             (@interface.GetTypeInfo().IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                         select @interface;
-        return interfaces.Any();
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether type is a generic collection.
-    /// </summary>
-    /// <param name="type">The type to examine.</param>
-    /// <returns>true if type is a generic collection; otherwise false.</returns>
-    public static bool IsGenericCollection(this Type type)
-    {
-        var collectionType = typeof(ICollection<>);
-        var typeInfo = type.GetTypeInfo();
-        var collectionTypeInfo = collectionType.GetTypeInfo();
-
-        if (typeInfo.IsGenericType && collectionTypeInfo.IsAssignableFrom(type.GetGenericTypeDefinition()))
-        {
-            return true;
-        }
-
-        var interfaces = typeInfo.GetInterfaces();
-        return interfaces.Any(@interface => @interface.GetTypeInfo().IsGenericType && collectionTypeInfo.IsAssignableFrom(@interface.GetGenericTypeDefinition()));
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether type is nullable
-    /// </summary>
-    /// <param name="type">The type to examine.</param>
-    /// <returns>true if type is nullable; otherwise false.</returns>
-    public static bool IsNullable(this Type type)
-    {
-        if (type is null)
-        {
-            return false;
-        }
-
-        var typeInfo = type.GetTypeInfo();
-        return !typeInfo.IsValueType || typeInfo.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-
-        //return Nullable.GetUnderlyingType(type) is not null; //faster than above version? Needs testing
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether type is numeric (int, long, byte, float, double, etc).
-    /// </summary>
-    /// <param name="type">The type to examine.</param>
-    /// <param name="includeNullable">if true, will consider type as numeric even if it is nullable (int?, long?, byte?, float?, double?, etc).</param>
-    /// <returns>true if type is numeric; otherwise false.</returns>
-    public static bool IsNumeric(this Type type, bool includeNullable = true)
-    {
-        if (type.IsNullable())
-        {
-            if (includeNullable)
-            {
-                type = Nullable.GetUnderlyingType(type);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return type.In(typeof(byte),
-            typeof(decimal),
-            typeof(double),
-            typeof(short),
-            typeof(int),
-            typeof(long),
-            typeof(sbyte),
-            typeof(float),
-            typeof(ushort),
-            typeof(uint),
-            typeof(ulong));
-    }
-
     ///// <summary>
     /////
     ///// </summary>
@@ -265,15 +271,4 @@ public static class TypeExtensions
     //    var nut = Nullable.GetUnderlyingType(type);
     //    return nut is not null && nut.GetTypeInfo().IsEnum;
     //}
-
-    /// <summary>
-    /// Converts a value type to its nullable equivalent.
-    /// </summary>
-    /// <param name="type">The type to convert.</param>
-    /// <returns>The nullable equivalent of type.</returns>
-    public static Type ToNullable(this Type type) => type is null
-        ? null
-        : type.IsNullable()
-            ? type
-            : type.GetTypeInfo().IsValueType && type != typeof(void) ? typeof(Nullable<>).MakeGenericType(type) : null;
 }

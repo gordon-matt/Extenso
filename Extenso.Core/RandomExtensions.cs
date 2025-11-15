@@ -7,59 +7,57 @@ namespace Extenso;
 /// </summary>
 public static class RandomExtensions
 {
-    /// <summary>
-    /// Returns a random System.Boolean.
-    /// </summary>
-    /// <param name="random">An instance of System.Random.</param>
-    /// <returns>System.Boolean</returns>
-    public static bool NextBoolean(this Random random) => random.Next(byte.MinValue, byte.MaxValue) > (byte.MaxValue / 2);
-
-    /// <summary>
-    /// Returns a random System.Drawing.Color.
-    /// </summary>
-    /// <param name="random">An instance of System.Random.</param>
-    /// <param name="includeAlphaChannel">If true, a random value will also be generated for the alpha channel.</param>
-    /// <returns>System.Drawing.Color</returns>
-    public static Color NextColor(this Random random, bool includeAlphaChannel = false) => includeAlphaChannel
-        ? Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255), random.Next(0, 255))
-        : Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-
-    /// <summary>
-    /// Returns a random System.DateTime between DateTime.MinValue and DateTime.MaxValue.
-    /// </summary>
-    /// <param name="random">An instance of System.Random.</param>
-    /// <returns>System.DateTime</returns>
-    public static DateTime NextDateTime(this Random random) => NextDateTime(random, DateTime.MinValue.Year, DateTime.MaxValue.Year);
-
-    /// <summary>
-    /// Returns a random System.DateTime between the specified years.
-    /// </summary>
-    /// <param name="random">This instance of System.Random.</param>
-    /// <param name="minYear"></param>
-    /// <param name="maxYear"></param>
-    /// <returns>System.DateTime.</returns>
-    public static DateTime NextDateTime(this Random random, int minYear, int maxYear)
+    extension(Random source)
     {
-        int year = random.Next(minYear, maxYear);
-        int month = random.Next(1, 12);
-        int day = random.Next(1, 28);
-        int hour = random.Next(0, 23);
-        int minute = random.Next(0, 59);
-        int second = random.Next(0, 59);
+        /// <summary>
+        /// Returns a random System.Boolean.
+        /// </summary>
+        /// <returns>System.Boolean</returns>
+        public bool NextBoolean() => source.Next(byte.MinValue, byte.MaxValue) > (byte.MaxValue / 2);
 
-        return new DateTime(year, month, day, hour, minute, second);
-    }
+        /// <summary>
+        /// Returns a random System.Drawing.Color.
+        /// </summary>
+        /// <param name="includeAlphaChannel">If true, a random value will also be generated for the alpha channel.</param>
+        /// <returns>System.Drawing.Color</returns>
+        public Color NextColor(bool includeAlphaChannel = false) => includeAlphaChannel
+            ? Color.FromArgb(source.Next(0, 255), source.Next(0, 255), source.Next(0, 255), source.Next(0, 255))
+            : Color.FromArgb(source.Next(0, 255), source.Next(0, 255), source.Next(0, 255));
 
-    /// <summary>
-    /// Returns a random element from the given sequence.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="random">An instance of System.Random.</param>
-    /// <param name="collection">A collection from which to randomly select an object.</param>
-    /// <returns>A randomly selected object from the given System.Collections.Generic.IEnumerable`1.</returns>
-    public static T NextFrom<T>(this Random random, IEnumerable<T> collection)
-    {
-        int count = collection.Count();
-        return collection.ElementAt(random.Next(0, count - 1));
+        /// <summary>
+        /// Returns a random System.DateTime between DateTime.MinValue and DateTime.MaxValue.
+        /// </summary>
+        /// <returns>System.DateTime</returns>
+        public DateTime NextDateTime() => NextDateTime(source, DateTime.MinValue.Year, DateTime.MaxValue.Year);
+
+        /// <summary>
+        /// Returns a random System.DateTime between the specified years.
+        /// </summary>
+        /// <param name="minYear"></param>
+        /// <param name="maxYear"></param>
+        /// <returns>System.DateTime.</returns>
+        public DateTime NextDateTime(int minYear, int maxYear)
+        {
+            int year = source.Next(minYear, maxYear);
+            int month = source.Next(1, 12);
+            int day = source.Next(1, 28);
+            int hour = source.Next(0, 23);
+            int minute = source.Next(0, 59);
+            int second = source.Next(0, 59);
+
+            return new DateTime(year, month, day, hour, minute, second);
+        }
+
+        /// <summary>
+        /// Returns a random element from the given sequence.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">A collection from which to randomly select an object.</param>
+        /// <returns>A randomly selected object from the given System.Collections.Generic.IEnumerable`1.</returns>
+        public T NextFrom<T>(IEnumerable<T> collection)
+        {
+            int count = collection.Count();
+            return collection.ElementAt(source.Next(0, count - 1));
+        }
     }
 }

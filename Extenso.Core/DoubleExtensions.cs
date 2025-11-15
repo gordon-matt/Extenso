@@ -5,10 +5,12 @@
 /// </summary>
 public static class DoubleExtensions
 {
-    /// <summary>
-    /// Gets a value indicating whether the given nullable System.Double is null or the default.
-    /// </summary>
-    /// <param name="source">The nullable System.Double to examine.</param>
-    /// <returns>true if source is null or the default; otherwise, false.</returns>
-    public static bool IsNullOrDefault(this double? source) => source is null or default(double);
+    extension(double? source)
+    {
+        /// <summary>
+        /// Gets a value indicating whether the given nullable System.Double is null or the default.
+        /// </summary>
+        /// <returns>true if source is null or the default; otherwise, false.</returns>
+        public bool IsNullOrDefault() => source is null or default(double);
+    }
 }

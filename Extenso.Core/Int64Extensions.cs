@@ -5,10 +5,12 @@
 /// </summary>
 public static class Int64Extensions
 {
-    /// <summary>
-    /// Gets a value indicating whether the given nullable System.Int64 is null or the default.
-    /// </summary>
-    /// <param name="source">The nullable System.Int64 to examine.</param>
-    /// <returns>true if source is null or the default; otherwise, false.</returns>
-    public static bool IsNullOrDefault(this long? source) => source is null or default(long);
+    extension(long? source)
+    {
+        /// <summary>
+        /// Gets a value indicating whether the given nullable System.Int64 is null or the default.
+        /// </summary>
+        /// <returns>true if source is null or the default; otherwise, false.</returns>
+        public bool IsNullOrDefault() => source is null or default(long);
+    }
 }

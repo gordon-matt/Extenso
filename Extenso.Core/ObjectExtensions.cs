@@ -14,304 +14,278 @@ namespace Extenso;
 /// </summary>
 public static class ObjectExtensions
 {
-    /// <summary>
-    /// Serializes the given object to binary format, converts it to a Base64 encoded string and returns the result.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The object to serialize.</param>
-    /// <param name="prependLength">
-    /// Specifies whether to prepend the length of the byte array to the Base64 string.
-    /// If true, the length and base64 encoded string will be separated by a colon.
-    /// </param>
-    /// <returns>A Base64 encoded string of the serialized object.</returns>
-    public static string Base64Serialize<T>(this T source, bool prependLength = false)
+    extension(object source)
     {
-        using var memoryStream = new MemoryStream();
-        memoryStream.BinarySerialize(source);
-        byte[] bytes = memoryStream.GetBuffer();
-        return bytes.Base64Serialize(prependLength);
-    }
-
-    /// <summary>
-    /// Serializes the given object to a byte array.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The object to serialize.</param>
-    /// <returns>A byte array of the serialized object.</returns>
-    public static byte[] BinarySerialize<T>(this T source)
-    {
-        using var memoryStream = new MemoryStream();
-        memoryStream.BinarySerialize(source);
-        return memoryStream.ToArray();
-    }
-
-    /// <summary>
-    /// Serializes the given object to a byte array and writes the data to the specified file.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The object to serialize.</param>
-    /// <param name="fileName">The full path of the file to save the serialized data to.</param>
-    public static void BinarySerialize<T>(this T source, string fileName)
-    {
-        using var fileStream = File.Open(fileName, FileMode.Create);
-        fileStream.BinarySerialize(source);
-        fileStream.Close();
-    }
-
-    /// <summary>
-    /// Computes the hash value for the given byte array using the specified algorithm.
-    /// </summary>
-    /// <typeparam name="T">The type of algorithm to use for computing the hash.</typeparam>
-    /// <param name="source">The object to compute the hash for.</param>
-    /// <param name="hashAlgorithm">The algorithm to use for computing the hash.</param>
-    /// <returns>The computed hash code.</returns>
-    /// <example><code>byte[] hash = myObject.ComputeHash(new MD5CryptoServiceProvider());</code></example>
-    public static byte[] ComputeHash(this object source, HashAlgorithm hashAlgorithm)
-    {
-        string json = source.JsonSerialize();
-        byte[] bytes = Encoding.UTF8.GetBytes(json);
-        hashAlgorithm.ComputeHash(bytes);
-        return hashAlgorithm.Hash;
-    }
-
-    /// <summary>
-    /// Computes the MD5 hash value for the given object.
-    /// </summary>
-    /// <param name="source">The object to compute the hash for.</param>
-    /// <returns>The computed hash code.</returns>
-    public static byte[] ComputeMD5Hash(this object source)
-    {
-        using var md5 = MD5.Create();
-        return ComputeHash(source, md5);
-    }
-
-    /// <summary>
-    /// Computes the SHA1 hash value for the given object.
-    /// </summary>
-    /// <param name="source">The object to compute the hash for.</param>
-    /// <returns>The computed hash code.</returns>
-    public static byte[] ComputeSHA1Hash(this object source)
-    {
-        using var sha1 = SHA1.Create();
-        return ComputeHash(source, sha1);
-    }
-
-    /// <summary>
-    /// Computes the SHA256 hash value for the given object.
-    /// </summary>
-    /// <param name="source">The object to compute the hash for.</param>
-    /// <returns>The computed hash code.</returns>
-    public static byte[] ComputeSHA256Hash(this object source)
-    {
-        using var sha256 = SHA256.Create();
-        return ComputeHash(source, sha256);
-    }
-
-    /// <summary>
-    /// Computes the SHA512 hash value for the given object.
-    /// </summary>
-    /// <param name="source">The object to compute the hash for.</param>
-    /// <returns>The computed hash code.</returns>
-    public static byte[] ComputeSHA512Hash(this object source)
-    {
-        using var sha512 = SHA512.Create();
-        return ComputeHash(source, sha512);
-    }
-
-    /// <summary>
-    /// Returns an object of the specified type and whose value is equivalent to the specified object.
-    /// </summary>
-    /// <typeparam name="T">The type of object to return.</typeparam>
-    /// <param name="source">An object that implements the System.IConvertible interface.</param>
-    /// <returns>
-    /// An object whose type is conversionType and whose value is equivalent to source.
-    /// -or- A null reference (Nothing in Visual Basic), if source is null and conversionType
-    /// is not a value type.
-    /// </returns>
-    public static T ConvertTo<T>(this object source) => (T)ConvertTo(source, typeof(T));
-
-    /// <summary>
-    /// Returns an object of the specified type and whose value is equivalent to the specified object.
-    /// </summary>
-    /// <param name="source">An object that implements the System.IConvertible interface.</param>
-    /// <param name="conversionType">The type of object to return.</param>
-    /// <returns>
-    /// An object whose type is conversionType and whose value is equivalent to source.
-    /// -or- A null reference (Nothing in Visual Basic), if source is null and conversionType
-    /// is not a value type.
-    /// </returns>
-    public static object ConvertTo(this object source, Type conversionType) => conversionType == typeof(Guid) ? new Guid(source.ToString()) : Convert.ChangeType(source, conversionType);
-
-    /// <summary>
-    /// Creates a deep clone of the given object.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The object to clone.</param>
-    /// <returns>A deep clone of source.</returns>
-    public static T DeepClone<T>(this T source)
-    {
-        using var memoryStream = new MemoryStream();
-        memoryStream.BinarySerialize(source);
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        return memoryStream.BinaryDeserialize<T>();
-    }
-
-    /// <summary>
-    /// Uses the default equality comparer for the type specified by the generic argument to determine whether two objects are equal.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The first object to compare.</param>
-    /// <param name="other">The second object to compare.</param>
-    /// <returns>true if the specified objects are equal; otherwise, false.</returns>
-    public static bool GenericEquals<T>(this T source, T other) => EqualityComparer<T>.Default.Equals(source, other);
-
-    /// <summary>
-    /// Determines whether a sequence contains the given element by using the default equality comparer.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The value to locate in the sequence.</param>
-    /// <param name="values">The sequence in which to locate source.</param>
-    /// <returns>true if values contains source; otherwise, false.</returns>
-    /// <example>
-    /// <code>
-    /// var myValues = new[] { "val1", "val2", "val3" };
-    /// if (myString.In(myValues))
-    /// </code>
-    /// </example>
-    public static bool In<T>(this T source, IEnumerable<T> values) => values.Contains(source);//foreach (T item in values)//{//    if (item.Equals(source))//    { return true; }//}//return false;
-
-    /// <summary>
-    /// Determines whether an array of objects contains the given element by using the default equality comparer.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The value to locate in the array of objects.</param>
-    /// <param name="values">The array of objects in which to locate source.</param>
-    /// <returns>true if values contains source; otherwise, false.</returns>
-    /// <example><code>if (myString.In("val1", "val2", "val3"))</code></example>
-    public static bool In<T>(this T source, params T[] values) => values.Contains(source);//foreach (T item in values)//{//    if (item.Equals(source))//    { return true; }//}//return false;
-
-    /// <summary>
-    /// Determines whether the value of source is equal to the default value of its type.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The value to compare with the default for its type.</param>
-    /// <returns>true if source is equal to the default value of its type; otherwise false.</returns>
-    public static bool IsDefault<T>(this T source) => source.GenericEquals(default);
-
-    /// <summary>
-    /// Serializes the specified object to a JSON string. A parameter specifies the serializer settings.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The object to serialize.</param>
-    /// <param name="settings">
-    /// The Newtonsoft.Json.JsonSerializerSettings used to serialize the object. If this
-    /// is null, default serialization settings will be used.
-    /// </param>
-    /// <returns>A JSON string representation of the object.</returns>
-    public static string JsonSerialize<T>(this T source, JsonSerializerSettings settings = null) => source is null ? null : JsonConvert.SerializeObject(source, settings);
-
-    /// <summary>
-    /// Creates a System.Dynamic.ExpandoObject from the given System.Object.
-    /// </summary>
-    /// <param name="source">The object to convert to an ExpandoObject.</param>
-    /// <returns>An ExpandoObject containing elements whose keys and values represent the public properties of source and the values thereof.</returns>
-    public static ExpandoObject ToExpando(this object source)
-    {
-        IDictionary<string, object> expando = new ExpandoObject();
-
-        foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(source.GetType()))
+        /// <summary>
+        /// Computes the hash value for the given byte array using the specified algorithm.
+        /// </summary>
+        /// <param name="hashAlgorithm">The algorithm to use for computing the hash.</param>
+        /// <returns>The computed hash code.</returns>
+        /// <example><code>byte[] hash = myObject.ComputeHash(new MD5CryptoServiceProvider());</code></example>
+        public byte[] ComputeHash(HashAlgorithm hashAlgorithm)
         {
-            expando.Add(property.Name, property.GetValue(source));
+            string json = source.JsonSerialize();
+            byte[] bytes = Encoding.UTF8.GetBytes(json);
+            hashAlgorithm.ComputeHash(bytes);
+            return hashAlgorithm.Hash;
         }
 
-        return expando as ExpandoObject;
-    }
-
-    /// <summary>
-    /// Serializes the specified object and writes the XML document to a file.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The object to serialize.</param>
-    /// <param name="fileName">The full path of the file to be written to.</param>
-    /// <param name="omitXmlDeclaration">Indicates whether to omit an XML declaration.</param>
-    /// <param name="removeNamespaces">
-    /// Indicates whether to remove the XML namespaces during serialization. If any of the properties on the object
-    /// are decorated with an XmlIncludeAttribute, then set this to false.
-    /// </param>
-    /// <param name="xmlns">
-    /// XML namespaces and prefixes that the serializer should use to generate qualified names.
-    /// If not null, removeNamespaces is ignored.
-    /// </param>
-    /// <param name="encoding">Specifies the character encoding to use.</param>
-    /// <returns>A string containing the XML.</returns>
-    /// <returns>true if successful; otherwise false.</returns>
-    public static bool XmlSerialize<T>(
-        this T source,
-        string fileName,
-        bool omitXmlDeclaration = true,
-        bool removeNamespaces = true,
-        XmlSerializerNamespaces xmlns = null,
-        Encoding encoding = null)
-    {
-        string xml = source.XmlSerialize(omitXmlDeclaration, removeNamespaces, xmlns, encoding);
-        return xml.ToFile(fileName);
-    }
-
-    /// <summary>
-    /// Serializes the specified object and writes the XML document to a string.
-    /// </summary>
-    /// <typeparam name="T">The type of source.</typeparam>
-    /// <param name="source">The object to serialize.</param>
-    /// <param name="omitXmlDeclaration">Indicates whether to omit an XML declaration.</param>
-    /// <param name="removeNamespaces">
-    /// Indicates whether to remove the XML namespaces during serialization. If any of the properties on the object
-    /// are decorated with an XmlIncludeAttribute, then set this to false.
-    /// </param>
-    /// <param name="xmlns">
-    /// XML namespaces and prefixes that the serializer should use to generate qualified names.
-    /// If not null, removeNamespaces is ignored.
-    /// </param>
-    /// <param name="encoding">Specifies the character encoding to use.</param>
-    /// <returns>A string containing the XML.</returns>
-    public static string XmlSerialize<T>(
-        this T source,
-        bool omitXmlDeclaration = true,
-        bool removeNamespaces = true,
-        XmlSerializerNamespaces xmlns = null,
-        Encoding encoding = null)
-    {
-        object locker = new();
-
-        var xmlSerializer = new XmlSerializer(source.GetType());
-
-        var settings = new XmlWriterSettings
+        /// <summary>
+        /// Computes the MD5 hash value for the given object.
+        /// </summary>
+        /// <returns>The computed hash code.</returns>
+        public byte[] ComputeMD5Hash()
         {
-            Indent = true,
-            OmitXmlDeclaration = omitXmlDeclaration
-        };
+            using var md5 = MD5.Create();
+            return ComputeHash(source, md5);
+        }
 
-        lock (locker)
+        /// <summary>
+        /// Computes the SHA1 hash value for the given object.
+        /// </summary>
+        /// <returns>The computed hash code.</returns>
+        public byte[] ComputeSHA1Hash()
         {
-            var stringBuilder = new StringBuilder();
-            using var stringWriter = new CustomEncodingStringWriter(encoding, stringBuilder);
-            using var xmlWriter = XmlWriter.Create(stringWriter, settings);
-            if (xmlns is not null)
+            using var sha1 = SHA1.Create();
+            return ComputeHash(source, sha1);
+        }
+
+        /// <summary>
+        /// Computes the SHA256 hash value for the given object.
+        /// </summary>
+        /// <returns>The computed hash code.</returns>
+        public byte[] ComputeSHA256Hash()
+        {
+            using var sha256 = SHA256.Create();
+            return ComputeHash(source, sha256);
+        }
+
+        /// <summary>
+        /// Computes the SHA512 hash value for the given object.
+        /// </summary>
+        /// <returns>The computed hash code.</returns>
+        public byte[] ComputeSHA512Hash()
+        {
+            using var sha512 = SHA512.Create();
+            return ComputeHash(source, sha512);
+        }
+
+        /// <summary>
+        /// Returns an object of the specified type and whose value is equivalent to the specified object.
+        /// </summary>
+        /// <typeparam name="T">The type of object to return.</typeparam>
+        /// <returns>
+        /// An object whose type is conversionType and whose value is equivalent to source.
+        /// -or- A null reference (Nothing in Visual Basic), if source is null and conversionType
+        /// is not a value type.
+        /// </returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2263:Prefer generic overload when type is known", Justification = "That would cause a circular reference.")]
+        public T ConvertTo<T>() => (T)ConvertTo(source, typeof(T));
+
+        /// <summary>
+        /// Returns an object of the specified type and whose value is equivalent to the specified object.
+        /// </summary>
+        /// <param name="conversionType">The type of object to return.</param>
+        /// <returns>
+        /// An object whose type is conversionType and whose value is equivalent to source.
+        /// -or- A null reference (Nothing in Visual Basic), if source is null and conversionType
+        /// is not a value type.
+        /// </returns>
+        public object ConvertTo(Type conversionType) => conversionType == typeof(Guid) ? new Guid(source.ToString()) : Convert.ChangeType(source, conversionType);
+
+        /// <summary>
+        /// Creates a System.Dynamic.ExpandoObject from the given System.Object.
+        /// </summary>
+        /// <returns>An ExpandoObject containing elements whose keys and values represent the public properties of source and the values thereof.</returns>
+        public ExpandoObject ToExpando()
+        {
+            IDictionary<string, object> expando = new ExpandoObject();
+
+            foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(source.GetType()))
             {
-                xmlSerializer.Serialize(xmlWriter, source, xmlns);
+                expando.Add(property.Name, property.GetValue(source));
             }
-            else
-            {
-                if (removeNamespaces)
-                {
-                    xmlns = new XmlSerializerNamespaces();
-                    xmlns.Add(string.Empty, string.Empty);
 
+            return expando as ExpandoObject;
+        }
+    }
+
+    extension<T>(T source)
+    {
+        /// <summary>
+        /// Serializes the given object to binary format, converts it to a Base64 encoded string and returns the result.
+        /// </summary>
+        /// <param name="prependLength">
+        /// Specifies whether to prepend the length of the byte array to the Base64 string.
+        /// If true, the length and base64 encoded string will be separated by a colon.
+        /// </param>
+        /// <returns>A Base64 encoded string of the serialized object.</returns>
+        public string Base64Serialize(bool prependLength = false)
+        {
+            using var memoryStream = new MemoryStream();
+            memoryStream.BinarySerialize(source);
+            byte[] bytes = memoryStream.GetBuffer();
+            return bytes.Base64Serialize(prependLength);
+        }
+
+        /// <summary>
+        /// Serializes the given object to a byte array.
+        /// </summary>
+        /// <returns>A byte array of the serialized object.</returns>
+        public byte[] BinarySerialize()
+        {
+            using var memoryStream = new MemoryStream();
+            memoryStream.BinarySerialize(source);
+            return memoryStream.ToArray();
+        }
+
+        /// <summary>
+        /// Serializes the given object to a byte array and writes the data to the specified file.
+        /// </summary>
+        /// <param name="fileName">The full path of the file to save the serialized data to.</param>
+        public void BinarySerialize(string fileName)
+        {
+            using var fileStream = File.Open(fileName, FileMode.Create);
+            fileStream.BinarySerialize(source);
+            fileStream.Close();
+        }
+
+        /// <summary>
+        /// Creates a deep clone of the given object.
+        /// </summary>
+        /// <returns>A deep clone of source.</returns>
+        public T DeepClone()
+        {
+            using var memoryStream = new MemoryStream();
+            memoryStream.BinarySerialize(source);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream.BinaryDeserialize<T>();
+        }
+
+        /// <summary>
+        /// Uses the default equality comparer for the type specified by the generic argument to determine whether two objects are equal.
+        /// </summary>
+        /// <param name="other">The second object to compare.</param>
+        /// <returns>true if the specified objects are equal; otherwise, false.</returns>
+        public bool GenericEquals(T other) => EqualityComparer<T>.Default.Equals(source, other);
+
+        /// <summary>
+        /// Determines whether a sequence contains the given element by using the default equality comparer.
+        /// </summary>
+        /// <param name="values">The sequence in which to locate source.</param>
+        /// <returns>true if values contains source; otherwise, false.</returns>
+        /// <example>
+        /// <code>
+        /// var myValues = new[] { "val1", "val2", "val3" };
+        /// if (myString.In(myValues))
+        /// </code>
+        /// </example>
+        public bool In(IEnumerable<T> values) => values.Contains(source);
+
+        /// <summary>
+        /// Determines whether an array of objects contains the given element by using the default equality comparer.
+        /// </summary>
+        /// <param name="values">The array of objects in which to locate source.</param>
+        /// <returns>true if values contains source; otherwise, false.</returns>
+        /// <example><code>if (myString.In("val1", "val2", "val3"))</code></example>
+        public bool In(params T[] values) => values.Contains(source);
+
+        /// <summary>
+        /// Determines whether the value of source is equal to the default value of its type.
+        /// </summary>
+        /// <returns>true if source is equal to the default value of its type; otherwise false.</returns>
+        public bool IsDefault() => source.GenericEquals(default);
+
+        /// <summary>
+        /// Serializes the specified object to a JSON string. A parameter specifies the serializer settings.
+        /// </summary>
+        /// <param name="settings">
+        /// The Newtonsoft.Json.JsonSerializerSettings used to serialize the object. If this
+        /// is null, default serialization settings will be used.
+        /// </param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public string JsonSerialize(JsonSerializerSettings settings = null) => source is null ? null : JsonConvert.SerializeObject(source, settings);
+
+        /// <summary>
+        /// Serializes the specified object and writes the XML document to a file.
+        /// </summary>
+        /// <param name="fileName">The full path of the file to be written to.</param>
+        /// <param name="omitXmlDeclaration">Indicates whether to omit an XML declaration.</param>
+        /// <param name="removeNamespaces">
+        /// Indicates whether to remove the XML namespaces during serialization. If any of the properties on the object
+        /// are decorated with an XmlIncludeAttribute, then set this to false.
+        /// </param>
+        /// <param name="xmlns">
+        /// XML namespaces and prefixes that the serializer should use to generate qualified names.
+        /// If not null, removeNamespaces is ignored.
+        /// </param>
+        /// <param name="encoding">Specifies the character encoding to use.</param>
+        /// <returns>A string containing the XML.</returns>
+        /// <returns>true if successful; otherwise false.</returns>
+        public bool XmlSerialize(
+            string fileName,
+            bool omitXmlDeclaration = true,
+            bool removeNamespaces = true,
+            XmlSerializerNamespaces xmlns = null,
+            Encoding encoding = null)
+        {
+            string xml = source.XmlSerialize(omitXmlDeclaration, removeNamespaces, xmlns, encoding);
+            return xml.ToFile(fileName);
+        }
+
+        /// <summary>
+        /// Serializes the specified object and writes the XML document to a string.
+        /// </summary>
+        /// <param name="omitXmlDeclaration">Indicates whether to omit an XML declaration.</param>
+        /// <param name="removeNamespaces">
+        /// Indicates whether to remove the XML namespaces during serialization. If any of the properties on the object
+        /// are decorated with an XmlIncludeAttribute, then set this to false.
+        /// </param>
+        /// <param name="xmlns">
+        /// XML namespaces and prefixes that the serializer should use to generate qualified names.
+        /// If not null, removeNamespaces is ignored.
+        /// </param>
+        /// <param name="encoding">Specifies the character encoding to use.</param>
+        /// <returns>A string containing the XML.</returns>
+        public string XmlSerialize(
+            bool omitXmlDeclaration = true,
+            bool removeNamespaces = true,
+            XmlSerializerNamespaces xmlns = null,
+            Encoding encoding = null)
+        {
+            object locker = new();
+
+            var xmlSerializer = new XmlSerializer(source.GetType());
+
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                OmitXmlDeclaration = omitXmlDeclaration
+            };
+
+            lock (locker)
+            {
+                var stringBuilder = new StringBuilder();
+                using var stringWriter = new CustomEncodingStringWriter(encoding, stringBuilder);
+                using var xmlWriter = XmlWriter.Create(stringWriter, settings);
+                if (xmlns is not null)
+                {
                     xmlSerializer.Serialize(xmlWriter, source, xmlns);
                 }
-                else { xmlSerializer.Serialize(xmlWriter, source); }
-            }
+                else
+                {
+                    if (removeNamespaces)
+                    {
+                        xmlns = new XmlSerializerNamespaces();
+                        xmlns.Add(string.Empty, string.Empty);
 
-            return stringBuilder.ToString();
+                        xmlSerializer.Serialize(xmlWriter, source, xmlns);
+                    }
+                    else { xmlSerializer.Serialize(xmlWriter, source); }
+                }
+
+                return stringBuilder.ToString();
+            }
         }
     }
 }

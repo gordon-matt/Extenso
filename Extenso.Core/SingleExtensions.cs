@@ -5,10 +5,12 @@
 /// </summary>
 public static class SingleExtensions
 {
-    /// <summary>
-    /// Gets a value indicating whether the given nullable System.Single is null or the default.
-    /// </summary>
-    /// <param name="source">The nullable System.Single to examine.</param>
-    /// <returns>true if source is null or the default; otherwise, false.</returns>
-    public static bool IsNullOrDefault(this float? source) => source is null or default(float);
+    extension(float? source)
+    {
+        /// <summary>
+        /// Gets a value indicating whether the given nullable System.Single is null or the default.
+        /// </summary>
+        /// <returns>true if source is null or the default; otherwise, false.</returns>
+        public bool IsNullOrDefault() => source is null or default(float);
+    }
 }
