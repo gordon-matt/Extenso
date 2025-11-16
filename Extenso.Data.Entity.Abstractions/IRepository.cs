@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Extenso.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -27,7 +26,7 @@ public interface IRepository<TEntity>
 
     IAsyncEnumerable<TEntity> StreamAsync(
         SearchOptions<TEntity> options,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default);
 
     #region Find
 

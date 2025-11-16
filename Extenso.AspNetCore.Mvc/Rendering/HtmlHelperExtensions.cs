@@ -40,7 +40,6 @@ public static class HtmlHelperExtensions
             return Image(html, url, $"data:image/jpg;base64,{base64}", alt, htmlAttributes);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public IHtmlContent Image(IUrlHelper url, string src, string alt, object htmlAttributes = null)
         {
             var builder = new TagBuilder("img")
@@ -98,7 +97,6 @@ public static class HtmlHelperExtensions
 
         #region Other
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public IHtmlContent FileUpload(string name, object htmlAttributes = null)
         {
             var builder = new TagBuilder("input")
@@ -127,7 +125,6 @@ public static class HtmlHelperExtensions
         /// <param name="name"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public IHtmlContent JsonObject<TEntity>(string name, TEntity item) => new HtmlString($"const {name} = {item.JsonSerialize()};");
 
         #endregion Other
@@ -215,7 +212,7 @@ public static class HtmlHelperExtensions
             object wrapperHtmlAttributes = null)
         {
             string fullHtmlFieldName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
-            string fullHtmlFieldId = html.ViewData.TemplateInfo.GetFullHtmlFieldId(name);
+            string fullHtmlFieldId = TemplateInfo.GetFullHtmlFieldId(name);
 
             var values = new List<string>();
             if (selectedValues != null)
@@ -288,7 +285,6 @@ public static class HtmlHelperExtensions
 
         #endregion CheckBoxList
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Extension method.")]
         public IHtmlContent Table<T>(IEnumerable<T> items, object htmlAttributes = null)
         {
             var builder = new FluentTagBuilder("table")
@@ -433,7 +429,7 @@ public static class HtmlHelperExtensions
 
             string htmlFieldName = expresionProvider.GetExpressionText(expression);
             string fullHtmlFieldName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
-            string fullHtmlFieldId = html.ViewData.TemplateInfo.GetFullHtmlFieldId(htmlFieldName);
+            string fullHtmlFieldId = TemplateInfo.GetFullHtmlFieldId(htmlFieldName);
 
             var func = expression.Compile();
             var selectedValues = func(html.ViewData.Model);

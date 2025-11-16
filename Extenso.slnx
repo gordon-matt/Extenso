@@ -1,0 +1,60 @@
+<Solution>
+  <Folder Name="/Demos/">
+    <Project Path="Extenso.Sandbox/Extenso.Sandbox.csproj" />
+  </Folder>
+  <Folder Name="/Demos/AspNetCore/" />
+  <Folder Name="/Demos/AspNetCore/Blazor/">
+    <Project Path="Demos/Demo.Extenso.AspNetCore.Blazor.OData/Demo.Extenso.AspNetCore.Blazor.OData.csproj" />
+  </Folder>
+  <Folder Name="/Demos/AspNetCore/Mvc/">
+    <Project Path="Demos/Demo.AspNetCore.Mvc.ExtensoUI/Demo.AspNetCore.Mvc.ExtensoUI.csproj" />
+    <Project Path="Demos/Demo.AspNetCore.Mvc.OData/Demo.Extenso.AspNetCore.Mvc.OData.csproj" />
+    <Project Path="Demos/Demo.Extenso.AspNetCore.Mvc/Demo.Extenso.AspNetCore.Mvc.csproj" />
+  </Folder>
+  <Folder Name="/Demos/Data/">
+    <Project Path="Demos/Demo.Data.InfoSchema/Demo.Data.InfoSchema.csproj" />
+  </Folder>
+  <Folder Name="/Other/">
+    <Project Path="DoxieDummy/DoxieDummy.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/Extenso.AspNetCore.Mvc.Tests/Extenso.AspNetCore.Mvc.Tests.csproj" />
+    <Project Path="Tests/Extenso.AspNetCore.OData.Tests/Extenso.AspNetCore.OData.Tests.csproj" />
+    <Project Path="Tests/Extenso.Core.Tests/Extenso.Core.Tests.csproj" />
+    <Project Path="Tests/Extenso.Data.Entity.AutoMapper.Tests/Extenso.Data.Entity.AutoMapper.Tests.csproj" />
+    <Project Path="Tests/Extenso.Data.Entity.Tests/Extenso.Data.Entity.Tests.csproj" />
+    <Project Path="Tests/Extenso.Data.OleDb.Tests/Extenso.Data.OleDb.Tests.csproj" />
+    <Project Path="Tests/Extenso.Data.QueryBuilder.Tests/Extenso.Data.QueryBuilder.Tests.csproj" />
+    <Project Path="Tests/Extenso.Data.Tests/Extenso.Data.Tests.csproj" />
+    <Project Path="Tests/Extenso.KendoGridBinder.Tests/Extenso.KendoGridBinder.Tests.csproj" />
+    <Project Path="Tests/Extenso.Mapping.Tests/Extenso.Mapping.Tests.csproj" />
+    <Project Path="Tests/Extenso.TestLib/Extenso.TestLib.csproj" />
+  </Folder>
+  <Folder Name="/_Solution Items/">
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Extenso.AspNetCore.Mvc.ExtensoUI.Foundation/Extenso.AspNetCore.Mvc.ExtensoUI.Foundation.csproj" />
+  <Project Path="Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI/Extenso.AspNetCore.Mvc.ExtensoUI.JQueryUI.csproj" />
+  <Project Path="Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI/Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI.csproj" />
+  <Project Path="Extenso.AspNetCore.Mvc.ExtensoUI/Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />
+  <Project Path="Extenso.AspNetCore.Mvc/Extenso.AspNetCore.Mvc.csproj" />
+  <Project Path="Extenso.AspNetCore.OData/Extenso.AspNetCore.OData.csproj" />
+  <Project Path="Extenso.Core/Extenso.Core.csproj" />
+  <Project Path="Extenso.Data.Entity.Abstractions/Extenso.Data.Entity.Abstractions.csproj" />
+  <Project Path="Extenso.Data.Entity.AutoMapper/Extenso.Data.Entity.AutoMapper.csproj" />
+  <Project Path="Extenso.Data.Entity/Extenso.Data.Entity.csproj" />
+  <Project Path="Extenso.Data.MySql/Extenso.Data.MySql.csproj" />
+  <Project Path="Extenso.Data.Npgsql/Extenso.Data.Npgsql.csproj" />
+  <Project Path="Extenso.Data.OleDb/Extenso.Data.OleDb.csproj" />
+  <Project Path="Extenso.Data.QueryBuilder.MySql/Extenso.Data.QueryBuilder.MySql.csproj" />
+  <Project Path="Extenso.Data.QueryBuilder.Npgsql/Extenso.Data.QueryBuilder.Npgsql.csproj" />
+  <Project Path="Extenso.Data.QueryBuilder/Extenso.Data.QueryBuilder.csproj" />
+  <Project Path="Extenso.Data/Extenso.Data.csproj" />
+  <Project Path="Extenso.Drawing/Extenso.Drawing.csproj" />
+  <Project Path="Extenso.KendoGridBinder/Extenso.KendoGridBinder.csproj" />
+  <Project Path="Extenso.Mapping.Abstractions/Extenso.Mapping.Abstractions.csproj" />
+  <Project Path="Extenso.Mapping/Extenso.Mapping.csproj" />
+  <Project Path="Extenso.WebAssets.KendoUI/Extenso.WebAssets.KendoUI.csproj" />
+  <Project Path="Extenso.Windows.Forms/Extenso.Windows.Forms.csproj" />
+</Solution>
