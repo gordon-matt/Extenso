@@ -20,6 +20,54 @@ public static class FilterDescriptorExtensions
         {FilterOperator.DoesNotContain, "DoesNotContain"}
     };
 
+    extension(IEnumerable<FilterDescriptor> columns)
+    {
+        public string ToODataFilterString<T>(RadzenDataGrid<T> dataGrid)
+        {
+            static bool canFilter(FilterDescriptor c)
+            {
+                return c.Property != null &&
+                !(c.FilterValue == null || (c.FilterValue as string) == string.Empty) && c.Property != null;
+            }
+
+            if (columns.Where(canFilter).Any())
+            {
+                var gridLogicalFilterOperator = columns.FirstOrDefault()?.LogicalFilterOperator;
+                string gridBooleanOperator = gridLogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
+
+                var whereList = new List<string>();
+                foreach (var column in columns.Where(canFilter))
+                {
+                    string property = column.Property.Replace('.', '/');
+
+                    string value = (string)Convert.ChangeType(column.FilterValue, typeof(string));
+                    string secondValue = (string)Convert.ChangeType(column.SecondFilterValue, typeof(string));
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        string linqOperator = ODataFilterOperators[column.FilterOperator];
+                        linqOperator ??= "==";
+
+                        string booleanOperator = column.LogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
+
+                        if (string.IsNullOrEmpty(secondValue))
+                        {
+                            whereList.Add(GetColumnODataFilter(dataGrid, column));
+                        }
+                        else
+                        {
+                            whereList.Add($"({GetColumnODataFilter(dataGrid, column)} {booleanOperator} {GetColumnODataFilter(dataGrid, column, true)})");
+                        }
+                    }
+                }
+
+                return string.Join($" {gridBooleanOperator} ", whereList.Where(i => !string.IsNullOrEmpty(i)));
+            }
+
+            return "";
+        }
+    }
+
     private static string GetColumnODataFilter<T>(RadzenDataGrid<T> dataGrid, FilterDescriptor column, bool second = false)
     {
         string property = column.Property.Replace('.', '/');
@@ -99,50 +147,5 @@ public static class FilterDescriptorExtensions
         }
 
         return string.Empty;
-    }
-
-    public static string ToODataFilterString<T>(this IEnumerable<FilterDescriptor> columns, RadzenDataGrid<T> dataGrid)
-    {
-        static bool canFilter(FilterDescriptor c)
-        {
-            return c.Property != null &&
-            !(c.FilterValue == null || (c.FilterValue as string) == string.Empty) && c.Property != null;
-        }
-
-        if (columns.Where(canFilter).Any())
-        {
-            var gridLogicalFilterOperator = columns.FirstOrDefault()?.LogicalFilterOperator;
-            string gridBooleanOperator = gridLogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
-
-            var whereList = new List<string>();
-            foreach (var column in columns.Where(canFilter))
-            {
-                string property = column.Property.Replace('.', '/');
-
-                string value = (string)Convert.ChangeType(column.FilterValue, typeof(string));
-                string secondValue = (string)Convert.ChangeType(column.SecondFilterValue, typeof(string));
-
-                if (!string.IsNullOrEmpty(value))
-                {
-                    string linqOperator = ODataFilterOperators[column.FilterOperator];
-                    linqOperator ??= "==";
-
-                    string booleanOperator = column.LogicalFilterOperator == LogicalFilterOperator.And ? "and" : "or";
-
-                    if (string.IsNullOrEmpty(secondValue))
-                    {
-                        whereList.Add(GetColumnODataFilter(dataGrid, column));
-                    }
-                    else
-                    {
-                        whereList.Add($"({GetColumnODataFilter(dataGrid, column)} {booleanOperator} {GetColumnODataFilter(dataGrid, column, true)})");
-                    }
-                }
-            }
-
-            return string.Join($" {gridBooleanOperator} ", whereList.Where(i => !string.IsNullOrEmpty(i)));
-        }
-
-        return "";
     }
 }

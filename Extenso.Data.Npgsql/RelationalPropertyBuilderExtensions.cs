@@ -4,6 +4,8 @@ namespace Extenso.Data.Npgsql;
 
 public static class RelationalPropertyBuilderExtensions
 {
-    public static PropertyBuilder ForNpgsqlHasColumnType(this PropertyBuilder propertyBuilder, string typeName) =>
-        propertyBuilder.HasAnnotation("Npgsql:ColumnType", typeName);
+    extension(PropertyBuilder propertyBuilder)
+    {
+        public PropertyBuilder ForNpgsqlHasColumnType(string typeName) => propertyBuilder.HasAnnotation("Npgsql:ColumnType", typeName);
+    }
 }

@@ -6,38 +6,39 @@ namespace Demo.Extenso.AspNetCore.Blazor.OData.Extensions;
 
 public static class DataTableExtensions
 {
-    public static byte[] ToXlsx(this DataTable table) => table.ToXlsx(true);
-
-    public static byte[] ToXlsx(this DataTable table, bool outputColumnNames)
+    extension(DataTable table)
     {
-        using var excel = new ExcelPackage();
-
-        string sheetName = string.IsNullOrEmpty(table.TableName)
-            ? "Report"
-            : table.TableName;
-
-        var worksheet = excel.Workbook.Worksheets.Add(sheetName);
-        worksheet.Cells["A1"].LoadFromDataTable(table, outputColumnNames);
-
-        int columnNumber = 1;
-        foreach (DataColumn column in table.Columns)
+        public byte[] ToXlsx(bool outputColumnNames = true)
         {
-            if (column.DataType == typeof(DateTime))
+            using var excel = new ExcelPackage();
+
+            string sheetName = string.IsNullOrEmpty(table.TableName)
+                ? "Report"
+                : table.TableName;
+
+            var worksheet = excel.Workbook.Worksheets.Add(sheetName);
+            worksheet.Cells["A1"].LoadFromDataTable(table, outputColumnNames);
+
+            int columnNumber = 1;
+            foreach (DataColumn column in table.Columns)
             {
-                worksheet.Column(columnNumber).Style.Numberformat.Format = "yyyy-mm-dd hh:mm";
-            }
-            else if (column.DataType == typeof(string))
-            {
-                if (table.Rows.OfType<DataRow>().Any(x => !x.IsNull(column) && x.Field<string>(column).ContainsAny("\n", "\r\n")))
+                if (column.DataType == typeof(DateTime))
                 {
-                    worksheet.Column(columnNumber).Style.WrapText = true;
+                    worksheet.Column(columnNumber).Style.Numberformat.Format = "yyyy-mm-dd hh:mm";
                 }
+                else if (column.DataType == typeof(string))
+                {
+                    if (table.Rows.OfType<DataRow>().Any(x => !x.IsNull(column) && x.Field<string>(column).ContainsAny("\n", "\r\n")))
+                    {
+                        worksheet.Column(columnNumber).Style.WrapText = true;
+                    }
+                }
+                columnNumber++;
             }
-            columnNumber++;
+
+            worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+            return excel.GetAsByteArray();
         }
-
-        worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
-
-        return excel.GetAsByteArray();
     }
 }

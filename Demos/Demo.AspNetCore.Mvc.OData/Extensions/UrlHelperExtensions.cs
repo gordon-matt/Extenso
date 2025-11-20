@@ -4,15 +4,18 @@ namespace Microsoft.AspNetCore.Mvc;
 
 public static class UrlHelperExtensions
 {
-    public static string EmailConfirmationLink(this IUrlHelper urlHelper, string userId, string code, string scheme) => urlHelper.Action(
+    extension(IUrlHelper urlHelper)
+    {
+        public string EmailConfirmationLink(string userId, string code, string scheme) => urlHelper.Action(
             action: nameof(AccountController.ConfirmEmail),
             controller: "Account",
             values: new { userId, code },
             protocol: scheme);
 
-    public static string ResetPasswordCallbackLink(this IUrlHelper urlHelper, string userId, string code, string scheme) => urlHelper.Action(
+        public string ResetPasswordCallbackLink(string userId, string code, string scheme) => urlHelper.Action(
             action: nameof(AccountController.ResetPassword),
             controller: "Account",
             values: new { userId, code },
             protocol: scheme);
+    }
 }
