@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-
 namespace Extenso.Data.Entity.Tests;
 
 [Collection("EntityFrameworkRepositoryTests")]
@@ -464,9 +463,29 @@ public class EntityFrameworkRepositoryTests : IDisposable
 
     #endregion Count
 
+    #region Exists
+
+    [Fact]
+    public void Exists()
+    {
+        bool expected = true;
+        bool actual = repository.Exists(x => true);
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Exists_With_Predicate()
+    {
+        bool expected = productModels.Any(x => x.Name.StartsWith("M"));
+        bool actual = repository.Exists(x => x.Name.StartsWith("M"));
+        Assert.Equal(expected, actual);
+    }
+
+    #endregion Exists
+
     #region Delete
 
-            // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
+    // repository.DeleteAll() uses ExecuteDelete which may not work with in-memory database.
     //[Fact]
     //public void DeleteAll();
 
