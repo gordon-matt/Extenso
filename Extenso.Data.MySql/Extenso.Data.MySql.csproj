@@ -7,7 +7,7 @@
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<Description>Data-related extension methods and other helper classes for MySql</Description>
-		<Version>10.0.1</Version>
+		<Version>10.0.2</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 	</PropertyGroup>
