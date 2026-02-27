@@ -255,7 +255,7 @@ public class ReadOnlyEntityFrameworkRepository<TEntity> : IReadOnlyRepository<TE
     public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, ContextOptions options = null)
     {
         using var context = GetContext(options);
-        return await context.Set<TEntity>().AsNoTracking().AnyAsync(predicate, options.CancellationToken);
+        return await context.Set<TEntity>().AsNoTracking().AnyAsync(predicate, options?.CancellationToken ?? default);
     }
 
     #endregion Exists
