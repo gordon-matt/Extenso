@@ -105,6 +105,20 @@ public interface IReadOnlyRepository<TEntity>
 
     #endregion Find
 
+    /// <summary>
+    /// Groups entities matching the search options and projects each group.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the projected result.</typeparam>
+    /// <typeparam name="TKey">The type of the grouping key.</typeparam>
+    /// <param name="options">Search options used to filter and sort entities before grouping. Paging is applied to the projected groups.</param>
+    /// <param name="keySelector">A function to extract the key for each group.</param>
+    /// <param name="projection">A projection from each group to a result value.</param>
+    /// <returns>A collection of projected group results.</returns>
+    Task<IReadOnlyCollection<TResult>> FindGroupedAsync<TResult, TKey>(
+        SearchOptions<TEntity> options,
+        Expression<Func<TEntity, TKey>> keySelector,
+        Expression<Func<IGrouping<TKey, TEntity>, TResult>> projection);
+
     #region Count
 
     /// <summary>

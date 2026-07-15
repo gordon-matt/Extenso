@@ -3,10 +3,7 @@ using Bogus;
 using Extenso.TestLib.Data;
 using Extenso.TestLib.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace Extenso.Data.Entity.Tests;
 
@@ -96,7 +93,7 @@ public class EntityFrameworkRepositoryTests : IDisposable
     [Fact]
     public void Find_IncludePaths_WithMandatoryFilter()
     {
-        var randomCategory = productModels.SelectMany(x => x.Products)
+        string randomCategory = productModels.SelectMany(x => x.Products)
             .Select(p => p.ProductSubcategory.ProductCategory.Name)
             .FirstOrDefault();
 
@@ -394,6 +391,131 @@ public class EntityFrameworkRepositoryTests : IDisposable
     }
 
     #endregion Find
+
+    #region GroupBy
+
+    [Fact]
+    public async Task FindGroupedAsync()
+    {
+        var expected = productModels
+            .GroupBy(x => x.Name[..1])
+            .Select(g => new
+            {
+                g.Key,
+                Count = g.Count(),
+                Min = g.Min(x => x.ProductModelId),
+                Max = g.Max(x => x.ProductModelId),
+                Sum = g.Sum(x => x.ProductModelId),
+                Average = g.Average(x => x.ProductModelId)
+            })
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        var actual = (await repository.FindGroupedAsync(
+            new SearchOptions<ProductModel>(),
+            x => x.Name.Substring(0, 1),
+            g => new
+            {
+                g.Key,
+                Count = g.Count(),
+                Min = g.Min(x => x.ProductModelId),
+                Max = g.Max(x => x.ProductModelId),
+                Sum = g.Sum(x => x.ProductModelId),
+                Average = g.Average(x => x.ProductModelId)
+            }))
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        Assert.Equal(expected.Count, actual.Count);
+        for (int i = 0; i < expected.Count; i++)
+        {
+            Assert.Equal(expected[i].Key, actual[i].Key);
+            Assert.Equal(expected[i].Count, actual[i].Count);
+            Assert.Equal(expected[i].Min, actual[i].Min);
+            Assert.Equal(expected[i].Max, actual[i].Max);
+            Assert.Equal(expected[i].Sum, actual[i].Sum);
+            Assert.Equal(expected[i].Average, actual[i].Average, 5);
+        }
+    }
+
+    [Fact]
+    public async Task FindGroupedAsync_With_Query()
+    {
+        var expected = productModels
+            .Where(x => x.Name.StartsWith("M"))
+            .GroupBy(x => x.Name[..1])
+            .Select(g => new
+            {
+                g.Key,
+                Count = g.Count(),
+                Min = g.Min(x => x.ProductModelId),
+                Max = g.Max(x => x.ProductModelId),
+                Sum = g.Sum(x => x.ProductModelId),
+                Average = g.Average(x => x.ProductModelId)
+            })
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        var actual = (await repository.FindGroupedAsync(
+            new SearchOptions<ProductModel>
+            {
+                Query = x => x.Name.StartsWith("M")
+            },
+            x => x.Name.Substring(0, 1),
+            g => new
+            {
+                g.Key,
+                Count = g.Count(),
+                Min = g.Min(x => x.ProductModelId),
+                Max = g.Max(x => x.ProductModelId),
+                Sum = g.Sum(x => x.ProductModelId),
+                Average = g.Average(x => x.ProductModelId)
+            }))
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        Assert.Equal(expected.Count, actual.Count);
+        for (int i = 0; i < expected.Count; i++)
+        {
+            Assert.Equal(expected[i].Key, actual[i].Key);
+            Assert.Equal(expected[i].Count, actual[i].Count);
+            Assert.Equal(expected[i].Min, actual[i].Min);
+            Assert.Equal(expected[i].Max, actual[i].Max);
+            Assert.Equal(expected[i].Sum, actual[i].Sum);
+            Assert.Equal(expected[i].Average, actual[i].Average, 5);
+        }
+    }
+
+    [Fact]
+    public async Task FindGroupedAsync_With_Paging()
+    {
+        int totalGroups = productModels
+            .GroupBy(x => x.Name[..1])
+            .Count();
+
+        Assert.True(totalGroups > 2, "Test requires more than 2 groups.");
+
+        var actual = await repository.FindGroupedAsync(
+            new SearchOptions<ProductModel>
+            {
+                PageNumber = 1,
+                PageSize = 2
+            },
+            x => x.Name.Substring(0, 1),
+            g => new
+            {
+                g.Key,
+                Count = g.Count(),
+                Min = g.Min(x => x.ProductModelId),
+                Max = g.Max(x => x.ProductModelId),
+                Sum = g.Sum(x => x.ProductModelId),
+                Average = g.Average(x => x.ProductModelId)
+            });
+
+        Assert.Equal(2, actual.Count);
+    }
+
+    #endregion GroupBy
 
     #region Count
 

@@ -187,6 +187,24 @@ public class ReadOnlyMappedEntityFrameworkRepository<TModel, TEntity> : IReadOnl
 
     #endregion Find
 
+    /// <inheritdoc/>
+    public virtual async Task<IReadOnlyCollection<TResult>> FindGroupedAsync<TResult, TKey>(
+        SearchOptions<TEntity> options,
+        Expression<Func<TEntity, TKey>> keySelector,
+        Expression<Func<IGrouping<TKey, TEntity>, TResult>> projection)
+    {
+        using var context = GetContext(options);
+        var query = BuildBaseQuery(context, options);
+
+        var groupedQuery = query
+            .GroupBy(keySelector)
+            .Select(projection);
+
+        groupedQuery = ApplyPaging(groupedQuery, options);
+
+        return await groupedQuery.ToListAsync(options?.CancellationToken ?? default);
+    }
+
     #region Count
 
     /// <inheritdoc/>
