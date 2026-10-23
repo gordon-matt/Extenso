@@ -290,3 +290,4 @@ Demos/Demo.AspNetCore.Mvc.ExtensoUI/wwwroot/lib/jquery-validation-unobtrusive
 Demos/Demo.AspNetCore.Mvc.OData/wwwroot/lib
 Demos/Demo.Extenso.AspNetCore.Blazor.OData/wwwroot/lib
 Demos/Demo.Extenso.AspNetCore.Mvc/wwwroot/lib
+NuGet-Push.ps1
