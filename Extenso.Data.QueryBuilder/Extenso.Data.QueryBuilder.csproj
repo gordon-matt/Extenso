@@ -1,26 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Authors>Matt Gordon</Authors>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Description>Fluent T-SQL Query Builder</Description>
-    <Version>10.0.1</Version>
-    <PackageIcon>ExtensoIcon.jpg</PackageIcon>
-    <RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net9.0\Extenso.Data.QueryBuilder.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\_Misc\ExtensoIcon.jpg">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Matt Gordon</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Description>Fluent T-SQL Query Builder</Description>
+		<Version>10.2.0</Version>
+		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
+		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>bin\Release\net9.0\Extenso.Data.QueryBuilder.xml</DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\_Misc\ExtensoIcon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />
+	</ItemGroup>
 </Project>

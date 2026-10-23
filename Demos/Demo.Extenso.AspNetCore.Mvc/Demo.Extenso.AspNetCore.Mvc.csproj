@@ -4,12 +4,12 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.3">
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.13" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.13">
 		  <TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.13" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />

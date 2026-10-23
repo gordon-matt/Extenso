@@ -1,26 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Authors>Matt Gordon</Authors>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-	<Version>10.0.2</Version>
-    <Description>Drawing-related extension methods and other helper classes.</Description>
-    <PackageIcon>ExtensoIcon.jpg</PackageIcon>
-    <RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net9.0\Extenso.Drawing.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\_Misc\ExtensoIcon.jpg">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="10.0.3" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Matt Gordon</Authors>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<Version>10.2.0</Version>
+		<Description>Drawing-related extension methods and other helper classes.</Description>
+		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
+		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DocumentationFile>bin\Release\net9.0\Extenso.Drawing.xml</DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\_Misc\ExtensoIcon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Drawing.Common" Version="10.0.13" />
+	</ItemGroup>
 </Project>
