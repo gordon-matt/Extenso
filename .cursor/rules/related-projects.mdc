@@ -1,0 +1,50 @@
+---
+description: Which of my other projects this repo depends on and where their source lives. Read before using or investigating any internal library/package.
+alwaysApply: false
+---
+
+Shared coding conventions live in Blueprint/.cursor/rules/conventions.mdc (absolute path: D:\Source\GitHub\Blueprint\.cursor\rules\conventions.mdc). Read it before writing or changing code.
+
+@../../Blueprint/.cursor/rules/conventions.mdc
+
+## Internal dependencies
+
+| Name | How it's consumed | Package ID and version | Source location |
+| --- | --- | --- | --- |
+| AutoMapper14.Extensions.ExpressionMapping | NuGet PackageReference | AutoMapper14.Extensions.ExpressionMapping 8.1.0 | `D:\Source\GitHub\Libraries\AutoMapper.Extensions.ExpressionMapping` (`..\..\Libraries\AutoMapper.Extensions.ExpressionMapping`) |
+
+## Unresolved
+
+None.
+
+## Reverse dependencies
+
+- `CMS\Inferno` - Extenso.AspNetCore.Mvc 10.0.1 (NuGet PackageReference); Extenso.AspNetCore.OData 10.0.2 (NuGet PackageReference); Extenso.Core 10.0.1 (NuGet PackageReference); Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `CMS\MantleCMS` - Extenso.AspNetCore.Mvc 10.0.1 (NuGet PackageReference); Extenso.AspNetCore.Mvc.ExtensoUI 10.0.1 (NuGet PackageReference); Extenso.AspNetCore.OData 10.0.1 (NuGet PackageReference); Extenso.Core 10.0.1 (NuGet PackageReference); Extenso.Data 10.0.1 (NuGet PackageReference); Extenso.Data.Entity 10.0.1 (NuGet PackageReference); Extenso.Data.QueryBuilder 10.0.1 (NuGet PackageReference); Extenso.Data.QueryBuilder.Npgsql 10.0.1 (NuGet PackageReference); Extenso.KendoGridBinder 1.0.0 (NuGet PackageReference); Extenso.WebAssets.KendoUI 1.0.0 (NuGet PackageReference)
+- `Components\BlazorForms` - Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `Components\EasyChatz` - Extenso.Data.Entity 10.2.0 (NuGet PackageReference)
+- `Components\elFinder.NetCore.GoogleStorage` - Extenso.Core 3.1.1 (NuGet PackageReference)
+- `Components\MyWebTree` - Extenso.Data.Entity 10.2.0 (NuGet PackageReference)
+- `Historicus\GeoDataConverter` - Extenso.Core 10.0.1 (NuGet PackageReference); Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `Historicus\Historicus.Tools` - Extenso.Core 10.0.1 (NuGet PackageReference); Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `Libraries\Dependo` - Extenso.Core 10.2.0 (NuGet PackageReference)
+- `Libraries\JQQueryBuilderHelpers` - Extenso.AspNetCore.Mvc 1.1.3 (NuGet PackageReference); Extenso.AspNetCore.OData 1.1.3 (NuGet PackageReference); Extenso.Data 1.1.3 (NuGet PackageReference); Extenso.Data.Entity 1.1.3 (NuGet PackageReference); Extenso.Data.QueryBuilder 1.1.2 (NuGet PackageReference); Extenso.Data.QueryBuilder.Npgsql 1.1.2 (NuGet PackageReference)
+- `Libraries\LogVue` - Extenso.Data.Entity 10.2.0 (NuGet PackageReference)
+- `SelfHosted\ArcaFS` - Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `SelfHosted\Kabinet` - Extenso.Data.Entity 10.2.0 (NuGet PackageReference)
+- `SelfHosted\Kinnect` - Extenso.Data.Entity 10.2.0 (NuGet PackageReference)
+- `SelfHosted\LinkStash` - Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `SelfHosted\MoneyLens` - Extenso.Data.Entity 10.2.0 (NuGet PackageReference)
+- `SelfHosted\MyVideoArchive` - Extenso.AspNetCore.OData 10.0.2 (NuGet PackageReference); Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `SelfHosted\PicStashly` - Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `SelfHosted\ReelSoon` - Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `SelfHosted\Shelfwarden` - Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `SelfHosted\Snippetz` - Extenso.Data.Entity 10.1.1 (NuGet PackageReference)
+- `Tools\CodeShop` - Extenso.Core 10.0.0 (NuGet PackageReference); Extenso.Data 10.0.0 (NuGet PackageReference); Extenso.Data.MySql 10.0.0 (NuGet PackageReference); Extenso.Data.Npgsql 10.0.0 (NuGet PackageReference)
+- `Tools\DataMigrator` - Extenso.Core 9.4.0 (NuGet PackageReference); Extenso.Data 9.4.0 (NuGet PackageReference); Extenso.Data.MySql 9.4.0 (NuGet PackageReference); Extenso.Data.Npgsql 9.4.0 (NuGet PackageReference); Extenso.Windows.Forms 9.4.0 (NuGet PackageReference)
+- `Tools\Doxie` - Extenso.Core 9.2.0 (NuGet PackageReference)
+- `Tools\Heroicsoft.DevToys.CodeGenerator` - Extenso.Core 8.0.0 (NuGet PackageReference)
+- `Tools\Queryz` - Extenso.AspNetCore.Mvc.ExtensoUI 9.3.0 (NuGet PackageReference); Extenso.AspNetCore.OData 9.3.1 (NuGet PackageReference); Extenso.Core 9.3.0 (NuGet PackageReference); Extenso.Data 9.3.1 (NuGet PackageReference); Extenso.Data.Entity 9.3.2 (NuGet PackageReference); Extenso.Data.MySql 9.3.0 (NuGet PackageReference); Extenso.Data.Npgsql 9.3.1 (NuGet PackageReference); Extenso.Data.QueryBuilder 9.3.1 (NuGet PackageReference); Extenso.Data.QueryBuilder.MySql 9.3.1 (NuGet PackageReference); Extenso.Data.QueryBuilder.Npgsql 9.3.1 (NuGet PackageReference); Extenso.WebAssets.KendoUI 1.0.0 (NuGet PackageReference)
+- `Websites\ZhongWenLearner` - Extenso.Core 10.0.1 (NuGet PackageReference); Extenso.Data 10.0.1 (NuGet PackageReference); Extenso.Windows.Forms 10.0.1 (NuGet PackageReference)
+
+When you need to understand an API, behavior, or bug in one of the internal packages above, read its source code at the listed location. Do NOT use reflection, decompilation, or inspect DLLs/NuGet cache. If a fix belongs in the library, say so rather than working around it in the consumer. Note that the consumer references a published package version, so local source may be newer than what the consumer actually uses; check the version.

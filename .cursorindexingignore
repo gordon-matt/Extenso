@@ -1,0 +1,4 @@
+# Excluded from indexing only. The agent can still read these files.
+package-lock.json
+*.min.js
+*.min.css
