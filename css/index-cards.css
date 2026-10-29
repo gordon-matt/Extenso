@@ -1,38 +1,78 @@
-﻿.card:hover, .card:focus, .card:active {
-    background-color: #99b3ff;
-    cursor: pointer;
+﻿.page-header {
+    margin: 0.5rem 0 1.25rem;
 }
 
-.card-deck {
+.page-header h1 {
+    font-size: 1.85rem;
+    margin-bottom: 0.15rem;
+}
+
+.page-header p {
+    margin: 0;
+}
+
+.assembly-grid {
     display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 }
 
-@media (min-width: 0) {
-    .card-deck {
-        grid-template-columns: repeat(1, 1fr);
-    }
+.assembly-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    min-height: 148px;
+    min-width: 0;
+    overflow: hidden;
+    padding: 1.1rem 1.15rem 1rem;
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-@media (min-width: 576px) {
-    .card-deck {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.assembly-card:hover,
+.assembly-card:focus {
+    border-color: #c9d7f5;
+    box-shadow: 0 12px 28px rgba(28, 56, 120, 0.08);
+    color: inherit;
+    text-decoration: none;
+    transform: translateY(-2px);
 }
 
-@media (min-width: 768px) {
-    .card-deck {
-        grid-template-columns: repeat(3, 1fr);
-    }
+.assembly-card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.45rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-@media (min-width: 992px) {
-    .card-deck {
-        grid-template-columns: repeat(4, 1fr);
-    }
+.assembly-card p {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: var(--muted);
+    display: -webkit-box;
+    flex: 1;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    margin: 0;
+    overflow: hidden;
+    overflow-wrap: anywhere;
 }
 
-@media (min-width: 1200px) {
-    .card-deck {
-        grid-template-columns: repeat(4, 1fr);
-    }
+.assembly-card-action {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.9rem;
+}
+
+.assembly-card:hover .assembly-card-action {
+    color: #1d4ed8;
 }
