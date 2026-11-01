@@ -23,6 +23,7 @@
 		<ProjectReference Include="..\Extenso.Data.QueryBuilder\Extenso.Data.QueryBuilder.csproj" />
 		<ProjectReference Include="..\Extenso.Data\Extenso.Data.csproj" />
 		<ProjectReference Include="..\Extenso.Drawing\Extenso.Drawing.csproj" />
+		<ProjectReference Include="..\Extenso.Mapping.Abstractions\Extenso.Mapping.Abstractions.csproj" />
 		<ProjectReference Include="..\Extenso.Mapping\Extenso.Mapping.csproj" />
 	</ItemGroup>
 </Project>
