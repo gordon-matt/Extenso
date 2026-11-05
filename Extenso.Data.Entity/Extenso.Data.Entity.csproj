@@ -8,10 +8,12 @@
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<Description>This library provides a generic repository interface and base class, as well as other data-related extension methods and helper classes.</Description>
-		<Version>10.2.0</Version>
+		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>entityframeworkcore;efcore;repository;generic-repository;linq;data</PackageTags>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\Release\net9.0\Extenso.Data.Entity.xml</DocumentationFile>
@@ -23,9 +25,9 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="LinqKit.Core" Version="1.3.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
+		<PackageReference Include="LinqKit.Core" Version="1.3.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.14" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Extenso.Data.Entity.Abstractions\Extenso.Data.Entity.Abstractions.csproj" />

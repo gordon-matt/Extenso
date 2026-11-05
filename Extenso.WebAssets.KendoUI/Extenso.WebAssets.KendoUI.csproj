@@ -12,13 +12,25 @@
 		<EmbedAllSources>true</EmbedAllSources>
 		<EnableDefaultEmbeddedResourceItems>true</EnableDefaultEmbeddedResourceItems>
 		
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<Description>KendoUIWeb (2014.1.318)</Description>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<IncludeContentInPack>true</IncludeContentInPack>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Authors>Matt Gordon</Authors>
+		<Company>Matt Gordon</Company>
+		<PackageTags>kendo-ui;kendoui;static-web-assets;razor-class-library;aspnetcore</PackageTags>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\_Misc\ExtensoIcon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="wwwroot\**\*" Pack="true" PackagePath="wwwroot\" />

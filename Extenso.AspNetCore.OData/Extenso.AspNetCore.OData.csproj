@@ -6,11 +6,14 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-		<Version>10.2.0</Version>
-		<Description></Description>
+		<Version>10.2.1</Version>
+		<Description>A generic OData controller (and mapped variant for DAOs/DTOs) for ASP.NET Core, providing CRUD endpoints over Extenso repositories.</Description>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Company>Matt Gordon</Company>
+		<PackageTags>aspnetcore;odata;rest;crud;generic-controller;entityframeworkcore</PackageTags>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />

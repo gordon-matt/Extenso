@@ -3,6 +3,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<NoWarn>$(NoWarn);MSB3270</NoWarn>
+		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation\Extenso.AspNetCore.Mvc.ExtensoUI.Foundation.csproj" />

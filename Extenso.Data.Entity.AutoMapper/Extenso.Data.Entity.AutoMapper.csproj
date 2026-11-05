@@ -4,17 +4,28 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>10.2.0</Version>
+		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<Authors>Matt Gordon</Authors>
 		<Company>Matt Gordon</Company>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+		<Description>AutoMapper-based entity model mapper for the Extenso mapped repositories, with expression-mapping helpers for includes and ordering.</Description>
+		<PackageTags>entityframeworkcore;efcore;automapper;repository;mapping;expression-mapping</PackageTags>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\Release\net9.0\Extenso.Data.Entity.AutoMapper.xml</DocumentationFile>
 	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="..\_Misc\ExtensoIcon.jpg">

@@ -3,13 +3,17 @@
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>10.2.0</Version>
+		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<Authors>Matt Gordon</Authors>
 		<Company>Matt Gordon</Company>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Description>A lightweight, simpler alternative to AutoMapper, complete with expression mapping for predicates, includes, projections, etc.</Description>
+		<PackageTags>mapping;object-mapping;mapper;expression-mapping;automapper-alternative</PackageTags>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -36,7 +40,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
 	</ItemGroup>
 
 </Project>

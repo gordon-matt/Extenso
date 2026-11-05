@@ -3,17 +3,28 @@
 		<TargetFramework>net10.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>10.2.0</Version>
+		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<Authors>Matt Gordon</Authors>
 		<Company>Matt Gordon</Company>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
+		<Description>Windows Forms extension methods, custom controls (numeric textbox, wizard host) and DataGridView column types.</Description>
+		<PackageTags>winforms;windows-forms;datagridview;controls;wizard;extensions</PackageTags>
+		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\Release\net9.0-windows7.0\Extenso.Windows.Forms.xml</DocumentationFile>
 	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="..\_Misc\ExtensoIcon.jpg">
