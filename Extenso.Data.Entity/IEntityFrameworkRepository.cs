@@ -2,6 +2,9 @@
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Defines the contract for the entity framework repository.
+/// </summary>
 public interface IEntityFrameworkRepository
 {
     /// <summary>

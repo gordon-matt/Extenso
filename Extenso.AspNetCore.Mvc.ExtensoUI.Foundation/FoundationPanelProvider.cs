@@ -3,10 +3,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.Foundation;
 
+/// <summary>
+/// Represents the foundation panel provider.
+/// </summary>
 public class FoundationPanelProvider : IPanelProvider
 {
     #region IPanelProvider Members
 
+    /// <summary>
+    /// Begins the panel.
+    /// </summary>
+    /// <param name="panel">The panel.</param>
+    /// <param name="writer">The writer.</param>
     public void BeginPanel(Panel panel, TextWriter writer)
     {
         switch (panel.State)
@@ -29,6 +37,12 @@ public class FoundationPanelProvider : IPanelProvider
         writer.Write(tag);
     }
 
+    /// <summary>
+    /// Begins the panel section.
+    /// </summary>
+    /// <param name="sectionType">The section type.</param>
+    /// <param name="writer">The writer.</param>
+    /// <param name="title">The title.</param>
     public void BeginPanelSection(PanelSectionType sectionType, TextWriter writer, string title = null)
     {
         switch (sectionType)
@@ -49,8 +63,18 @@ public class FoundationPanelProvider : IPanelProvider
         }
     }
 
+    /// <summary>
+    /// Performs the end panel operation.
+    /// </summary>
+    /// <param name="panel">The panel.</param>
+    /// <param name="writer">The writer.</param>
     public void EndPanel(Panel panel, TextWriter writer) => writer.Write("</div>");
 
+    /// <summary>
+    /// Performs the end panel section operation.
+    /// </summary>
+    /// <param name="sectionType">The section type.</param>
+    /// <param name="writer">The writer.</param>
     public void EndPanelSection(PanelSectionType sectionType, TextWriter writer) => writer.Write("</div>");
 
     #endregion IPanelProvider Members

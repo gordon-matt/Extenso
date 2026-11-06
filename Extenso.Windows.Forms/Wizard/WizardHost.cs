@@ -2,6 +2,9 @@
 
 namespace Extenso.Windows.Forms.Wizard;
 
+/// <summary>
+/// Represents the wizard host.
+/// </summary>
 public partial class WizardHost : Form
 {
     private const string VALIDATION_MESSAGE = "Current page is not valid. Please fill in required information";
@@ -10,6 +13,9 @@ public partial class WizardHost : Form
 
     private bool navigationEnabled = true;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is navigation enabled.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool NavigationEnabled
     {
@@ -24,6 +30,9 @@ public partial class WizardHost : Form
         }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is show first button.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowFirstButton
     {
@@ -31,6 +40,9 @@ public partial class WizardHost : Form
         set => btnFirst.Visible = value;
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is show last button.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowLastButton
     {
@@ -38,6 +50,9 @@ public partial class WizardHost : Form
         set => btnLast.Visible = value;
     }
 
+    /// <summary>
+    /// Gets or sets the wizard pages.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public WizardPageCollection WizardPages { get; set; }
 
@@ -45,14 +60,23 @@ public partial class WizardHost : Form
 
     #region Delegates & Events
 
+    /// <summary>
+    /// Represents the method that handles wizard completed event handler.
+    /// </summary>
     public delegate void WizardCompletedEventHandler();
 
+    /// <summary>
+    /// Occurs when wizard completed.
+    /// </summary>
     public event WizardCompletedEventHandler WizardCompleted;
 
     #endregion Delegates & Events
 
     #region Constructor & Window Event Handlers
 
+    /// <summary>
+    /// Initializes a new instance of the WizardHost class.
+    /// </summary>
     public WizardHost()
     {
         InitializeComponent();
@@ -66,6 +90,9 @@ public partial class WizardHost : Form
 
     #region Private Methods
 
+    /// <summary>
+    /// Updates the navigation.
+    /// </summary>
     public void UpdateNavigation()
     {
         #region Reset
@@ -143,6 +170,12 @@ public partial class WizardHost : Form
 
     #region Public Methods
 
+    /// <summary>
+    /// Loads the next page.
+    /// </summary>
+    /// <param name="pageIndex">The page index.</param>
+    /// <param name="previousPageIndex">The previous page index.</param>
+    /// <param name="savePreviousPage">The save previous page.</param>
     public void LoadNextPage(int pageIndex, int previousPageIndex, bool savePreviousPage)
     {
         if (pageIndex != -1)
@@ -158,6 +191,9 @@ public partial class WizardHost : Form
         }
     }
 
+    /// <summary>
+    /// Loads the wizard.
+    /// </summary>
     public void LoadWizard() => WizardPages.MovePageFirst();
 
     #endregion Public Methods

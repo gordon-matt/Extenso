@@ -2,11 +2,22 @@
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
+/// <summary>
+/// Represents the accordion.
+/// </summary>
 [DebuggerDisplay("Id = {Id}")]
 public class Accordion : HtmlElement
 {
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
     public string Id { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of the Accordion class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="htmlAttributes">The HTML attributes.</param>
     public Accordion(string id = null, object htmlAttributes = null)
         : base(htmlAttributes)
     {
@@ -19,7 +30,9 @@ public class Accordion : HtmlElement
         EnsureHtmlAttribute("id", Id);
     }
 
+    /// <inheritdoc/>
     protected internal override void StartTag(TextWriter textWriter) => Provider.AccordionProvider.BeginAccordion(this, textWriter);
 
+    /// <inheritdoc/>
     protected internal override void EndTag(TextWriter textWriter) => Provider.AccordionProvider.EndAccordion(this, textWriter);
 }

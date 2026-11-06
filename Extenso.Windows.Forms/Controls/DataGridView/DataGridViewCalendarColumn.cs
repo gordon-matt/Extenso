@@ -2,12 +2,19 @@ using System.ComponentModel;
 
 namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view calendar column.
+/// </summary>
 public class DataGridViewCalendarColumn : DataGridViewColumn
 {
+    /// <summary>
+    /// Initializes a new instance of the DataGridViewCalendarColumn class.
+    /// </summary>
     public DataGridViewCalendarColumn() : base(new DataGridViewCalendarCell())
     {
     }
 
+    /// <inheritdoc/>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
@@ -21,6 +28,9 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
         }
     }
 
+    /// <summary>
+    /// Gets or sets the custom format.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string CustomFormat
     {
@@ -32,6 +42,9 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
         }
     }
 
+    /// <summary>
+    /// Gets or sets the date time picker format.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DateTimePickerFormat DateTimePickerFormat
     {
@@ -43,12 +56,19 @@ public class DataGridViewCalendarColumn : DataGridViewColumn
         }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is show check box.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowCheckBox { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is show up down.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ShowUpDown { get; set; }
 
+    /// <inheritdoc/>
     public override object Clone()
     {
         var dataGridViewCalendarColumn = (DataGridViewCalendarColumn)base.Clone();

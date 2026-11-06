@@ -2,6 +2,9 @@
 
 namespace Extenso.Windows.Forms;
 
+/// <summary>
+/// Provides extension methods for controls.
+/// </summary>
 public static class ControlExtensions
 {
     private delegate object GetControlPropertyThreadSafeDelegate(Control control, string propertyName, object[] args);
@@ -10,6 +13,12 @@ public static class ControlExtensions
 
     extension(Control control)
     {
+        /// <summary>
+        /// Gets the property thread safe.
+        /// </summary>
+        /// <param name="propertyName">The property name.</param>
+        /// <param name="args">The args.</param>
+        /// <returns>The property thread safe.</returns>
         public object GetPropertyThreadSafe(string propertyName, object[] args) => control.InvokeRequired
             ? control.Invoke(new GetControlPropertyThreadSafeDelegate(
                 GetPropertyThreadSafe),
@@ -58,6 +67,11 @@ public static class ControlExtensions
             return ret;
         }
 
+        /// <summary>
+        /// Sets the property thread safe.
+        /// </summary>
+        /// <param name="propertyName">The property name.</param>
+        /// <param name="propertyValue">The property value.</param>
         public void SetPropertyThreadSafe(string propertyName, object propertyValue)
         {
             if (control.InvokeRequired)

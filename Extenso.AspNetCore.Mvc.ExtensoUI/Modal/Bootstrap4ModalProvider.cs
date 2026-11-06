@@ -4,10 +4,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
+/// <summary>
+/// Represents the bootstrap4modal provider.
+/// </summary>
 public class Bootstrap4ModalProvider : IModalProvider
 {
     #region IModalProvider Members
 
+    /// <summary>
+    /// Begins the modal.
+    /// </summary>
+    /// <param name="modal">The modal.</param>
+    /// <param name="writer">The writer.</param>
     public void BeginModal(Modal modal, TextWriter writer)
     {
         modal.EnsureClass("modal");
@@ -24,6 +32,12 @@ public class Bootstrap4ModalProvider : IModalProvider
         writer.Write(tag);
     }
 
+    /// <summary>
+    /// Begins the modal section panel.
+    /// </summary>
+    /// <param name="section">The section.</param>
+    /// <param name="writer">The writer.</param>
+    /// <param name="title">The title.</param>
     public void BeginModalSectionPanel(ModalSection section, TextWriter writer, string title = null)
     {
         switch (section)
@@ -47,12 +61,29 @@ $@"<h5 class=""modal-title"">{title}</h5>
         }
     }
 
+    /// <summary>
+    /// Performs the end modal section panel operation.
+    /// </summary>
+    /// <param name="section">The section.</param>
+    /// <param name="writer">The writer.</param>
     public void EndModalSectionPanel(ModalSection section, TextWriter writer) => writer.Write("</div>");
 
+    /// <summary>
+    /// Performs the end modal operation.
+    /// </summary>
+    /// <param name="modal">The modal.</param>
+    /// <param name="writer">The writer.</param>
     public void EndModal(Modal modal, TextWriter writer) =>
         //writer.Write("</div>");
         writer.Write("</div></div></div>");
 
+    /// <summary>
+    /// Gets the modal launch button.
+    /// </summary>
+    /// <param name="modalId">The modal identifier.</param>
+    /// <param name="text">The text.</param>
+    /// <param name="htmlAttributes">The HTML attributes.</param>
+    /// <returns>The modal launch button.</returns>
     public IHtmlContent ModalLaunchButton(string modalId, string text, object htmlAttributes = null)
     {
         var builder = new FluentTagBuilder("button")
@@ -65,6 +96,13 @@ $@"<h5 class=""modal-title"">{title}</h5>
         return new HtmlString(builder.ToString());
     }
 
+    /// <summary>
+    /// Gets the modal close button.
+    /// </summary>
+    /// <param name="modalId">The modal identifier.</param>
+    /// <param name="text">The text.</param>
+    /// <param name="htmlAttributes">The HTML attributes.</param>
+    /// <returns>The modal close button.</returns>
     public IHtmlContent ModalCloseButton(string modalId, string text, object htmlAttributes = null)
     {
         var builder = new FluentTagBuilder("button")

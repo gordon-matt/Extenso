@@ -4,8 +4,16 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 // ReSharper disable once CheckNamespace
 namespace Extenso.KendoGridBinder.ModelBinder.Api;
 
+/// <summary>
+/// Represents the kendo grid API model binder provider.
+/// </summary>
 public class KendoGridApiModelBinderProvider : IModelBinderProvider
 {
+    /// <summary>
+    /// Gets the binder.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns>The binder.</returns>
     public IModelBinder GetBinder(ModelBinderProviderContext context)
     {
         if (context == null)

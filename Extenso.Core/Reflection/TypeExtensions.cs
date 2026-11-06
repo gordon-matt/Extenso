@@ -89,6 +89,11 @@ public static class TypeExtensions
             return default;
         }
 
+        /// <summary>
+        /// Determines whether this instance is assignable to generic type.
+        /// </summary>
+        /// <param name="genericType">The generic type.</param>
+        /// <returns>true when the condition is met; otherwise, false.</returns>
         public bool IsAssignableToGenericType(Type genericType)
         {
             ArgumentNullException.ThrowIfNull(source);

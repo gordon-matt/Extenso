@@ -1,17 +1,29 @@
 namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view bar graph column.
+/// </summary>
 public class DataGridViewBarGraphColumn : DataGridViewColumn
 {
+    /// <summary>
+    /// The max value.
+    /// </summary>
     public long MaxValue;
 
     private bool needsRecalc = true;
 
+    /// <summary>
+    /// Initializes a new instance of the DataGridViewBarGraphColumn class.
+    /// </summary>
     public DataGridViewBarGraphColumn()
     {
         this.CellTemplate = new DataGridViewBarGraphCell();
         this.ReadOnly = true;
     }
 
+    /// <summary>
+    /// Performs the calc max value operation.
+    /// </summary>
     public void CalcMaxValue()
     {
         if (needsRecalc)

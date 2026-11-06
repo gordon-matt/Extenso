@@ -2,13 +2,20 @@ using System.ComponentModel;
 
 namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view numeric text box column.
+/// </summary>
 public class DataGridViewNumericTextBoxColumn : DataGridViewColumn
 {
+    /// <summary>
+    /// Initializes a new instance of the DataGridViewNumericTextBoxColumn class.
+    /// </summary>
     public DataGridViewNumericTextBoxColumn()
         : base(new DataGridViewNumericTextBoxCell())
     {
     }
 
+    /// <inheritdoc/>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
@@ -25,6 +32,7 @@ public class DataGridViewNumericTextBoxColumn : DataGridViewColumn
         }
     }
 
+    /// <inheritdoc/>
     public override object Clone()
     {
         var col = (DataGridViewNumericTextBoxColumn)base.Clone();

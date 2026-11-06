@@ -6,8 +6,17 @@ using Newtonsoft.Json;
 
 namespace Extenso.KendoGridBinder.ModelBinder;
 
+/// <summary>
+/// Provides grid helper.
+/// </summary>
 public static class GridHelper
 {
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="queryString">The query string.</param>
+    /// <returns>The t.</returns>
     public static T Parse<T>(NameValueCollection queryString) where T : KendoGridBaseRequest, new() => new()
     {
         Take = queryString.GetQueryValue("take", (int?)null),
@@ -21,6 +30,11 @@ public static class GridHelper
         SortObjects = SortHelper.Parse(queryString)
     };
 
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <param name="jsonRequest">The JSON request.</param>
+    /// <returns>The kendo grid API request.</returns>
     public static KendoGridApiRequest Parse(string jsonRequest)
     {
         var kendoJsonRequest = JsonConvert.DeserializeObject<GridRequest>(jsonRequest);

@@ -2,6 +2,9 @@
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.Foundation;
 
+/// <summary>
+/// Represents the foundation6ui provider.
+/// </summary>
 public class Foundation6UIProvider : BaseUIProvider
 {
     private IAccordionProvider accordionProvider;
@@ -11,16 +14,21 @@ public class Foundation6UIProvider : BaseUIProvider
 
     #region IExtensoUIProvider Members
 
+    /// <inheritdoc/>
     public override IAccordionProvider AccordionProvider => accordionProvider ??= new FoundationAccordionProvider();
 
+    /// <inheritdoc/>
     public override IModalProvider ModalProvider => modalProvider ??= new FoundationModalProvider(this);
 
+    /// <inheritdoc/>
     public override IPanelProvider PanelProvider => panelProvider ??= new FoundationPanelProvider();
 
+    /// <inheritdoc/>
     public override ITabsProvider TabsProvider => tabsProvider ??= new FoundationTabsProvider();
 
     #endregion IExtensoUIProvider Members
 
+    /// <inheritdoc/>
     protected override string GetButtonCssClass(State state) => state switch
     {
         State.Danger => "button alert",

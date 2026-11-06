@@ -21,6 +21,9 @@ namespace Extenso.Windows.Forms.Controls;
 //  the column types most often when working with the DataGridView, and
 //  this one sets the basics and Cell Template values controlling the
 //  default behaviour for cells of this column type.
+/// <summary>
+/// Represents the data grid view masked text box column.
+/// </summary>
 public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
 {
     //CUSTOM CODE
@@ -35,6 +38,9 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  Initializes a new instance of this class, making sure to pass
     //  to its base constructor an instance of a DataGridViewMaskedTextBoxCell
     //  class to use as the basic template.
+    /// <summary>
+    /// Initializes a new instance of the DataGridViewMaskedTextBoxColumn class.
+    /// </summary>
     public DataGridViewMaskedTextBoxColumn() : base(new DataGridViewMaskedTextBoxCell())
     {
     }
@@ -44,6 +50,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //
     //  A DataGridViewMaskedTextBoxCell cell which will serve as the template cell
     //  for this column.
+    /// <inheritdoc/>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override DataGridViewCell CellTemplate
     {
@@ -61,6 +68,9 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
         }
     }
 
+    /// <summary>
+    /// Gets or sets the fore color.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color ForeColor
     {
@@ -77,6 +87,9 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  data in a cell of this type.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is include literals.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool IncludeLiterals
     {
@@ -120,6 +133,9 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //   of the DataGridViewMaskedTextBox for a particular cell programmatically.
     //
     //   See the DataGridViewMaskedTextBox control documentation for more details.
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is include prompt.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual bool IncludePrompt
     {
@@ -164,6 +180,9 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  for entering new data into cells of this type.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    /// <summary>
+    /// Gets or sets the mask.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual string Mask
     {
@@ -208,6 +227,9 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  choose a different one.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    /// <summary>
+    /// Gets or sets the prompt char.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual char PromptChar
     {
@@ -253,6 +275,9 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     //  type.
     //
     //  See the DataGridViewMaskedTextBox control documentation for more details.
+    /// <summary>
+    /// Gets or sets the validating type.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public virtual Type ValidatingType
     {
@@ -292,6 +317,7 @@ public class DataGridViewMaskedTextBoxColumn : DataGridViewColumn
     }
 
     //CUSTOM CODE
+    /// <inheritdoc/>
     public override object Clone()
     {
         var col = (DataGridViewMaskedTextBoxColumn)base.Clone();

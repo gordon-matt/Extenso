@@ -3,10 +3,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
+/// <summary>
+/// Provides extension methods for HTML helpers.
+/// </summary>
 public static class HtmlHelperExtensions
 {
     extension<TModel>(IHtmlHelper<TModel> html)
     {
+        /// <summary>
+        /// Gets the extenso UI.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <returns>The extenso UI.</returns>
         public ExtensoUI<TModel> ExtensoUI(IExtensoUIProvider provider = null)
         {
             if (provider != null)

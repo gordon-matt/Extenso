@@ -3,6 +3,9 @@ using System.Data.OleDb;
 
 namespace Extenso.Data.OleDb;
 
+/// <summary>
+/// Provides ole database type converter.
+/// </summary>
 public static class OleDbTypeConverter
 {
     private static readonly Lazy<HashSet<(OleDbType OleDbType, Type SystemType)>> netTypes;
@@ -130,9 +133,24 @@ public static class OleDbTypeConverter
         ]);
     }
 
+    /// <summary>
+    /// Converts the value to the system type.
+    /// </summary>
+    /// <param name="oleDbType">The ole database type.</param>
+    /// <returns>The system type.</returns>
     public static Type ToSystemType(OleDbType oleDbType) => netTypes.Value.First(x => x.OleDbType == oleDbType).SystemType;
 
+    /// <summary>
+    /// Converts the value to the database type.
+    /// </summary>
+    /// <param name="oleDbType">The ole database type.</param>
+    /// <returns>The database type.</returns>
     public static DbType ToDbType(OleDbType oleDbType) => dbTypes.Value.First(x => x.OleDbType == oleDbType).DbType;
 
+    /// <summary>
+    /// Converts the value to the SQL database type.
+    /// </summary>
+    /// <param name="oleDbType">The ole database type.</param>
+    /// <returns>The SQL database type.</returns>
     public static SqlDbType ToSqlDbType(OleDbType oleDbType) => sqlDbTypes.Value.First(x => x.OleDbType == oleDbType).SqlDbType;
 }

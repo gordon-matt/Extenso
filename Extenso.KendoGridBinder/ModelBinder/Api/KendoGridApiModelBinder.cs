@@ -5,8 +5,16 @@ using Microsoft.AspNetCore.WebUtilities;
 // ReSharper disable once CheckNamespace
 namespace Extenso.KendoGridBinder.ModelBinder.Api;
 
+/// <summary>
+/// Represents the kendo grid API model binder.
+/// </summary>
 public class KendoGridApiModelBinder : IModelBinder
 {
+    /// <summary>
+    /// Binds the model.
+    /// </summary>
+    /// <param name="bindingContext">The binding context.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task BindModelAsync(ModelBindingContext bindingContext)
     {
         if (bindingContext == null)

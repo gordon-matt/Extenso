@@ -7,17 +7,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Represents the read only entity framework repository.
+/// </summary>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public class ReadOnlyEntityFrameworkRepository<TEntity> : IReadOnlyRepository<TEntity>, IEntityFrameworkRepository
     where TEntity : class, IEntity
 {
     #region Non-Public Members
 
+    /// <summary>
+    /// The context factory.
+    /// </summary>
     protected IDbContextFactory contextFactory;
 
     #endregion Non-Public Members
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the ReadOnlyEntityFrameworkRepository class.
+    /// </summary>
+    /// <param name="contextFactory">The context factory.</param>
     public ReadOnlyEntityFrameworkRepository(IDbContextFactory contextFactory)
     {
         this.contextFactory = contextFactory;
@@ -47,6 +58,12 @@ public class ReadOnlyEntityFrameworkRepository<TEntity> : IReadOnlyRepository<TE
         return new EntityFrameworkRepositoryConnection<TEntity>(otherConnection.Context, false);
     }
 
+    /// <summary>
+    /// Gets the stream.
+    /// </summary>
+    /// <param name="options">The options.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>The stream.</returns>
     public virtual async IAsyncEnumerable<TEntity> StreamAsync(
         SearchOptions<TEntity> options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -305,6 +322,12 @@ public class ReadOnlyEntityFrameworkRepository<TEntity> : IReadOnlyRepository<TE
 
     #endregion IEntityFrameworkRepository<TEntity> Members
 
+    /// <summary>
+    /// Builds the base query.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="options">The options.</param>
+    /// <returns>The base query.</returns>
     protected IQueryable<TEntity> BuildBaseQuery(DbContext context, SearchOptions<TEntity> options)
     {
         var query = context.Set<TEntity>().AsNoTracking();
@@ -354,8 +377,21 @@ public class ReadOnlyEntityFrameworkRepository<TEntity> : IReadOnlyRepository<TE
         return query;
     }
 
+    /// <summary>
+    /// Applies the mandatory filters.
+    /// </summary>
+    /// <param name="predicate">The predicate to apply.</param>
+    /// <param name="filters">The filters.</param>
+    /// <returns>The mandatory filters.</returns>
     protected virtual Expression<Func<TEntity, bool>> ApplyMandatoryFilters(Expression<Func<TEntity, bool>> predicate, IDictionary<string, object> filters) => predicate;
 
+    /// <summary>
+    /// Applies the paging.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="query">The query.</param>
+    /// <param name="options">The options.</param>
+    /// <returns>The paging.</returns>
     protected static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TEntity> options)
     {
         if (options.PageSize > 0 && options.PageNumber > 0)

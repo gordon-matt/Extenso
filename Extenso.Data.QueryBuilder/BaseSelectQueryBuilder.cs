@@ -7,34 +7,84 @@ using Extenso.Reflection;
 
 namespace Extenso.Data.QueryBuilder;
 
+/// <summary>
+/// Represents the base select query builder.
+/// </summary>
 public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
 {
     #region Non-Public Members
 
+    /// <summary>
+    /// The group by columns.
+    /// </summary>
     protected readonly ICollection<string> groupByColumns = [];
+    /// <summary>
+    /// The selected columns.
+    /// </summary>
     protected readonly IDictionary<string, string> selectedColumns = new Dictionary<string, string>();
+    /// <summary>
+    /// The having statement.
+    /// </summary>
     protected WhereStatement havingStatement = [];
+    /// <summary>
+    /// The is distinct.
+    /// </summary>
     protected bool isDistinct;
+    /// <summary>
+    /// The joins.
+    /// </summary>
     protected ICollection<JoinClause> joins = [];
+    /// <summary>
+    /// The order by statement.
+    /// </summary>
     protected ICollection<OrderByClause> orderByStatement = [];
+    /// <summary>
+    /// The order by literal.
+    /// </summary>
     protected string orderByLiteral;
+    /// <summary>
+    /// The selected tables.
+    /// </summary>
     protected ICollection<string> selectedTables = [];
+    /// <summary>
+    /// The where statement.
+    /// </summary>
     protected WhereStatement whereStatement = [];
+    /// <summary>
+    /// The table aliases.
+    /// </summary>
     protected IDictionary<string, string> tableAliases = new Dictionary<string, string>();
 
+    /// <summary>
+    /// The skip count.
+    /// </summary>
     protected int skipCount;
+    /// <summary>
+    /// The take count.
+    /// </summary>
     protected int takeCount;
 
     #endregion Non-Public Members
 
     #region Public Methods
 
+    /// <summary>
+    /// Selects the all.
+    /// </summary>
+    /// <returns>The all.</returns>
     public virtual ISelectQueryBuilder SelectAll()
     {
         selectedColumns.Clear();
         return this;
     }
 
+    /// <summary>
+    /// Selects as.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="column">The column.</param>
+    /// <param name="alias">The alias.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder SelectAs(string tableName, string column, string alias)
     {
         //selectedColumns.Clear();
@@ -43,6 +93,12 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Selects the value.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="columns">The columns.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Select(string tableName, params ReadOnlySpan<string> columns)
     {
         selectedColumns.Clear();
@@ -54,6 +110,11 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Selects the value.
+    /// </summary>
+    /// <param name="columns">The columns.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Select(IEnumerable<TableColumnPair> columns)
     {
         selectedColumns.Clear();
@@ -64,12 +125,21 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Selects the value.
+    /// </summary>
+    /// <param name="literal">The literal.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Select(SqlLiteral literal)
     {
         selectedColumns.Add(literal.Value, null);
         return this;
     }
 
+    /// <summary>
+    /// Selects the count all.
+    /// </summary>
+    /// <returns>The count all.</returns>
     public virtual ISelectQueryBuilder SelectCountAll()
     {
         selectedColumns.Clear();
@@ -77,12 +147,22 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Gets the distinct.
+    /// </summary>
+    /// <param name="isDistinct">The is distinct.</param>
+    /// <returns>The distinct.</returns>
     public virtual ISelectQueryBuilder Distinct(bool isDistinct = true)
     {
         this.isDistinct = isDistinct;
         return this;
     }
 
+    /// <summary>
+    /// Creates a value from the value.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder From(string tableName)
     {
         selectedTables.Clear();
@@ -90,6 +170,11 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Creates a value from the value.
+    /// </summary>
+    /// <param name="tableNames">The table names.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder From(params ReadOnlySpan<string> tableNames)
     {
         selectedTables.Clear();
@@ -100,6 +185,16 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Joins the value.
+    /// </summary>
+    /// <param name="joinType">The join type.</param>
+    /// <param name="toTableName">The to table name.</param>
+    /// <param name="toColumnName">The to column name.</param>
+    /// <param name="comparisonOperator">The comparison operator.</param>
+    /// <param name="fromTableName">The from table name.</param>
+    /// <param name="fromColumnName">The from column name.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Join(
         JoinType joinType,
         string toTableName,
@@ -120,6 +215,15 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Wheres the value.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="column">The column.</param>
+    /// <param name="comparisonOperator">The comparison operator.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="logicOperator">The logic operator.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Where(string tableName, string column, ComparisonOperator comparisonOperator, object value, LogicOperator logicOperator = LogicOperator.And)
     {
         var whereClause = new WhereClause(
@@ -133,42 +237,81 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Wheres the value.
+    /// </summary>
+    /// <param name="whereClause">The where clause.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Where(WhereClause whereClause)
     {
         whereStatement.AddClause(whereClause);
         return this;
     }
 
+    /// <summary>
+    /// Wheres the value.
+    /// </summary>
+    /// <param name="whereStatement">The where statement.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Where(WhereStatement whereStatement)
     {
         this.whereStatement = whereStatement;
         return this;
     }
 
+    /// <summary>
+    /// Wheres the value.
+    /// </summary>
+    /// <param name="literal">The literal.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Where(string literal)
     {
         whereStatement = WhereStatement.CreateFromLiteral(literal);
         return this;
     }
 
+    /// <summary>
+    /// Orders by.
+    /// </summary>
+    /// <param name="column">The column.</param>
+    /// <param name="order">The order.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder OrderBy(string column, SortDirection order)
     {
         orderByStatement.Add(new OrderByClause(EncloseIdentifier(column), order));
         return this;
     }
 
+    /// <summary>
+    /// Orders by.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="column">The column.</param>
+    /// <param name="order">The order.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder OrderBy(string tableName, string column, SortDirection order)
     {
         orderByStatement.Add(new OrderByClause(CreateFieldName(tableName, column), order));
         return this;
     }
 
+    /// <summary>
+    /// Orders by.
+    /// </summary>
+    /// <param name="literal">The literal.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder OrderBy(string literal)
     {
         orderByLiteral = literal;
         return this;
     }
 
+    /// <summary>
+    /// Gets the group by.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="columns">The columns.</param>
+    /// <returns>The group by.</returns>
     public virtual ISelectQueryBuilder GroupBy(string tableName, params ReadOnlySpan<string> columns)
     {
         string enclosedTableName = EncloseTable(tableName);
@@ -179,6 +322,11 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Gets the group by.
+    /// </summary>
+    /// <param name="columns">The columns.</param>
+    /// <returns>The group by.</returns>
     public virtual ISelectQueryBuilder GroupBy(IEnumerable<TableColumnPair> columns)
     {
         foreach (var column in columns)
@@ -188,6 +336,15 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Gets the having.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="column">The column.</param>
+    /// <param name="comparisonOperator">The comparison operator.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="logicOperator">The logic operator.</param>
+    /// <returns>The having.</returns>
     public virtual ISelectQueryBuilder Having(string tableName, string column, ComparisonOperator comparisonOperator, object value, LogicOperator logicOperator = LogicOperator.And)
     {
         var whereClause = new WhereClause(
@@ -201,52 +358,103 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Gets the having.
+    /// </summary>
+    /// <param name="whereClause">The where clause.</param>
+    /// <returns>The having.</returns>
     public virtual ISelectQueryBuilder Having(WhereClause whereClause)
     {
         havingStatement.AddClause(whereClause);
         return this;
     }
 
+    /// <summary>
+    /// Gets the having.
+    /// </summary>
+    /// <param name="havingStatement">The having statement.</param>
+    /// <returns>The having.</returns>
     public virtual ISelectQueryBuilder Having(WhereStatement havingStatement)
     {
         this.havingStatement = havingStatement;
         return this;
     }
 
+    /// <summary>
+    /// Gets the having.
+    /// </summary>
+    /// <param name="literal">The literal.</param>
+    /// <returns>The having.</returns>
     public virtual ISelectQueryBuilder Having(string literal)
     {
         havingStatement = WhereStatement.CreateFromLiteral(literal);
         return this;
     }
 
+    /// <summary>
+    /// Skips the value.
+    /// </summary>
+    /// <param name="count">The count.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Skip(int count)
     {
         skipCount = count;
         return this;
     }
 
+    /// <summary>
+    /// Takes the value.
+    /// </summary>
+    /// <param name="count">The count.</param>
+    /// <returns>The i select query builder.</returns>
     public virtual ISelectQueryBuilder Take(int count)
     {
         takeCount = count;
         return this;
     }
 
+    /// <summary>
+    /// Builds the query.
+    /// </summary>
+    /// <returns>The query.</returns>
     public abstract string BuildQuery();
 
     #endregion Public Methods
 
     #region Non-Public Methods
 
+    /// <summary>
+    /// Gets the enclose identifier.
+    /// </summary>
+    /// <param name="identifier">The identifier.</param>
+    /// <returns>The enclose identifier.</returns>
     protected abstract string EncloseIdentifier(string identifier);
 
+    /// <summary>
+    /// Gets the enclose table.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <returns>The enclose table.</returns>
     protected virtual string EncloseTable(string tableName) =>
         tableName.Contains('.')
             ? string.Join(".", tableName.Split('.').Select(EncloseIdentifier))
             : EncloseIdentifier(tableName);
 
+    /// <summary>
+    /// Creates the field name.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="column">The column.</param>
+    /// <returns>The field name.</returns>
     protected virtual string CreateFieldName(string tableName, string column) =>
         $"{EncloseTable(tableName)}.{EncloseIdentifier(column)}";
 
+    /// <summary>
+    /// Creates the where statement.
+    /// </summary>
+    /// <param name="statement">The statement.</param>
+    /// <param name="isHaving">The is having.</param>
+    /// <returns>The where statement.</returns>
     protected virtual string CreateWhereStatement(WhereStatement statement, bool isHaving)
     {
         if (!string.IsNullOrEmpty(statement.Literal))
@@ -269,6 +477,12 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         }
     }
 
+    /// <summary>
+    /// Creates the where clause.
+    /// </summary>
+    /// <param name="clause">The clause.</param>
+    /// <param name="sb">The sb.</param>
+    /// <param name="isFirst">The is first.</param>
     protected virtual void CreateWhereClause(WhereClause clause, StringBuilder sb, bool isFirst)
     {
         if (!isFirst)
@@ -317,6 +531,14 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         sb.Append(' ');
     }
 
+    /// <summary>
+    /// Creates the comparison clause.
+    /// </summary>
+    /// <param name="tableName">The table name.</param>
+    /// <param name="columnName">The column name.</param>
+    /// <param name="comparisonOperator">The comparison operator.</param>
+    /// <param name="value">The value.</param>
+    /// <returns>The comparison clause.</returns>
     protected virtual string CreateComparisonClause(string tableName, string columnName, ComparisonOperator comparisonOperator, object value)
     {
         string fieldName = CreateFieldName(tableName, columnName);
@@ -382,6 +604,11 @@ public abstract class BaseSelectQueryBuilder : ISelectQueryBuilder
         return output;
     }
 
+    /// <summary>
+    /// Formats the SQL value.
+    /// </summary>
+    /// <param name="someValue">The some value.</param>
+    /// <returns>The SQL value.</returns>
     protected virtual string FormatSQLValue(object someValue)
     {
         string formattedValue = string.Empty;

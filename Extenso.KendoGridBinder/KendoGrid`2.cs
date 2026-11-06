@@ -7,17 +7,42 @@ using Extenso.KendoGridBinder.Validations;
 
 namespace Extenso.KendoGridBinder;
 
+/// <summary>
+/// Represents the kendo grid.
+/// </summary>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
+/// <typeparam name="TViewModel">The type of the view model.</typeparam>
 public class KendoGrid<TEntity, TViewModel>
 {
     private readonly Func<IQueryable<TEntity>, IEnumerable<TViewModel>> _conversion;
     private readonly Dictionary<string, MapExpression<TEntity>> _mappings;
     private readonly IQueryable<TEntity> _query;
 
+    /// <summary>
+    /// Gets or sets the groups.
+    /// </summary>
     public object Groups { get; set; }
+    /// <summary>
+    /// Gets or sets the data.
+    /// </summary>
     public IEnumerable<TViewModel> Data { get; set; }
+    /// <summary>
+    /// Gets or sets the aggregates.
+    /// </summary>
     public object Aggregates { get; set; }
+    /// <summary>
+    /// Gets or sets the total.
+    /// </summary>
     public int Total { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the KendoGrid class.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <param name="query">The query.</param>
+    /// <param name="mappings">The mappings.</param>
+    /// <param name="conversion">The conversion.</param>
+    /// <param name="includes">The includes.</param>
     public KendoGrid(
          KendoGridBaseRequest request,
          IQueryable<TEntity> query,
@@ -74,6 +99,11 @@ public class KendoGrid<TEntity, TViewModel>
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the KendoGrid class.
+    /// </summary>
+    /// <param name="list">The list.</param>
+    /// <param name="totalCount">The total count.</param>
     protected KendoGrid(IEnumerable<TViewModel> list, int totalCount)
     {
         Guard.NotNull(list, nameof(list));
@@ -82,6 +112,10 @@ public class KendoGrid<TEntity, TViewModel>
         Total = totalCount;
     }
 
+    /// <summary>
+    /// Returns the value as the queryable.
+    /// </summary>
+    /// <returns>The queryable.</returns>
     public IQueryable<TEntity> AsQueryable() => _query;
 
     private IQueryable<TEntity> ApplyFiltering(IQueryable<TEntity> query, FilterObjectWrapper filter)
@@ -129,6 +163,13 @@ public class KendoGrid<TEntity, TViewModel>
         return aggregates;
     }
 
+    /// <summary>
+    /// Applies the grouping and sorting.
+    /// </summary>
+    /// <param name="query">The query.</param>
+    /// <param name="includes">The includes.</param>
+    /// <param name="request">The request.</param>
+    /// <returns>The grouping and sorting.</returns>
     protected IEnumerable<KendoGroup> ApplyGroupingAndSorting(IQueryable<TEntity> query, IList<string> includes, KendoGridBaseRequest request)
     {
         bool hasAggregates = request.GroupObjects.Any(g => g.AggregateObjects.Any());
@@ -248,6 +289,11 @@ public class KendoGrid<TEntity, TViewModel>
         kendoGroups.Add(kendoGroup);
     }
 
+    /// <summary>
+    /// Gets the sorting.
+    /// </summary>
+    /// <param name="sortObjects">The sort objects.</param>
+    /// <returns>The sorting.</returns>
     protected string GetSorting(IEnumerable<SortObject> sortObjects)
     {
         if (sortObjects == null)
@@ -259,6 +305,11 @@ public class KendoGrid<TEntity, TViewModel>
         return expression.Length > 1 ? expression : null;
     }
 
+    /// <summary>
+    /// Gets the filtering.
+    /// </summary>
+    /// <param name="filter">The filter.</param>
+    /// <returns>The filtering.</returns>
     protected string GetFiltering(FilterObjectWrapper filter)
     {
         string finalExpression = string.Empty;
@@ -290,7 +341,17 @@ public class KendoGrid<TEntity, TViewModel>
         return finalExpression.Length == 0 ? "true" : finalExpression;
     }
 
+    /// <summary>
+    /// Maps the fieldfrom view modelto entity.
+    /// </summary>
+    /// <param name="field">The field.</param>
+    /// <returns>The fieldfrom view modelto entity.</returns>
     protected string MapFieldfromViewModeltoEntity(string field) => _mappings != null && field != null && _mappings.ContainsKey(field) ? _mappings[field].Path : field;
 
+    /// <summary>
+    /// Maps the fieldfrom entityto view model.
+    /// </summary>
+    /// <param name="field">The field.</param>
+    /// <returns>The fieldfrom entityto view model.</returns>
     protected string MapFieldfromEntitytoViewModel(string field) => _mappings != null && field != null && _mappings.Any(m => m.Value.Path == field) ? _mappings.First(kvp => kvp.Value.Path == field).Key : field;
 }

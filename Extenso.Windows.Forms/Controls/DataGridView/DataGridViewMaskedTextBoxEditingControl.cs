@@ -20,24 +20,43 @@ namespace Extenso.Windows.Forms.Controls;
 //  Identifies the editing control for the DataGridViewMaskedTextBox column type.  It
 //  isn't too much different from a regular DataGridViewMaskedTextBox control,
 //  except that it implements the IDataGridViewEditingControl interface.
+/// <summary>
+/// Represents the data grid view masked text box editing control.
+/// </summary>
 [ToolboxItem(false)]
 public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridViewEditingControl
 {
+    /// <summary>
+    /// The data grid view.
+    /// </summary>
     protected DataGridView dataGridView;
+    /// <summary>
+    /// The row index.
+    /// </summary>
     protected int rowIndex;
+    /// <summary>
+    /// The value changed.
+    /// </summary>
     protected bool valueChanged = false;
 
+    /// <summary>
+    /// Initializes a new instance of the DataGridViewMaskedTextBoxEditingControl class.
+    /// </summary>
     public DataGridViewMaskedTextBoxEditingControl()
     {
     }
 
     //  Notify DataGridView that the value has changed.
+    /// <summary>
+    /// Notifies the data grid view of value change.
+    /// </summary>
     protected virtual void NotifyDataGridViewOfValueChange()
     {
         this.valueChanged = true;
         this.dataGridView?.NotifyCurrentCellDirty(true);
     }
 
+    /// <inheritdoc/>
     protected override void OnTextChanged(EventArgs e)
     {
         base.OnTextChanged(e);
@@ -48,6 +67,9 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     #region IDataGridViewEditingControl Members
 
     //  Returns or sets the parent DataGridView.
+    /// <summary>
+    /// Gets or sets the editing control data grid view.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public DataGridView EditingControlDataGridView
     {
@@ -56,6 +78,9 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     }
 
     //  Sets/Gets the formatted value contents of this cell.
+    /// <summary>
+    /// Gets or sets the editing control formatted value.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public object EditingControlFormattedValue
     {
@@ -70,6 +95,9 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     //  Indicates the row index of this cell.  This is often -1 for the
     //  template cell, but for other cells, might actually have a value
     //  greater than or equal to zero.
+    /// <summary>
+    /// Gets or sets the editing control row index.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int EditingControlRowIndex
     {
@@ -78,6 +106,9 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     }
 
     //  Gets or sets our flag indicating whether the value has changed.
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is editing control value changed.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool EditingControlValueChanged
     {
@@ -87,16 +118,26 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
 
     //  Indicates the cursor that should be shown when the user hovers their
     //  mouse over this cell when the editing control is shown.
+    /// <summary>
+    /// Gets the editing panel cursor.
+    /// </summary>
     public Cursor EditingPanelCursor => Cursors.IBeam;
 
     //  Indicates whether or not the parent DataGridView control should
     //  reposition the editing control every time value change is indicated.
     //  There is no need to do this for the DataGridViewMaskedTextBox.
+    /// <summary>
+    /// Gets a value indicating whether this instance is reposition editing control on value change.
+    /// </summary>
     public bool RepositionEditingControlOnValueChange => false;
 
     //  Make the DataGridViewMaskedTextBox control match the style and colors of
     //  the host DataGridView control and other editing controls
     //  before showing the editing control.
+    /// <summary>
+    /// Applies the cell style to editing control.
+    /// </summary>
+    /// <param name="dataGridViewCellStyle">The data grid view cell style.</param>
     public void ApplyCellStyleToEditingControl(DataGridViewCellStyle dataGridViewCellStyle)
     {
         this.Font = dataGridViewCellStyle.Font;
@@ -110,6 +151,12 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     //  Process input key and determine if the key should be used for the editing control
     //  or allowed to be processed by the grid. Handle cursor movement keys for the DataGridViewMaskedTextBox
     //  control; otherwise if the DataGridView doesn't want the input key then let the editing control handle it.
+    /// <summary>
+    /// Gets the editing control wants input key.
+    /// </summary>
+    /// <param name="keyData">The key data.</param>
+    /// <param name="dataGridViewWantsInputKey">The data grid view wants input key.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public bool EditingControlWantsInputKey(Keys keyData, bool dataGridViewWantsInputKey)
     {
         switch (keyData & Keys.KeyCode)
@@ -169,9 +216,18 @@ public class DataGridViewMaskedTextBoxEditingControl : MaskedTextBox, IDataGridV
     }
 
     //   Get the value of the editing control for formatting.
+    /// <summary>
+    /// Gets the editing control formatted value.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns>The editing control formatted value.</returns>
     public object GetEditingControlFormattedValue(DataGridViewDataErrorContexts context) => this.Text;
 
     //  Prepare the editing control for edit.
+    /// <summary>
+    /// Prepares the editing control for edit.
+    /// </summary>
+    /// <param name="selectAll">The select all.</param>
     public void PrepareEditingControlForEdit(bool selectAll)
     {
         if (selectAll)

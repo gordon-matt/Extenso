@@ -5,8 +5,16 @@ using Newtonsoft.Json;
 
 namespace Extenso.KendoGridBinder.ModelBinder;
 
+/// <summary>
+/// Provides filter helper.
+/// </summary>
 public static class FilterHelper
 {
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <param name="queryString">The query string.</param>
+    /// <returns>The filter object wrapper.</returns>
     public static FilterObjectWrapper Parse(NameValueCollection queryString)
     {
         // If there is a filter query parameter, try to parse the value as json
@@ -71,6 +79,11 @@ public static class FilterHelper
     }
     */
 
+    /// <summary>
+    /// Maps the root filter.
+    /// </summary>
+    /// <param name="mainFilter">The main filter.</param>
+    /// <returns>The root filter.</returns>
     public static FilterObjectWrapper MapRootFilter(Filter mainFilter)
     {
         if (mainFilter != null)
@@ -116,6 +129,11 @@ public static class FilterHelper
     };
 
     // "filter":{"logic":"and","filters":[{"field":"LastName","operator":"contains","value":"s"}]}
+    /// <summary>
+    /// Gets the filter objects.
+    /// </summary>
+    /// <param name="filterAsJson">The filter as JSON.</param>
+    /// <returns>The filter objects.</returns>
     public static FilterObjectWrapper GetFilterObjects(string filterAsJson)
     {
         var parseResult = JsonConvert.DeserializeObject<Filter>(filterAsJson);

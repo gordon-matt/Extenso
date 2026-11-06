@@ -2,6 +2,9 @@
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI;
 
+/// <summary>
+/// Represents the kendo bootstrap3ui provider.
+/// </summary>
 public class KendoBootstrap3UIProvider : Bootstrap3UIProvider
 {
     private IAccordionProvider accordionProvider;
@@ -10,14 +13,18 @@ public class KendoBootstrap3UIProvider : Bootstrap3UIProvider
 
     #region IExtensoUIProvider Members
 
+    /// <inheritdoc/>
     public override IAccordionProvider AccordionProvider => accordionProvider ??= new KendoUIAccordionProvider(this);
 
+    /// <inheritdoc/>
     public override IModalProvider ModalProvider => modalProvider ??= new KendoUIModalProvider(this);
 
+    /// <inheritdoc/>
     public override ITabsProvider TabsProvider => tabsProvider ??= new KendoUITabsProvider(this);
 
     #endregion IExtensoUIProvider Members
 
+    /// <inheritdoc/>
     protected override string GetButtonCssClass(State state) => state switch
     {
         State.Primary => "k-primary k-button",

@@ -5,10 +5,18 @@ using Newtonsoft.Json;
 
 namespace Extenso.KendoGridBinder.ModelBinder;
 
+/// <summary>
+/// Provides aggregate helper.
+/// </summary>
 public static class AggregateHelper
 {
     private static readonly Regex AggregateRegex = new(@"^aggregate\[(\d*)\]\[(field|aggregate)\]$", RegexOptions.IgnoreCase);
 
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <param name="queryString">The query string.</param>
+    /// <returns>The aggregate objects.</returns>
     public static IEnumerable<AggregateObject> Parse(NameValueCollection queryString)
     {
         // If there is a aggregates query parameter, try to parse the value as json
@@ -29,6 +37,11 @@ public static class AggregateHelper
         return null;
     }
 
+    /// <summary>
+    /// Maps the value.
+    /// </summary>
+    /// <param name="aggregates">The aggregates.</param>
+    /// <returns>The aggregate objects.</returns>
     public static IEnumerable<AggregateObject> Map(IEnumerable<AggregateObject> aggregates)
     {
         if (aggregates == null)

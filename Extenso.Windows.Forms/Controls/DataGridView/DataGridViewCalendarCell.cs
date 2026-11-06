@@ -1,7 +1,13 @@
 ﻿namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view calendar cell.
+/// </summary>
 public class DataGridViewCalendarCell : DataGridViewTextBoxCell
 {
+    /// <summary>
+    /// Initializes a new instance of the DataGridViewCalendarCell class.
+    /// </summary>
     public DataGridViewCalendarCell() : base()
     {
         switch (DataGridViewCalendarColumnDateFormat.DateTimePickerFormat)
@@ -30,18 +36,22 @@ public class DataGridViewCalendarCell : DataGridViewTextBoxCell
         }
     }
 
+    /// <inheritdoc/>
     public override object DefaultNewRowValue
         // Use the current date and time as the default value.
         => null;
 
+    /// <inheritdoc/>
     public override Type EditType
         // Return the type of the editing contol that CalendarCell uses.
         => typeof(DataGridViewCalendarEditingControl);
 
+    /// <inheritdoc/>
     public override Type ValueType
         // Return the type of the value that CalendarCell contains.
         => typeof(DateTime);
 
+    /// <inheritdoc/>
     public override void InitializeEditingControl(int rowIndex, object initialFormattedValue,
                                 DataGridViewCellStyle dataGridViewCellStyle)
     {

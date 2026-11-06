@@ -3,14 +3,30 @@ using Extenso.Windows.Forms.Win32;
 
 namespace Extenso.Windows.Forms;
 
+/// <summary>
+/// Provides extension methods for web browsers.
+/// </summary>
 public static class WebBrowserExtensions
 {
     extension(WebBrowser webBrowser)
     {
+        /// <summary>
+        /// Gets the screenshot.
+        /// </summary>
+        /// <returns>The screenshot.</returns>
         public Bitmap GetScreenshot() => webBrowser.GetScreenshot(null);
 
+        /// <summary>
+        /// Gets the screenshot.
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns>The screenshot.</returns>
         public Bitmap GetScreenshot(Size? size) => webBrowser.GenerateScreenshot(size);
 
+        /// <summary>
+        /// Saves the screenshot.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
         public void SaveScreenshot(string fileName)
         {
             new DirectoryInfo(Path.GetDirectoryName(fileName)).EnsureExists();
@@ -18,6 +34,11 @@ public static class WebBrowserExtensions
             screenshot.Save(fileName);
         }
 
+        /// <summary>
+        /// Saves the screenshot.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="imageFormat">The image format.</param>
         public void SaveScreenshot(string fileName, ImageFormat imageFormat)
         {
             new DirectoryInfo(Path.GetDirectoryName(fileName)).EnsureExists();
@@ -25,6 +46,11 @@ public static class WebBrowserExtensions
             screenshot.Save(fileName, imageFormat);
         }
 
+        /// <summary>
+        /// Saves the screenshot.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="size">The size.</param>
         public void SaveScreenshot(string fileName, Size? size)
         {
             new DirectoryInfo(Path.GetDirectoryName(fileName)).EnsureExists();
@@ -32,6 +58,12 @@ public static class WebBrowserExtensions
             screenshot.Save(fileName);
         }
 
+        /// <summary>
+        /// Saves the screenshot.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="size">The size.</param>
+        /// <param name="imageFormat">The image format.</param>
         public void SaveScreenshot(string fileName, Size? size, ImageFormat imageFormat)
         {
             new DirectoryInfo(Path.GetDirectoryName(fileName)).EnsureExists();

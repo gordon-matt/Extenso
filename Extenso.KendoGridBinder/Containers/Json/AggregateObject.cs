@@ -8,13 +8,22 @@ namespace Extenso.KendoGridBinder.Containers.Json;
 [DataContract(Name = "aggregate")]
 public class AggregateObject
 {
+    /// <summary>
+    /// Gets or sets the field.
+    /// </summary>
     [DataMember(Name = "field")]
     public string Field { get; set; }
 
+    /// <summary>
+    /// Gets or sets the aggregate.
+    /// </summary>
     [DataMember(Name = "aggregate")]
     public string Aggregate { get; set; }
 
     // TODO : is this used/supported ?
+    /// <summary>
+    /// Gets or sets the direction.
+    /// </summary>
     [DataMember(Name = "dir")]
     public string Direction { get; set; }
 

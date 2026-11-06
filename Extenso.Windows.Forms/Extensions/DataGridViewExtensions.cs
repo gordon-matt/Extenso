@@ -1,5 +1,8 @@
 ﻿namespace Extenso.Windows.Forms;
 
+/// <summary>
+/// Provides extension methods for data grid views.
+/// </summary>
 public static class DataGridViewExtensions
 {
     extension(DataGridView dataGridView)

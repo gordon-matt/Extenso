@@ -1,5 +1,8 @@
 ﻿namespace Extenso.Windows.Forms;
 
+/// <summary>
+/// Provides extension methods for directory infos.
+/// </summary>
 public static class DirectoryInfoExtensions
 {
     extension(DirectoryInfo directoryInfo)

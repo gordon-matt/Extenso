@@ -3,10 +3,18 @@ using Extenso.Reflection;
 
 namespace Extenso.Data;
 
+/// <summary>
+/// Provides extension methods for data columns.
+/// </summary>
 public static class DataColumnExtensions
 {
     extension(DataColumn column)
     {
+        /// <summary>
+        /// Gets the change data type.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>true when the condition is met; otherwise, false.</returns>
         public bool ChangeDataType<T>()
         {
             string temp = "_1_TEMP_1_";
@@ -72,6 +80,12 @@ public static class DataColumnExtensions
             return true;
         }
 
+        /// <summary>
+        /// Performs the change data type operation.
+        /// </summary>
+        /// <typeparam name="TFrom">The type of the from.</typeparam>
+        /// <typeparam name="TTo">The type of the to.</typeparam>
+        /// <param name="convert">The convert.</param>
         public void ChangeDataType<TFrom, TTo>(Func<TFrom, TTo> convert)
         {
             string temp = "_1_TEMP_1_";
@@ -92,6 +106,10 @@ public static class DataColumnExtensions
             newColumn.SetOrdinal(ordinal);
         }
 
+        /// <summary>
+        /// Gets the column length.
+        /// </summary>
+        /// <returns>The column length.</returns>
         public int ColumnLength()
         {
             int length = 0;

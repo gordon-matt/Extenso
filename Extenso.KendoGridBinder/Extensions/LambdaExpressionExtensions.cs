@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace Extenso.KendoGridBinder.Extensions;
 
+/// <summary>
+/// Provides extension methods for lambda expressions.
+/// </summary>
 public static class LambdaExpressionExtensions
 {
     extension(LambdaExpression expression)

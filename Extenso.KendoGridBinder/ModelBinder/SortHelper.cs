@@ -5,8 +5,16 @@ using Newtonsoft.Json;
 
 namespace Extenso.KendoGridBinder.ModelBinder;
 
+/// <summary>
+/// Provides sort helper.
+/// </summary>
 public static class SortHelper
 {
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <param name="queryString">The query string.</param>
+    /// <returns>The sort objects.</returns>
     public static IEnumerable<SortObject> Parse(NameValueCollection queryString)
     {
         // If there is a sort query parameter, try to parse the value as json
@@ -34,8 +42,19 @@ public static class SortHelper
         return result != null ? Map(result) : null;
     }
 
+    /// <summary>
+    /// Maps the value.
+    /// </summary>
+    /// <param name="sort">The sort.</param>
+    /// <returns>The sort objects.</returns>
     public static IEnumerable<SortObject> Map(IEnumerable<Sort> sort) => sort?.Select(s => new SortObject(s.Field, s.Dir));
 
+    /// <summary>
+    /// Gets the sort objects.
+    /// </summary>
+    /// <param name="queryValues">The query values.</param>
+    /// <param name="sortKeys">The sort keys.</param>
+    /// <returns>The sort objects.</returns>
     public static IEnumerable<SortObject> GetSortObjects(NameValueCollection queryValues, IEnumerable<string> sortKeys)
     {
         var list = new List<SortObject>();

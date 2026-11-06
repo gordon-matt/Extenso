@@ -13,15 +13,30 @@ namespace Extenso.Data.QueryBuilder;
 [DebuggerDisplay("{FieldName} {SortDirection}")]
 public struct OrderByClause
 {
+    /// <summary>
+    /// The field name.
+    /// </summary>
     public string FieldName;
+    /// <summary>
+    /// The sort direction.
+    /// </summary>
     public SortDirection SortDirection;
 
+    /// <summary>
+    /// Initializes a new instance of the OrderByClause class.
+    /// </summary>
+    /// <param name="field">The field.</param>
     public OrderByClause(string field)
     {
         FieldName = field;
         SortDirection = SortDirection.Ascending;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the OrderByClause class.
+    /// </summary>
+    /// <param name="field">The field.</param>
+    /// <param name="order">The order.</param>
     public OrderByClause(string field, SortDirection order)
     {
         FieldName = field;

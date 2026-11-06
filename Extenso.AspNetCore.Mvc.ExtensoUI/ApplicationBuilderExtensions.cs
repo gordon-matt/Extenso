@@ -9,10 +9,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
+/// <summary>
+/// Provides extension methods for application builders.
+/// </summary>
 public static class ApplicationBuilderExtensions
 {
     extension(IApplicationBuilder app)
     {
+        /// <summary>
+        /// Uses the extenso UI.
+        /// </summary>
+        /// <typeparam name="TProvider">The type of the provider.</typeparam>
         public void UseExtensoUI<TProvider>()
             where TProvider : BaseUIProvider, new()
         {

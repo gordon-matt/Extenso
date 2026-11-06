@@ -28,6 +28,11 @@ public static class FileInfoExtensions
         public string BrotliCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal)
             => source.Compress(CompressionAlgorithm.Brotli, compressionLevel);
 
+        /// <summary>
+        /// Gets the brotli compress.
+        /// </summary>
+        /// <param name="compressionLevel">The compression level.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the string.</returns>
         public async Task<string> BrotliCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal)
             => await source.CompressAsync(CompressionAlgorithm.Brotli, compressionLevel);
 
@@ -38,6 +43,10 @@ public static class FileInfoExtensions
         public string BrotliDecompress()
             => source.Decompress(CompressionAlgorithm.Brotli);
 
+        /// <summary>
+        /// Gets the brotli decompress.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the string.</returns>
         public async Task<string> BrotliDecompressAsync()
             => await source.DecompressAsync(CompressionAlgorithm.Brotli);
 
@@ -48,6 +57,11 @@ public static class FileInfoExtensions
         public string DeflateCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal)
             => source.Compress(CompressionAlgorithm.Deflate, compressionLevel);
 
+        /// <summary>
+        /// Deflates the compress.
+        /// </summary>
+        /// <param name="compressionLevel">The compression level.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the string.</returns>
         public async Task<string> DeflateCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal)
             => await source.CompressAsync(CompressionAlgorithm.Deflate, compressionLevel);
 
@@ -58,6 +72,10 @@ public static class FileInfoExtensions
         public string DeflateDecompress()
             => source.Decompress(CompressionAlgorithm.Deflate);
 
+        /// <summary>
+        /// Deflates the decompress.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the string.</returns>
         public async Task<string> DeflateDecompressAsync()
             => await source.DecompressAsync(CompressionAlgorithm.Deflate);
 
@@ -108,6 +126,11 @@ public static class FileInfoExtensions
         public string GZipCompress(CompressionLevel compressionLevel = CompressionLevel.Optimal)
             => source.Compress(CompressionAlgorithm.GZip, compressionLevel);
 
+        /// <summary>
+        /// Gets the g zip compress.
+        /// </summary>
+        /// <param name="compressionLevel">The compression level.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the string.</returns>
         public async Task<string> GZipCompressAsync(CompressionLevel compressionLevel = CompressionLevel.Optimal)
             => await source.CompressAsync(CompressionAlgorithm.GZip, compressionLevel);
 
@@ -118,6 +141,10 @@ public static class FileInfoExtensions
         public string GZipDecompress()
             => source.Decompress(CompressionAlgorithm.GZip);
 
+        /// <summary>
+        /// Gets the g zip decompress.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the string.</returns>
         public async Task<string> GZipDecompressAsync()
             => await source.DecompressAsync(CompressionAlgorithm.GZip);
 

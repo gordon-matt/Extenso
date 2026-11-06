@@ -4,10 +4,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc;
 
+/// <summary>
+/// Provides extension methods for enums.
+/// </summary>
 public static class EnumExtensions
 {
     extension(Type type)
     {
+        /// <summary>
+        /// Converts the value to the select list.
+        /// </summary>
+        /// <param name="selectedValue">The selected value.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <param name="nameIsId">The name is identifier.</param>
+        /// <returns>The select list.</returns>
         public SelectList ToSelectList(object selectedValue = null, string emptyText = null, bool nameIsId = false)
         {
             if (!type.GetTypeInfo().IsEnum)
@@ -43,6 +53,13 @@ public static class EnumExtensions
             return new SelectList(values, "Id", "Name", selectedValue);
         }
 
+        /// <summary>
+        /// Converts the value to the multi select list.
+        /// </summary>
+        /// <param name="selectedValues">The selected values.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <param name="nameIsId">The name is identifier.</param>
+        /// <returns>The multi select list.</returns>
         public MultiSelectList ToMultiSelectList(IEnumerable selectedValues = null, string emptyText = null, bool nameIsId = false)
         {
             if (!type.GetTypeInfo().IsEnum)
@@ -79,6 +96,14 @@ public static class EnumExtensions
         }
     }
 
+    /// <summary>
+    /// Converts the value to the select list.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="selectedValue">The selected value.</param>
+    /// <param name="emptyText">The empty text.</param>
+    /// <param name="nameIsId">The name is identifier.</param>
+    /// <returns>The select list.</returns>
     public static SelectList ToSelectList<T>(object selectedValue = null, string emptyText = null, bool nameIsId = false) where T : struct
     {
         if (!typeof(T).GetTypeInfo().IsEnum)
@@ -112,6 +137,14 @@ public static class EnumExtensions
         return new SelectList(values, "Id", "Name", selectedValue);
     }
 
+    /// <summary>
+    /// Converts the value to the multi select list.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="selectedValues">The selected values.</param>
+    /// <param name="emptyText">The empty text.</param>
+    /// <param name="nameIsId">The name is identifier.</param>
+    /// <returns>The multi select list.</returns>
     public static MultiSelectList ToMultiSelectList<T>(IEnumerable selectedValues = null, string emptyText = null, bool nameIsId = false) where T : struct
     {
         if (!typeof(T).GetTypeInfo().IsEnum)

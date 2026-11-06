@@ -3,13 +3,20 @@ using Extenso.Collections;
 
 namespace Extenso.Data.QueryBuilder.MySql;
 
+/// <summary>
+/// Represents the my SQL select query builder.
+/// </summary>
 public class MySqlSelectQueryBuilder : BaseSelectQueryBuilder
 {
+    /// <summary>
+    /// Initializes a new instance of the MySqlSelectQueryBuilder class.
+    /// </summary>
     public MySqlSelectQueryBuilder()
         : base()
     {
     }
 
+    /// <inheritdoc/>
     public override ISelectQueryBuilder SelectCountAll()
     {
         selectedColumns.Clear();
@@ -19,6 +26,7 @@ public class MySqlSelectQueryBuilder : BaseSelectQueryBuilder
         return this;
     }
 
+    /// <inheritdoc/>
     public override string BuildQuery()
     {
         var query = new StringBuilder();
@@ -177,5 +185,6 @@ public class MySqlSelectQueryBuilder : BaseSelectQueryBuilder
         return query.ToString().Trim();
     }
 
+    /// <inheritdoc/>
     protected override string EncloseIdentifier(string identifier) => string.Concat('`', identifier, '`');
 }

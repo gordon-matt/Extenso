@@ -2,10 +2,16 @@
 
 namespace Extenso.Data.Common;
 
+/// <summary>
+/// Provides extension methods for database parameter collections.
+/// </summary>
 public static class DbParameterCollectionExtensions
 {
     extension(DbParameterCollection parameters)
     {
+        /// <summary>
+        /// Ensures the database nulls.
+        /// </summary>
         public void EnsureDbNulls()
         {
             foreach (DbParameter p in parameters)
@@ -16,6 +22,9 @@ public static class DbParameterCollectionExtensions
     }
     extension(IEnumerable<DbParameter> parameters)
     {
+        /// <summary>
+        /// Ensures the database nulls.
+        /// </summary>
         public void EnsureDbNulls()
         {
             foreach (var p in parameters)

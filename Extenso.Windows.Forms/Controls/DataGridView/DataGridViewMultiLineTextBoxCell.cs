@@ -1,24 +1,34 @@
 ﻿namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view multi line text box cell.
+/// </summary>
 public class DataGridViewMultiLineTextBoxCell : DataGridViewTextBoxCell
 {
+    /// <summary>
+    /// Initializes a new instance of the DataGridViewMultiLineTextBoxCell class.
+    /// </summary>
     public DataGridViewMultiLineTextBoxCell()
         : base()
     {
     }
 
+    /// <inheritdoc/>
     public override object DefaultNewRowValue =>
             // Use the current date and time as the default value.
             null;
 
+    /// <inheritdoc/>
     public override Type EditType =>
             // Return the type of the editing contol that DataGridViewMultiLineTextBoxCell uses.
             typeof(DataGridViewMultiLineTextBoxEditingControl);
 
+    /// <inheritdoc/>
     public override Type ValueType =>
             // Return the type of the value that DataGridViewMultiLineTextBoxCell contains.
             typeof(string);
 
+    /// <inheritdoc/>
     public override void InitializeEditingControl(int rowIndex, object
                     initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
     {

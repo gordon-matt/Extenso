@@ -11,21 +11,51 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Extenso.AspNetCore.Mvc.Rendering;
 
+/// <summary>
+/// Specifies the page target.
+/// </summary>
 public enum PageTarget : byte
 {
+    /// <summary>
+    /// The default value.
+    /// </summary>
     Default = 0,
+    /// <summary>
+    /// The blank value.
+    /// </summary>
     Blank = 1,
+    /// <summary>
+    /// The parent value.
+    /// </summary>
     Parent = 2,
+    /// <summary>
+    /// The self value.
+    /// </summary>
     Self = 3,
+    /// <summary>
+    /// The top value.
+    /// </summary>
     Top = 4
 }
 
+/// <summary>
+/// Provides extension methods for HTML helpers.
+/// </summary>
 public static class HtmlHelperExtensions
 {
     extension(IHtmlHelper html)
     {
         #region Images
 
+        /// <summary>
+        /// Gets the embedded image.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="assembly">The assembly.</param>
+        /// <param name="resourceName">The resource name.</param>
+        /// <param name="alt">The alt.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns>The embedded image.</returns>
         public IHtmlContent EmbeddedImage(IUrlHelper url, Assembly assembly, string resourceName, string alt, object htmlAttributes = null)
         {
             string base64 = string.Empty;
@@ -40,6 +70,14 @@ public static class HtmlHelperExtensions
             return Image(html, url, $"data:image/jpg;base64,{base64}", alt, htmlAttributes);
         }
 
+        /// <summary>
+        /// Gets the image.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="src">The src.</param>
+        /// <param name="alt">The alt.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns>The image.</returns>
         public IHtmlContent Image(IUrlHelper url, string src, string alt, object htmlAttributes = null)
         {
             var builder = new TagBuilder("img")
@@ -58,6 +96,17 @@ public static class HtmlHelperExtensions
             return new HtmlString(builder.Build());
         }
 
+        /// <summary>
+        /// Gets the image link.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="src">The src.</param>
+        /// <param name="alt">The alt.</param>
+        /// <param name="href">The href.</param>
+        /// <param name="aHtmlAttributes">The a HTML attributes.</param>
+        /// <param name="imgHtmlAttributes">The img HTML attributes.</param>
+        /// <param name="target">The target.</param>
+        /// <returns>The image link.</returns>
         public IHtmlContent ImageLink(IUrlHelper url, string src, string alt, string href, object aHtmlAttributes = null, object imgHtmlAttributes = null, PageTarget target = PageTarget.Default)
         {
             var builder = new TagBuilder("a");
@@ -82,6 +131,16 @@ public static class HtmlHelperExtensions
 
         #endregion Images
 
+        /// <summary>
+        /// Gets the numbers drop down.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="min">The min.</param>
+        /// <param name="max">The max.</param>
+        /// <param name="selected">The selected.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns>The numbers drop down.</returns>
         public IHtmlContent NumbersDropDown(string name, int min, int max, int? selected = null, string emptyText = null, object htmlAttributes = null)
         {
             var numbers = new List<int>();
@@ -97,6 +156,12 @@ public static class HtmlHelperExtensions
 
         #region Other
 
+        /// <summary>
+        /// Gets the file upload.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns>The file upload.</returns>
         public IHtmlContent FileUpload(string name, object htmlAttributes = null)
         {
             var builder = new TagBuilder("input")
@@ -201,6 +266,18 @@ public static class HtmlHelperExtensions
         //    return new HtmlString(sb.ToString());
         //}
 
+        /// <summary>
+        /// Checks the box list.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="selectList">The select list.</param>
+        /// <param name="selectedValues">The selected values.</param>
+        /// <param name="labelHtmlAttributes">The label HTML attributes.</param>
+        /// <param name="checkboxHtmlAttributes">The checkbox HTML attributes.</param>
+        /// <param name="inputInsideLabel">The input inside label.</param>
+        /// <param name="wrapInDiv">The wrap in div.</param>
+        /// <param name="wrapperHtmlAttributes">The wrapper HTML attributes.</param>
+        /// <returns>The box list.</returns>
         public IHtmlContent CheckBoxList(
             string name,
             IEnumerable<SelectListItem> selectList,
@@ -285,6 +362,13 @@ public static class HtmlHelperExtensions
 
         #endregion CheckBoxList
 
+        /// <summary>
+        /// Gets the table.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="items">The items.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns>The table.</returns>
         public IHtmlContent Table<T>(IEnumerable<T> items, object htmlAttributes = null)
         {
             var builder = new FluentTagBuilder("table")
@@ -325,6 +409,16 @@ public static class HtmlHelperExtensions
 
     extension<TModel>(IHtmlHelper<TModel> html)
     {
+        /// <summary>
+        /// Gets the numbers drop down for.
+        /// </summary>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <param name="min">The min.</param>
+        /// <param name="max">The max.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns>The numbers drop down for.</returns>
         public IHtmlContent NumbersDropDownFor<TValue>(Expression<Func<TModel, TValue>> expression, int min, int max, string emptyText = null, object htmlAttributes = null)
         {
             var func = expression.Compile();
@@ -415,6 +509,18 @@ public static class HtmlHelperExtensions
         //    return new HtmlString(sb.ToString());
         //}
 
+        /// <summary>
+        /// Checks the box list for.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <param name="selectList">The select list.</param>
+        /// <param name="labelHtmlAttributes">The label HTML attributes.</param>
+        /// <param name="checkboxHtmlAttributes">The checkbox HTML attributes.</param>
+        /// <param name="inputInsideLabel">The input inside label.</param>
+        /// <param name="wrapInDiv">The wrap in div.</param>
+        /// <param name="wrapperHtmlAttributes">The wrapper HTML attributes.</param>
+        /// <returns>The box list for.</returns>
         public IHtmlContent CheckBoxListFor<TProperty>(
             Expression<Func<TModel, IEnumerable<TProperty>>> expression,
             IEnumerable<SelectListItem> selectList,
@@ -507,6 +613,14 @@ public static class HtmlHelperExtensions
 
         #region Cultures
 
+        /// <summary>
+        /// Gets the cultures drop down list.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="selectedValue">The selected value.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <returns>The cultures drop down list.</returns>
         public IHtmlContent CulturesDropDownList(
             string name, string selectedValue = null, object htmlAttributes = null, string emptyText = null)
         {
@@ -523,6 +637,13 @@ public static class HtmlHelperExtensions
             return html.DropDownList(name, selectList, htmlAttributes);
         }
 
+        /// <summary>
+        /// Gets the cultures drop down list for.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <returns>The cultures drop down list for.</returns>
         public IHtmlContent CulturesDropDownListFor(
             Expression<Func<TModel, string>> expression, object htmlAttributes = null, string emptyText = null)
         {
@@ -544,6 +665,14 @@ public static class HtmlHelperExtensions
 
         #endregion Cultures
 
+        /// <summary>
+        /// Gets the enum multi drop down list for.
+        /// </summary>
+        /// <typeparam name="TEnum">The type of the enum.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <returns>The enum multi drop down list for.</returns>
         public IHtmlContent EnumMultiDropDownListFor<TEnum>(
             Expression<Func<TModel, IEnumerable<TEnum>>> expression,
             string emptyText = null,
@@ -566,6 +695,14 @@ public static class HtmlHelperExtensions
 
         #region Time Zones
 
+        /// <summary>
+        /// Gets the time zones drop down list.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="selectedValue">The selected value.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <returns>The time zones drop down list.</returns>
         public IHtmlContent TimeZonesDropDownList(
             string name, string selectedValue = null, object htmlAttributes = null, string emptyText = null)
         {
@@ -582,6 +719,13 @@ public static class HtmlHelperExtensions
             return html.DropDownList(name, selectList, htmlAttributes);
         }
 
+        /// <summary>
+        /// Gets the time zones drop down list for.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="htmlAttributes">The HTML attributes.</param>
+        /// <param name="emptyText">The empty text.</param>
+        /// <returns>The time zones drop down list for.</returns>
         public IHtmlContent TimeZonesDropDownListFor(
             Expression<Func<TModel, string>> expression, object htmlAttributes = null, string emptyText = null)
         {

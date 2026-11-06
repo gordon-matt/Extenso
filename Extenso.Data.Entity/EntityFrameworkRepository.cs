@@ -9,9 +9,17 @@ using Microsoft.Extensions.Options;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Represents the entity framework repository.
+/// </summary>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public class EntityFrameworkRepository<TEntity> : ReadOnlyEntityFrameworkRepository<TEntity>, IRepository<TEntity>, IEntityFrameworkRepository
     where TEntity : class, IEntity
 {
+    /// <summary>
+    /// Initializes a new instance of the EntityFrameworkRepository class.
+    /// </summary>
+    /// <param name="contextFactory">The context factory.</param>
     public EntityFrameworkRepository(IDbContextFactory contextFactory)
         : base(contextFactory)
     {

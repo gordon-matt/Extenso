@@ -3,13 +3,20 @@ using Extenso.Collections;
 
 namespace Extenso.Data.QueryBuilder.Npgsql;
 
+/// <summary>
+/// Represents the npgsql select query builder.
+/// </summary>
 public class NpgsqlSelectQueryBuilder : BaseSelectQueryBuilder
 {
+    /// <summary>
+    /// Initializes a new instance of the NpgsqlSelectQueryBuilder class.
+    /// </summary>
     public NpgsqlSelectQueryBuilder()
         : base()
     {
     }
 
+    /// <inheritdoc/>
     public override ISelectQueryBuilder SelectCountAll()
     {
         selectedColumns.Clear();
@@ -19,6 +26,7 @@ public class NpgsqlSelectQueryBuilder : BaseSelectQueryBuilder
         return this;
     }
 
+    /// <inheritdoc/>
     public override string BuildQuery()
     {
         var query = new StringBuilder();
@@ -176,8 +184,10 @@ public class NpgsqlSelectQueryBuilder : BaseSelectQueryBuilder
         return query.ToString().Trim();
     }
 
+    /// <inheritdoc/>
     protected override string EncloseIdentifier(string identifier) => string.Concat('"', identifier, '"');
 
+    /// <inheritdoc/>
     protected override string FormatSQLValue(object someValue)
     {
         var type = someValue.GetType();

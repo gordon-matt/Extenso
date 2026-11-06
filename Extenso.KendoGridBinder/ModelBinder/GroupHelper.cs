@@ -5,11 +5,19 @@ using Newtonsoft.Json;
 
 namespace Extenso.KendoGridBinder.ModelBinder;
 
+/// <summary>
+/// Provides group helper.
+/// </summary>
 public static class GroupHelper
 {
     private static readonly Regex GroupRegex = new(@"^group\[(\d*)\]\[(field|dir)\]$", RegexOptions.IgnoreCase);
     private static readonly Regex GroupAggregateRegex = new(@"^group\[(\d*)\]\[aggregates\]\[(\d*)\]\[(field|aggregate)\]$", RegexOptions.IgnoreCase);
 
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <param name="queryString">The query string.</param>
+    /// <returns>The group objects.</returns>
     public static IEnumerable<GroupObject> Parse(NameValueCollection queryString)
     {
         // If there is a group query parameter, try to parse the value as json
@@ -30,6 +38,11 @@ public static class GroupHelper
         return null;
     }
 
+    /// <summary>
+    /// Maps the value.
+    /// </summary>
+    /// <param name="groups">The groups.</param>
+    /// <returns>The group objects.</returns>
     public static IEnumerable<GroupObject> Map(IEnumerable<GroupObject> groups)
     {
         if (groups == null)

@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.Providers;
 
+/// <summary>
+/// Represents the bootstrap5ui provider.
+/// </summary>
 public class Bootstrap5UIProvider : BaseUIProvider
 {
     private IAccordionProvider accordionProvider;
@@ -17,6 +20,7 @@ public class Bootstrap5UIProvider : BaseUIProvider
 
     #region General
 
+    /// <inheritdoc/>
     public override IHtmlContent ActionLink(IHtmlHelper html, string text, State state, string actionName, string controllerName, object routeValues = null, object htmlAttributes = null)
     {
         string stateCss = GetButtonCssClass(state);
@@ -30,6 +34,7 @@ public class Bootstrap5UIProvider : BaseUIProvider
         return new HtmlString(builder.ToString());
     }
 
+    /// <inheritdoc/>
     public override IHtmlContent Button(string text, State state, string onClick = null, object htmlAttributes = null)
     {
         string stateCss = GetButtonCssClass(state);
@@ -48,6 +53,7 @@ public class Bootstrap5UIProvider : BaseUIProvider
         return new HtmlString(builder.ToString());
     }
 
+    /// <inheritdoc/>
     public override IHtmlContent SubmitButton(string text, State state, object htmlAttributes = null)
     {
         string stateCss = GetButtonCssClass(state);
@@ -65,18 +71,23 @@ public class Bootstrap5UIProvider : BaseUIProvider
 
     #region Special
 
+    /// <inheritdoc/>
     public override IAccordionProvider AccordionProvider => accordionProvider ??= new Bootstrap5AccordionProvider();
 
+    /// <inheritdoc/>
     public override IModalProvider ModalProvider => modalProvider ??= new Bootstrap5ModalProvider();
 
+    /// <inheritdoc/>
     public override IPanelProvider PanelProvider => panelProvider ??= new Bootstrap5PanelProvider();
 
+    /// <inheritdoc/>
     public override ITabsProvider TabsProvider => tabsProvider ??= new Bootstrap5TabsProvider();
 
     #endregion Special
 
     #endregion IExtensoUIProvider Members
 
+    /// <inheritdoc/>
     protected override string GetButtonCssClass(State state) => state switch
     {
         State.Danger => "btn btn-danger",

@@ -4,10 +4,18 @@ using Extenso.Data.Common;
 
 namespace Extenso.Data.OleDb;
 
+/// <summary>
+/// Provides extension methods for ole database connections.
+/// </summary>
 public static class OleDbConnectionExtensions
 {
     extension(OleDbConnection connection)
     {
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName)
         {
             var columnData = new ColumnInfoCollection();
@@ -100,6 +108,12 @@ public static class OleDbConnectionExtensions
             return columnData;
         }
 
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="columnNames">The column names.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName, IEnumerable<string> columnNames)
         {
             var data = from x in connection.GetColumnData(tableName)
@@ -111,6 +125,11 @@ public static class OleDbConnectionExtensions
             return collection;
         }
 
+        /// <summary>
+        /// Gets the foreign key data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The foreign key data.</returns>
         public ForeignKeyInfoCollection GetForeignKeyData(string tableName)
         {
             object[] foreignKeyRestrictions = new object[] { null, null, null, null, null, tableName };
@@ -146,12 +165,22 @@ public static class OleDbConnectionExtensions
             return foreignKeyData;
         }
 
+        /// <summary>
+        /// Gets the row count.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The row count.</returns>
         public int GetRowCount(string tableName)
         {
             using var commandBuilder = new OleDbCommandBuilder();
             return connection.ExecuteScalar($"SELECT COUNT(*) FROM [{tableName}]");
         }
 
+        /// <summary>
+        /// Gets the table names.
+        /// </summary>
+        /// <param name="includeViews">The include views.</param>
+        /// <returns>The table names.</returns>
         public IEnumerable<string> GetTableNames(bool includeViews = false)
         {
             var results = new List<string>();
@@ -186,6 +215,10 @@ public static class OleDbConnectionExtensions
             return results;
         }
 
+        /// <summary>
+        /// Gets the view names.
+        /// </summary>
+        /// <returns>The view names.</returns>
         public IEnumerable<string> GetViewNames()
         {
             var results = new List<string>();

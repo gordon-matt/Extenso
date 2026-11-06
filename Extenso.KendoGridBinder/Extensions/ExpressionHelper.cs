@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace Extenso.KendoGridBinder.Extensions;
 
+/// <summary>
+/// Provides expression helper.
+/// </summary>
 public static class ExpressionHelper
 {
     /// <summary>

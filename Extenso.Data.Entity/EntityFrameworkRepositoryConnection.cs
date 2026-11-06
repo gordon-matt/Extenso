@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Represents the entity framework repository connection.
+/// </summary>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepositoryConnection<TEntity>
     where TEntity : class
 {
@@ -13,16 +17,27 @@ public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepo
 
     #endregion Private Members
 
+    /// <summary>
+    /// Gets the context.
+    /// </summary>
     public DbContext Context { get; }
 
     #region Constructor / Destructor
 
+    /// <summary>
+    /// Initializes a new instance of the EntityFrameworkRepositoryConnection class.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="isContextOwner">The is context owner.</param>
     public EntityFrameworkRepositoryConnection(DbContext context, bool isContextOwner)
     {
         this.Context = context;
         this.isContextOwner = isContextOwner;
     }
 
+    /// <summary>
+    /// Releases resources used by the EntityFrameworkRepositoryConnection class.
+    /// </summary>
     ~EntityFrameworkRepositoryConnection()
     {
         Dispose(false);
@@ -32,6 +47,11 @@ public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepo
 
     #region IRepositoryConnection<TEntity> Members
 
+    /// <summary>
+    /// Queries the value.
+    /// </summary>
+    /// <param name="includePaths">The include paths.</param>
+    /// <returns>The t entity i queryable.</returns>
     public virtual IQueryable<TEntity> Query(params Expression<Func<TEntity, dynamic>>[] includePaths)
     {
         var query = Context.Set<TEntity>().AsNoTracking();
@@ -44,6 +64,12 @@ public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepo
         return query;
     }
 
+    /// <summary>
+    /// Queries the value.
+    /// </summary>
+    /// <param name="predicate">The predicate to apply.</param>
+    /// <param name="includePaths">The include paths.</param>
+    /// <returns>The t entity i queryable.</returns>
     public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, dynamic>>[] includePaths)
     {
         var query = Context.Set<TEntity>().AsNoTracking().Where(predicate);
@@ -60,12 +86,19 @@ public class EntityFrameworkRepositoryConnection<TEntity> : IEntityFrameworkRepo
 
     #region IDisposable Members
 
+    /// <summary>
+    /// Releases the resources used by this instance.
+    /// </summary>
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Releases the resources used by this instance.
+    /// </summary>
+    /// <param name="disposing">The disposing.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!isContextOwner)

@@ -5,12 +5,19 @@ using Extenso.KendoGridBinder.AutoMapperExtensions;
 
 namespace Extenso.KendoGridBinder;
 
+/// <summary>
+/// Represents the kendo grid queryable helper.
+/// </summary>
 public class KendoGridQueryableHelper
 {
     private readonly AutoMapperUtils _autoMapperUtils;
     private readonly MapperConfiguration _mapperConfiguration;
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// Initializes a new instance of the KendoGridQueryableHelper class.
+    /// </summary>
+    /// <param name="mapperConfiguration">The mapper configuration.</param>
     public KendoGridQueryableHelper(MapperConfiguration mapperConfiguration)
     {
         _mapperConfiguration = mapperConfiguration;
@@ -18,6 +25,18 @@ public class KendoGridQueryableHelper
         _mapper = mapperConfiguration.CreateMapper();
     }
 
+    /// <summary>
+    /// Converts the value to the kendo grid ex.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <param name="query">The query.</param>
+    /// <param name="request">The request.</param>
+    /// <param name="includes">The includes.</param>
+    /// <param name="mappings">The mappings.</param>
+    /// <param name="conversion">The conversion.</param>
+    /// <param name="canUseAutoMapperProjection">The can use auto mapper projection.</param>
+    /// <returns>The kendo grid ex.</returns>
     public KendoGrid<TEntity, TViewModel> ToKendoGridEx<TEntity, TViewModel>(IQueryable<TEntity> query,
         KendoGridBaseRequest request,
         IEnumerable<string> includes = null,
@@ -31,6 +50,18 @@ public class KendoGridQueryableHelper
         return new KendoGrid<TEntity, TViewModel>(request, query, mappings2, conversion2, includes);
     }
 
+    /// <summary>
+    /// Filters by.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <param name="query">The query.</param>
+    /// <param name="request">The request.</param>
+    /// <param name="includes">The includes.</param>
+    /// <param name="mappings">The mappings.</param>
+    /// <param name="conversion">The conversion.</param>
+    /// <param name="canUseAutoMapperProjection">The can use auto mapper projection.</param>
+    /// <returns>The ts.</returns>
     public IEnumerable<TViewModel> FilterBy<TEntity, TViewModel>(IQueryable<TEntity> query,
         KendoGridBaseRequest request,
         IEnumerable<string> includes = null,

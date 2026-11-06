@@ -17,6 +17,11 @@ namespace Extenso.AspNetCore.OData;
 public abstract class BaseODataController<TEntity, TKey> : GenericODataController<TEntity, TKey>
     where TEntity : BaseEntity<TKey>
 {
+    /// <summary>
+    /// Initializes a new instance of the BaseODataController class.
+    /// </summary>
+    /// <param name="authorizationService">The authorization service.</param>
+    /// <param name="repository">The repository.</param>
     protected BaseODataController(IAuthorizationService authorizationService, IRepository<TEntity> repository)
         : base(authorizationService, repository)
     {
@@ -39,5 +44,6 @@ public abstract class BaseODataController<TEntity, TKey> : GenericODataControlle
         return entity == null ? NotFound() : !await CanViewEntityAsync(entity) ? Unauthorized() : Ok(result);
     }
 
+    /// <inheritdoc/>
     protected override TKey GetId(TEntity entity) => entity.Id;
 }

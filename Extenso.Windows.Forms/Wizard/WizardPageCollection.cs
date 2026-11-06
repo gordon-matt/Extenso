@@ -1,5 +1,8 @@
 ﻿namespace Extenso.Windows.Forms.Wizard;
 
+/// <summary>
+/// Represents the wizard page collection.
+/// </summary>
 public class WizardPageCollection : Dictionary<int, IWizardPage>
 {
     #region Properties
@@ -42,6 +45,9 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
 
     #region Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the WizardPageCollection class.
+    /// </summary>
     public WizardPageCollection()
     {
         PageLocation = WizardPageLocation.Start;
@@ -51,8 +57,15 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
 
     #region Delegates & Events
 
+    /// <summary>
+    /// Represents the method that handles wizard page location changed event hanlder.
+    /// </summary>
+    /// <param name="e">The e.</param>
     public delegate void WizardPageLocationChangedEventHanlder(WizardPageLocationChangedEventArgs e);
 
+    /// <summary>
+    /// Occurs when wizard page location changed.
+    /// </summary>
     public event WizardPageLocationChangedEventHanlder WizardPageLocationChanged;
 
     #endregion Delegates & Events
@@ -173,6 +186,9 @@ public class WizardPageCollection : Dictionary<int, IWizardPage>
         return null;
     }
 
+    /// <summary>
+    /// Resets the value.
+    /// </summary>
     public void Reset()
     {
         CurrentPage = null;

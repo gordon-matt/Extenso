@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Defines the contract for the mapped repository.
+/// </summary>
+/// <typeparam name="TModel">The type of the model.</typeparam>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public interface IMappedRepository<TModel, TEntity> : IReadOnlyMappedRepository<TModel, TEntity>
     where TModel : class
     where TEntity : class, IEntity

@@ -3,20 +3,33 @@ using System.Globalization;
 
 namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the numeric text box.
+/// </summary>
 [ToolboxBitmap(typeof(TextBox)),
 ToolboxItem(true),
 Description("Custom TextBox, Accepts Numerical Input Only")]
 public partial class NumericTextBox : TextBox
 {
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is allow space.
+    /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool AllowSpace { set; get; } = false;
 
+    /// <summary>
+    /// Gets the decimal value.
+    /// </summary>
     public decimal DecimalValue => decimal.Parse(Text);
 
+    /// <summary>
+    /// Gets the int value.
+    /// </summary>
     public int IntValue => int.Parse(Text);
 
     // Restricts the entry of characters to digits (including hex), the negative sign,
     // the decimal point, and editing keystrokes (backspace).
+    /// <inheritdoc/>
     protected override void OnKeyPress(KeyPressEventArgs e)
     {
         base.OnKeyPress(e);

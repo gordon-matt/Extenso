@@ -8,13 +8,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Represents the read only mapped entity framework repository.
+/// </summary>
+/// <typeparam name="TModel">The type of the model.</typeparam>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public class ReadOnlyMappedEntityFrameworkRepository<TModel, TEntity> : IReadOnlyMappedRepository<TModel, TEntity>, IEntityFrameworkRepository
     where TModel : class
     where TEntity : class, IEntity
 {
+    /// <summary>
+    /// The context factory.
+    /// </summary>
     protected IDbContextFactory contextFactory;
+    /// <summary>
+    /// The mapper.
+    /// </summary>
     protected readonly IEntityModelMapper<TEntity, TModel> mapper;
 
+    /// <summary>
+    /// Initializes a new instance of the ReadOnlyMappedEntityFrameworkRepository class.
+    /// </summary>
+    /// <param name="contextFactory">The context factory.</param>
+    /// <param name="mapper">The mapper.</param>
     public ReadOnlyMappedEntityFrameworkRepository(
         IDbContextFactory contextFactory,
         IEntityModelMapper<TEntity, TModel> mapper)
@@ -48,6 +64,12 @@ public class ReadOnlyMappedEntityFrameworkRepository<TModel, TEntity> : IReadOnl
         return new MappedEntityFrameworkRepositoryConnection<TEntity, TModel>(otherConnection.Context, mapper, false);
     }
 
+    /// <summary>
+    /// Gets the stream.
+    /// </summary>
+    /// <param name="options">The options.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>The stream.</returns>
     public virtual async IAsyncEnumerable<TModel> StreamAsync(
         SearchOptions<TEntity> options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -365,6 +387,12 @@ public class ReadOnlyMappedEntityFrameworkRepository<TModel, TEntity> : IReadOnl
         return query;
     }
 
+    /// <summary>
+    /// Applies the mandatory filters.
+    /// </summary>
+    /// <param name="predicate">The predicate to apply.</param>
+    /// <param name="filters">The filters.</param>
+    /// <returns>The mandatory filters.</returns>
     protected virtual Expression<Func<TEntity, bool>> ApplyMandatoryFilters(Expression<Func<TEntity, bool>> predicate, IDictionary<string, object> filters) => predicate;
 
     private static IQueryable<T> ApplyPaging<T>(IQueryable<T> query, SearchOptions<TEntity> options)

@@ -91,6 +91,11 @@ public static class EnumerableExtensions
             }
         }
 
+        /// <summary>
+        /// Gets the flatten.
+        /// </summary>
+        /// <param name="selector">The selector to apply.</param>
+        /// <returns>The flatten.</returns>
         public IEnumerable<T> Flatten(Func<T, IEnumerable<T>> selector)
         {
             var queue = new Queue<T>();

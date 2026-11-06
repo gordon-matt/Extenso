@@ -7,6 +7,9 @@ using Microsoft.Data.SqlClient;
 namespace Extenso.Data.SqlClient;
 
 // TODO: Use parameterized queries to prevent the risk of SQL injection attacks. Do the same everywhere else as well..
+/// <summary>
+/// Provides extension methods for SQL connections.
+/// </summary>
 public static class SqlConnectionExtensions
 {
     extension(SqlConnection connection)
@@ -49,6 +52,12 @@ public static class SqlConnectionExtensions
             await bulkCopy.WriteToServerAsync(batch.ToDataTable(convertNullableTypes: true));
         }
 
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="schema">The schema.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName, string schema = "dbo")
         {
             const string CMD_COLUMN_INFO_FORMAT =
@@ -226,6 +235,13 @@ AND T.CONSTRAINT_SCHEMA = @SchemaName";
             return list;
         }
 
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="columnNames">The column names.</param>
+        /// <param name="schema">The schema.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName, IEnumerable<string> columnNames, string schema = "dbo")
         {
             var filteredColumns = connection
@@ -237,6 +253,10 @@ AND T.CONSTRAINT_SCHEMA = @SchemaName";
             return collection;
         }
 
+        /// <summary>
+        /// Gets the schema names.
+        /// </summary>
+        /// <returns>The schema names.</returns>
         public IEnumerable<string> GetSchemaNames()
         {
             const string CMD_SELECT_SCHEMA_NAMES =
@@ -274,6 +294,10 @@ ORDER BY S.[name]";
             return schemaNames;
         }
 
+        /// <summary>
+        /// Gets the database names.
+        /// </summary>
+        /// <returns>The database names.</returns>
         public IEnumerable<string> GetDatabaseNames()
         {
             const string CMD_SELECT_DATABASE_NAMES = "SELECT NAME FROM SYS.DATABASES ORDER BY NAME";
@@ -306,6 +330,12 @@ ORDER BY S.[name]";
             return databaseNames;
         }
 
+        /// <summary>
+        /// Gets the foreign key data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="schema">The schema.</param>
+        /// <returns>The foreign key data.</returns>
         public ForeignKeyInfoCollection GetForeignKeyData(string tableName, string schema = "dbo")
         {
             const string CMD_FOREIGN_KEYS_FORMAT =
@@ -379,6 +409,12 @@ ORDER BY 1,2,3,4";
             return foreignKeyData;
         }
 
+        /// <summary>
+        /// Gets the row count.
+        /// </summary>
+        /// <param name="schema">The schema.</param>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The row count.</returns>
         public int GetRowCount(string schema, string tableName)
         {
             using var commandBuilder = new SqlCommandBuilder();

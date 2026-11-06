@@ -3,10 +3,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.Foundation;
 
+/// <summary>
+/// Represents the foundation accordion provider.
+/// </summary>
 public class FoundationAccordionProvider : IAccordionProvider
 {
     #region IAccordionProvider Members
 
+    /// <summary>
+    /// Begins the accordion.
+    /// </summary>
+    /// <param name="accordion">The accordion.</param>
+    /// <param name="writer">The writer.</param>
     public void BeginAccordion(Accordion accordion, TextWriter writer)
     {
         accordion.EnsureClass("accordion");
@@ -20,6 +28,14 @@ public class FoundationAccordionProvider : IAccordionProvider
         writer.Write(tag);
     }
 
+    /// <summary>
+    /// Begins the accordion panel.
+    /// </summary>
+    /// <param name="writer">The writer.</param>
+    /// <param name="title">The title.</param>
+    /// <param name="panelId">The panel identifier.</param>
+    /// <param name="parentAccordionId">The parent accordion identifier.</param>
+    /// <param name="expanded">The expanded.</param>
     public void BeginAccordionPanel(TextWriter writer, string title, string panelId, string parentAccordionId, bool expanded)
     {
         var li = new FluentTagBuilder("li", TagRenderMode.StartTag)
@@ -35,8 +51,17 @@ public class FoundationAccordionProvider : IAccordionProvider
         writer.Write(@"<div class=""accordion-content"" data-tab-content>");
     }
 
+    /// <summary>
+    /// Performs the end accordion panel operation.
+    /// </summary>
+    /// <param name="writer">The writer.</param>
     public void EndAccordionPanel(TextWriter writer) => writer.Write("</div></li>");
 
+    /// <summary>
+    /// Performs the end accordion operation.
+    /// </summary>
+    /// <param name="accordion">The accordion.</param>
+    /// <param name="writer">The writer.</param>
     public void EndAccordion(Accordion accordion, TextWriter writer) => writer.Write("</ul>");
 
     #endregion IAccordionProvider Members

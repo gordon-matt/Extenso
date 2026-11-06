@@ -1,0 +1,13 @@
+<Project>
+
+	<!-- Missing XML documentation on the public API is a build error. Tests, demos, samples, and templates are exempt. -->
+	<PropertyGroup>
+		<XmlDocProjectDir>$([System.String]::Copy('$(MSBuildProjectDirectory)').Replace('\', '/').ToLowerInvariant())</XmlDocProjectDir>
+		<XmlDocProjectName>$([System.String]::Copy('$(MSBuildProjectName)').ToLowerInvariant())</XmlDocProjectName>
+		<XmlDocOptOut Condition="$(XmlDocProjectDir.Contains('/tests/')) Or $(XmlDocProjectDir.EndsWith('/tests')) Or $(XmlDocProjectDir.Contains('/demos/')) Or $(XmlDocProjectDir.EndsWith('/demos')) Or $(XmlDocProjectDir.Contains('/demo/')) Or $(XmlDocProjectDir.EndsWith('/demo')) Or $(XmlDocProjectDir.Contains('/samples/')) Or $(XmlDocProjectDir.EndsWith('/samples')) Or $(XmlDocProjectDir.Contains('/sample/')) Or $(XmlDocProjectDir.EndsWith('/sample')) Or $(XmlDocProjectDir.Contains('/templates/')) Or $(XmlDocProjectDir.EndsWith('/templates')) Or $(XmlDocProjectDir.Contains('/sandbox/')) Or $(XmlDocProjectDir.EndsWith('/sandbox')) Or $(XmlDocProjectDir.Contains('.demo')) Or $(XmlDocProjectDir.Contains('.sample')) Or $(XmlDocProjectName.Contains('.demo')) Or $(XmlDocProjectName.Contains('.tests')) Or $(XmlDocProjectName.Contains('.sample')) Or $(XmlDocProjectName.Contains('sandbox')) Or $(XmlDocProjectName.Contains('.testlib'))">true</XmlDocOptOut>
+		<GenerateDocumentationFile Condition="'$(XmlDocOptOut)' != 'true'">true</GenerateDocumentationFile>
+		<GenerateDocumentationFile Condition="'$(XmlDocOptOut)' == 'true'">false</GenerateDocumentationFile>
+		<WarningsAsErrors Condition="'$(GenerateDocumentationFile)' == 'true'">$(WarningsAsErrors);CS1591</WarningsAsErrors>
+	</PropertyGroup>
+
+</Project>

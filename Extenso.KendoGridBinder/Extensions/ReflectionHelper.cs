@@ -9,6 +9,11 @@ public static class ReflectionHelper
 {
     extension(object obj)
     {
+        /// <summary>
+        /// Gets the field value.
+        /// </summary>
+        /// <param name="fieldName">The field name.</param>
+        /// <returns>The field value.</returns>
         public object GetFieldValue(string fieldName)
         {
             if (obj == null)
@@ -21,6 +26,11 @@ public static class ReflectionHelper
                 : fieldInfo.GetValue(obj);
         }
 
+        /// <summary>
+        /// Sets the field value.
+        /// </summary>
+        /// <param name="fieldName">The field name.</param>
+        /// <param name="val">The val.</param>
         public void SetFieldValue(string fieldName, object val)
         {
             if (obj == null)

@@ -4,10 +4,19 @@ using Npgsql;
 
 namespace Extenso.Data.Npgsql;
 
+/// <summary>
+/// Provides extension methods for npgsql connections.
+/// </summary>
 public static class NpgsqlConnectionExtensions
 {
     extension(NpgsqlConnection connection)
     {
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="schema">The schema.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName, string schema = "public")
         {
             const string CMD_COLUMN_INFO_FORMAT =
@@ -220,6 +229,13 @@ AND kcu.""table_schema"" = @SchemaName";
             return list;
         }
 
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="columnNames">The column names.</param>
+        /// <param name="schema">The schema.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName, IEnumerable<string> columnNames, string schema = "public")
         {
             var filteredColumns = connection
@@ -231,6 +247,10 @@ AND kcu.""table_schema"" = @SchemaName";
             return collection;
         }
 
+        /// <summary>
+        /// Gets the schema names.
+        /// </summary>
+        /// <returns>The schema names.</returns>
         public IEnumerable<string> GetSchemaNames()
         {
             const string CMD_SELECT_SCHEMA_NAMES = "SELECT nspname FROM pg_catalog.pg_namespace ORDER BY nspname;";
@@ -263,6 +283,10 @@ AND kcu.""table_schema"" = @SchemaName";
             return schemaNames;
         }
 
+        /// <summary>
+        /// Gets the database names.
+        /// </summary>
+        /// <returns>The database names.</returns>
         public IEnumerable<string> GetDatabaseNames()
         {
             const string CMD_SELECT_DATABASE_NAMES = "SELECT datname FROM pg_database ORDER BY datname;";
@@ -295,6 +319,12 @@ AND kcu.""table_schema"" = @SchemaName";
             return databaseNames;
         }
 
+        /// <summary>
+        /// Gets the foreign key data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="schema">The schema.</param>
+        /// <returns>The foreign key data.</returns>
         public ForeignKeyInfoCollection GetForeignKeyData(string tableName, string schema = "public")
         {
             const string CMD_FOREIGN_KEYS_FORMAT =
@@ -369,6 +399,12 @@ ORDER BY 1,2,3,4";
             return foreignKeyData;
         }
 
+        /// <summary>
+        /// Gets the row count.
+        /// </summary>
+        /// <param name="schema">The schema.</param>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The row count.</returns>
         public int GetRowCount(string schema, string tableName)
         {
             using var commandBuilder = new NpgsqlCommandBuilder();

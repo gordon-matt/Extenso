@@ -4,10 +4,18 @@ using MySql.Data.MySqlClient;
 
 namespace Extenso.Data.MySql;
 
+/// <summary>
+/// Provides extension methods for my SQL connections.
+/// </summary>
 public static class MySqlConnectionExtensions
 {
     extension(MySqlConnection connection)
     {
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName)
         {
             const string CMD_COLUMN_INFO_FORMAT =
@@ -263,6 +271,12 @@ AND `COLUMN_KEY` = 'PRI';";
             return list;
         }
 
+        /// <summary>
+        /// Gets the column data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <param name="columnNames">The column names.</param>
+        /// <returns>The column data.</returns>
         public ColumnInfoCollection GetColumnData(string tableName, IEnumerable<string> columnNames)
         {
             var data = from x in connection.GetColumnData(tableName)
@@ -274,6 +288,10 @@ AND `COLUMN_KEY` = 'PRI';";
             return collection;
         }
 
+        /// <summary>
+        /// Gets the database names.
+        /// </summary>
+        /// <returns>The database names.</returns>
         public IEnumerable<string> GetDatabaseNames()
         {
             const string CMD_SELECT_DATABASE_NAMES = "SHOW DATABASES;";
@@ -306,6 +324,11 @@ AND `COLUMN_KEY` = 'PRI';";
             return databaseNames;
         }
 
+        /// <summary>
+        /// Gets the foreign key data.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The foreign key data.</returns>
         public ForeignKeyInfoCollection GetForeignKeyData(string tableName)
         {
             const string CMD_FOREIGN_KEYS_FORMAT =
@@ -360,15 +383,31 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
             return foreignKeyData;
         }
 
+        /// <summary>
+        /// Gets the row count.
+        /// </summary>
+        /// <param name="tableName">The table name.</param>
+        /// <returns>The row count.</returns>
         public int GetRowCount(string tableName)
         {
             using var commandBuilder = new MySqlCommandBuilder();
             return (int)connection.ExecuteScalar<long>($"SELECT COUNT(*) FROM {commandBuilder.QuoteIdentifier(tableName)}");
         }
 
+        /// <summary>
+        /// Gets the table names.
+        /// </summary>
+        /// <param name="includeViews">The include views.</param>
+        /// <returns>The table names.</returns>
         public IEnumerable<string> GetTableNames(bool includeViews = false) =>
             !string.IsNullOrEmpty(connection.Database) ? connection.GetTableNames(connection.Database, includeViews) : [];
 
+        /// <summary>
+        /// Gets the table names.
+        /// </summary>
+        /// <param name="databaseName">The database name.</param>
+        /// <param name="includeViews">The include views.</param>
+        /// <returns>The table names.</returns>
         public IEnumerable<string> GetTableNames(string databaseName, bool includeViews = false)
         {
             using var commandBuilder = new MySqlCommandBuilder();
@@ -404,9 +443,18 @@ AND CONSTRAINT_NAME <> 'PRIMARY';";
             return tables;
         }
 
+        /// <summary>
+        /// Gets the view names.
+        /// </summary>
+        /// <returns>The view names.</returns>
         public IEnumerable<string> GetViewNames() =>
             !string.IsNullOrEmpty(connection.Database) ? connection.GetViewNames(connection.Database) : [];
 
+        /// <summary>
+        /// Gets the view names.
+        /// </summary>
+        /// <param name="databaseName">The database name.</param>
+        /// <returns>The view names.</returns>
         public IEnumerable<string> GetViewNames(string databaseName)
         {
             var tables = new List<string>();

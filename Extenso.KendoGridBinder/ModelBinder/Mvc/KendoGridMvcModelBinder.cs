@@ -6,8 +6,16 @@ using Microsoft.Extensions.Primitives;
 // ReSharper disable once CheckNamespace
 namespace Extenso.KendoGridBinder.ModelBinder.Mvc;
 
+/// <summary>
+/// Represents the kendo grid MVC model binder.
+/// </summary>
 public class KendoGridMvcModelBinder : IModelBinder
 {
+    /// <summary>
+    /// Binds the model.
+    /// </summary>
+    /// <param name="bindingContext">The binding context.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
         if (bindingContext == null)

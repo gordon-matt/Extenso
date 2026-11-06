@@ -4,8 +4,17 @@ using System.Reflection;
 
 namespace Extenso.Mapping;
 
+/// <summary>
+/// Provides expression type mapper.
+/// </summary>
 public static class ExpressionTypeMapper
 {
+    /// <summary>
+    /// Replaces the types.
+    /// </summary>
+    /// <param name="expression">The expression.</param>
+    /// <param name="replacements">The replacements.</param>
+    /// <returns>The types.</returns>
     public static Expression ReplaceTypes(Expression expression, IDictionary<Type, Type> replacements)
     {
         var newExpression = new TypeReplacementVisitor(replacements).Visit(expression);

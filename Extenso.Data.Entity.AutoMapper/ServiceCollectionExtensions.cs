@@ -2,6 +2,9 @@
 
 namespace Extenso.Data.Entity.AutoMapper;
 
+/// <summary>
+/// Provides extension methods for service collections.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)

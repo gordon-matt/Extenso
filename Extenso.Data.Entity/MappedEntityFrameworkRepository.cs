@@ -4,10 +4,20 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Represents the mapped entity framework repository.
+/// </summary>
+/// <typeparam name="TModel">The type of the model.</typeparam>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public class MappedEntityFrameworkRepository<TModel, TEntity> : ReadOnlyMappedEntityFrameworkRepository<TModel, TEntity>, IMappedRepository<TModel, TEntity>, IEntityFrameworkRepository
     where TModel : class
     where TEntity : class, IEntity
 {
+    /// <summary>
+    /// Initializes a new instance of the MappedEntityFrameworkRepository class.
+    /// </summary>
+    /// <param name="contextFactory">The context factory.</param>
+    /// <param name="mapper">The mapper.</param>
     public MappedEntityFrameworkRepository(
         IDbContextFactory contextFactory,
         IEntityModelMapper<TEntity, TModel> mapper)

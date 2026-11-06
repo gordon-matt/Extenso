@@ -5,12 +5,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI.KendoUI;
 
+/// <summary>
+/// Represents the kendo UI modal provider.
+/// </summary>
 public class KendoUIModalProvider : IModalProvider
 {
     private string title;
 
     private readonly BaseUIProvider uiProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the KendoUIModalProvider class.
+    /// </summary>
+    /// <param name="uiProvider">The UI provider.</param>
     public KendoUIModalProvider(BaseUIProvider uiProvider)
     {
         this.uiProvider = uiProvider;
@@ -18,6 +25,11 @@ public class KendoUIModalProvider : IModalProvider
 
     #region IModalProvider Members
 
+    /// <summary>
+    /// Begins the modal.
+    /// </summary>
+    /// <param name="modal">The modal.</param>
+    /// <param name="writer">The writer.</param>
     public void BeginModal(Modal modal, TextWriter writer)
     {
         var builder = new FluentTagBuilder("div", TagRenderMode.StartTag)
@@ -28,6 +40,12 @@ public class KendoUIModalProvider : IModalProvider
         writer.Write(tag);
     }
 
+    /// <summary>
+    /// Begins the modal section panel.
+    /// </summary>
+    /// <param name="section">The section.</param>
+    /// <param name="writer">The writer.</param>
+    /// <param name="title">The title.</param>
     public void BeginModalSectionPanel(ModalSection section, TextWriter writer, string title = null)
     {
         switch (section)
@@ -44,6 +62,11 @@ public class KendoUIModalProvider : IModalProvider
         }
     }
 
+    /// <summary>
+    /// Performs the end modal operation.
+    /// </summary>
+    /// <param name="modal">The modal.</param>
+    /// <param name="writer">The writer.</param>
     public void EndModal(Modal modal, TextWriter writer)
     {
         uiProvider.Scripts.Add(
@@ -61,8 +84,20 @@ $@"$('#{modal.Id}').kendoWindow({{
         writer.Write("</div>");
     }
 
+    /// <summary>
+    /// Performs the end modal section panel operation.
+    /// </summary>
+    /// <param name="section">The section.</param>
+    /// <param name="writer">The writer.</param>
     public void EndModalSectionPanel(ModalSection section, TextWriter writer) => writer.Write("</div>");
 
+    /// <summary>
+    /// Gets the modal launch button.
+    /// </summary>
+    /// <param name="modalId">The modal identifier.</param>
+    /// <param name="text">The text.</param>
+    /// <param name="htmlAttributes">The HTML attributes.</param>
+    /// <returns>The modal launch button.</returns>
     public IHtmlContent ModalLaunchButton(string modalId, string text, object htmlAttributes = null)
     {
         var builder = new FluentTagBuilder("span")
@@ -79,6 +114,13 @@ $@"$('#{modalId}-launch-button')
         return new HtmlString(builder.ToString());
     }
 
+    /// <summary>
+    /// Gets the modal close button.
+    /// </summary>
+    /// <param name="modalId">The modal identifier.</param>
+    /// <param name="text">The text.</param>
+    /// <param name="htmlAttributes">The HTML attributes.</param>
+    /// <returns>The modal close button.</returns>
     public IHtmlContent ModalCloseButton(string modalId, string text, object htmlAttributes = null)
     {
         var builder = new FluentTagBuilder("span")

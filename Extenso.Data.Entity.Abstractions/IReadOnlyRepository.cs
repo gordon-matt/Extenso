@@ -3,6 +3,10 @@ using Extenso.Collections.Generic;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Defines the contract for the read only repository.
+/// </summary>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public interface IReadOnlyRepository<TEntity>
     where TEntity : class
 {
@@ -23,6 +27,12 @@ public interface IReadOnlyRepository<TEntity>
     IRepositoryConnection<TEntity> UseConnection<TOther>(IRepositoryConnection<TOther> connection)
         where TOther : class;
 
+    /// <summary>
+    /// Gets the stream.
+    /// </summary>
+    /// <param name="options">The options.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>The stream.</returns>
     IAsyncEnumerable<TEntity> StreamAsync(
         SearchOptions<TEntity> options,
         CancellationToken cancellationToken = default);

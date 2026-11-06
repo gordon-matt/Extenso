@@ -5,10 +5,20 @@ using System.Runtime.Versioning;
 
 namespace Extenso.Drawing;
 
+/// <summary>
+/// Provides extension methods for images.
+/// </summary>
 public static class ImageExtensions
 {
     extension(Image image)
     {
+        /// <summary>
+        /// Resizes the to file.
+        /// </summary>
+        /// <param name="targetSize">The target size.</param>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="qualityPercent">The quality percent.</param>
+        /// <param name="mimeType">The mime type.</param>
         [SupportedOSPlatform("windows")]
         public void ResizeToFile(int targetSize, string fileName, byte qualityPercent = 80, string mimeType = "image/jpeg")
         {
@@ -30,6 +40,13 @@ public static class ImageExtensions
             newBitmap.Save(fileName, encoder, parameters);
         }
 
+        /// <summary>
+        /// Resizes the to stream.
+        /// </summary>
+        /// <param name="targetSize">The target size.</param>
+        /// <param name="qualityPercent">The quality percent.</param>
+        /// <param name="mimeType">The mime type.</param>
+        /// <returns>The stream.</returns>
         [SupportedOSPlatform("windows")]
         public MemoryStream ResizeToStream(int targetSize, byte qualityPercent = 80, string mimeType = "image/jpeg")
         {

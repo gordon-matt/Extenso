@@ -2,6 +2,9 @@
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
+/// <summary>
+/// Represents the accordion panel.
+/// </summary>
 public class AccordionPanel : IDisposable
 {
     private readonly TextWriter textWriter;
@@ -20,5 +23,8 @@ public class AccordionPanel : IDisposable
         provider.AccordionProvider.BeginAccordionPanel(textWriter, title, panelId, parentAccordionId, expanded);
     }
 
+    /// <summary>
+    /// Releases the resources used by this instance.
+    /// </summary>
     public void Dispose() => provider.AccordionProvider.EndAccordionPanel(textWriter);
 }

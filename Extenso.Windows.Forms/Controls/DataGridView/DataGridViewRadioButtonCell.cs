@@ -5,6 +5,9 @@ using System.Windows.Forms.VisualStyles;
 
 namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view radio button cell.
+/// </summary>
 [DebuggerDisplay("ColumnIndex = {ColumnIndex}, RowIndex = {RowIndex}")]
 public class DataGridViewRadioButtonCell : DataGridViewComboBoxCell, IDataGridViewEditingCell
 {

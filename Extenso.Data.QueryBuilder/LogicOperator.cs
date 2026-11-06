@@ -10,6 +10,12 @@ namespace Extenso.Data.QueryBuilder;
 /// </summary>
 public enum LogicOperator : byte
 {
+    /// <summary>
+    /// The and value.
+    /// </summary>
     And = 0,
+    /// <summary>
+    /// The or value.
+    /// </summary>
     Or = 1
 }

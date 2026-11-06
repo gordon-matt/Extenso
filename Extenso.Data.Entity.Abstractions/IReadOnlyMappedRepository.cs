@@ -3,6 +3,11 @@ using Extenso.Collections.Generic;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Defines the contract for the read only mapped repository.
+/// </summary>
+/// <typeparam name="TModel">The type of the model.</typeparam>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public interface IReadOnlyMappedRepository<TModel, TEntity>
     where TModel : class
     where TEntity : class, IEntity
@@ -24,6 +29,12 @@ public interface IReadOnlyMappedRepository<TModel, TEntity>
     IRepositoryConnection<TModel> UseConnection<TOther>(IRepositoryConnection<TOther> connection)
         where TOther : class;
 
+    /// <summary>
+    /// Gets the stream.
+    /// </summary>
+    /// <param name="options">The options.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>The stream.</returns>
     IAsyncEnumerable<TModel> StreamAsync(
         SearchOptions<TEntity> options,
         CancellationToken cancellationToken = default);

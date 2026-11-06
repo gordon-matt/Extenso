@@ -18,6 +18,11 @@ public abstract class BaseMappedODataController<TModel, TEntity, TKey> : Generic
     where TModel : BaseEntity<TKey>
     where TEntity : BaseEntity<TKey>
 {
+    /// <summary>
+    /// Initializes a new instance of the BaseMappedODataController class.
+    /// </summary>
+    /// <param name="authorizationService">The authorization service.</param>
+    /// <param name="repository">The repository.</param>
     protected BaseMappedODataController(IAuthorizationService authorizationService, IMappedRepository<TModel, TEntity> repository)
         : base(authorizationService, repository)
     {
@@ -40,5 +45,6 @@ public abstract class BaseMappedODataController<TModel, TEntity, TKey> : Generic
         return entity == null ? NotFound() : !await CanViewEntityAsync(entity) ? Unauthorized() : Ok(result);
     }
 
+    /// <inheritdoc/>
     protected override TKey GetId(TModel entity) => entity.Id;
 }

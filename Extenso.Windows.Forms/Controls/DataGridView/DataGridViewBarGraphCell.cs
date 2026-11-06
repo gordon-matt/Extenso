@@ -1,7 +1,11 @@
 ﻿namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view bar graph cell.
+/// </summary>
 public class DataGridViewBarGraphCell : DataGridViewTextBoxCell
 {
+    /// <inheritdoc/>
     protected override void Paint(
         Graphics graphics,
         Rectangle clipBounds,

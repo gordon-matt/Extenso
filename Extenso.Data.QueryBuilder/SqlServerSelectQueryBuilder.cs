@@ -8,8 +8,12 @@ using Extenso.Collections;
 
 namespace Extenso.Data.QueryBuilder;
 
+/// <summary>
+/// Represents the SQL server select query builder.
+/// </summary>
 public class SqlServerSelectQueryBuilder : BaseSelectQueryBuilder
 {
+    /// <inheritdoc/>
     public override string BuildQuery()
     {
         var query = new StringBuilder();
@@ -160,5 +164,6 @@ public class SqlServerSelectQueryBuilder : BaseSelectQueryBuilder
         return query.ToString().Trim();
     }
 
+    /// <inheritdoc/>
     protected override string EncloseIdentifier(string identifier) => string.Concat('[', identifier, ']');
 }

@@ -5,7 +5,14 @@
 
 namespace Extenso.Data.QueryBuilder;
 
+/// <summary>
+/// Defines the contract for the query builder.
+/// </summary>
 public interface IQueryBuilder
 {
+    /// <summary>
+    /// Builds the query.
+    /// </summary>
+    /// <returns>The query.</returns>
     string BuildQuery();
 }

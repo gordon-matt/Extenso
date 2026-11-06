@@ -4,15 +4,29 @@ using Extenso.KendoGridBinder.Extensions;
 
 namespace Extenso.KendoGridBinder.AutoMapperExtensions;
 
+/// <summary>
+/// Represents the auto mapper utils.
+/// </summary>
 public class AutoMapperUtils
 {
     private readonly MapperConfiguration _mapperConfiguration;
 
+    /// <summary>
+    /// Initializes a new instance of the AutoMapperUtils class.
+    /// </summary>
+    /// <param name="mapperConfiguration">The mapper configuration.</param>
     public AutoMapperUtils(MapperConfiguration mapperConfiguration)
     {
         _mapperConfiguration = mapperConfiguration;
     }
 
+    /// <summary>
+    /// Gets the model mappings.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <param name="mappings">The mappings.</param>
+    /// <returns>The model mappings.</returns>
     public Dictionary<string, MapExpression<TEntity>> GetModelMappings<TEntity, TViewModel>(Dictionary<string, MapExpression<TEntity>> mappings = null)
     {
         if (SameTypes<TEntity, TViewModel>())
@@ -81,5 +95,11 @@ public class AutoMapperUtils
         return mappings;
     }
 
+    /// <summary>
+    /// Gets the same types.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public static bool SameTypes<TEntity, TViewModel>() => typeof(TEntity) == typeof(TViewModel);
 }

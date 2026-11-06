@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Extenso.Data.Entity;
 
+/// <summary>
+/// Defines the contract for the repository.
+/// </summary>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
 public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
     where TEntity : class
 {

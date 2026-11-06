@@ -2,6 +2,10 @@
 
 namespace Extenso.AspNetCore.Mvc.ExtensoUI;
 
+/// <summary>
+/// Represents the tabs builder.
+/// </summary>
+/// <typeparam name="TModel">The type of the model.</typeparam>
 public class TabsBuilder<TModel> : BuilderBase<TModel, Tabs>
 {
     private bool isHeaderClosed;
@@ -20,6 +24,10 @@ public class TabsBuilder<TModel> : BuilderBase<TModel, Tabs>
         Element.Provider.TabsProvider.BeginTabsHeader(TextWriter);
     }
 
+    /// <summary>
+    /// Begins the panel.
+    /// </summary>
+    /// <returns>The panel.</returns>
     public TabPanel BeginPanel()
     {
         writingContent = true;
@@ -57,6 +65,7 @@ public class TabsBuilder<TModel> : BuilderBase<TModel, Tabs>
         }
     }
 
+    /// <inheritdoc/>
     public override void Dispose()
     {
         CloseHeader();
@@ -66,6 +75,11 @@ public class TabsBuilder<TModel> : BuilderBase<TModel, Tabs>
         base.Dispose();
     }
 
+    /// <summary>
+    /// Performs the tab operation.
+    /// </summary>
+    /// <param name="label">The label.</param>
+    /// <param name="id">The identifier.</param>
     public void Tab(string label, string id)
     {
         if (string.IsNullOrWhiteSpace(label))

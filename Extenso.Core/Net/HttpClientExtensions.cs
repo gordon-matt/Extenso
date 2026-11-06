@@ -1,5 +1,8 @@
 ﻿namespace Extenso.Net;
 
+/// <summary>
+/// Provides extension methods for HTTP clients.
+/// </summary>
 public static class HttpClientExtensions
 {
     extension(HttpClient httpClient)

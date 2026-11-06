@@ -15,7 +15,13 @@
 
 namespace Extenso.Windows.Forms.Controls;
 
+/// <summary>
+/// Represents the data grid view masked text box options.
+/// </summary>
 public class DataGridViewMaskedTextBoxOptions
 {
+    /// <summary>
+    /// The fore clr.
+    /// </summary>
     public static Color foreClr;
 }

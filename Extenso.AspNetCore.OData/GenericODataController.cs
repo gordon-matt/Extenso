@@ -86,6 +86,11 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
         return Ok(results);
     }
 
+    /// <summary>
+    /// Performs the stream operation.
+    /// </summary>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [HttpGet("stream")]
     [Route("~/odata/[controller]/stream")]
     public virtual async Task Stream(CancellationToken cancellationToken)
@@ -368,6 +373,10 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
 
     private bool disposedValue = false; // To detect redundant calls
 
+    /// <summary>
+    /// Releases the resources used by this instance.
+    /// </summary>
+    /// <param name="disposing">The disposing.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -391,6 +400,9 @@ public abstract class GenericODataController<TEntity, TKey> : ODataController, I
     // }
 
     // This code added to correctly implement the disposable pattern.
+    /// <summary>
+    /// Releases the resources used by this instance.
+    /// </summary>
     public void Dispose() =>
         // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
         Dispose(true);// TODO: uncomment the following line if the finalizer is overridden above.// GC.SuppressFinalize(this);
