@@ -3,7 +3,6 @@
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<Authors>Matt Gordon</Authors>
@@ -40,7 +39,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" />
 	</ItemGroup>
 
 </Project>

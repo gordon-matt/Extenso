@@ -3,7 +3,6 @@
 		<TargetFramework>net10.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<Authors>Matt Gordon</Authors>
 		<Company>Matt Gordon</Company>

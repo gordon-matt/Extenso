@@ -6,11 +6,11 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.2" />
-    <PackageReference Include="Bogus" Version="35.6.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.14" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Extenso.AspNetCore.Mvc.ExtensoUI\Extenso.AspNetCore.Mvc.ExtensoUI.csproj" />

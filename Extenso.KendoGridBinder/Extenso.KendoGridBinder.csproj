@@ -27,9 +27,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="14.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.4" />
+		<PackageReference Include="AutoMapper" />
+		<PackageReference Include="Newtonsoft.Json" />
+		<PackageReference Include="System.Linq.Dynamic.Core" />
 	</ItemGroup>
 
 	<ItemGroup>

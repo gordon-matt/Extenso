@@ -6,7 +6,6 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-		<Version>10.2.1</Version>
 		<Description>Drawing-related extension methods and other helper classes.</Description>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
@@ -31,6 +30,6 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Drawing.Common" Version="10.0.14" />
+		<PackageReference Include="System.Drawing.Common" />
 	</ItemGroup>
 </Project>

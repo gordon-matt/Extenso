@@ -9,7 +9,6 @@
 		<Description>Extension methods and other helper classes</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
-		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<PackageTags>extensions;extension-methods;helpers;utilities;dotnet</PackageTags>
@@ -32,6 +31,6 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>
 </Project>

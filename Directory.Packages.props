@@ -1,0 +1,51 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Autofac" Version="9.3.4" />
+    <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="11.0.2" />
+    <PackageVersion Include="AutoMapper" Version="14.0.0" />
+    <PackageVersion Include="AutoMapper14.Extensions.ExpressionMapping" Version="8.1.0" />
+    <PackageVersion Include="Blazorise.Bootstrap" Version="1.8.7" />
+    <PackageVersion Include="Blazorise.Icons.FontAwesome" Version="1.8.7" />
+    <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="coverlet.collector" Version="10.1.1" />
+    <PackageVersion Include="CsvHelper" Version="33.1.0" />
+    <PackageVersion Include="EPPlus" Version="8.7.2" />
+    <PackageVersion Include="FluentAssertions" Version="8.11.0" />
+    <PackageVersion Include="Humanizer.Core" Version="3.0.10" />
+    <PackageVersion Include="Linq.PropertyTranslator.Core" Version="1.0.5.1" />
+    <PackageVersion Include="LinqKit.Core" Version="1.3.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.AspNetCore.OData" Version="9.5.0" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
+    <PackageVersion Include="Moq" Version="4.21.0" />
+    <PackageVersion Include="MySql.Data" Version="26.10.0" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageVersion Include="Npgsql" Version="10.0.3" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageVersion Include="NUnit" Version="5.0.0" />
+    <PackageVersion Include="NUnit.Analyzers" Version="4.15.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.3.1" />
+    <PackageVersion Include="Radzen.Blazor" Version="8.3.3" />
+    <PackageVersion Include="System.Data.OleDb" Version="10.0.14" />
+    <PackageVersion Include="System.Drawing.Common" Version="10.0.14" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.4" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+  </ItemGroup>
+</Project>

@@ -1,4 +1,7 @@
 <Project>
+	<PropertyGroup>
+		<Version>10.2.2</Version>
+	</PropertyGroup>
 
 	<!-- Missing XML documentation on the public API is a build error. Tests, demos, samples, and templates are exempt. -->
 	<PropertyGroup>

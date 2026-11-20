@@ -8,7 +8,6 @@
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<Description>Foundation Provider for ExtensoUI</Description>
-		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryUrl>https://github.com/gordon-matt/Extenso</RepositoryUrl>
 		<PackageTags>aspnetcore;mvc;html-helpers;ui-components;foundation;zurb-foundation</PackageTags>

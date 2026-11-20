@@ -7,7 +7,6 @@
 		<Description>Data-related extension methods and other helper classes.</Description>
 		<PackageProjectUrl>https://github.com/gordon-matt/Extenso</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<RepositoryType>git</RepositoryType>
 		<Company>Matt Gordon</Company>
@@ -31,8 +30,8 @@
 		</None>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Humanizer.Core" Version="3.0.10" />
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.1.1" />
+		<PackageReference Include="Humanizer.Core" />
+		<PackageReference Include="Microsoft.Data.SqlClient" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Extenso.Core\Extenso.Core.csproj" />

@@ -4,7 +4,6 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>10.2.1</Version>
 		<PackageIcon>ExtensoIcon.jpg</PackageIcon>
 		<Authors>Matt Gordon</Authors>
 		<Company>Matt Gordon</Company>
@@ -35,7 +34,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="AutoMapper14.Extensions.ExpressionMapping" Version="8.1.0" />
+	  <PackageReference Include="AutoMapper14.Extensions.ExpressionMapping" />
 	</ItemGroup>
 
 	<ItemGroup>
